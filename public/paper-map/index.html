@@ -686,6 +686,18 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
           // Ensure JetBrains Mono is loaded before rendering labels
           await document.fonts.ready;
           // Only build labels where we have a position.
+          // Wait for JetBrains Mono to be fully loaded before any label rendering
+          await document.fonts.ready;
+          await document.fonts.load('700 16px "JetBrains Mono"');
+          // Verify font is actually available to Canvas
+          var testCanvas = document.createElement('canvas');
+          var testCtx = testCanvas.getContext('2d');
+          testCtx.font = '16px "JetBrains Mono"';
+          var m1 = testCtx.measureText('M').width;
+          testCtx.font = '16px monospace';
+          var m2 = testCtx.measureText('M').width;
+          console.log('Font check: JetBrains Mono width=' + m1 + ', monospace width=' + m2 + ', match=' + (m1 !== m2));
+
           await datamap.addLabels(labelData, {
             labelTextColor: d => [d.r, d.g, d.b],
             textMinPixelSize: 18,
@@ -693,12 +705,26 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
             textOutlineWidth: 8,
             textOutlineColor: [17, 17, 17, 221],
             textBackgroundColor: [0, 0, 0, 64],
-            fontFamily: "JetBrains Mono",
+            fontFamily: "JetBrains Mono, monospace",
             fontWeight: 600,
             lineSpacing: 0.95,
             textCollisionSizeScale: 3,
             pickable: false,
           });
+
+          // Force layer rebuild after a delay to ensure font atlas uses correct font
+          setTimeout(function() {
+            if (datamap.labelLayer) {
+              var newLayer = datamap.labelLayer.clone({
+                fontFamily: "JetBrains Mono, monospace",
+                updateTriggers: { all: Date.now() }
+              });
+              var idx = datamap.layers.indexOf(datamap.labelLayer);
+              if (idx >= 0) datamap.layers[idx] = newLayer;
+              datamap.labelLayer = newLayer;
+              datamap.deckgl.setProps({layers: [...datamap.layers]});
+            }
+          }, 2000);
 
           
           
