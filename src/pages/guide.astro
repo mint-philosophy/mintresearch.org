@@ -2068,35 +2068,37 @@ function makeDraggable(tip) {
       });
     }
 
-    if (isTouch) {
-      el.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (activeEl === this && tip.classList.contains('visible')) {
-          tip.classList.remove('visible');
-          activeEl = null;
-          return;
-        }
-        tip.innerHTML = this.getAttribute('data-ingest-tip');
-        tip.style.borderColor = this.getAttribute('data-ingest-color') || 'var(--mint)';
-        // Clamp within nearest section or viewport
-        var elRect = this.getBoundingClientRect();
-        var section = this.closest('section');
-        var ar = {left: elRect.left, right: elRect.right, top: elRect.top, bottom: elRect.bottom, width: elRect.width, height: elRect.height};
-        ar._container = section ? section.getBoundingClientRect() : null;
-        tip.classList.add('visible');
-        requestAnimationFrame(function() { clampTip(tip, ar); });
-        activeEl = this;
-      });
-    }
   });
 
+  // Touch: use document-level delegation so taps on child elements (e.g.
+  // .card-head inside .card[data-ingest-tip]) still trigger the tooltip.
   if (isTouch) {
     document.addEventListener('click', function(e) {
-      if (activeEl && !activeEl.contains(e.target) && !tip.contains(e.target)) {
+      var target = e.target.closest('[data-ingest-tip]');
+      // Dismiss if tapping outside any tooltip element
+      if (!target && !tip.contains(e.target)) {
+        if (activeEl) {
+          tip.classList.remove('visible');
+          activeEl = null;
+        }
+        return;
+      }
+      if (!target) return;
+      // Toggle off if tapping same element
+      if (activeEl === target && tip.classList.contains('visible')) {
         tip.classList.remove('visible');
         activeEl = null;
+        return;
       }
+      tip.innerHTML = target.getAttribute('data-ingest-tip');
+      tip.style.borderColor = target.getAttribute('data-ingest-color') || 'var(--mint)';
+      var elRect = target.getBoundingClientRect();
+      var section = target.closest('section');
+      var ar = {left: elRect.left, right: elRect.right, top: elRect.top, bottom: elRect.bottom, width: elRect.width, height: elRect.height};
+      ar._container = section ? section.getBoundingClientRect() : null;
+      tip.classList.add('visible');
+      requestAnimationFrame(function() { clampTip(tip, ar); });
+      activeEl = target;
     });
   }
 })();
