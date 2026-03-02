@@ -1894,12 +1894,7 @@ import RefTable from '../components/RefTable.astro';
   <span class="arrow">↓</span> <span id="tokenCount">0</span> tokens
 </div>
 
-<!-- Section indicator bar (shows current section while scrolling) -->
-<div class="section-indicator" id="sectionIndicator">
-  <span class="si-num" id="siNum"></span>
-  <span class="si-name" id="siName"></span>
-  <span class="si-cli" id="siCli"></span>
-</div>
+<!-- Section indicator removed — statusline already shows current section -->
 
 </main>
 
@@ -2388,54 +2383,6 @@ document.getElementById('subscribe-form').addEventListener('submit', function(e)
   updateTokens();
 })();
 
-// ===== Section indicator bar (shows current section while scrolling) =====
-(function() {
-  var indicator = document.getElementById('sectionIndicator');
-  var siNum = document.getElementById('siNum');
-  var siName = document.getElementById('siName');
-  var siCli = document.getElementById('siCli');
-  if (!indicator) return;
-  var headers = document.querySelectorAll('h2.cli-call[data-section-name]');
-  if (!headers.length) return;
-  var sections = [];
-  headers.forEach(function(h) {
-    var sec = h.closest('section');
-    var num = sec ? sec.querySelector('.section-num') : null;
-    var cliLine = h.querySelector('.cli-line');
-    sections.push({
-      el: sec || h,
-      num: num ? num.textContent.trim() : '',
-      name: h.getAttribute('data-section-name'),
-      cli: cliLine ? cliLine.textContent.trim() : ''
-    });
-  });
-  var current = '';
-  function updateIndicator() {
-    var scrollY = window.pageYOffset + window.innerHeight * 0.3;
-    var active = null;
-    for (var i = sections.length - 1; i >= 0; i--) {
-      if (sections[i].el.offsetTop <= scrollY) { active = sections[i]; break; }
-    }
-    if (active && active.name !== current) {
-      current = active.name;
-      siNum.textContent = active.num ? '[' + active.num + ']' : '';
-      siName.textContent = active.name;
-      siCli.textContent = active.cli;
-    }
-    if (window.pageYOffset > 400) {
-      indicator.classList.add('visible');
-    } else {
-      indicator.classList.remove('visible');
-    }
-  }
-  var ticking2 = false;
-  window.addEventListener('scroll', function() {
-    if (!ticking2) {
-      requestAnimationFrame(function() { updateIndicator(); ticking2 = false; });
-      ticking2 = true;
-    }
-  });
-  updateIndicator();
-})();
+// Section indicator removed — statusline handles current section display.
 </script>
 </BaseLayout>
