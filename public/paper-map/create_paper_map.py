@@ -124,7 +124,7 @@ def create_visualization(df, coords):
     # Custom hover template
     hover_template = """
     <div style="max-width:350px; font-family: 'JetBrains Mono', monospace;">
-        <div style="font-size:14px; font-weight:600; color:#fff; margin-bottom:6px;">
+        <div style="font-size:14px; font-weight:600; color:#abb2bf; margin-bottom:6px;">
             {title}
         </div>
         <div style="font-size:11px; color:#aaa; margin-bottom:4px;">
@@ -132,7 +132,7 @@ def create_visualization(df, coords):
         </div>
         <div style="display:flex; gap:12px; font-size:11px; color:#888; margin-bottom:8px;">
             <span>{year}</span>
-            <span style="color:#6b9; font-weight:500;">{category}</span>
+            <span style="color:#2ec4b6; font-weight:500;">{category}</span>
             <span style="color:#7eb5d6;">{discipline}</span>
         </div>
         <div style="font-size:11px; color:#ccc; line-height:1.4;">
@@ -171,10 +171,10 @@ def create_visualization(df, coords):
         position: absolute;
         top: 70px;
         right: 16px;
-        background: rgba(20,20,20,0.92);
+        background: rgba(17,17,17,0.92);
         backdrop-filter: blur(8px);
         padding: 12px;
-        border-radius: 12px;
+        border-radius: 0;
         font-family: 'JetBrains Mono', monospace;
         z-index: 1000;
         max-height: calc(100vh - 100px);
@@ -211,19 +211,19 @@ def create_visualization(df, coords):
         color: #888;
         font-size: 10px;
         padding: 3px 8px;
-        border-radius: 4px;
+        border-radius: 0;
         cursor: pointer;
         transition: all 0.15s;
     }
     .filter-header-btn:hover {
         background: rgba(255,255,255,0.15);
-        color: #fff;
+        color: #abb2bf;
     }
     /* 3-way toggle */
     #mode-toggle {
         display: flex;
         background: rgba(255,255,255,0.06);
-        border-radius: 6px;
+        border-radius: 0;
         padding: 2px;
         margin-bottom: 8px;
     }
@@ -234,7 +234,7 @@ def create_visualization(df, coords):
         color: #666;
         font-size: 10px;
         padding: 5px 4px;
-        border-radius: 4px;
+        border-radius: 0;
         cursor: pointer;
         transition: all 0.15s;
         text-align: center;
@@ -242,7 +242,7 @@ def create_visualization(df, coords):
     }
     .mode-btn.active {
         background: rgba(255,255,255,0.12);
-        color: #fff;
+        color: #abb2bf;
     }
     .mode-btn:hover:not(.active) {
         color: #aaa;
@@ -275,7 +275,7 @@ def create_visualization(df, coords):
         color: #ccc;
         font-size: 11px;
         padding: 4px 8px;
-        border-radius: 6px;
+        border-radius: 0;
         cursor: pointer;
         transition: all 0.15s;
         display: inline-flex;
@@ -286,7 +286,7 @@ def create_visualization(df, coords):
     .filter-chip.active {
         background: color-mix(in srgb, var(--chip-color) 25%, transparent);
         border-color: var(--chip-color);
-        color: #fff;
+        color: #abb2bf;
     }
     .filter-chip:not(.active) {
         opacity: 0.45;
@@ -314,12 +314,12 @@ def create_visualization(df, coords):
         color: #ccc;
         font-size: 12px;
         padding: 4px 6px;
-        border-radius: 4px;
+        border-radius: 0;
         text-align: center;
         font-family: 'JetBrains Mono', monospace;
     }
     .year-input:focus {
-        border-color: #6b9;
+        border-color: #2ec4b6;
         outline: none;
     }
     #year-range span {
@@ -327,7 +327,7 @@ def create_visualization(df, coords):
         font-size: 11px;
     }
     #filter-count {
-        color: #6b9;
+        color: #2ec4b6;
         font-size: 11px;
         margin-top: 8px;
         padding-top: 6px;
@@ -343,7 +343,7 @@ def create_visualization(df, coords):
         color: #aaa;
         font-size: 11px;
         padding: 6px 12px;
-        border-radius: 6px;
+        border-radius: 0;
         cursor: pointer;
         z-index: 1001;
         font-family: 'JetBrains Mono', monospace;
@@ -352,7 +352,7 @@ def create_visualization(df, coords):
         transition: all 0.15s;
     }
     #toggle-filters:hover {
-        color: #fff;
+        color: #abb2bf;
         background: rgba(50,50,50,0.95);
     }
     #stats-display {
@@ -374,7 +374,7 @@ def create_visualization(df, coords):
         left: 20px;
         background: rgba(30,30,30,0.9);
         padding: 8px 12px;
-        border-radius: 6px;
+        border-radius: 0;
         font-family: 'JetBrains Mono', monospace;
         color: #888;
         font-size: 11px;
@@ -385,7 +385,7 @@ def create_visualization(df, coords):
         pointer-events: auto;
     }
     #credits-btn:hover {
-        color: #fff;
+        color: #abb2bf;
         background: rgba(50,50,50,0.95);
     }
     """
