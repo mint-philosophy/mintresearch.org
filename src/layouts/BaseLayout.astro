@@ -152,9 +152,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       fadeEls.forEach(el => fadeObserver.observe(el));
     }
 
-    // Card accordion
+    // Card accordion — only for cards that have a .card-body to expand.
+    // Tooltip-only cards (data-ingest-tip, no card-body) must NOT get this
+    // handler, otherwise it interferes with the tooltip click delegation.
     document.querySelectorAll('.card .card-head').forEach(head => {
-      head.addEventListener('click', () => head.closest('.card')?.classList.toggle('open'));
+      const card = head.closest('.card');
+      if (card && card.querySelector('.card-body')) {
+        head.addEventListener('click', () => card.classList.toggle('open'));
+      }
     });
 
     // Typing animation — types title, then subtitle
