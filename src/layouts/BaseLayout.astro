@@ -1,11 +1,13 @@
 ---
+import Sidebar from '../components/Sidebar.astro';
+import '../styles/global.css';
+
 interface Props {
   title: string;
 }
 
 const { title } = Astro.props;
-
-import '../styles/global.css';
+const currentPath = Astro.url.pathname;
 ---
 
 <!DOCTYPE html>
@@ -26,6 +28,110 @@ import '../styles/global.css';
   </button>
   <div class="mobile-overlay" id="mobileOverlay"></div>
 
+  <Sidebar currentPath={currentPath} />
+
   <slot />
+
+  <script>
+    // Mobile menu toggle
+    const menuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('mobileOverlay');
+
+    function toggleMenu() {
+      sidebar?.classList.toggle('open');
+      overlay?.classList.toggle('open');
+    }
+
+    menuBtn?.addEventListener('click', toggleMenu);
+    overlay?.addEventListener('click', toggleMenu);
+
+    // Close mobile menu on nav link click
+    sidebar?.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+          sidebar?.classList.remove('open');
+          overlay?.classList.remove('open');
+        }
+      });
+    });
+
+    // Search overlay
+    const searchTrigger = document.getElementById('searchTrigger');
+    const searchOverlay = document.getElementById('searchOverlay');
+    const searchInput = document.getElementById('searchInput');
+
+    searchTrigger?.addEventListener('click', () => {
+      searchOverlay?.classList.add('open');
+      searchInput?.focus();
+    });
+
+    searchOverlay?.addEventListener('click', (e) => {
+      if (e.target === searchOverlay) {
+        searchOverlay.classList.remove('open');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        searchOverlay?.classList.toggle('open');
+        if (searchOverlay?.classList.contains('open')) {
+          searchInput?.focus();
+        }
+      }
+      if (e.key === 'Escape') {
+        searchOverlay?.classList.remove('open');
+      }
+    });
+
+    // Scroll spy — highlight active section link
+    const sectionLinks = document.querySelectorAll('.nav-section');
+    const sections = new Map<string, Element>();
+
+    sectionLinks.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href?.startsWith('#')) {
+        const target = document.getElementById(href.slice(1));
+        if (target) sections.set(href, target);
+      }
+    });
+
+    if (sections.size > 0) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const id = '#' + entry.target.id;
+            sectionLinks.forEach(link => {
+              link.classList.toggle('active', link.getAttribute('href') === id);
+            });
+          }
+        });
+      }, { rootMargin: '-20% 0px -70% 0px' });
+
+      sections.forEach(el => observer.observe(el));
+    }
+
+    // Fade-in intersection observer
+    const fadeEls = document.querySelectorAll('.fade-in');
+    if (fadeEls.length > 0) {
+      const fadeObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      fadeEls.forEach(el => fadeObserver.observe(el));
+    }
+
+    // Card accordion toggle
+    document.querySelectorAll('.card .card-head').forEach(head => {
+      head.addEventListener('click', () => {
+        head.closest('.card')?.classList.toggle('open');
+      });
+    });
+  </script>
 </body>
 </html>

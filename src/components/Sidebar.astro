@@ -1,32 +1,80 @@
 ---
-interface NavLink {
-  href: string;
-  label: string;
-  mark: string;
-  active?: boolean;
-}
+import { siteNav } from '../data/navigation';
+import type { SectionLink } from '../data/navigation';
 
 interface Props {
-  links: NavLink[];
+  currentPath: string;
 }
 
-const { links } = Astro.props;
+const { currentPath } = Astro.props;
+
+// Strip base path prefix so we compare against clean paths like "/" and "/guide/"
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const cleanPath = (currentPath || "/").startsWith(base)
+  ? (currentPath || "/").slice(base.length) || "/"
+  : (currentPath || "/");
+
+function isActivePage(pagePath: string): boolean {
+  if (pagePath === "/") {
+    return cleanPath === "/" || cleanPath === "";
+  }
+  return cleanPath.startsWith(pagePath);
+}
 ---
 
-<nav class="sidebar">
+<nav class="sidebar" id="sidebar">
   <div class="logo">
     <h2>MINT</h2>
-    <p>Research Lab</p>
+    <p class="logo-sub">Research Lab</p>
   </div>
+
   <div class="search-trigger" id="searchTrigger">
     <span>&#128269;</span> Search... <kbd>&#8984;K</kbd>
   </div>
-  {links.map((link) => (
-    <a class:list={["nav-link", { active: link.active }]} href={link.href}>
-      <span class="nav-mark" set:html={link.mark} />
-      {link.label}
-    </a>
-  ))}
+
+  <div class="nav-pages">
+    {siteNav.map((page) => {
+      const active = isActivePage(page.path);
+      return (
+        <>
+          <a
+            class:list={["nav-link", "nav-page", { active }]}
+            href={base + page.path}
+          >
+            <span class="nav-mark">{page.icon}</span>
+            {page.label}
+          </a>
+          {page.sections.length > 0 && (
+            <div class:list={["nav-sections", { expanded: active }]}>
+              {page.sections.map((section: SectionLink) => (
+                <>
+                  {section.divider && (
+                    <div class="nav-divider">{section.divider}</div>
+                  )}
+                  <a
+                    class="nav-link nav-section"
+                    href={active ? section.href : base + page.path + section.href}
+                  >
+                    <span class="nav-mark">&#9659;</span>
+                    {section.label}
+                  </a>
+                  {section.children?.map((child: SectionLink) => (
+                    <a
+                      class="nav-link nav-section sub-link"
+                      href={active ? child.href : base + page.path + child.href}
+                    >
+                      <span class="nav-mark">&#8250;</span>
+                      {child.label}
+                    </a>
+                  ))}
+                </>
+              ))}
+            </div>
+          )}
+        </>
+      );
+    })}
+  </div>
 </nav>
 
 <div class="search-overlay" id="searchOverlay">

@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="MINT Lab — Corpus Map">
+
+<main>
+
+<section class="hero" id="corpus-map-hero" style="padding-bottom: 24px;">
+  <h1>The <span class="gradient">Corpus Map</span></h1>
+  <p class="subtitle">Interactive visualization of the MINT Lab research corpus &mdash; updated daily</p>
+</section>
+
+<section class="no-brackets" style="padding: 0 0 48px; max-width: none;">
+  <div class="map-container">
+    <iframe
+      src="/paper-map/"
+      title="MINT Lab Research Corpus Map"
+      class="map-frame"
+      loading="lazy"
+    ></iframe>
+  </div>
+</section>
+
+</main>
+
+</BaseLayout>
+
+<style>
+  .map-container {
+    width: calc(100% + var(--sidebar-w));
+    margin-left: calc(-1 * var(--sidebar-w));
+    height: calc(100vh - 200px);
+    min-height: 500px;
+    position: relative;
+    border-top: 1px dashed rgba(46, 196, 182, 0.15);
+    border-bottom: 1px dashed rgba(46, 196, 182, 0.15);
+  }
+  .map-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #080d14;
+  }
+  @media (max-width: 768px) {
+    .map-container {
+      width: 100%;
+      margin-left: 0;
+      height: calc(100vh - 160px);
+    }
+  }
+</style>
