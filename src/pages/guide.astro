@@ -420,7 +420,7 @@ import RefTable from '../components/RefTable.astro';
 
   <div class="pipeline-tip" id="pipelineTip"></div>
 
-  <p style="margin-top:20px;color:var(--text-2);font-size:13px"><em>Hover over any node in the diagram above to see what it does.</em></p>
+  <p style="margin-top:20px;color:var(--text-2);font-size:13px"><em>Tap or hover any node in the diagram to see what it does.</em></p>
 
 </section>
 
@@ -1903,32 +1903,137 @@ import RefTable from '../components/RefTable.astro';
 </main>
 
 <script is:inline>
+// ===== Shared tooltip positioning helper =====
+function clampTip(tip, anchorRect, containerSel) {
+  var pad = 10;
+  var tw = tip.offsetWidth || 300;
+  var th = tip.offsetHeight || 80;
+  var vw = window.innerWidth;
+  var vh = window.innerHeight;
+  // Get container bounds (diagram or section) to avoid going outside it
+  var container = anchorRect._container;
+  if (!container && containerSel) {
+    var el = document.querySelector(containerSel);
+    if (el) container = el.getBoundingClientRect();
+  }
+  var minX = container ? Math.max(pad, container.left) : pad;
+  var maxX = container ? Math.min(vw - pad, container.right) : vw - pad;
+  // Position below the anchor, centered horizontally
+  var x = anchorRect.left + (anchorRect.width / 2) - (tw / 2);
+  var y = anchorRect.bottom + 8;
+  // Clamp horizontal: stay within container/viewport
+  if (x + tw > maxX) x = maxX - tw;
+  if (x < minX) x = minX;
+  // If it goes below viewport, flip above
+  if (y + th > vh) y = anchorRect.top - th - 8;
+  if (y < pad) y = pad;
+  tip.style.left = x + 'px';
+  tip.style.top = y + 'px';
+}
+
+// ===== Make a tooltip draggable on touch =====
+function makeDraggable(tip) {
+  var dragging = false, startX, startY, origX, origY;
+  tip.addEventListener('touchstart', function(e) {
+    if (e.touches.length !== 1) return;
+    dragging = true;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    origX = parseInt(tip.style.left) || 0;
+    origY = parseInt(tip.style.top) || 0;
+    tip.style.transition = 'none';
+    e.preventDefault();
+  }, {passive: false});
+  tip.addEventListener('touchmove', function(e) {
+    if (!dragging) return;
+    var dx = e.touches[0].clientX - startX;
+    var dy = e.touches[0].clientY - startY;
+    tip.style.left = (origX + dx) + 'px';
+    tip.style.top = (origY + dy) + 'px';
+    e.preventDefault();
+  }, {passive: false});
+  tip.addEventListener('touchend', function() {
+    dragging = false;
+    tip.style.transition = '';
+  });
+}
+
 // ===== Pipeline tooltips =====
 (function() {
   var tip = document.getElementById('pipelineTip');
   if (!tip) return;
+  var isTouch = 'ontouchstart' in window;
+  var activeNode = null;
+  var pipeWrap = document.querySelector('.pipeline-wrap');
+  makeDraggable(tip);
+
   document.querySelectorAll('.pn').forEach(function(node) {
-    node.addEventListener('mouseenter', function(e) {
-      var text = this.getAttribute('data-tip');
-      if (!text) return;
-      tip.textContent = text;
-      var rect = this.querySelector('rect');
-      var col = rect ? rect.getAttribute('stroke') : null;
-      tip.style.borderColor = (col && col !== 'rgba(255,255,255,0.1)') ? col : 'var(--mint)';
-      tip.classList.add('visible');
-    });
-    node.addEventListener('mousemove', function(e) {
-      var x = e.clientX + 14;
-      var y = e.clientY + 14;
-      if (x + 330 > window.innerWidth) x = e.clientX - 334;
-      if (y + 100 > window.innerHeight) y = e.clientY - 80;
-      tip.style.left = x + 'px';
-      tip.style.top = y + 'px';
-    });
-    node.addEventListener('mouseleave', function() {
-      tip.classList.remove('visible');
-    });
+    if (!isTouch) {
+      node.addEventListener('mouseenter', function(e) {
+        var text = this.getAttribute('data-tip');
+        if (!text) return;
+        tip.textContent = text;
+        var rect = this.querySelector('rect');
+        var col = rect ? rect.getAttribute('stroke') : null;
+        tip.style.borderColor = (col && col !== 'rgba(255,255,255,0.1)') ? col : 'var(--mint)';
+        tip.classList.add('visible');
+      });
+      node.addEventListener('mousemove', function(e) {
+        var x = e.clientX + 14;
+        var y = e.clientY + 14;
+        var vw = window.innerWidth;
+        var pw = pipeWrap ? pipeWrap.getBoundingClientRect() : null;
+        var maxR = pw ? pw.right : vw;
+        var minL = pw ? pw.left : 0;
+        if (x + 330 > maxR) x = maxR - 330;
+        if (x < minL) x = minL;
+        if (y + 100 > window.innerHeight) y = e.clientY - 80;
+        tip.style.left = x + 'px';
+        tip.style.top = y + 'px';
+      });
+      node.addEventListener('mouseleave', function() {
+        tip.classList.remove('visible');
+      });
+    }
+
+    // Touch: tap to toggle
+    if (isTouch) {
+      node.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (activeNode === this && tip.classList.contains('visible')) {
+          tip.classList.remove('visible');
+          activeNode = null;
+          return;
+        }
+        var text = this.getAttribute('data-tip');
+        if (!text) return;
+        tip.textContent = text;
+        var rect = this.querySelector('rect');
+        var col = rect ? rect.getAttribute('stroke') : null;
+        tip.style.borderColor = (col && col !== 'rgba(255,255,255,0.1)') ? col : 'var(--mint)';
+        // Position clamped to pipeline diagram bounds
+        var svgEl = this.closest('svg');
+        var svgRect = svgEl ? svgEl.getBoundingClientRect() : null;
+        var nodeRect = this.getBoundingClientRect();
+        var ar = {left: nodeRect.left, right: nodeRect.right, top: nodeRect.top, bottom: nodeRect.bottom, width: nodeRect.width, height: nodeRect.height};
+        ar._container = svgRect;
+        tip.classList.add('visible');
+        // Need to measure after visible so offsetWidth/Height are real
+        requestAnimationFrame(function() { clampTip(tip, ar); });
+        activeNode = this;
+      });
+    }
   });
+
+  if (isTouch) {
+    document.addEventListener('click', function(e) {
+      if (activeNode && !activeNode.contains(e.target) && !tip.contains(e.target)) {
+        tip.classList.remove('visible');
+        activeNode = null;
+      }
+    });
+  }
 })();
 
 // ===== Hover/tap tooltips (ingest stages, corpus search cards, etc.) =====
@@ -1937,6 +2042,7 @@ import RefTable from '../components/RefTable.astro';
   if (!tip) return;
   var isTouch = 'ontouchstart' in window;
   var activeEl = null;
+  makeDraggable(tip);
 
   document.querySelectorAll('[data-ingest-tip]').forEach(function(el) {
     if (!isTouch) {
@@ -1949,7 +2055,8 @@ import RefTable from '../components/RefTable.astro';
       el.addEventListener('mousemove', function(e) {
         var x = e.clientX + 14;
         var y = e.clientY + 14;
-        if (x + 350 > window.innerWidth) x = e.clientX - 354;
+        if (x + 350 > window.innerWidth) x = window.innerWidth - 360;
+        if (x < 10) x = 10;
         if (y + 100 > window.innerHeight) y = e.clientY - 80;
         tip.style.left = x + 'px';
         tip.style.top = y + 'px';
@@ -1971,15 +2078,13 @@ import RefTable from '../components/RefTable.astro';
         }
         tip.innerHTML = this.getAttribute('data-ingest-tip');
         tip.style.borderColor = this.getAttribute('data-ingest-color') || 'var(--mint)';
-        var rect = this.getBoundingClientRect();
-        var x = rect.left;
-        var y = rect.bottom + 8;
-        if (x + 350 > window.innerWidth) x = window.innerWidth - 360;
-        if (x < 10) x = 10;
-        if (y + 120 > window.innerHeight) y = rect.top - 120;
-        tip.style.left = x + 'px';
-        tip.style.top = y + 'px';
+        // Clamp within nearest section or viewport
+        var elRect = this.getBoundingClientRect();
+        var section = this.closest('section');
+        var ar = {left: elRect.left, right: elRect.right, top: elRect.top, bottom: elRect.bottom, width: elRect.width, height: elRect.height};
+        ar._container = section ? section.getBoundingClientRect() : null;
         tip.classList.add('visible');
+        requestAnimationFrame(function() { clampTip(tip, ar); });
         activeEl = this;
       });
     }
