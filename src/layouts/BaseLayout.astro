@@ -8,6 +8,7 @@ interface Props {
 
 const { title } = Astro.props;
 const currentPath = Astro.url.pathname;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <!DOCTYPE html>
@@ -18,7 +19,7 @@ const currentPath = Astro.url.pathname;
   <title>{title}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
@@ -30,23 +31,48 @@ const currentPath = Astro.url.pathname;
 
   <Sidebar currentPath={currentPath} />
 
+  <!-- Top Banner -->
+  <div class="top-banner">
+    <div class="top-banner-inner">
+      <a href={`${base}/`} style="display:inline-flex;"><img src={`${base}/assets/mint-banner.png`} alt="MINT LAB" class="top-banner-logo" /></a>
+      <div class="top-banner-minties">
+        <img src={`${base}/assets/minty-teal.png`} alt="" class="top-banner-minty" style="animation-delay: 0s;" />
+        <img src={`${base}/assets/minty-brown.png`} alt="" class="top-banner-minty" style="animation-delay: 0.3s;" />
+        <img src={`${base}/assets/minty-yellow.png`} alt="" class="top-banner-minty" style="animation-delay: 0.6s;" />
+        <img src={`${base}/assets/minty-purple.png`} alt="" class="top-banner-minty" style="animation-delay: 0.9s;" />
+        <img src={`${base}/assets/minty-red.png`} alt="" class="top-banner-minty" style="animation-delay: 1.2s;" />
+        <img src={`${base}/assets/minty-green.png`} alt="" class="top-banner-minty" style="animation-delay: 1.5s;" />
+        <img src={`${base}/assets/minty-cool.png`} alt="" class="top-banner-minty" style="animation-delay: 1.8s;" />
+      </div>
+    </div>
+  </div>
+
   <slot />
 
+  <!-- Statusline -->
+  <div class="statusline" id="statusline">
+    <img src={`${base}/assets/minty-teal.png`} alt="" class="statusline-minty" />
+    <div class="statusline-progress">
+      <span class="statusline-bar" id="statusBar"></span>
+      <span class="statusline-pct" id="statusPct">0%</span>
+    </div>
+    <span class="statusline-sep">│</span>
+    <span class="statusline-section" id="statusSection">top</span>
+    <span class="statusline-sep">│</span>
+    <span class="statusline-site">mintresearch.org</span>
+  </div>
+
   <script>
-    // Mobile menu toggle
+    // Mobile menu
     const menuBtn = document.getElementById('mobileMenuBtn');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('mobileOverlay');
-
     function toggleMenu() {
       sidebar?.classList.toggle('open');
       overlay?.classList.toggle('open');
     }
-
     menuBtn?.addEventListener('click', toggleMenu);
     overlay?.addEventListener('click', toggleMenu);
-
-    // Close mobile menu on nav link click
     sidebar?.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
         if (window.innerWidth <= 768) {
@@ -59,79 +85,124 @@ const currentPath = Astro.url.pathname;
     // Search overlay
     const searchTrigger = document.getElementById('searchTrigger');
     const searchOverlay = document.getElementById('searchOverlay');
-    const searchInput = document.getElementById('searchInput');
-
+    const searchInput = document.getElementById('searchInput') as HTMLInputElement | null;
     searchTrigger?.addEventListener('click', () => {
       searchOverlay?.classList.add('open');
       searchInput?.focus();
     });
-
     searchOverlay?.addEventListener('click', (e) => {
-      if (e.target === searchOverlay) {
-        searchOverlay.classList.remove('open');
-      }
+      if (e.target === searchOverlay) searchOverlay.classList.remove('open');
     });
-
     document.addEventListener('keydown', (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         searchOverlay?.classList.toggle('open');
-        if (searchOverlay?.classList.contains('open')) {
-          searchInput?.focus();
-        }
+        if (searchOverlay?.classList.contains('open')) searchInput?.focus();
       }
-      if (e.key === 'Escape') {
-        searchOverlay?.classList.remove('open');
-      }
+      if (e.key === 'Escape') searchOverlay?.classList.remove('open');
     });
 
-    // Scroll spy — highlight active section link
+    // Statusline scroll progress
+    const BAR_LEN = 16;
+    const statusBar = document.getElementById('statusBar');
+    const statusPct = document.getElementById('statusPct');
+    const statusSection = document.getElementById('statusSection');
     const sectionLinks = document.querySelectorAll('.nav-section');
-    const sections = new Map<string, Element>();
+    const allSections = document.querySelectorAll('section[id]');
 
-    sectionLinks.forEach(link => {
-      const href = link.getAttribute('href');
-      if (href?.startsWith('#')) {
-        const target = document.getElementById(href.slice(1));
-        if (target) sections.set(href, target);
+    function updateStatusline() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? Math.round((scrollTop / docHeight) * 100) : 0;
+      const filled = Math.round((pct / 100) * BAR_LEN);
+      const empty = BAR_LEN - filled;
+
+      if (statusBar) {
+        statusBar.innerHTML =
+          '\u2593'.repeat(filled) +
+          '<span class="bar-empty">' + '\u2591'.repeat(empty) + '</span>';
       }
-    });
+      if (statusPct) statusPct.textContent = pct + '%';
 
-    if (sections.size > 0) {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const id = '#' + entry.target.id;
-            sectionLinks.forEach(link => {
-              link.classList.toggle('active', link.getAttribute('href') === id);
-            });
-          }
-        });
-      }, { rootMargin: '-20% 0px -70% 0px' });
+      let currentSection = 'top';
+      allSections.forEach(sec => {
+        if (sec.getBoundingClientRect().top <= 200) currentSection = sec.id;
+      });
+      if (statusSection) statusSection.textContent = currentSection;
 
-      sections.forEach(el => observer.observe(el));
+      sectionLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href?.startsWith('#')) {
+          link.classList.toggle('active', href === '#' + currentSection);
+        }
+      });
     }
 
-    // Fade-in intersection observer
+    window.addEventListener('scroll', updateStatusline, { passive: true });
+    updateStatusline();
+
+    // Fade-in observer
     const fadeEls = document.querySelectorAll('.fade-in');
     if (fadeEls.length > 0) {
       const fadeObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-          }
+          if (entry.isIntersecting) entry.target.classList.add('visible');
         });
       }, { threshold: 0.1 });
-
       fadeEls.forEach(el => fadeObserver.observe(el));
     }
 
-    // Card accordion toggle
+    // Card accordion
     document.querySelectorAll('.card .card-head').forEach(head => {
-      head.addEventListener('click', () => {
-        head.closest('.card')?.classList.toggle('open');
-      });
+      head.addEventListener('click', () => head.closest('.card')?.classList.toggle('open'));
     });
+
+    // Typing animation — types title, then subtitle
+    function typeElement(el: HTMLElement, text: string, speed: number, onDone?: () => void) {
+      el.innerHTML = '<span class="typing-cursor"></span>';
+      let i = 0;
+      function tick() {
+        if (i < text.length) {
+          const cursor = el.querySelector('.typing-cursor');
+          if (cursor) el.insertBefore(document.createTextNode(text[i]), cursor);
+          i++;
+          setTimeout(tick, speed + Math.random() * (speed * 0.5));
+        } else if (onDone) {
+          onDone();
+        }
+      }
+      tick();
+    }
+
+    const heroTitle = document.querySelector('.hero h1[data-typing]') as HTMLElement | null;
+    const heroSub = document.querySelector('[data-typing-sub]') as HTMLElement | null;
+
+    if (heroTitle) {
+      const titleText = heroTitle.getAttribute('data-typing') || '';
+      setTimeout(() => {
+        typeElement(heroTitle, titleText, 35, () => {
+          // Remove cursor from title, start subtitle
+          const titleCursor = heroTitle.querySelector('.typing-cursor');
+          if (titleCursor) titleCursor.remove();
+          if (heroSub) {
+            const subText = heroSub.getAttribute('data-typing-sub') || '';
+            setTimeout(() => typeElement(heroSub, subText, 28), 300);
+          }
+        });
+      }, 400);
+    }
+
+    // Cycling minty in sidebar
+    const mintyImages = document.querySelectorAll('.minty-cycle img');
+    if (mintyImages.length > 0) {
+      let cur = 0;
+      mintyImages[0]?.classList.add('minty-active');
+      setInterval(() => {
+        mintyImages[cur]?.classList.remove('minty-active');
+        cur = (cur + 1) % mintyImages.length;
+        mintyImages[cur]?.classList.add('minty-active');
+      }, 2500);
+    }
   </script>
 </body>
 </html>

@@ -361,6 +361,16 @@ nav.sidebar a.sub-link { padding-left: 32px; font-size: 11px; }
   border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: column;
+  text-decoration: none;
+}
+nav.sidebar a.sidebar-header {
+  border-left: none;
+  gap: 0;
+  padding: 14px 12px;
+}
+nav.sidebar a.sidebar-header:hover {
+  background: transparent;
+  text-decoration: none;
 }
 .sidebar-title {
   font-size: 14px;
@@ -494,7 +504,8 @@ section > h3:first-of-type::before { display: none; }
 }
 .card .card-head {
   padding: 12px 14px; display: flex; align-items: center;
-  gap: 10px; position: relative;
+  gap: 10px; position: relative; cursor: pointer;
+  -webkit-tap-highlight-color: rgba(46,196,182,0.1);
 }
 .card .card-head::after {
   content: '▸'; position: absolute; right: 14px;
@@ -588,6 +599,7 @@ details.lab-accordion summary {
   color: var(--text-bright); list-style: none;
   display: flex; justify-content: space-between; align-items: center;
   font-family: var(--font);
+  -webkit-tap-highlight-color: rgba(46,196,182,0.1);
 }
 details.lab-accordion summary::-webkit-details-marker { display: none; }
 details.lab-accordion summary::after { content: '[+]'; font-size: 11px; color: var(--accent); }
@@ -655,21 +667,71 @@ details.lab-accordion .accordion-inner p { font-size: 12px; }
 h2.cli-call {
   text-transform: none;
   letter-spacing: 0;
-  font-size: 14px;
   font-weight: 400;
   color: var(--text-2);
   border-top: 1px dashed var(--border);
   border-bottom: 1px dashed var(--border);
+  font-size: 14px;
+  padding: 10px 0;
+}
+h2.cli-call .section-label {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-bright);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+h2.cli-call .cli-line {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-3);
 }
 h2.cli-call .fn { color: var(--cyan); font-weight: 600; }
 h2.cli-call .str { color: var(--yellow); }
 h2.cli-call .kw { color: var(--purple); }
 h2.cli-call .op { color: var(--text-3); }
+/* Typing cursor on CLI line */
+h2.cli-call .cli-cursor {
+  display: inline-block;
+  width: 6px; height: 13px;
+  background: var(--accent);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink 1s step-end infinite;
+}
+
+/* ===== Section Indicator Bar (bottom) ===== */
+.section-indicator {
+  position: fixed;
+  bottom: var(--statusline-h);
+  left: 0;
+  right: 0;
+  height: 24px;
+  background: var(--bg-0);
+  border-top: 1px dashed var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  z-index: 90;
+  font-family: var(--font);
+  font-size: 11px;
+  color: var(--text-3);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.section-indicator.visible { opacity: 1; }
+.section-indicator .si-num { color: var(--accent); margin-right: 8px; }
+.section-indicator .si-name { color: var(--text-2); }
+.section-indicator .si-cli { color: var(--text-3); margin-left: auto; font-size: 10px; }
 
 /* ===== Token Counter (bottom-right scroll indicator) ===== */
 .token-counter {
   position: fixed;
-  bottom: calc(var(--statusline-h) + 8px);
+  bottom: calc(var(--statusline-h) + 24px + 8px);
   right: 16px;
   font-family: var(--font);
   font-size: 11px;
@@ -802,7 +864,7 @@ ul.clean li:last-child::before { content: '└── '; }
 .ingest-num { font-size: 10px; font-weight: 600; min-width: 16px; opacity: 0.7; }
 .ingest-info { display: flex; flex-direction: column; }
 .ingest-name { font-size: 12px; font-weight: 700; } .ingest-desc { font-size: 10px; color: var(--text-3); }
-.ingest-stage--highlight .ingest-box { border-width: 1.5px; }
+.ingest-stage--highlight .ingest-box { border-style: dashed; border-width: 1.5px; }
 [data-ingest-tip] { cursor: pointer; transition: filter 0.15s; }
 [data-ingest-tip]:hover { filter: brightness(1.2); }
 .ingest-tip { position: fixed; max-width: min(320px, calc(100vw - 20px)); padding: 8px 12px; background: var(--bg-0); border: 1px solid var(--accent); color: var(--text-1); font-family: var(--font); font-size: 11px; line-height: 1.5; pointer-events: none; opacity: 0; transition: opacity 0.15s; z-index: 200; }
