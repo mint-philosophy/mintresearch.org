@@ -123,7 +123,7 @@ def create_visualization(df, coords):
 
     # Custom hover template
     hover_template = """
-    <div style="max-width:350px; font-family: system-ui, sans-serif;">
+    <div style="max-width:350px; font-family: 'JetBrains Mono', monospace;">
         <div style="font-size:14px; font-weight:600; color:#fff; margin-bottom:6px;">
             {title}
         </div>
@@ -175,7 +175,7 @@ def create_visualization(df, coords):
         backdrop-filter: blur(8px);
         padding: 12px;
         border-radius: 12px;
-        font-family: system-ui, sans-serif;
+        font-family: 'JetBrains Mono', monospace;
         z-index: 1000;
         max-height: calc(100vh - 100px);
         overflow-y: auto;
@@ -316,7 +316,7 @@ def create_visualization(df, coords):
         padding: 4px 6px;
         border-radius: 4px;
         text-align: center;
-        font-family: system-ui, sans-serif;
+        font-family: 'JetBrains Mono', monospace;
     }
     .year-input:focus {
         border-color: #6b9;
@@ -346,7 +346,7 @@ def create_visualization(df, coords):
         border-radius: 6px;
         cursor: pointer;
         z-index: 1001;
-        font-family: system-ui, sans-serif;
+        font-family: 'JetBrains Mono', monospace;
         pointer-events: auto;
         display: none;
         transition: all 0.15s;
@@ -362,7 +362,7 @@ def create_visualization(df, coords):
         background: rgba(30,30,30,0.9);
         padding: 12px 16px;
         border-radius: 8px;
-        font-family: system-ui, sans-serif;
+        font-family: 'JetBrains Mono', monospace;
         color: #aaa;
         font-size: 12px;
         z-index: 1000;
@@ -375,7 +375,7 @@ def create_visualization(df, coords):
         background: rgba(30,30,30,0.9);
         padding: 8px 12px;
         border-radius: 6px;
-        font-family: system-ui, sans-serif;
+        font-family: 'JetBrains Mono', monospace;
         color: #888;
         font-size: 11px;
         z-index: 1000;
@@ -665,7 +665,7 @@ def create_visualization(df, coords):
         search_field='searchable',
         title="MINT Lab Research Corpus",
         sub_title=f"{len(df):,} papers across {df['macro_category'].nunique()} research areas",
-        font_family="Inter",
+        font_family="JetBrains Mono",
         darkmode=True,
         marker_size_array=marker_sizes,
         cluster_boundary_polygons=True,
