@@ -1,0 +1,37 @@
+---
+interface NavLink {
+  href: string;
+  label: string;
+  mark: string;
+  active?: boolean;
+}
+
+interface Props {
+  links: NavLink[];
+}
+
+const { links } = Astro.props;
+---
+
+<nav class="sidebar">
+  <div class="logo">
+    <h2>MINT</h2>
+    <p>Research Lab</p>
+  </div>
+  <div class="search-trigger" id="searchTrigger">
+    <span>&#128269;</span> Search... <kbd>&#8984;K</kbd>
+  </div>
+  {links.map((link) => (
+    <a class:list={["nav-link", { active: link.active }]} href={link.href}>
+      <span class="nav-mark" set:html={link.mark} />
+      {link.label}
+    </a>
+  ))}
+</nav>
+
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search daemons, skills, commands, concepts...">
+    <div class="search-results" id="searchResults"></div>
+  </div>
+</div>

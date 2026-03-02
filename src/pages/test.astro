@@ -1,0 +1,143 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Sidebar from '../components/Sidebar.astro';
+import Section from '../components/Section.astro';
+import Card from '../components/Card.astro';
+import StatCard from '../components/StatCard.astro';
+import RefTable from '../components/RefTable.astro';
+import BleedLine from '../components/BleedLine.astro';
+
+const navLinks = [
+  { href: "#overview", label: "Overview", mark: "&#9659;", active: true },
+  { href: "#pipeline", label: "Content Pipeline", mark: "&#9659;" },
+  { href: "#corpus", label: "The Corpus", mark: "&#9659;" },
+  { href: "#daemons", label: "Daemons", mark: "&#9659;" },
+];
+---
+
+<BaseLayout title="MINT Lab - Component Test">
+  <Sidebar links={navLinks} />
+
+  <main>
+    <!-- Hero-style section (no brackets) -->
+    <section class="hero" id="overview">
+      <h1>Component <span class="gradient">Test Page</span></h1>
+      <p class="subtitle">Verifying the MINT Lab design system components render correctly.</p>
+    </section>
+
+    <BleedLine heavy />
+
+    <!-- Section with number badge -->
+    <Section id="stats-section" num="01">
+      <h2>Stats and Cards</h2>
+      <p class="lead">Testing stat cards, expandable cards, and reference tables.</p>
+
+      <h3>Key Metrics</h3>
+      <div class="stats">
+        <StatCard num="~2,000" label="Papers" />
+        <StatCard num="154K" label="Chunks" />
+        <StatCard num="41" label="Dimensions" />
+        <StatCard num="29" label="Clusters" />
+        <StatCard num="6" label="Daemons" />
+      </div>
+
+      <h3>Expandable Cards</h3>
+      <div class="cards">
+        <Card
+          title="Feed Classifier"
+          sub="Scores items across 6 dimensions"
+          iconBg="rgba(46,196,182,0.08)"
+          iconText="&#x1F4CB;"
+        >
+          <p>The feed classifier scores each incoming item across six weighted dimensions: Relevance (.30), Quality (.25), Authority (.15), Novelty (.15), Actionability (.10), and Engagement (.05).</p>
+          <div class="detail-row">
+            <span class="detail-label">Schedule</span>
+            <span class="detail-val">Daily at 06:00 AEDT</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Model</span>
+            <span class="detail-val">Claude Opus</span>
+          </div>
+        </Card>
+
+        <Card
+          title="Corpus Ingestion"
+          sub="10-stage unified pipeline"
+          iconBg="rgba(45,212,191,0.08)"
+          iconText="&#x1F4DA;"
+          open
+        >
+          <p>Unified pipeline handling download, conversion, embedding, enrichment, analysis, and cataloging of academic papers.</p>
+          <div class="detail-row">
+            <span class="detail-label">Workers</span>
+            <span class="detail-val">6 concurrent</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Embeddings</span>
+            <span class="detail-val">Voyage 2048d</span>
+          </div>
+        </Card>
+
+        <Card
+          title="Daily Digest"
+          sub="Narrative summary for subscribers"
+          iconBg="rgba(244,114,182,0.08)"
+          iconText="&#x1F4E8;"
+        >
+          <p>Generates a narrative daily digest from the previous day's curated content and distributes via email and Slack.</p>
+        </Card>
+      </div>
+    </Section>
+
+    <BleedLine />
+
+    <!-- Section with reference table -->
+    <Section id="reference-section" num="02">
+      <h2>Reference Data</h2>
+      <p>Testing reference table and other structural elements.</p>
+
+      <h3>Daemon Registry</h3>
+      <RefTable>
+        <thead>
+          <tr>
+            <th>Daemon</th>
+            <th>Schedule</th>
+            <th>Function</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>feedme-daily</code></td>
+            <td>Daily 06:00</td>
+            <td>Fetch, classify, and rank items from 6 sources</td>
+          </tr>
+          <tr>
+            <td><code>feed-promote</code></td>
+            <td>Every 5 min</td>
+            <td>Copy thumbs-up items to #firehose</td>
+          </tr>
+          <tr>
+            <td><code>news-pdf-bot</code></td>
+            <td>Every 5 min</td>
+            <td>Download PDFs for #firehose URLs</td>
+          </tr>
+          <tr>
+            <td><code>corpus-ingest</code></td>
+            <td>Triggered</td>
+            <td>10-stage paper ingestion pipeline</td>
+          </tr>
+          <tr>
+            <td><code>yesterday-in-ai</code></td>
+            <td>Daily 08:00</td>
+            <td>Generate and distribute daily digest</td>
+          </tr>
+        </tbody>
+      </RefTable>
+
+      <h3>Callout Example</h3>
+      <div class="callout">
+        <p><strong>Note:</strong> This test page demonstrates all the core design system components. JavaScript interactivity (search, accordion toggles, fade-in observer) will be added in a later phase.</p>
+      </div>
+    </Section>
+  </main>
+</BaseLayout>

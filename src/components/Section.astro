@@ -1,0 +1,14 @@
+---
+interface Props {
+  id: string;
+  num?: string;
+  noBrackets?: boolean;
+}
+
+const { id, num, noBrackets } = Astro.props;
+---
+
+<section id={id} class:list={["fade-in", { "no-brackets": noBrackets }]}>
+  {num && <span class="section-num">{num}</span>}
+  <slot />
+</section>

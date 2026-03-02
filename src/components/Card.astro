@@ -1,0 +1,24 @@
+---
+interface Props {
+  title: string;
+  sub: string;
+  iconBg: string;
+  iconText: string;
+  open?: boolean;
+}
+
+const { title, sub, iconBg, iconText, open } = Astro.props;
+---
+
+<div class:list={["card", { open }]}>
+  <div class="card-head">
+    <div class="card-icon" style={`background:${iconBg}`} set:html={iconText} />
+    <div>
+      <div class="card-title">{title}</div>
+      <div class="card-sub">{sub}</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <slot />
+  </div>
+</div>
