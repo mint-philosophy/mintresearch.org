@@ -305,20 +305,9 @@ section::after {
 
 /* ===== STRUCTURAL LINES ===== */
 
-/* A. Connector line between registration mark and section title */
-section .section-num {
-  position: relative;
-}
-section .section-num::before {
-  content: '';
-  position: absolute;
-  left: -50px;
-  top: 50%;
-  width: 38px;
-  height: 1px;
-  background: linear-gradient(to right, rgba(46, 196, 182, 0.2), rgba(46, 196, 182, 0.06));
-  pointer-events: none;
-}
+/* A. Connector line between registration mark and section title -- removed.
+   The L-brackets stand alone; the tapered gradient line was inconsistent
+   with the clean geometric aesthetic. */
 
 /* B. Card grid structural separators */
 /* Cards already have border via .card rule; grid gaps provide visual separation.
@@ -466,10 +455,7 @@ section > h3:first-of-type::before {
   letter-spacing: 0.3px;
 }
 
-/* Squid watermark -- detailed Minty mascot, inline-styled for positioning */
-.hero-squid {
-  color: var(--accent);
-}
+/* Squid watermark -- removed; will be replaced with proper mascot image later */
 
 /* ===== Stats Row ===== */
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin: 24px 0; }
@@ -553,15 +539,15 @@ section > h3:first-of-type::before {
   background-image:
     repeating-linear-gradient(
       to right,
-      rgba(46, 196, 182, 0.08) 0px,
-      rgba(46, 196, 182, 0.08) 1px,
+      rgba(46, 196, 182, 0.04) 0px,
+      rgba(46, 196, 182, 0.04) 1px,
       transparent 1px,
       transparent 24px
     ),
     repeating-linear-gradient(
       to bottom,
-      rgba(46, 196, 182, 0.08) 0px,
-      rgba(46, 196, 182, 0.08) 1px,
+      rgba(46, 196, 182, 0.04) 0px,
+      rgba(46, 196, 182, 0.04) 1px,
       transparent 1px,
       transparent 24px
     );
@@ -576,15 +562,15 @@ section > h3:first-of-type::before {
   background-image:
     repeating-linear-gradient(
       to right,
-      rgba(46, 196, 182, 0.08) 0px,
-      rgba(46, 196, 182, 0.08) 1px,
+      rgba(46, 196, 182, 0.04) 0px,
+      rgba(46, 196, 182, 0.04) 1px,
       transparent 1px,
       transparent 24px
     ),
     repeating-linear-gradient(
       to bottom,
-      rgba(46, 196, 182, 0.08) 0px,
-      rgba(46, 196, 182, 0.08) 1px,
+      rgba(46, 196, 182, 0.04) 0px,
+      rgba(46, 196, 182, 0.04) 1px,
       transparent 1px,
       transparent 24px
     );
@@ -803,7 +789,22 @@ ul.clean li::before {
 @media (max-width: 900px) {
   .pipeline-wrap { display: none; }
   .pipeline-mobile {
-    display: block; background: var(--bg-3);
+    display: block; background-color: var(--bg-3);
+    background-image:
+      repeating-linear-gradient(
+        to right,
+        rgba(46, 196, 182, 0.04) 0px,
+        rgba(46, 196, 182, 0.04) 1px,
+        transparent 1px,
+        transparent 24px
+      ),
+      repeating-linear-gradient(
+        to bottom,
+        rgba(46, 196, 182, 0.04) 0px,
+        rgba(46, 196, 182, 0.04) 1px,
+        transparent 1px,
+        transparent 24px
+      );
     border: 1px solid var(--border); border-radius: 0;
     padding: 20px 16px; margin: 20px -20px;
   }
@@ -837,6 +838,7 @@ ul.clean li::before {
   .sidebar-dot { display: none; }
   .bleed-line { display: none; }
   section { border-top: none; }
+  section::before, section::after { display: none; }
   h3::before { display: none; }
 }
 
@@ -902,7 +904,7 @@ details.lab-accordion .accordion-inner ul.clean li { font-size: 13px; }
 .mp-services .mp-pill { flex: 0 0 auto; }
 
 /* ===== Corpus-Ingest Vertical Pipeline ===== */
-.ingest-pipeline { background-color: var(--bg-2); background-image: repeating-linear-gradient(to right, rgba(46, 196, 182, 0.08) 0px, rgba(46, 196, 182, 0.08) 1px, transparent 1px, transparent 24px), repeating-linear-gradient(to bottom, rgba(46, 196, 182, 0.08) 0px, rgba(46, 196, 182, 0.08) 1px, transparent 1px, transparent 24px); border: 1px dashed var(--border); border-radius: var(--radius); padding: 24px; margin: 20px 0; }
+.ingest-pipeline { background-color: var(--bg-2); background-image: repeating-linear-gradient(to right, rgba(46, 196, 182, 0.04) 0px, rgba(46, 196, 182, 0.04) 1px, transparent 1px, transparent 24px), repeating-linear-gradient(to bottom, rgba(46, 196, 182, 0.04) 0px, rgba(46, 196, 182, 0.04) 1px, transparent 1px, transparent 24px); border: 1px dashed var(--border); border-radius: var(--radius); padding: 24px; margin: 20px 0; }
 .ingest-stages { display: flex; flex-direction: column; padding-left: 8px; }
 .ingest-stage { display: flex; align-items: flex-start; position: relative; padding-left: 24px; min-height: 48px; }
 .ingest-dot { position: absolute; left: 0; top: 12px; width: 10px; height: 10px; border-radius: 50%; z-index: 2; }
@@ -989,51 +991,7 @@ details.lab-accordion .accordion-inner ul.clean li { font-size: 13px; }
 
 <!-- ============ HERO ============ -->
 <section class="hero" id="overview">
-  <!-- Squid watermark SVG — Minty with proper mantle, blank eyes, no mask -->
-  <svg viewBox="0 0 260 380" fill="none" xmlns="http://www.w3.org/2000/svg" style="position:absolute;right:4%;top:8%;width:420px;height:auto;opacity:0.05;pointer-events:none;z-index:0" class="hero-squid">
-    <!-- Mantle: wide diamond/arrow hood, the signature Minty silhouette -->
-    <path d="M130 6 L148 30 L168 55 L178 82 L176 108 L170 125 L130 138 L90 125 L84 108 L82 82 L92 55 L112 30 Z" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linejoin="round"/>
-    <!-- Mantle inner contour (volume/depth) -->
-    <path d="M130 20 L144 38 L160 60 L168 84 L166 106 L160 118 L130 128 L100 118 L94 106 L92 84 L100 60 L116 38 Z" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.3"/>
-    <!-- Mantle highlight sheen -->
-    <path d="M110 40 Q130 32 150 40 Q162 58 164 82 Q155 65 130 58 Q105 65 96 82 Q98 58 110 40" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.35"/>
-    <!-- Mantle point fin lines -->
-    <path d="M118 30 L130 6 L142 30" stroke="currentColor" stroke-width="0.7" fill="none" opacity="0.4"/>
-
-    <!-- Head/face: rounder area below mantle -->
-    <path d="M90 130 Q88 148 100 162 Q115 175 130 175 Q145 175 160 162 Q172 148 170 130" stroke="currentColor" stroke-width="1.2" fill="none"/>
-
-    <!-- Left eye (large, blank) — sits well inside face curve -->
-    <circle cx="110" cy="144" r="14" stroke="currentColor" stroke-width="1.3" fill="none"/>
-
-    <!-- Right eye (large, blank) -->
-    <circle cx="150" cy="144" r="14" stroke="currentColor" stroke-width="1.3" fill="none"/>
-
-    <!-- Tentacles: 6 flowing curves from below face -->
-    <path d="M98 168 Q84 196 72 226 Q60 258 54 280 Q50 296 58 308 Q64 313 66 304" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-    <path d="M108 172 Q99 204 95 236 Q91 266 89 288 Q87 304 93 314 Q97 318 99 308" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-    <path d="M120 175 Q118 206 116 238 Q115 266 117 290 Q118 306 121 318 Q123 322 125 314" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-    <path d="M140 175 Q142 206 144 238 Q145 266 143 290 Q142 306 139 318 Q137 322 135 314" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-    <path d="M152 172 Q161 204 165 236 Q169 266 171 288 Q173 304 167 314 Q163 318 161 308" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-    <path d="M162 168 Q176 196 188 226 Q200 258 206 280 Q210 296 202 308 Q196 313 194 304" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-
-    <!-- Tentacle suckers -->
-    <circle cx="78" cy="216" r="2.2" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.35"/>
-    <circle cx="66" cy="254" r="2" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.3"/>
-    <circle cx="58" cy="282" r="1.8" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.25"/>
-    <circle cx="99" cy="224" r="2.2" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.35"/>
-    <circle cx="95" cy="258" r="2" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.3"/>
-    <circle cx="93" cy="288" r="1.8" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.25"/>
-    <circle cx="161" cy="224" r="2.2" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.35"/>
-    <circle cx="165" cy="258" r="2" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.3"/>
-    <circle cx="167" cy="288" r="1.8" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.25"/>
-    <circle cx="182" cy="216" r="2.2" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.35"/>
-    <circle cx="194" cy="254" r="2" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.3"/>
-    <circle cx="202" cy="282" r="1.8" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.25"/>
-
-    <!-- Shadow/float ellipse -->
-    <ellipse cx="130" cy="340" rx="42" ry="7" stroke="currentColor" stroke-width="0.8" fill="none" opacity="0.25"/>
-  </svg>
+  <!-- Squid mascot placeholder — will be replaced with proper image later -->
   <h1>Agentic Infrastructure for the <span class="gradient">MINT Lab</span></h1>
   <p class="subtitle">Machine Intelligence &amp; Normative Theory &mdash; ANU and Johns Hopkins University</p>
 </section>
@@ -1743,6 +1701,9 @@ details.lab-accordion .accordion-inner ul.clean li { font-size: 13px; }
   <p>A researcher who would otherwise spend hours manually tracking Twitter, scanning arXiv, downloading papers, and forwarding links to colleagues can instead review a curated feed for five minutes each morning and know that everything worth tracking is being captured, classified, summarised, stored, analyzed, and shared automatically.</p>
 </section>
 
+<!-- Full-width bleed line: content systems → guided tour -->
+<div class="bleed-line" aria-hidden="true"></div>
+
 <!-- ============ FOR LAB MEMBERS ============ -->
 
 <section id="corpus" class="fade-in">
@@ -2218,6 +2179,9 @@ details.lab-accordion .accordion-inner ul.clean li { font-size: 13px; }
     </div>
   </div>
 </section>
+
+<!-- Full-width bleed line: guided tour → technical deep dive -->
+<div class="bleed-line" aria-hidden="true"></div>
 
 <!-- ============ THE CORPUS ============ -->
 <section id="corpus-overview" class="fade-in">
@@ -2796,8 +2760,6 @@ details.lab-accordion .accordion-inner ul.clean li { font-size: 13px; }
 </section>
 
 
-<!-- Full-width bleed line: practical guide → technical sections -->
-<div class="bleed-line bleed-line--dashed" aria-hidden="true"></div>
 <!-- ============ AGENT ENGINEERING ============ -->
 <section id="agents" class="fade-in">
   <span class="section-num">10</span>
