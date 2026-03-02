@@ -37,8 +37,8 @@
   --border: rgba(46, 196, 182, 0.08);
   --border-hover: rgba(46, 196, 182, 0.3);
   --sidebar-w: 220px;
-  --radius: 10px;
-  --radius-sm: 6px;
+  --radius: 0;
+  --radius-sm: 0;
   /* Legacy aliases for inline styles */
   --mint: #2ec4b6;
   --mint-soft: rgba(46, 196, 182, 0.12);
@@ -411,6 +411,8 @@ section > h3:first-of-type::before {
   100% { opacity: 1; transform: translateX(-50%) scale(1.08); }
 }
 .hero::after { border: none; opacity: 0; }
+/* Suppress L-brackets on sections without numbered headers */
+section.no-brackets::before, section.no-brackets::after { display: none; }
 .hero h1 {
   font-family: 'Fraunces', serif;
   font-size: 56px; font-weight: 600;
@@ -969,7 +971,7 @@ details.lab-accordion .accordion-inner ul.clean li { font-size: 13px; }
 <div class="bleed-line bleed-line--heavy" aria-hidden="true"></div>
 
 <!-- ============ PIPELINE ============ -->
-<section id="pipeline" class="fade-in" style="max-width:none;padding-left:24px;padding-right:24px">
+<section id="pipeline" class="fade-in no-brackets" style="max-width:none;padding-left:24px;padding-right:24px">
 
   <div class="pipeline-wrap">
     <svg viewBox="0 0 960 710" width="100%" xmlns="http://www.w3.org/2000/svg">
@@ -3080,7 +3082,7 @@ details.lab-accordion .accordion-inner ul.clean li { font-size: 13px; }
 
 
 <!-- ============ SUBSCRIBE ============ -->
-<section id="subscribe" style="text-align:center;padding:48px;max-width:700px">
+<section id="subscribe" class="no-brackets" style="text-align:center;padding:48px;max-width:700px">
   <span class="section-num" style="opacity:0.3">&#10022;</span>
   <h2 style="justify-content:center">Yesterday in AI</h2>
   <p style="color:var(--text-2);margin-bottom:20px">Daily AI news digest from the MINT Lab. One email per weekday morning.</p>
@@ -3098,7 +3100,7 @@ details.lab-accordion .accordion-inner ul.clean li { font-size: 13px; }
 </section>
 
 <!-- ============ FOOTER ============ -->
-<section style="text-align:center;padding:48px;color:var(--text-3);font-size:12px;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px">
+<section class="no-brackets" style="text-align:center;padding:48px;color:var(--text-3);font-size:12px;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px">
   <p>MINT Lab &mdash; Machine Intelligence &amp; Normative Theory &mdash; ANU and Johns Hopkins University</p>
   <p style="margin-top:4px">Updated March 2026</p>
 </section>
