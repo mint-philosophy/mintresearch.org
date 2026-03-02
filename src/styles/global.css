@@ -730,22 +730,26 @@ h2.cli-call .cli-cursor {
 .section-indicator .si-name { color: var(--text-2); }
 .section-indicator .si-cli { color: var(--text-3); margin-left: auto; font-size: 10px; }
 
-/* ===== Token Counter (bottom-right scroll indicator) ===== */
+/* ===== Token Counter (centered in statusline) ===== */
 .token-counter {
   position: fixed;
-  bottom: calc(var(--statusline-h) + 24px + 8px);
-  right: 16px;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: var(--statusline-h);
   font-family: var(--font);
   font-size: 11px;
   color: var(--text-3);
-  background: var(--bg-2);
-  border: 1px dashed var(--border);
-  padding: 3px 8px;
-  z-index: 90;
+  background: none;
+  border: none;
+  padding: 0 8px;
+  z-index: 111;
   opacity: 0;
   transition: opacity 0.3s;
   pointer-events: none;
   user-select: none;
+  display: flex;
+  align-items: center;
 }
 .token-counter.visible { opacity: 1; }
 .token-counter .arrow { color: var(--accent); margin-right: 4px; }
