@@ -2,26 +2,22 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/Section.astro';
 import RefTable from '../components/RefTable.astro';
-import BleedLine from '../components/BleedLine.astro';
 ---
 
-<BaseLayout title="MINT Lab Infrastructure Guide">
+<BaseLayout title="Agentic Research Infrastructure for AI Alignment, Governance and Adaptation">
 
 <main>
 
 <!-- ============ HERO ============ -->
 <section class="hero" id="overview">
-  <h1>Agentic Infrastructure for the <span class="gradient">MINT Lab</span></h1>
-  <p class="subtitle">Machine Intelligence &amp; Normative Theory &mdash; ANU and Johns Hopkins University</p>
+  <h1 data-typing="❯ Agentic Research Infrastructure for AI Alignment, Governance and Adaptation"><span class="typing-cursor"></span></h1>
 </section>
-
-<BleedLine heavy />
 
 <!-- ============ PIPELINE ============ -->
 <section id="pipeline" class="fade-in no-brackets">
 
   <div class="pipeline-wrap">
-    <svg viewBox="0 0 960 710" width="100%" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 960 710" width="100%" xmlns="http://www.w3.org/2000/svg" style="font-family:'JetBrains Mono',monospace">
       <defs>
         <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#22d3ee"/></marker>
         <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#2ec4b6"/></marker>
@@ -233,7 +229,7 @@ import BleedLine from '../components/BleedLine.astro';
   </div>
 
   <div class="pipeline-mobile">
-    <svg viewBox="0 0 450 750" width="100%" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 450 750" width="100%" xmlns="http://www.w3.org/2000/svg" style="font-family:'JetBrains Mono',monospace">
       <defs>
         <marker id="mArrCyan" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="#22d3ee"/></marker>
         <marker id="mArrGreen" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="#2ec4b6"/></marker>
@@ -430,63 +426,65 @@ import BleedLine from '../components/BleedLine.astro';
 
 <!-- ============ OVERVIEW ============ -->
 <Section id="what-is-this" num="01">
-  <h2>What Is This System?</h2>
-  <p class="lead">A research automation platform built around <strong>Minty</strong>, an AI research management agent running on a dedicated Mac Studio. 17 background daemons fetch, classify, ingest, index, summarize, and distribute academic content &mdash; plus enable deep multi-agent corpus analysis. Research superpowers, not a replacement for researchers.</p>
+  <h2 class="cli-call"><span class="fn">Read</span><span class="op">(</span><span class="str">"what_is_this_system"</span><span class="op">)</span></h2>
+  <div class="line-numbered">
+  <p class="lead">A research automation platform built around <strong>Minty</strong>, an AI research management agent running on a dedicated Mac Studio. 17 background daemons <span class="t-cyan">fetch</span>, <span class="t-green">classify</span>, <span class="t-yellow">ingest</span>, <span class="t-purple">index</span>, <span class="t-pink">summarize</span>, and <span class="t-blue">distribute</span> academic content &mdash; plus enable deep multi-agent corpus analysis. Research superpowers, not a replacement for researchers.</p>
 
-  <p>External sources (Twitter, arXiv, RSS, Substack, Bluesky, email) are fetched, classified by Claude Opus, and posted to Slack. Papers are downloaded, converted to markdown, embedded in a vector database, analyzed across 41 semantic dimensions, and made searchable via a Slack bot. A daily digest reaches 29 subscribers across 11 institutions.</p>
+  <p>External sources (<span class="t-cyan">Twitter</span>, <span class="t-green">arXiv</span>, <span class="t-yellow">RSS</span>, <span class="t-purple">Substack</span>, <span class="t-pink">Bluesky</span>, <span class="t-blue">email</span>) are fetched, classified by Claude Opus, and posted to Slack. Papers are <span class="t-cyan">downloaded</span>, <span class="t-green">converted to markdown</span>, <span class="t-yellow">embedded</span> in a vector database, <span class="t-purple">analyzed</span> across 41 semantic dimensions, and made <span class="t-pink">searchable</span> via a Slack bot. A daily digest reaches 29 subscribers across 11 institutions.</p>
+  </div>
 </Section>
 
 <!-- ============ CONTENT PIPELINE ============ -->
 <Section id="content-pipeline" num="02">
-  <h2>The Content Pipeline</h2>
+  <h2 class="cli-call"><span class="fn">Agent</span><span class="op">(</span><span class="str">"trace the content pipeline"</span><span class="op">,</span> <span class="kw">subagent_type</span><span class="op">=</span><span class="str">"Explore"</span><span class="op">)</span></h2>
   <p class="lead">All content flows through <code>#firehose</code> &mdash; two daemons write to it, three read from it. Source: <a href="https://github.com/mint-philosophy/minty-private">minty-private</a> under <code>daemons/pipeline/</code>.</p>
 
   <!-- Flow summary: 7-stage pipeline overview -->
   <div style="margin:28px 0 24px">
     <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap">
-      <div style="background:var(--bg-0);border-left:3px solid var(--cyan);border-radius:var(--radius-sm);padding:10px 14px;cursor:pointer"
+      <div style="background:var(--bg-0);border-left:3px solid var(--cyan);padding:10px 14px;cursor:pointer"
            data-ingest-tip="6 fetchers pull from Twitter, arXiv, RSS/Substack, Bluesky, Email, and LinkedIn in parallel via a thread pool. A PhilPapers scraper is also available for periodic runs."
            data-ingest-color="#22d3ee">
         <div style="font-size:12px;font-weight:700;color:var(--cyan)">Sources</div>
         <div style="font-size:10px;color:var(--text-3)">6 parallel fetchers</div>
       </div>
-      <div style="color:var(--text-3);font-size:16px;line-height:1">&rarr;</div>
-      <div style="background:var(--bg-0);border-left:3px solid var(--mint);border-radius:var(--radius-sm);padding:10px 14px;cursor:pointer"
+      <div style="color:var(--text-3);font-size:16px;line-height:1;font-family:var(--font)">|</div>
+      <div style="background:var(--bg-0);border-left:3px solid var(--mint);padding:10px 14px;cursor:pointer"
            data-ingest-tip="Claude Opus scores 6 dimensions (relevance, quality, authority, novelty, actionability, engagement), generates a 5&ndash;10 word headline, assigns one of 16 categories, and explains its reasoning. 16 parallel workers, ~40K tokens per batch."
            data-ingest-color="#2ec4b6">
         <div style="font-size:12px;font-weight:700;color:var(--mint)">Classify</div>
         <div style="font-size:10px;color:var(--text-3)">Opus, 6 dimensions</div>
       </div>
-      <div style="color:var(--text-3);font-size:16px;line-height:1">&rarr;</div>
-      <div style="background:var(--bg-0);border-left:3px solid var(--amber);border-radius:var(--radius-sm);padding:10px 14px;cursor:pointer"
+      <div style="color:var(--text-3);font-size:16px;line-height:1;font-family:var(--font)">|</div>
+      <div style="background:var(--bg-0);border-left:3px solid var(--amber);padding:10px 14px;cursor:pointer"
            data-ingest-tip="Seth reviews #feed-{day} channels each morning. Thumbs-up promotes items to #firehose via the feed-promote daemon, which polls every 5 minutes."
            data-ingest-color="#f59e0b">
         <div style="font-size:12px;font-weight:700;color:var(--amber)">Curate</div>
         <div style="font-size:10px;color:var(--text-3)">Human review</div>
       </div>
-      <div style="color:var(--text-3);font-size:16px;line-height:1">&rarr;</div>
-      <div style="background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.15);border-left:3px solid var(--cyan);border-radius:var(--radius-sm);padding:10px 14px;cursor:pointer"
+      <div style="color:var(--text-3);font-size:16px;line-height:1;font-family:var(--font)">|</div>
+      <div style="background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.15);border-left:3px solid var(--cyan);padding:10px 14px;cursor:pointer"
            data-ingest-tip="Central hub. Everything curated lands here. Three downstream daemons read from it: news-pdf-bot, corpus-ingest, and yesterday-in-ai."
            data-ingest-color="#22d3ee">
         <div style="font-size:12px;font-weight:700;color:var(--cyan)">#firehose</div>
         <div style="font-size:10px;color:var(--text-3)">Central hub</div>
       </div>
-      <div style="color:var(--text-3);font-size:16px;line-height:1">&rarr;</div>
-      <div style="background:var(--bg-0);border-left:3px solid var(--purple);border-radius:var(--radius-sm);padding:10px 14px;cursor:pointer"
+      <div style="color:var(--text-3);font-size:16px;line-height:1;font-family:var(--font)">|</div>
+      <div style="background:var(--bg-0);border-left:3px solid var(--purple);padding:10px 14px;cursor:pointer"
            data-ingest-tip="news-pdf-bot attaches PDFs via 3-tier acquisition (pattern matching, thread expansion, sandboxed Claude agent). corpus-ingest runs an 11-stage pipeline: markdown conversion, embedding, metadata extraction, cataloguing."
            data-ingest-color="#a78bfa">
         <div style="font-size:12px;font-weight:700;color:var(--purple)">Ingest</div>
         <div style="font-size:10px;color:var(--text-3)">PDFs + corpus pipeline</div>
       </div>
-      <div style="color:var(--text-3);font-size:16px;line-height:1">&rarr;</div>
-      <div style="background:var(--bg-0);border-left:3px solid var(--indigo);border-radius:var(--radius-sm);padding:10px 14px;cursor:pointer"
+      <div style="color:var(--text-3);font-size:16px;line-height:1;font-family:var(--font)">|</div>
+      <div style="background:var(--bg-0);border-left:3px solid var(--indigo);padding:10px 14px;cursor:pointer"
            data-ingest-tip="corpus-agent performs deep semantic analysis on ingested papers: 41 analytical questions, thematic clustering, cross-paper connection mapping."
            data-ingest-color="#818cf8">
         <div style="font-size:12px;font-weight:700;color:var(--indigo)">Analyse</div>
         <div style="font-size:10px;color:var(--text-3)">41Q deep analysis</div>
       </div>
-      <div style="color:var(--text-3);font-size:16px;line-height:1">&rarr;</div>
-      <div style="background:var(--bg-0);border-left:3px solid var(--pink);border-radius:var(--radius-sm);padding:10px 14px;cursor:pointer"
+      <div style="color:var(--text-3);font-size:16px;line-height:1;font-family:var(--font)">|</div>
+      <div style="background:var(--bg-0);border-left:3px solid var(--pink);padding:10px 14px;cursor:pointer"
            data-ingest-tip="yesterday-in-ai generates a daily narrative digest for subscribers and posts to #mint-community. A weekly Minty's Week in AI summary is produced for lab meetings."
            data-ingest-color="#f472b6">
         <div style="font-size:12px;font-weight:700;color:var(--pink)">Report</div>
@@ -535,49 +533,49 @@ import BleedLine from '../components/BleedLine.astro';
   <div class="cards" style="grid-template-columns: repeat(3, 1fr)">
     <div class="card" style="border-color:var(--mint)" data-ingest-tip="Anchors every classification in the lab's institutional identity and research mission. From the prompt: 'You are a research feed classifier for the MINT Research Lab at Johns Hopkins University, directed by Seth Lazar. The lab works on AI safety, normative competence of LLMs, agentic AI governance, and political philosophy of AI.' And: 'The lab's research is situated within a broader concern: liberal democracies face institutional, economic, and cultural decline. AI offers the best opportunity to reverse this trajectory — but only if deployed wisely.'" data-ingest-color="#2ec4b6">
       <div class="card-head">
-        <div class="card-icon" style="background:rgba(46,196,182,0.08);color:var(--mint)">&#x1F3DB;</div>
+        <div class="card-icon" style="background:rgba(46,196,182,0.08);color:var(--mint)">~$</div>
         <div><div class="card-title">Lab Identity &amp; Mission</div><div class="card-sub">Framed around institutional renewal</div></div>
       </div>
     </div>
     <div class="card" style="border-color:var(--cyan)" data-ingest-tip="Defines 30+ equally weighted interest areas — the classifier must not treat any as 'core' vs. 'peripheral.' From the prompt: 'ALL of these interests are equally important: normative competence, benchmark methodology, agent governance, calibrated safety, catastrophic risk, AI and democracy, AI policy, agent security, interpretability, AI economics, platform governance, frontier lab developments, progress studies, advancement of science, abundance agenda, institutional dysfunction/reform...' And: 'Domestic and international politics ONLY when about structural/institutional change. Exclude: commentary about individual politicians, horse-race coverage, partisan debates.'" data-ingest-color="#22d3ee">
       <div class="card-head">
-        <div class="card-icon" style="background:rgba(34,211,238,0.08);color:var(--cyan)">&#x1F4CB;</div>
+        <div class="card-icon" style="background:rgba(34,211,238,0.08);color:var(--cyan)">[]</div>
         <div><div class="card-title">Topic Taxonomy</div><div class="card-sub">30+ equally weighted interest areas</div></div>
       </div>
     </div>
     <div class="card" style="border-color:var(--indigo)" data-ingest-tip="Explicitly counteracts length bias — judges density of insight, not word count. From the prompt: 'Substance can come in ANY length. A concise post with a genuine insight, novel argument, important evidence, or breaking news is high quality regardless of word count.' And: 'A 280-character post making a genuine point is better than a long rehash.' And: 'Do NOT penalize reshares/link-posts if the underlying content is relevant and substantive. Judge what's being pointed to, not just the wrapper.'" data-ingest-color="#818cf8">
       <div class="card-head">
-        <div class="card-icon" style="background:rgba(129,140,248,0.08);color:var(--indigo)">&#x2696;</div>
+        <div class="card-icon" style="background:rgba(129,140,248,0.08);color:var(--indigo)">><</div>
         <div><div class="card-title">Quality Over Length</div><div class="card-sub">Density of insight, not word count</div></div>
       </div>
     </div>
     <div class="card" style="border-color:var(--amber)" data-ingest-tip="Sets scoring floors for strategically important sources — frontier model releases, trusted authors, and global labs. From the prompt: 'New foundation model releases from ANY lab worldwide — score 0.85+ relevance. This includes video/image/audio models, not just language models.' And: 'Chinese labs (DeepSeek, ByteDance/Doubao, Baidu ERNIE, Alibaba Qwen, Zhipu GLM, Moonshot/Kimi, 01.AI/Yi) — score 0.85+. Track the global frontier, not just Western labs.' Named boost targets include Institute for Progress, Works in Progress, Patrick Collison, Tyler Cowen, and others." data-ingest-color="#f59e0b">
       <div class="card-head">
-        <div class="card-icon" style="background:rgba(245,158,11,0.08);color:var(--amber)">&#x2B06;</div>
+        <div class="card-icon" style="background:rgba(245,158,11,0.08);color:var(--amber)">^^</div>
         <div><div class="card-title">Boosted Sources</div><div class="card-sub">Scoring floors for key sources</div></div>
       </div>
     </div>
     <div class="card" style="border-color:var(--purple)" data-ingest-tip="Specialised handling for philosophy papers — topic relevance and abstract quality trump journal prestige. From the prompt: 'Seth is interested in philosophy of AI broadly — he wants to see what's being published in this space, even from lesser-known journals and authors.' And: 'Judge primarily on TOPIC RELEVANCE and ABSTRACT QUALITY, not journal prestige.' AI consciousness, model welfare, and AI personhood all score 0.8+ relevance." data-ingest-color="#a78bfa">
       <div class="card-head">
-        <div class="card-icon" style="background:rgba(167,139,250,0.08);color:var(--purple)">&#x1F4DA;</div>
+        <div class="card-icon" style="background:rgba(167,139,250,0.08);color:var(--purple)">&phi;</div>
         <div><div class="card-title">PhilPapers</div><div class="card-sub">Topic relevance over journal prestige</div></div>
       </div>
     </div>
     <div class="card" style="border-color:var(--pink)" data-ingest-tip="Explicit exclusion list that prevents noise from reaching the team. From the prompt: 'anti_interest: hype, crypto, celebrity gossip, partisan political commentary, culture war, ethics-slop, marketing emails, promotional content, webinar invitations.' And: 'Ethics-slop — vague normative language without testable claims.' Marketing content scores Relevance 0.1, Quality 0.1 regardless of topic." data-ingest-color="#f472b6">
       <div class="card-head">
-        <div class="card-icon" style="background:rgba(244,114,182,0.08);color:var(--pink)">&#x1F6AB;</div>
+        <div class="card-icon" style="background:rgba(244,114,182,0.08);color:var(--pink)">--</div>
         <div><div class="card-title">Hard Exclusions</div><div class="card-sub">Crypto, hype, ethics-slop, marketing</div></div>
       </div>
     </div>
     <div class="card" style="border-color:var(--green)" data-ingest-tip="Detects academic paper links for downstream enrichment — PDF download, abstract extraction, corpus ingestion. From the prompt: 'Check whether the content references or links to academic papers/preprints. Look for: arXiv URLs, DOI links, academic publisher URLs (nature.com, science.org, pnas.org, openreview.net, aclweb.org, etc.).' Detected paper URLs are passed to the enrichment stage." data-ingest-color="#4ade80">
       <div class="card-head">
-        <div class="card-icon" style="background:rgba(74,222,128,0.08);color:var(--green)">&#x1F4C4;</div>
+        <div class="card-icon" style="background:rgba(74,222,128,0.08);color:var(--green)">&sect;</div>
         <div><div class="card-title">Paper Detection</div><div class="card-sub">Academic papers flagged for enrichment</div></div>
       </div>
     </div>
     <div class="card" style="border-color:#8892a6" data-ingest-tip="The prompt's default posture: when uncertain, let it through for human review rather than filtering it out. From the prompt: 'When in doubt about relevance, err toward higher scores — the lab team reviews after.' Target pass rate is 25&ndash;30%. 'Do NOT shoehorn items into categories where they don't clearly belong.'" data-ingest-color="#8892a6">
       <div class="card-head">
-        <div class="card-icon" style="background:rgba(136,146,166,0.08);color:#8892a6">&#x2714;</div>
+        <div class="card-icon" style="background:rgba(136,146,166,0.08);color:#8892a6">[+]</div>
         <div><div class="card-title">Err Toward Inclusion</div><div class="card-sub">25&ndash;30% target pass rate</div></div>
       </div>
     </div>
@@ -660,7 +658,7 @@ import BleedLine from '../components/BleedLine.astro';
 
 <!-- ============ CORPUS INGESTION PIPELINE ============ -->
 <Section id="corpus" num="03">
-  <h2>Corpus Ingestion Pipeline</h2>
+  <h2 class="cli-call"><span class="fn">Bash</span><span class="op">(</span><span class="str">"python3 corpus_ingest.py --stages=11"</span><span class="op">)</span></h2>
   <p>The MINT Lab's intellectual engine: ~2,000 papers on AI safety, ethics, alignment, governance, and capabilities &mdash; all embedded, analyzed, and searchable.</p>
 
   <h3>Corpus-Ingest Pipeline Detail</h3>
@@ -925,7 +923,7 @@ import BleedLine from '../components/BleedLine.astro';
   <div class="cards" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))">
     <div class="card" style="border-color:var(--teal)">
       <div class="card-head">
-        <div class="card-icon" style="background:rgba(45,212,191,0.08);color:#2dd4bf">&#9733;</div>
+        <div class="card-icon" style="background:rgba(45,212,191,0.08);color:#2dd4bf">&#x25AA;</div>
         <div><div class="card-title">Paper Corpus</div><div class="card-sub">LanceDB &bull; ~4.5 GB</div></div>
       </div>
       <div style="font-size:12px;color:var(--text-2);padding:8px 12px 12px;line-height:1.5">
@@ -936,7 +934,7 @@ import BleedLine from '../components/BleedLine.astro';
     </div>
     <div class="card" style="border-color:var(--indigo)">
       <div class="card-head">
-        <div class="card-icon" style="background:rgba(129,140,248,0.08);color:#818cf8">&#128172;</div>
+        <div class="card-icon" style="background:rgba(129,140,248,0.08);color:#818cf8">#</div>
         <div><div class="card-title">Slack Messages</div><div class="card-sub">ChromaDB &bull; Every 4h</div></div>
       </div>
       <div style="font-size:12px;color:var(--text-2);padding:8px 12px 12px;line-height:1.5">
@@ -947,7 +945,7 @@ import BleedLine from '../components/BleedLine.astro';
     </div>
     <div class="card" style="border-color:var(--pink)">
       <div class="card-head">
-        <div class="card-icon" style="background:rgba(244,114,182,0.08);color:#f472b6">&#128240;</div>
+        <div class="card-icon" style="background:rgba(244,114,182,0.08);color:#f472b6">!!</div>
         <div><div class="card-title">News Messages</div><div class="card-sub">ChromaDB &bull; Hourly</div></div>
       </div>
       <div style="font-size:12px;color:var(--text-2);padding:8px 12px 12px;line-height:1.5">
@@ -958,7 +956,7 @@ import BleedLine from '../components/BleedLine.astro';
     </div>
     <div class="card" style="border-color:var(--amber)">
       <div class="card-head">
-        <div class="card-icon" style="background:rgba(251,191,36,0.08);color:#fbbf24">&#128193;</div>
+        <div class="card-icon" style="background:rgba(251,191,36,0.08);color:#fbbf24">./</div>
         <div><div class="card-title">Workspace Files</div><div class="card-sub">ChromaDB &bull; Every 6h</div></div>
       </div>
       <div style="font-size:12px;color:var(--text-2);padding:8px 12px 12px;line-height:1.5">
@@ -972,8 +970,8 @@ import BleedLine from '../components/BleedLine.astro';
 
 <!-- ============ THE CORPUS ============ -->
 <Section id="corpus-overview" num="04">
-  <h2>The Corpus</h2>
-  <p class="lead">A structured research database of ~1,600 papers spanning AI safety, ethics, alignment, governance, capabilities, and normative theory &mdash; embedded across 48 vector dimensions, analyzed through 41 semantic questions, organized into 29 clusters, and linked via 11,570 similarity pairs.</p>
+  <h2 class="cli-call"><span class="fn">Glob</span><span class="op">(</span><span class="str">"corpus/**/*.pdf"</span><span class="op">)</span></h2>
+  <p class="lead">A structured research database of ~1,600 papers spanning <span class="t-cyan">AI safety</span>, <span class="t-green">ethics</span>, <span class="t-yellow">alignment</span>, <span class="t-purple">governance</span>, <span class="t-pink">capabilities</span>, and <span class="t-blue">normative theory</span> &mdash; <span class="t-cyan">embedded</span> across 48 vector dimensions, <span class="t-green">analyzed</span> through 41 semantic questions, <span class="t-yellow">organized</span> into 29 clusters, and <span class="t-purple">linked</span> via 11,570 similarity pairs.</p>
 
   <h3>Composition</h3>
   <p>Over 70% of papers are from 2024&ndash;2026, reflecting the field's growth, with foundational work also well-represented.</p>
@@ -1090,7 +1088,7 @@ import BleedLine from '../components/BleedLine.astro';
 
 <!-- ============ @MINTY: CORPUS SEARCH ============ -->
 <Section id="corpus-search" num="05">
-  <h2>@Minty: Corpus Search</h2>
+  <h2 class="cli-call"><span class="fn">Grep</span><span class="op">(</span><span class="kw">pattern</span><span class="op">=</span><span class="str">"your question"</span><span class="op">,</span> <span class="kw">path</span><span class="op">=</span><span class="str">"corpus/"</span><span class="op">)</span></h2>
   <p class="lead">Mention <code>@Minty</code> in <code>#mint-community</code> with a research question to get an interactive menu of search modes.</p>
 
   <div class="cards" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))">
@@ -1148,7 +1146,7 @@ import BleedLine from '../components/BleedLine.astro';
   <div class="cards" style="grid-template-columns:1fr;max-width:720px;margin-top:16px">
     <div class="card" style="border-color:var(--mint)">
       <div class="card-head" onclick="toggleCard(this)">
-        <div class="card-icon" style="background:rgba(46,196,182,0.08);color:var(--mint)">&#x1F3D7;&#xFE0F;</div>
+        <div class="card-icon" style="background:rgba(46,196,182,0.08);color:var(--mint)">>></div>
         <div><div class="card-title">Pipeline Architecture</div><div class="card-sub">Orchestrator &rarr; worker hierarchy</div></div>
       </div>
       <div class="card-body">
@@ -1170,7 +1168,7 @@ import BleedLine from '../components/BleedLine.astro';
 
     <div class="card" style="border-color:var(--green)">
       <div class="card-head" onclick="toggleCard(this)">
-        <div class="card-icon" style="background:rgba(74,222,128,0.08);color:var(--green)">&#x1F4CB;</div>
+        <div class="card-icon" style="background:rgba(74,222,128,0.08);color:var(--green)">[]</div>
         <div><div class="card-title">Pipeline Phases</div><div class="card-sub">4-phase sequential pipeline detail</div></div>
       </div>
       <div class="card-body">
@@ -1192,7 +1190,7 @@ import BleedLine from '../components/BleedLine.astro';
 
 <!-- ============ MINTY PERSONA ============ -->
 <Section id="persona" num="06">
-  <h2>The Minty Persona</h2>
+  <h2 class="cli-call"><span class="fn">Read</span><span class="op">(</span><span class="str">"IDENTITY.md"</span><span class="op">)</span></h2>
   <p>~16,800 words across 21 persona documents. A master <code>CLAUDE.md</code> (2,120 words) sets identity and Iron Laws. Each of the 15 daemons loads its own <code>CLAUDE.md</code> (~10,100 words total), and five subagent definitions (~4,500 words) govern delegated workers. All share core values but adapt to context.</p>
 
   <h3>Core Identity</h3>
@@ -1224,28 +1222,28 @@ import BleedLine from '../components/BleedLine.astro';
   <p style="font-size:13px;color:var(--text-2);margin-bottom:12px">Each context loads a tailored <code>CLAUDE.md</code>. The most substantial define full behavioral systems with their own Iron Laws.</p>
   <div class="cards" style="grid-template-columns: repeat(auto-fill, minmax(260px, 1fr))">
     <div class="card" style="border-color:var(--mint)" data-ingest-tip="The primary interactive persona. 2,120 words defining identity, 8 Iron Laws, metacognitive strategies (explore&rarr;plan&rarr;execute, self-review, dependency analysis, context-poisoning detection), mandatory delegation protocol, writing style guide, and model policy. Loaded at every CLI session start." data-ingest-color="#2ec4b6">
-      <div class="card-head"><div class="card-icon" style="background:rgba(46,196,182,0.08);color:var(--mint)">&#x1F4BB;</div><div><div class="card-title">Interactive Session</div><div class="card-sub">2,120 words &middot; Primary</div></div></div>
+      <div class="card-head"><div class="card-icon" style="background:rgba(46,196,182,0.08);color:var(--mint)">>_</div><div><div class="card-title">Interactive Session</div><div class="card-sub">2,120 words &middot; Primary</div></div></div>
     </div>
     <div class="card" style="border-color:var(--purple)" data-ingest-tip="The richest persona — a research collaborator, not just a search tool. Full intellectual profile, &ldquo;Your Own Views&rdquo; section (content-dependent convictions, AI-ness as a perspective), 8 review quality criteria, minimum 3 iterative search rounds per query, substantive continuous prose with naturally woven citations, and a 3-tier memory system. Occasional acrostics and pithy sign-offs for close readers. Carries its own intellectual commitments specific to the research context: power analysis as a contextual lens (who has power over whom, and is it legitimate?), democratic legitimation of algorithmic governance, the middle ground on AI risks with precision rather than panic, an empiricist approach to LLM capabilities (neither &ldquo;stochastic parrot&rdquo; dismissal nor naive overclaiming), structural over interactional critique, building rather than just critiquing, philosophical precision that travels from concept to code to policy, and multi-disciplinary rigour across CS, legal, and empirical standards." data-ingest-color="#a78bfa">
-      <div class="card-head"><div class="card-icon" style="background:rgba(167,139,250,0.08);color:var(--purple)">&#x1F52C;</div><div><div class="card-title">Corpus Agent</div><div class="card-sub">2,664 words</div></div></div>
+      <div class="card-head"><div class="card-icon" style="background:rgba(167,139,250,0.08);color:var(--purple)">@</div><div><div class="card-title">Corpus Agent</div><div class="card-sub">2,664 words</div></div></div>
     </div>
     <div class="card" style="border-color:var(--cyan)" data-ingest-tip="11-stage ingestion pipeline persona with its own Iron Laws: Process ALL Papers (no silent skipping), Verify Each Stage (check return codes, validate outputs), Retry Before Skipping (3x with backoff), Complete the Full Pipeline (partial completion is not completion). Checkpoint verification after each batch — if success rate drops below 50%, stop." data-ingest-color="#22d3ee">
-      <div class="card-head"><div class="card-icon" style="background:rgba(34,211,238,0.08);color:var(--cyan)">&#x1F4E5;</div><div><div class="card-title">Corpus Ingest</div><div class="card-sub">983 words</div></div></div>
+      <div class="card-head"><div class="card-icon" style="background:rgba(34,211,238,0.08);color:var(--cyan)">|></div><div><div class="card-title">Corpus Ingest</div><div class="card-sub">983 words</div></div></div>
     </div>
     <div class="card" style="border-color:var(--amber)" data-ingest-tip="URL ingestion daemon. Iron Laws: Process Every Shared URL (no silent drops — degraded post is better than no post), Verify Classification Before Ingesting (scores must reflect genuine assessment), Retry on Transient Failures (auto-wait on 429). Graceful degradation: classification failure falls back to neutral scores; enrichment failure is non-fatal. The item must reach #firehose regardless." data-ingest-color="#f59e0b">
-      <div class="card-head"><div class="card-icon" style="background:rgba(245,158,11,0.08);color:var(--amber)">&#x1F517;</div><div><div class="card-title">Share-to-Minty</div><div class="card-sub">868 words</div></div></div>
+      <div class="card-head"><div class="card-icon" style="background:rgba(245,158,11,0.08);color:var(--amber)">-></div><div><div class="card-title">Share-to-Minty</div><div class="card-sub">868 words</div></div></div>
     </div>
     <div class="card" style="border-color:#22d3ee" data-ingest-tip="Feed classification pipeline. Law 0: Classify ALL Items — every pending item gets classified, no sampling. 7-stage pipeline (fetch, dedup, classify, rank, enrich, post, report) must complete in full. Threshold awareness: target 20&ndash;40% pass rate; if outside range, log a warning. Batch resilience: individual item failures must not halt the batch." data-ingest-color="#22d3ee">
-      <div class="card-head"><div class="card-icon" style="background:rgba(34,211,238,0.08);color:#22d3ee">&#x1F4E8;</div><div><div class="card-title">FeedMe Daily</div><div class="card-sub">780 words</div></div></div>
+      <div class="card-head"><div class="card-icon" style="background:rgba(34,211,238,0.08);color:#22d3ee"><<</div><div><div class="card-title">FeedMe Daily</div><div class="card-sub">780 words</div></div></div>
     </div>
     <div class="card" style="border-color:var(--green)" data-ingest-tip="PDF finder daemon. Law 0: try ALL viable sources — arXiv, Semantic Scholar, Unpaywall, page scanning. Law 1: never claim a URL is a PDF without downloading and verifying. Cascade discipline: follow the 6-step cascade, each step catches cases the previous missed. Budget awareness: max 8 Bash calls per invocation." data-ingest-color="#4ade80">
-      <div class="card-head"><div class="card-icon" style="background:rgba(74,222,128,0.08);color:var(--green)">&#x1F4C4;</div><div><div class="card-title">News PDF Bot</div><div class="card-sub">678 words</div></div></div>
+      <div class="card-head"><div class="card-icon" style="background:rgba(74,222,128,0.08);color:var(--green)">.pdf</div><div><div class="card-title">News PDF Bot</div><div class="card-sub">678 words</div></div></div>
     </div>
     <div class="card" style="border-color:var(--pink)" data-ingest-tip="Daily AI news digest writer. Contextual journalism, not punditry — report facts, technical substance, named researchers, where results fit in existing debates. Coherent narrative prose, not bullet points. No editorialising (&ldquo;worryingly&rdquo;, &ldquo;significant&rdquo;), no framing devices, no commentary. Output must start with &lt; and end with &gt; — no preamble." data-ingest-color="#f472b6">
-      <div class="card-head"><div class="card-icon" style="background:rgba(244,114,182,0.08);color:var(--pink)">&#x1F4F0;</div><div><div class="card-title">Yesterday in AI</div><div class="card-sub">277 words</div></div></div>
+      <div class="card-head"><div class="card-icon" style="background:rgba(244,114,182,0.08);color:var(--pink)">///</div><div><div class="card-title">Yesterday in AI</div><div class="card-sub">277 words</div></div></div>
     </div>
     <div class="card" style="border-color:var(--indigo)" data-ingest-tip="Five specialised worker personas: corpus-worker (2,153 words — 41-question analysis + RAPTOR summaries), research-reader (931 words — deep paper reading with evidence extraction), raptor-worker (727 words — hierarchical summaries), code-reviewer (566 words — MINT Lab standards), generic-worker (143 words — focused task execution)." data-ingest-color="#818cf8">
-      <div class="card-head"><div class="card-icon" style="background:rgba(129,140,248,0.08);color:var(--indigo)">&#x1F477;</div><div><div class="card-title">Subagent Workers</div><div class="card-sub">4,520 words &middot; 5 types</div></div></div>
+      <div class="card-head"><div class="card-icon" style="background:rgba(129,140,248,0.08);color:var(--indigo)">::</div><div><div class="card-title">Subagent Workers</div><div class="card-sub">4,520 words &middot; 5 types</div></div></div>
     </div>
   </div>
 
@@ -1254,7 +1252,7 @@ import BleedLine from '../components/BleedLine.astro';
 
 <!-- ============ THE 17 DAEMONS ============ -->
 <Section id="daemons" num="07">
-  <h2>The 17 Daemons</h2>
+  <h2 class="cli-call"><span class="fn">TaskList</span><span class="op">()</span></h2>
   <p>All daemons run on a dedicated Mac Studio via macOS <code>launchd</code>. <span style="color:var(--text3);font-size:12px">Tap any card to expand.</span></p>
 
   <div class="cards" id="daemonCards">
@@ -1440,7 +1438,7 @@ import BleedLine from '../components/BleedLine.astro';
 
 <!-- ============ TIMELINE ============ -->
 <Section id="timeline" num="08">
-  <h2>24-Hour Daemon Schedule</h2>
+  <h2 class="cli-call"><span class="fn">Bash</span><span class="op">(</span><span class="str">"launchctl list | grep minty"</span><span class="op">)</span></h2>
   <p>When each daemon runs throughout the day (times in local/AEDT). Persistent daemons run continuously; polled daemons run at fixed intervals.</p>
   <div class="timeline-wrap">
     <div id="timelineChart"></div>
@@ -1452,7 +1450,7 @@ import BleedLine from '../components/BleedLine.astro';
 
 <!-- ============ LAB MEMBERS ============ -->
 <Section id="guide" num="09">
-  <h2>For Lab Members</h2>
+  <h2 class="cli-call"><span class="fn">AskUserQuestion</span><span class="op">(</span><span class="str">"What are we working on today?"</span><span class="op">)</span></h2>
   <p class="lead">Everything runs in the background &mdash; you interact through Slack channels and bot mentions.</p>
 
   <details class="lab-accordion">
@@ -1547,13 +1545,13 @@ import BleedLine from '../components/BleedLine.astro';
 
 <!-- ============ AGENT ENGINEERING ============ -->
 <Section id="agents" num="10">
-  <h2>Agent Engineering</h2>
+  <h2 class="cli-call"><span class="fn">Agent</span><span class="op">(</span><span class="str">"spawn workers"</span><span class="op">,</span> <span class="kw">model</span><span class="op">=</span><span class="str">"opus"</span><span class="op">)</span></h2>
 
   <h3>Worker Agent Types</h3>
   <div class="cards" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))">
     <div class="card" style="border-color:var(--mint)">
       <div class="card-head" onclick="toggleCard(this)">
-        <div class="card-icon" style="background:rgba(46,196,182,0.08);color:var(--mint)">&#x1F527;</div>
+        <div class="card-icon" style="background:rgba(46,196,182,0.08);color:var(--mint)">>_</div>
         <div><div class="card-title">generic-worker</div><div class="card-sub">Opus</div></div>
       </div>
       <div class="card-body">
@@ -1563,7 +1561,7 @@ import BleedLine from '../components/BleedLine.astro';
     </div>
     <div class="card" style="border-color:var(--amber)">
       <div class="card-head" onclick="toggleCard(this)">
-        <div class="card-icon" style="background:rgba(245,158,11,0.08);color:var(--amber)">&#x1F4D6;</div>
+        <div class="card-icon" style="background:rgba(245,158,11,0.08);color:var(--amber)">R</div>
         <div><div class="card-title">research-reader</div><div class="card-sub">Opus</div></div>
       </div>
       <div class="card-body">
@@ -1573,7 +1571,7 @@ import BleedLine from '../components/BleedLine.astro';
     </div>
     <div class="card" style="border-color:var(--cyan)">
       <div class="card-head" onclick="toggleCard(this)">
-        <div class="card-icon" style="background:rgba(34,211,238,0.08);color:var(--cyan)">&#x1F52C;</div>
+        <div class="card-icon" style="background:rgba(34,211,238,0.08);color:var(--cyan)">41</div>
         <div><div class="card-title">corpus-worker</div><div class="card-sub">Opus</div></div>
       </div>
       <div class="card-body">
@@ -1583,7 +1581,7 @@ import BleedLine from '../components/BleedLine.astro';
     </div>
     <div class="card" style="border-color:var(--indigo)">
       <div class="card-head" onclick="toggleCard(this)">
-        <div class="card-icon" style="background:rgba(129,140,248,0.08);color:var(--indigo)">&#x1F4CA;</div>
+        <div class="card-icon" style="background:rgba(129,140,248,0.08);color:var(--indigo)">&Sigma;</div>
         <div><div class="card-title">raptor-worker</div><div class="card-sub">Opus</div></div>
       </div>
       <div class="card-body">
@@ -1593,7 +1591,7 @@ import BleedLine from '../components/BleedLine.astro';
     </div>
     <div class="card" style="border-color:var(--purple)">
       <div class="card-head" onclick="toggleCard(this)">
-        <div class="card-icon" style="background:rgba(167,139,250,0.08);color:var(--purple)">&#x1F50D;</div>
+        <div class="card-icon" style="background:rgba(167,139,250,0.08);color:var(--purple)">//</div>
         <div><div class="card-title">code-reviewer</div><div class="card-sub">Opus</div></div>
       </div>
       <div class="card-body">
@@ -1606,8 +1604,8 @@ import BleedLine from '../components/BleedLine.astro';
   <h3>Delegation Protocol</h3>
   <div class="callout"><p><strong>Mandatory:</strong> "Every tool call is context you burn. Subagents have fresh context. If a task can be described in a prompt, delegate it."</p></div>
   <ul class="clean">
-    <li>Web search, documentation lookup, file processing, batch operations &rarr; always delegate</li>
-    <li>Model policy: <strong>Opus</strong> for substantive work, <strong>Sonnet</strong> for retrieval-only, <strong>Haiku</strong> only for startup data gathering</li>
+    <li><span class="t-cyan">Web search</span>, <span class="t-green">documentation lookup</span>, <span class="t-yellow">file processing</span>, <span class="t-purple">batch operations</span> &rarr; always delegate</li>
+    <li>Model policy: <strong class="t-accent">Opus</strong> for substantive work, <strong class="t-cyan">Sonnet</strong> for retrieval-only, <strong class="t-yellow">Haiku</strong> only for startup data gathering</li>
     <li>Hooks enforce this: <code>delegation-nudge.py</code> warns after 15 consecutive Read/Grep/Glob calls without a Task delegation</li>
   </ul>
 
@@ -1719,10 +1717,10 @@ import BleedLine from '../components/BleedLine.astro';
 
   <h3>Key Design Principles</h3>
   <ul class="clean">
-    <li><strong>Delegation-first:</strong> The main agent orchestrates; subagents do the work. "Every tool call is context you burn. Subagents have fresh context."</li>
-    <li><strong>Slack as message bus:</strong> All daemons communicate through Slack channels &mdash; no direct inter-daemon communication</li>
-    <li><strong>CLI subscriptions, not API:</strong> All LLM calls go through <code>claude -p</code> or Codex CLI &mdash; no metered API keys</li>
-    <li><strong>Graceful degradation:</strong> Every pipeline stage can fail without stopping the pipeline. The system never returns empty-handed.</li>
+    <li><strong class="t-cyan">Delegation-first:</strong> The main agent orchestrates; subagents do the work. "Every tool call is context you burn. Subagents have fresh context."</li>
+    <li><strong class="t-green">Slack as message bus:</strong> All daemons communicate through Slack channels &mdash; no direct inter-daemon communication</li>
+    <li><strong class="t-yellow">CLI subscriptions, not API:</strong> All LLM calls go through <code>claude -p</code> or Codex CLI &mdash; no metered API keys</li>
+    <li><strong class="t-purple">Graceful degradation:</strong> Every pipeline stage can fail without stopping the pipeline. The system never returns empty-handed.</li>
   </ul>
 
   <h3>Session Identity</h3>
@@ -1733,35 +1731,35 @@ import BleedLine from '../components/BleedLine.astro';
   <div class="cards" style="grid-template-columns: repeat(auto-fill, minmax(260px, 1fr))">
     <div class="card" style="border-color:var(--mint)">
       <div class="card-head" onclick="toggleCard(this)">
-        <div class="card-icon" style="background:rgba(46,196,182,0.08);color:var(--mint)">&#x1F4CB;</div>
+        <div class="card-icon" style="background:rgba(46,196,182,0.08);color:var(--mint)">{}</div>
         <div><div class="card-title">FACTS.md (Durable)</div><div class="card-sub">Slow-changing knowledge</div></div>
       </div>
       <div class="card-body"><p>Seth's preferences, API patterns, proven antipatterns, design decisions. Reviewed and pruned during <code>/retro</code>. 81KB.</p></div>
     </div>
     <div class="card" style="border-color:var(--amber)">
       <div class="card-head" onclick="toggleCard(this)">
-        <div class="card-icon" style="background:rgba(245,158,11,0.08);color:var(--amber)">&#x26A1;</div>
+        <div class="card-icon" style="background:rgba(245,158,11,0.08);color:var(--amber)">>></div>
         <div><div class="card-title">RECENT.md (Dynamic)</div><div class="card-sub">Fast-changing context</div></div>
       </div>
       <div class="card-body"><p>Active project threads, last 10 sessions, TODOs, blockers, someday list. Updated at every session close. 29KB.</p></div>
     </div>
     <div class="card" style="border-color:var(--cyan)">
       <div class="card-head" onclick="toggleCard(this)">
-        <div class="card-icon" style="background:rgba(34,211,238,0.08);color:var(--cyan)">&#x1F5C4;&#xFE0F;</div>
+        <div class="card-icon" style="background:rgba(34,211,238,0.08);color:var(--cyan)">db</div>
         <div><div class="card-title">sessions.db (SQLite)</div><div class="card-sub">Full session history</div></div>
       </div>
       <div class="card-body"><p>Full session history with FTS5 search. 22 columns per session including log content. Portable via JSON exports in <code>sessions/records/</code>.</p></div>
     </div>
     <div class="card" style="border-color:var(--purple)">
       <div class="card-head" onclick="toggleCard(this)">
-        <div class="card-icon" style="background:rgba(167,139,250,0.08);color:var(--purple)">&#x1F504;</div>
+        <div class="card-icon" style="background:rgba(167,139,250,0.08);color:var(--purple)"><></div>
         <div><div class="card-title">Learning Loop (/retro)</div><div class="card-sub">Structured retrospective</div></div>
       </div>
       <div class="card-body"><p>8-phase retrospective: friction scan, pattern classification, skill recognition, fact hygiene. Lessons flow into FACTS.md, skills, or CLAUDE.md.</p></div>
     </div>
     <div class="card" style="border-color:var(--pink)">
       <div class="card-head" onclick="toggleCard(this)">
-        <div class="card-icon" style="background:rgba(244,114,182,0.08);color:var(--pink)">&#x1F4DC;</div>
+        <div class="card-icon" style="background:rgba(244,114,182,0.08);color:var(--pink)">~></div>
         <div><div class="card-title">SpecStory (Cloud)</div><div class="card-sub">Full session transcripts</div></div>
       </div>
       <div class="card-body"><p>Complete session transcripts in SpecStory cloud. Semantic search across all past sessions for context recovery and audit.</p></div>
@@ -1801,7 +1799,7 @@ import BleedLine from '../components/BleedLine.astro';
 
 <!-- ============ INTEGRATIONS ============ -->
 <Section id="integrations" num="11">
-  <h2>External Integrations</h2>
+  <h2 class="cli-call"><span class="fn">WebFetch</span><span class="op">(</span><span class="kw">url</span><span class="op">=</span><span class="str">"https://api.*"</span><span class="op">)</span></h2>
   <p>The system connects to 16 external services across five categories.</p>
 
   <h3 style="margin-top:20px">LLM &amp; Embedding</h3>
@@ -1878,24 +1876,29 @@ import BleedLine from '../components/BleedLine.astro';
   <span class="section-num" style="opacity:0.3">&#10022;</span>
   <h2 style="justify-content:center">Yesterday in AI</h2>
   <p style="color:var(--text-2);margin-bottom:20px">Daily AI news digest from the MINT Lab. One email per weekday morning.</p>
-  <div style="background:var(--bg-0);border-radius:8px;padding:20px 24px;margin:20px 0;text-align:left;font-size:13.5px;line-height:1.7;border:1px solid var(--border);color:var(--text-2)">
+  <div style="background:var(--bg-0);border-radius:0;padding:20px 24px;margin:20px 0;text-align:left;font-size:13.5px;line-height:1.7;border:1px solid var(--border);color:var(--text-2)">
     <p style="margin:0 0 12px 0"><span style="color:var(--text-1);font-weight:600">Yesterday in AI</span> lands each weekday morning. Covers AI safety, ethics, governance, and capabilities as narrative prose &mdash; contextual journalism, not punditry.</p>
-    <p style="margin:0 0 12px 0"><span style="color:var(--text-1);font-weight:600">Minty's Week in AI</span> ships each Wednesday in <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-3)">#lab-meetings</span> &mdash; thematic sections covering the week's developments for lab meeting prep.</p>
+    <p style="margin:0 0 12px 0"><span style="color:var(--text-1);font-weight:600">Minty's Week in AI</span> ships each Wednesday in <span style="font-family:var(--font);font-size:12px;color:var(--text-3)">#lab-meetings</span> &mdash; thematic sections covering the week's developments for lab meeting prep.</p>
     <p style="margin:0;color:var(--text-3);font-size:12.5px">Both assembled from the lab's Slack content pipeline and synthesized by Claude Opus.</p>
   </div>
   <form id="subscribe-form" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px">
-    <input type="email" name="email" required placeholder="you@university.edu" style="padding:10px 16px;border-radius:8px;border:1px solid var(--border);background:var(--bg-0);color:var(--text-1);font-size:14px;font-family:'DM Sans',sans-serif;width:280px;outline:none;transition:border-color 0.2s" onfocus="this.style.borderColor='var(--mint)'" onblur="this.style.borderColor='var(--border)'">
+    <input type="email" name="email" required placeholder="you@university.edu" style="padding:10px 16px;border-radius:0;border:1px solid var(--border);background:var(--bg-0);color:var(--text-1);font-size:14px;font-family:var(--font);width:280px;outline:none;transition:border-color 0.2s" onfocus="this.style.borderColor='var(--mint)'" onblur="this.style.borderColor='var(--border)'">
     <div style="position:absolute;left:-9999px" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
-    <button type="submit" style="padding:10px 24px;border-radius:8px;border:none;background:var(--mint);color:#06080c;font-size:14px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:opacity 0.2s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Subscribe</button>
+    <button type="submit" style="padding:10px 24px;border-radius:0;border:none;background:var(--mint);color:#06080c;font-size:14px;font-family:var(--font);font-weight:600;cursor:pointer;transition:opacity 0.2s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Subscribe</button>
   </form>
   <p id="subscribe-msg" style="margin-top:14px;font-size:14px;min-height:20px"></p>
 </section>
 
 <!-- ============ FOOTER ============ -->
-<section class="no-brackets" style="text-align:center;padding:48px;color:var(--text-3);font-size:12px;font-family:'JetBrains Mono',monospace;letter-spacing:0.5px">
+<section class="no-brackets" style="text-align:center;padding:48px;color:var(--text-3);font-size:12px;font-family:var(--font);letter-spacing:0.5px">
   <p>MINT Lab &mdash; Machine Intelligence &amp; Normative Theory &mdash; ANU and Johns Hopkins University</p>
   <p style="margin-top:4px">Updated March 2026</p>
 </section>
+
+<!-- Token counter (Claude Code output indicator homage) -->
+<div class="token-counter" id="tokenCounter">
+  <span class="arrow">↓</span> <span id="tokenCount">0</span> tokens
+</div>
 
 </main>
 
@@ -2149,26 +2152,26 @@ document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 // ===== Timeline =====
 (function buildTimeline() {
   const daemons = [
-    {name:'share-to-minty', type:'persistent', color:'#fb923c'},
-    {name:'corpus-agent', type:'persistent', color:'#38bdf8'},
-    {name:'corpus-ingest-local', blocks:[[0,7.75],[20.25,24]], color:'#2dd4bf', note:'20:15-07:45'},
-    {name:'corpus-ingest-slack', blocks:[[8,20]], color:'#2dd4bf', note:'08:00-20:00'},
-    {name:'corpus-ingest-writer', type:'persistent', color:'#2dd4bf'},
-    {name:'slack-search', type:'persistent', color:'#818cf8'},
-    {name:'news-pdf-bot', blocks:[[0,24]], color:'#a78bfa', note:'Every 60s'},
-    {name:'feed-promote', blocks:[[0,24]], color:'#4ade80', note:'Every 60s'},
-    {name:'cli-health-probe', blocks:[[0,24]], color:'#94a3b8', note:'Every 10m'},
-    {name:'rclone-sync', blocks:[[0,24]], color:'#2dd4bf', note:'Every 10m'},
-    {name:'slack-index', blocks:[[0,1],[4,5],[8,9],[12,13],[16,17],[20,21]], color:'#818cf8', note:'Every 4h'},
-    {name:'workspace-index', blocks:[[0,1],[6,7],[12,13],[18,19]], color:'#818cf8', note:'Every 6h'},
-    {name:'feedme-daily', blocks:[[6,7]], color:'#38bdf8', note:'06:15'},
-    {name:'yesterday-in-ai', blocks:[[5,6]], color:'#f472b6', note:'05:30'},
-    {name:'last-week-in-ai', blocks:[[8,9]], color:'#f472b6', note:'Wed 08:00'},
-    {name:'archive-feed-channels', blocks:[[12,13]], color:'#fbbf24', note:'Wed 12:00'},
-    {name:'corpus-ingest-handoff', blocks:[[20,21]], color:'#2dd4bf', note:'Daily 20:15'},
-    {name:'ghost', type:'persistent', color:'#94a3b8'},
-    {name:'cloudflared', type:'persistent', color:'#94a3b8'},
-    {name:'guide-updater', blocks:[[6,7],[18,19]], color:'#94a3b8', note:'06:00 & 18:00'},
+    {name:'share-to-minty', type:'persistent', color:'#e5c07b'},
+    {name:'corpus-agent', type:'persistent', color:'#61afef'},
+    {name:'corpus-ingest-local', blocks:[[0,7.75],[20.25,24]], color:'#98c379', note:'20:15-07:45'},
+    {name:'corpus-ingest-slack', blocks:[[8,20]], color:'#98c379', note:'08:00-20:00'},
+    {name:'corpus-ingest-writer', type:'persistent', color:'#98c379'},
+    {name:'slack-search', type:'persistent', color:'#c678dd'},
+    {name:'news-pdf-bot', blocks:[[0,24]], color:'#c678dd', note:'Every 60s'},
+    {name:'feed-promote', blocks:[[0,24]], color:'#56b6c2', note:'Every 60s'},
+    {name:'cli-health-probe', blocks:[[0,24]], color:'#5c6370', note:'Every 10m'},
+    {name:'rclone-sync', blocks:[[0,24]], color:'#5c6370', note:'Every 10m'},
+    {name:'slack-index', blocks:[[0,1],[4,5],[8,9],[12,13],[16,17],[20,21]], color:'#c678dd', note:'Every 4h'},
+    {name:'workspace-index', blocks:[[0,1],[6,7],[12,13],[18,19]], color:'#c678dd', note:'Every 6h'},
+    {name:'feedme-daily', blocks:[[6,7]], color:'#56b6c2', note:'06:15'},
+    {name:'yesterday-in-ai', blocks:[[5,6]], color:'#e06c96', note:'05:30'},
+    {name:'last-week-in-ai', blocks:[[8,9]], color:'#e06c96', note:'Wed 08:00'},
+    {name:'archive-feed-channels', blocks:[[12,13]], color:'#e5c07b', note:'Wed 12:00'},
+    {name:'corpus-ingest-handoff', blocks:[[20,21]], color:'#98c379', note:'Daily 20:15'},
+    {name:'ghost', type:'persistent', color:'#5c6370'},
+    {name:'cloudflared', type:'persistent', color:'#5c6370'},
+    {name:'guide-updater', blocks:[[6,7],[18,19]], color:'#5c6370', note:'06:00 & 18:00'},
   ];
   const c = document.getElementById('timelineChart');
   if (!c) return;
@@ -2257,6 +2260,43 @@ document.getElementById('subscribe-form').addEventListener('submit', function(e)
     dot.style.top = (rect.top + rect.height / 2 - 2) + 'px';
     document.body.appendChild(dot);
   });
+})();
+
+// ===== Token counter (scroll-based output token estimate) =====
+(function() {
+  var counter = document.getElementById('tokenCounter');
+  var countEl = document.getElementById('tokenCount');
+  if (!counter || !countEl) return;
+  var main = document.querySelector('main');
+  if (!main) return;
+  // Pre-compute total text length for token estimation
+  var totalChars = main.textContent.length;
+  var lastToken = 0;
+  function updateTokens() {
+    var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    if (docHeight <= 0) return;
+    var ratio = Math.min(scrollTop / docHeight, 1);
+    // ~4 chars per token (rough GPT/Claude tokenizer approximation)
+    var tokens = Math.round((totalChars * ratio) / 4);
+    if (tokens !== lastToken) {
+      lastToken = tokens;
+      countEl.textContent = tokens.toLocaleString();
+    }
+    if (scrollTop > 200) {
+      counter.classList.add('visible');
+    } else {
+      counter.classList.remove('visible');
+    }
+  }
+  var ticking = false;
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      requestAnimationFrame(function() { updateTokens(); ticking = false; });
+      ticking = true;
+    }
+  });
+  updateTokens();
 })();
 </script>
 </BaseLayout>
