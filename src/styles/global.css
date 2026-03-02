@@ -613,6 +613,44 @@ details.lab-accordion .accordion-inner p { font-size: 12px; }
 .law-name { font-size: 16px; font-weight: 600; color: var(--accent); margin-bottom: 6px; }
 .law-text { font-size: 13px; color: var(--text-2); max-width: 480px; margin: 0 auto; }
 
+/* ===== Pipeline Flow Grid (7-stage overview) ===== */
+.pipeline-flow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  align-items: stretch;
+}
+.pf-card {
+  background: var(--bg-0);
+  padding: 10px 14px;
+  position: relative;
+}
+/* Pipe separator between cards on desktop */
+.pf-card + .pf-card::before {
+  content: '|';
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--text-3);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1;
+}
+.pf-hub {
+  background: rgba(34,211,238,0.06);
+  border: 1px solid rgba(34,211,238,0.15);
+}
+@media (max-width: 768px) {
+  .pipeline-flow { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .pf-card + .pf-card::before { display: none; }
+  /* Last card (odd) spans full width */
+  .pf-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+@media (max-width: 480px) {
+  .pipeline-flow { grid-template-columns: 1fr; }
+}
+
 /* ===== CLI Tool-Call Section Headers ===== */
 h2.cli-call {
   text-transform: none;

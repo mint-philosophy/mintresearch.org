@@ -441,50 +441,44 @@ import RefTable from '../components/RefTable.astro';
 
   <!-- Flow summary: 7-stage pipeline overview -->
   <div style="margin:28px 0 24px">
-    <div style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap">
-      <div style="background:var(--bg-0);border-left:3px solid var(--cyan);padding:10px 14px;cursor:pointer"
+    <div class="pipeline-flow">
+      <div class="pf-card" style="border-left:3px solid var(--cyan);cursor:pointer"
            data-ingest-tip="6 fetchers pull from Twitter, arXiv, RSS/Substack, Bluesky, Email, and LinkedIn in parallel via a thread pool. A PhilPapers scraper is also available for periodic runs."
            data-ingest-color="#22d3ee">
         <div style="font-size:12px;font-weight:700;color:var(--cyan)">Sources</div>
         <div style="font-size:10px;color:var(--text-3)">6 parallel fetchers</div>
       </div>
-      <div style="color:var(--text-3);font-size:16px;line-height:1;font-family:var(--font)">|</div>
-      <div style="background:var(--bg-0);border-left:3px solid var(--mint);padding:10px 14px;cursor:pointer"
+      <div class="pf-card" style="border-left:3px solid var(--mint);cursor:pointer"
            data-ingest-tip="Claude Opus scores 6 dimensions (relevance, quality, authority, novelty, actionability, engagement), generates a 5&ndash;10 word headline, assigns one of 16 categories, and explains its reasoning. 16 parallel workers, ~40K tokens per batch."
            data-ingest-color="#2ec4b6">
         <div style="font-size:12px;font-weight:700;color:var(--mint)">Classify</div>
         <div style="font-size:10px;color:var(--text-3)">Opus, 6 dimensions</div>
       </div>
-      <div style="color:var(--text-3);font-size:16px;line-height:1;font-family:var(--font)">|</div>
-      <div style="background:var(--bg-0);border-left:3px solid var(--amber);padding:10px 14px;cursor:pointer"
+      <div class="pf-card" style="border-left:3px solid var(--amber);cursor:pointer"
            data-ingest-tip="Seth reviews #feed-{day} channels each morning. Thumbs-up promotes items to #firehose via the feed-promote daemon, which polls every 5 minutes."
            data-ingest-color="#f59e0b">
         <div style="font-size:12px;font-weight:700;color:var(--amber)">Curate</div>
         <div style="font-size:10px;color:var(--text-3)">Human review</div>
       </div>
-      <div style="color:var(--text-3);font-size:16px;line-height:1;font-family:var(--font)">|</div>
-      <div style="background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.15);border-left:3px solid var(--cyan);padding:10px 14px;cursor:pointer"
+      <div class="pf-card pf-hub" style="border-left:3px solid var(--cyan);cursor:pointer"
            data-ingest-tip="Central hub. Everything curated lands here. Three downstream daemons read from it: news-pdf-bot, corpus-ingest, and yesterday-in-ai."
            data-ingest-color="#22d3ee">
         <div style="font-size:12px;font-weight:700;color:var(--cyan)">#firehose</div>
         <div style="font-size:10px;color:var(--text-3)">Central hub</div>
       </div>
-      <div style="color:var(--text-3);font-size:16px;line-height:1;font-family:var(--font)">|</div>
-      <div style="background:var(--bg-0);border-left:3px solid var(--purple);padding:10px 14px;cursor:pointer"
+      <div class="pf-card" style="border-left:3px solid var(--purple);cursor:pointer"
            data-ingest-tip="news-pdf-bot attaches PDFs via 3-tier acquisition (pattern matching, thread expansion, sandboxed Claude agent). corpus-ingest runs an 11-stage pipeline: markdown conversion, embedding, metadata extraction, cataloguing."
            data-ingest-color="#a78bfa">
         <div style="font-size:12px;font-weight:700;color:var(--purple)">Ingest</div>
         <div style="font-size:10px;color:var(--text-3)">PDFs + corpus pipeline</div>
       </div>
-      <div style="color:var(--text-3);font-size:16px;line-height:1;font-family:var(--font)">|</div>
-      <div style="background:var(--bg-0);border-left:3px solid var(--indigo);padding:10px 14px;cursor:pointer"
+      <div class="pf-card" style="border-left:3px solid var(--indigo);cursor:pointer"
            data-ingest-tip="corpus-agent performs deep semantic analysis on ingested papers: 41 analytical questions, thematic clustering, cross-paper connection mapping."
            data-ingest-color="#818cf8">
         <div style="font-size:12px;font-weight:700;color:var(--indigo)">Analyse</div>
         <div style="font-size:10px;color:var(--text-3)">41Q deep analysis</div>
       </div>
-      <div style="color:var(--text-3);font-size:16px;line-height:1;font-family:var(--font)">|</div>
-      <div style="background:var(--bg-0);border-left:3px solid var(--pink);padding:10px 14px;cursor:pointer"
+      <div class="pf-card" style="border-left:3px solid var(--pink);cursor:pointer"
            data-ingest-tip="yesterday-in-ai generates a daily narrative digest for subscribers and posts to #mint-community. A weekly Minty's Week in AI summary is produced for lab meetings."
            data-ingest-color="#f472b6">
         <div style="font-size:12px;font-weight:700;color:var(--pink)">Report</div>
