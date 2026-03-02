@@ -1021,8 +1021,17 @@ ul.clean li:last-child::before { content: '└── '; }
   .about-grid { grid-template-columns: 1fr; }
   .bleed-line { display: none; }
   section::before, section::after { display: none; }
-  .statusline { padding: 0 8px; font-size: 10px; }
-  .statusline-section, .statusline-site { display: none; }
+  .statusline {
+    padding: 4px 8px;
+    font-size: 10px;
+    height: auto;
+    min-height: var(--statusline-h);
+    flex-wrap: wrap;
+    gap: 4px 10px;
+  }
+  .statusline-progress { min-width: auto; flex: 1 1 100%; }
+  .statusline-section { flex: 1; min-width: 0; }
+  .statusline-site { font-size: 9px; }
 }
 
 @media (max-width: 400px) {
