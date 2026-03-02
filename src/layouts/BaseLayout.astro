@@ -184,17 +184,37 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
     if (heroTitle) {
       const titleText = heroTitle.getAttribute('data-typing') || '';
-      setTimeout(() => {
+      let typing = false;
+      let typed = false;
+
+      function runTitleType() {
+        if (typing) return;
+        typing = true;
+        typed = false;
         typeElement(heroTitle, titleText, 35, () => {
-          // Remove cursor from title, start subtitle
           const titleCursor = heroTitle.querySelector('.typing-cursor');
           if (titleCursor) titleCursor.remove();
+          typing = false;
+          typed = true;
           if (heroSub) {
             const subText = heroSub.getAttribute('data-typing-sub') || '';
             setTimeout(() => typeElement(heroSub, subText, 28), 300);
           }
         });
-      }, 400);
+      }
+
+      // Initial type on load
+      setTimeout(() => runTitleType(), 400);
+
+      // Re-type when scrolling back to the top
+      let wasAtTop = true;
+      window.addEventListener('scroll', () => {
+        const atTop = window.scrollY < 100;
+        if (atTop && !wasAtTop && typed && !typing) {
+          runTitleType();
+        }
+        wasAtTop = atTop;
+      }, { passive: true });
     }
 
     // Cycling minty in sidebar
