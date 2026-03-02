@@ -3,7 +3,6 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://mint-philosophy.github.io',
-  base: '/mintresearch.org',
+  site: 'https://mintresearch.org',
   output: 'static',
 });
