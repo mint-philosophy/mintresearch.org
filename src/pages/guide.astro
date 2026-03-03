@@ -2,6 +2,11 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/Section.astro';
 import RefTable from '../components/RefTable.astro';
+import stats from '../data/stats.json';
+const fmt = (n: number) => n.toLocaleString();
+const approx = (n: number) => '~' + (Math.round(n / 100) * 100).toLocaleString();
+const c = stats.corpus;
+const sub = stats.subscribers;
 ---
 
 <BaseLayout title="Agentic Research Infrastructure for AI Alignment, Governance and Adaptation">
@@ -96,7 +101,7 @@ import RefTable from '../components/RefTable.astro';
       <!-- ===== RIGHT COLUMN: Digest loop ===== -->
       <line x1="580" y1="130" x2="640" y2="130" stroke="#f472b6" stroke-width="1.5" marker-end="url(#arrowPink)"/>
 
-      <g class="pn" data-tip="Generates a narrative daily digest from the previous day's #firehose posts using Claude. Sends as a rich HTML email to 29 lab members across 11 institutions and posts to #mint-community." style="cursor:pointer" transform="translate(648,108)">
+      <g class="pn" data-tip={`Generates a narrative daily digest from the previous day's #firehose posts using Claude. Sends as a rich HTML email to ${sub.count} lab members across ${sub.institutionCount} institutions and posts to #mint-community.`} style="cursor:pointer" transform="translate(648,108)">
         <rect width="150" height="50" fill="url(#nodeGrad)" stroke="#f472b6" stroke-width="1.5"/>
         <text x="75" y="19" text-anchor="middle" fill="#f472b6" font-size="10" font-weight="700">yesterday-in-ai</text>
         <text x="75" y="33" text-anchor="middle" fill="#94a3b8" font-size="8">Daily/weekly digest</text>
@@ -104,10 +109,10 @@ import RefTable from '../components/RefTable.astro';
       </g>
 
       <line x1="798" y1="133" x2="838" y2="133" stroke="#f472b6" stroke-width="1" marker-end="url(#arrowPink)"/>
-      <g class="pn" data-tip="Rich HTML email digest sent daily to 29 lab members across 11 institutions, including MINT Lab members, collaborators at Stanford, ANU, and elsewhere." style="cursor:pointer" transform="translate(846,114)">
+      <g class="pn" data-tip={`Rich HTML email digest sent daily to ${sub.count} lab members across ${sub.institutionCount} institutions, including MINT Lab members, collaborators at Stanford, ANU, and elsewhere.`} style="cursor:pointer" transform="translate(846,114)">
         <rect width="100" height="38" fill="url(#nodeGrad)" stroke="rgba(255,255,255,0.1)"/>
         <text x="50" y="16" text-anchor="middle" fill="#f472b6" font-size="9" font-weight="600">Email</text>
-        <text x="50" y="30" text-anchor="middle" fill="#64748b" font-size="8">29 lab members</text>
+        <text x="50" y="30" text-anchor="middle" fill="#64748b" font-size="8">{sub.count} lab members</text>
       </g>
 
       <line x1="723" y1="158" x2="723" y2="200" stroke="#f472b6" stroke-width="1.5" marker-end="url(#arrowPink)"/>
@@ -150,7 +155,7 @@ import RefTable from '../components/RefTable.astro';
       </g>
       <line x1="510" y1="344" x2="510" y2="370" stroke="#2dd4bf" stroke-width="1.5" marker-end="url(#arrowTeal)"/>
 
-      <g class="pn" data-tip="Unified 11-stage ingestion pipeline: download, rename, markdown conversion (6-tier cascade), embed (Voyage 2048d), enrich (CrossRef/Semantic Scholar), analyze (41 questions via LLM), RAPTOR summaries, verify, Drive upload, Zotero catalog, Slack report." style="cursor:pointer" transform="translate(440,373)">
+      <g class="pn" data-tip={`Unified 11-stage ingestion pipeline: download, rename, markdown conversion (6-tier cascade), embed (Voyage 2048d), enrich (CrossRef/Semantic Scholar), analyze (${c.semanticQuestionCount} questions via LLM), RAPTOR summaries, verify, Drive upload, Zotero catalog, Slack report.`} style="cursor:pointer" transform="translate(440,373)">
         <rect width="140" height="50" fill="url(#nodeGrad)" stroke="#2dd4bf" stroke-width="1.5"/>
         <text x="70" y="19" text-anchor="middle" fill="#2dd4bf" font-size="10" font-weight="700">corpus-ingest</text>
         <text x="70" y="33" text-anchor="middle" fill="#94a3b8" font-size="8">Unified pipeline</text>
@@ -158,11 +163,11 @@ import RefTable from '../components/RefTable.astro';
       </g>
       <line x1="510" y1="423" x2="510" y2="470" stroke="#2dd4bf" stroke-width="1.5" marker-end="url(#arrowTeal)"/>
 
-      <g class="pn" data-tip="Vector database holding ~2,200 papers with 48 embedding dimensions per document (each 2048d via Voyage), 154K text chunks, 41 semantic analysis dimensions, 29 topic clusters, and 11,570 pre-computed similarity pairs." style="cursor:pointer" transform="translate(435,473)">
+      <g class="pn" data-tip={`Vector database holding ${approx(c.paperCount)} papers with ${c.embeddingDimsPerDoc} embedding dimensions per document (each 2048d via Voyage), ${fmt(c.chunkCount)} text chunks, ${c.semanticQuestionCount} semantic analysis dimensions, ${c.clusterCount} topic clusters, and ${fmt(c.similarityPairCount)} pre-computed similarity pairs.`} style="cursor:pointer" transform="translate(435,473)">
         <rect width="150" height="52" fill="url(#nodeGrad)" stroke="#2dd4bf" stroke-width="1.5"/>
         <text x="75" y="17" text-anchor="middle" fill="#2dd4bf" font-size="10" font-weight="700">LanceDB Corpus</text>
-        <text x="75" y="31" text-anchor="middle" fill="#94a3b8" font-size="8">~2,200 papers</text>
-        <text x="75" y="43" text-anchor="middle" fill="#64748b" font-size="8">41 semantic dimensions</text>
+        <text x="75" y="31" text-anchor="middle" fill="#94a3b8" font-size="8">{approx(c.paperCount)} papers</text>
+        <text x="75" y="43" text-anchor="middle" fill="#64748b" font-size="8">{c.semanticQuestionCount} semantic dimensions</text>
       </g>
 
       <line x1="510" y1="525" x2="510" y2="555" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
@@ -351,18 +356,18 @@ import RefTable from '../components/RefTable.astro';
       </g>
       <line x1="328" y1="505" x2="328" y2="532" stroke="#2dd4bf" stroke-width="1.2" marker-end="url(#mArrTeal)"/>
 
-      <g class="pn" data-tip="11-stage pipeline: download, rename, markdown conversion, embed, enrich, analyze (41 questions), RAPTOR summaries, verify, Drive upload, Zotero, report." style="cursor:pointer" transform="translate(263,540)">
+      <g class="pn" data-tip={`11-stage pipeline: download, rename, markdown conversion, embed, enrich, analyze (${c.semanticQuestionCount} questions), RAPTOR summaries, verify, Drive upload, Zotero, report.`} style="cursor:pointer" transform="translate(263,540)">
         <rect width="130" height="40" fill="url(#mGrad)" stroke="#2dd4bf" stroke-width="1.2"/>
         <text x="65" y="16" text-anchor="middle" fill="#2dd4bf" font-size="9" font-weight="700">corpus-ingest</text>
         <text x="65" y="28" text-anchor="middle" fill="#94a3b8" font-size="7">11-stage pipeline</text>
       </g>
       <line x1="328" y1="580" x2="328" y2="607" stroke="#2dd4bf" stroke-width="1.2" marker-end="url(#mArrTeal)"/>
 
-      <g class="pn" data-tip="Vector database with ~2,200 papers, 48 embedding dimensions, 154K text chunks, 29 topic clusters, and 11,570 pre-computed similarity pairs." style="cursor:pointer" transform="translate(258,615)">
+      <g class="pn" data-tip={`Vector database with ${approx(c.paperCount)} papers, ${c.embeddingDimsPerDoc} embedding dimensions, ${fmt(c.chunkCount)} text chunks, ${c.clusterCount} topic clusters, and ${fmt(c.similarityPairCount)} pre-computed similarity pairs.`} style="cursor:pointer" transform="translate(258,615)">
         <rect width="140" height="42" fill="url(#mGrad)" stroke="#2dd4bf" stroke-width="1.2"/>
         <text x="70" y="15" text-anchor="middle" fill="#2dd4bf" font-size="9" font-weight="700">LanceDB Corpus</text>
-        <text x="70" y="27" text-anchor="middle" fill="#94a3b8" font-size="7">~2,200 papers</text>
-        <text x="70" y="37" text-anchor="middle" fill="#64748b" font-size="6">41 semantic dimensions</text>
+        <text x="70" y="27" text-anchor="middle" fill="#94a3b8" font-size="7">{approx(c.paperCount)} papers</text>
+        <text x="70" y="37" text-anchor="middle" fill="#64748b" font-size="6">{c.semanticQuestionCount} semantic dimensions</text>
       </g>
       <line x1="328" y1="657" x2="328" y2="684" stroke="#22d3ee" stroke-width="1.2" marker-end="url(#mArrBlue)"/>
 
@@ -424,7 +429,7 @@ import RefTable from '../components/RefTable.astro';
   <div class="line-numbered">
   <p class="lead">A research automation platform built around <strong>Minty</strong>, an AI research management agent running on a dedicated Mac Studio. 17 background daemons <span class="t-cyan">fetch</span>, <span class="t-green">classify</span>, <span class="t-yellow">ingest</span>, <span class="t-purple">index</span>, <span class="t-pink">summarize</span>, and <span class="t-blue">distribute</span> academic content &mdash; plus enable deep multi-agent corpus analysis. Research superpowers, not a replacement for researchers.</p>
 
-  <p>External sources (<span class="t-cyan">Twitter</span>, <span class="t-green">arXiv</span>, <span class="t-yellow">RSS</span>, <span class="t-purple">Substack</span>, <span class="t-pink">Bluesky</span>, <span class="t-blue">email</span>) are fetched, classified by Claude Opus, and posted to Slack. Papers are <span class="t-cyan">downloaded</span>, <span class="t-green">converted to markdown</span>, <span class="t-yellow">embedded</span> in a vector database, <span class="t-purple">analyzed</span> across 41 semantic dimensions, and made <span class="t-pink">searchable</span> via a Slack bot. A daily digest reaches 29 lab members across 11 institutions.</p>
+  <p>External sources (<span class="t-cyan">Twitter</span>, <span class="t-green">arXiv</span>, <span class="t-yellow">RSS</span>, <span class="t-purple">Substack</span>, <span class="t-pink">Bluesky</span>, <span class="t-blue">email</span>) are fetched, classified by Claude Opus, and posted to Slack. Papers are <span class="t-cyan">downloaded</span>, <span class="t-green">converted to markdown</span>, <span class="t-yellow">embedded</span> in a vector database, <span class="t-purple">analyzed</span> across {c.semanticQuestionCount} semantic dimensions, and made <span class="t-pink">searchable</span> via a Slack bot. A daily digest reaches {sub.count} lab members across {sub.institutionCount} institutions.</p>
   </div>
 </Section>
 
@@ -467,10 +472,10 @@ import RefTable from '../components/RefTable.astro';
         <div style="font-size:10px;color:var(--text-3)">PDFs + corpus pipeline</div>
       </div>
       <div class="pf-card" style="border-left:3px solid var(--indigo);cursor:pointer"
-           data-ingest-tip="corpus-agent performs deep semantic analysis on ingested papers: 41 analytical questions, thematic clustering, cross-paper connection mapping."
+           data-ingest-tip={`corpus-agent performs deep semantic analysis on ingested papers: ${c.semanticQuestionCount} analytical questions, thematic clustering, cross-paper connection mapping.`}
            data-ingest-color="#818cf8">
         <div style="font-size:12px;font-weight:700;color:var(--indigo)">Analyse</div>
-        <div style="font-size:10px;color:var(--text-3)">41Q deep analysis</div>
+        <div style="font-size:10px;color:var(--text-3)">{c.semanticQuestionCount}Q deep analysis</div>
       </div>
       <div class="pf-card" style="border-left:3px solid var(--pink);cursor:pointer"
            data-ingest-tip="yesterday-in-ai generates a daily narrative digest for subscribers and posts to #mint-community. A weekly Minty's Week in AI summary is produced for lab meetings."
@@ -646,11 +651,11 @@ import RefTable from '../components/RefTable.astro';
 
   <div class="cards" style="grid-template-columns:repeat(auto-fill, minmax(220px, 1fr))">
     <div class="card" style="border-color:var(--pink);cursor:pointer"
-         data-ingest-tip="Generates a narrative daily digest from yesterday's #firehose posts &mdash; intelligent prose, not a list. Sent as HTML email to 29 lab members across 11 institutions, posted to #mint-community, and published to Ghost. A weekly &lsquo;Minty's Week in AI&rsquo; summary also ships before lab meetings."
+         data-ingest-tip={`Generates a narrative daily digest from yesterday's #firehose posts \u2014 intelligent prose, not a list. Sent as HTML email to ${sub.count} lab members across ${sub.institutionCount} institutions, posted to #mint-community, and published to Ghost. A weekly \u2018Minty's Week in AI\u2019 summary also ships before lab meetings.`}
          data-ingest-color="#f472b6">
       <div class="card-head"><div>
         <div class="card-title" style="color:var(--pink)">yesterday-in-ai</div>
-        <div class="card-sub">Daily narrative digest &rarr; 29 lab members. Weekly summary for lab meetings.</div>
+        <div class="card-sub">Daily narrative digest &rarr; {sub.count} lab members. Weekly summary for lab meetings.</div>
       </div></div>
     </div>
     <div class="card" style="border-color:var(--purple);cursor:pointer"
@@ -662,7 +667,7 @@ import RefTable from '../components/RefTable.astro';
       </div></div>
     </div>
     <div class="card" style="border-color:var(--teal);cursor:pointer"
-         data-ingest-tip="Picks up papers from #firehose and runs the 11-stage ingestion pipeline: download, rename, markdown conversion, chunking, embedding, metadata extraction, cataloguing (Zotero), analysis (41 semantic questions), RAPTOR summaries, clustering, and Google Drive upload. Detailed in &sect;03 below."
+         data-ingest-tip={`Picks up papers from #firehose and runs the 11-stage ingestion pipeline: download, rename, markdown conversion, chunking, embedding, metadata extraction, cataloguing (Zotero), analysis (${c.semanticQuestionCount} semantic questions), RAPTOR summaries, clustering, and Google Drive upload. Detailed in \u00a703 below.`}
          data-ingest-color="#2dd4bf">
       <div class="card-head"><div>
         <div class="card-title" style="color:var(--teal)">corpus-ingest</div>
@@ -679,7 +684,7 @@ import RefTable from '../components/RefTable.astro';
 <!-- ============ CORPUS INGESTION PIPELINE ============ -->
 <Section id="corpus" num="03">
   <h2 class="cli-call" data-section-name="Corpus Ingestion"><span class="section-label">Corpus Ingestion</span><span class="cli-line"><span class="fn">Bash</span><span class="op">(</span><span class="str">"python3 corpus_ingest.py --stages=11"</span><span class="op">)</span><span class="cli-cursor"></span></span></h2>
-  <p>The MINT Lab's intellectual engine: ~2,200 papers on AI safety, ethics, alignment, governance, and capabilities &mdash; all embedded, analyzed, and searchable.</p>
+  <p>The MINT Lab's intellectual engine: {approx(c.paperCount)} papers on AI safety, ethics, alignment, governance, and capabilities &mdash; all embedded, analyzed, and searchable.</p>
 
   <h3>Corpus-Ingest Pipeline Detail</h3>
   <p>Each paper flows through 11 stages in the unified corpus-ingest daemon. The pipeline supports resume from the last completed stage.</p>
@@ -726,7 +731,7 @@ import RefTable from '../components/RefTable.astro';
       <div class="ingest-stage">
         <img class="ingest-dot" src="/mintresearch.org/assets/minty-indigo.png" alt="" style="filter:drop-shadow(0 0 4px rgba(129,140,248,0.5))">
         <div class="ingest-line" style="background:#818cf8"></div>
-        <div class="ingest-box" style="border-color:#818cf8" data-ingest-tip="Generates 2048-dimensional vector embeddings via Voyage AI. Each document receives 48 separate embeddings — one per semantic dimension — enabling multi-lens retrieval. Chunks are also embedded separately for passage-level search." data-ingest-color="#818cf8">
+        <div class="ingest-box" style="border-color:#818cf8" data-ingest-tip={`Generates 2048-dimensional vector embeddings via Voyage AI. Each document receives ${c.embeddingDimsPerDoc} separate embeddings \u2014 one per semantic dimension \u2014 enabling multi-lens retrieval. Chunks are also embedded separately for passage-level search.`} data-ingest-color="#818cf8">
           <span class="ingest-num" style="color:#818cf8">4</span>
           <div class="ingest-info">
             <div class="ingest-name" style="color:#818cf8">Embed</div>
@@ -750,11 +755,11 @@ import RefTable from '../components/RefTable.astro';
       <div class="ingest-stage">
         <img class="ingest-dot" src="/mintresearch.org/assets/minty-purple.png" alt="" style="filter:drop-shadow(0 0 4px rgba(167,139,250,0.5))">
         <div class="ingest-line" style="background:#a78bfa"></div>
-        <div class="ingest-box" style="border-color:#a78bfa" data-ingest-tip="Deep semantic analysis via Claude Opus across 41 questions spanning research core (thesis, claims, evidence), methodology, AI-specific dimensions, meta-analysis, and advanced categories. Each answer becomes a searchable text field with its own 2048d embedding vector." data-ingest-color="#a78bfa">
+        <div class="ingest-box" style="border-color:#a78bfa" data-ingest-tip={`Deep semantic analysis via Claude Opus across ${c.semanticQuestionCount} questions spanning research core (thesis, claims, evidence), methodology, AI-specific dimensions, meta-analysis, and advanced categories. Each answer becomes a searchable text field with its own 2048d embedding vector.`} data-ingest-color="#a78bfa">
           <span class="ingest-num" style="color:#a78bfa">6</span>
           <div class="ingest-info">
             <div class="ingest-name" style="color:#a78bfa">Analyze</div>
-            <div class="ingest-desc">41Q via LLM</div>
+            <div class="ingest-desc">{c.semanticQuestionCount}Q via LLM</div>
           </div>
         </div>
       </div>
@@ -840,15 +845,15 @@ import RefTable from '../components/RefTable.astro';
       <h3>Scale</h3>
       <RefTable>
         <tbody>
-        <tr><td>Papers</td><td><strong>~2,200</strong></td></tr>
-        <tr><td>Text chunks</td><td>154,509 (<code>chunks_md</code> table, markdown-aware)</td></tr>
-        <tr><td>Semantic analyses</td><td>1,744 (41 questions each)</td></tr>
-        <tr><td>RAPTOR summaries</td><td>1,674</td></tr>
-        <tr><td>Topic clusters</td><td>29 (with 114 micro-topics)</td></tr>
-        <tr><td>Embedding dims per doc</td><td>48 (each 2048d Voyage)</td></tr>
-        <tr><td>Total columns</td><td>138 in documents table</td></tr>
-        <tr><td>Pre-computed similarities</td><td>11,570 pairs</td></tr>
-        <tr><td>LanceDB size</td><td>4.3 GB (compacted after markdown chunk migration)</td></tr>
+        <tr><td>Papers</td><td><strong>{approx(c.paperCount)}</strong></td></tr>
+        <tr><td>Text chunks</td><td>{fmt(c.chunkCount)} (<code>chunks_md</code> table, markdown-aware)</td></tr>
+        <tr><td>Semantic analyses</td><td>{fmt(c.semanticAnalysisCount)} ({c.semanticQuestionCount} questions each)</td></tr>
+        <tr><td>RAPTOR summaries</td><td>{fmt(c.raptorSummaryCount)}</td></tr>
+        <tr><td>Topic clusters</td><td>{c.clusterCount} (with {c.microTopicCount} micro-topics)</td></tr>
+        <tr><td>Embedding dims per doc</td><td>{c.embeddingDimsPerDoc} (each 2048d Voyage)</td></tr>
+        <tr><td>Total columns</td><td>{c.schemaColumnCount} in documents table</td></tr>
+        <tr><td>Pre-computed similarities</td><td>{fmt(c.similarityPairCount)} pairs</td></tr>
+        <tr><td>LanceDB size</td><td>{c.lancedbSizeGB} GB (compacted after markdown chunk migration)</td></tr>
         </tbody>
       </RefTable>
     </div>
@@ -858,7 +863,7 @@ import RefTable from '../components/RefTable.astro';
         <li><strong>search-summary</strong> &mdash; RAPTOR summary search (fast, broad)</li>
         <li><strong>search</strong> &mdash; Full-text semantic search (deep)</li>
         <li><strong>search-semantic</strong> &mdash; Argumentative similarity</li>
-        <li><strong>search-dimension qNN</strong> &mdash; 41 semantic dimensions</li>
+        <li><strong>search-dimension qNN</strong> &mdash; {c.semanticQuestionCount} semantic dimensions</li>
         <li><strong>chunks</strong> &mdash; Passage-level search</li>
         <li><strong>similar / similar-by-dim</strong> &mdash; Pre-computed similarity</li>
         <li><strong>Unified search</strong> &mdash; Multi-modal with RRF fusion</li>
@@ -868,8 +873,8 @@ import RefTable from '../components/RefTable.astro';
 
   <div class="ingest-tip" id="ingestTip"></div>
 
-  <h3>41-Question Semantic Analysis</h3>
-  <p>Every paper is analyzed across 41 dimensions, each producing text content and a 2048d embedding vector. Hover any cell to see the full question.</p>
+  <h3>{c.semanticQuestionCount}-Question Semantic Analysis</h3>
+  <p>Every paper is analyzed across {c.semanticQuestionCount} dimensions, each producing text content and a 2048d embedding vector. Hover any cell to see the full question.</p>
 
   <h3 style="font-size:12px;color:var(--mint);margin-top:24px">Research Core</h3>
   <div class="q-grid">
@@ -944,11 +949,11 @@ import RefTable from '../components/RefTable.astro';
     <div class="card no-expand" style="border-color:var(--teal)">
       <div class="card-head">
         <div class="card-icon" style="background:rgba(45,212,191,0.08);color:#2dd4bf">&#x25AA;</div>
-        <div><div class="card-title">Paper Corpus</div><div class="card-sub">LanceDB &bull; ~4.5 GB</div></div>
+        <div><div class="card-title">Paper Corpus</div><div class="card-sub">LanceDB &bull; ~{c.lancedbSizeGB} GB</div></div>
       </div>
       <div style="font-size:12px;color:var(--text-2);padding:8px 12px 12px;line-height:1.5">
-        <div>~2,200 papers &bull; ~155K chunks</div>
-        <div>41 semantic dimensions &bull; 29 clusters</div>
+        <div>{approx(c.paperCount)} papers &bull; ~{Math.round(c.chunkCount / 1000)}K chunks</div>
+        <div>{c.semanticQuestionCount} semantic dimensions &bull; {c.clusterCount} clusters</div>
         <div style="margin-top:6px;color:var(--text-3)"><code style="font-size:10px">Voyage context-3 (2048d)</code></div>
       </div>
     </div>
@@ -991,7 +996,7 @@ import RefTable from '../components/RefTable.astro';
 <!-- ============ THE CORPUS ============ -->
 <Section id="corpus-overview" num="04">
   <h2 class="cli-call" data-section-name="The Corpus"><span class="section-label">The Corpus</span><span class="cli-line"><span class="fn">Glob</span><span class="op">(</span><span class="str">"corpus/**/*.pdf"</span><span class="op">)</span><span class="cli-cursor"></span></span></h2>
-  <p class="lead">A structured research database of ~2,200 papers spanning <span class="t-cyan">AI safety</span>, <span class="t-green">ethics</span>, <span class="t-yellow">alignment</span>, <span class="t-purple">governance</span>, <span class="t-pink">capabilities</span>, and <span class="t-blue">normative theory</span> &mdash; <span class="t-cyan">embedded</span> across 48 vector dimensions, <span class="t-green">analyzed</span> through 41 semantic questions, <span class="t-yellow">organized</span> into 29 clusters, and <span class="t-purple">linked</span> via 11,570 similarity pairs.</p>
+  <p class="lead">A structured research database of {approx(c.paperCount)} papers spanning <span class="t-cyan">AI safety</span>, <span class="t-green">ethics</span>, <span class="t-yellow">alignment</span>, <span class="t-purple">governance</span>, <span class="t-pink">capabilities</span>, and <span class="t-blue">normative theory</span> &mdash; <span class="t-cyan">embedded</span> across {c.embeddingDimsPerDoc} vector dimensions, <span class="t-green">analyzed</span> through {c.semanticQuestionCount} semantic questions, <span class="t-yellow">organized</span> into {c.clusterCount} clusters, and <span class="t-purple">linked</span> via {fmt(c.similarityPairCount)} similarity pairs.</p>
 
   <h3>Composition</h3>
   <p>Over 70% of papers are from 2024&ndash;2026, reflecting the field's growth, with foundational work also well-represented.</p>
@@ -1000,70 +1005,45 @@ import RefTable from '../components/RefTable.astro';
     <div>
       <h3>By Year</h3>
       <div style="display:flex;align-items:flex-end;gap:3px;height:120px;padding:8px 0">
-        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end">
-          <div style="width:100%;background:var(--text-3);border-radius:0;height:8px;opacity:0.5"></div>
-          <span style="font-size:9px;color:var(--text-3);margin-top:4px">&le;'22</span>
-        </div>
-        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end">
-          <div style="width:100%;background:var(--indigo);border-radius:0;height:26px"></div>
-          <span style="font-size:9px;color:var(--text-3);margin-top:4px">'23</span>
-        </div>
-        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end">
-          <div style="width:100%;background:var(--cyan);border-radius:0;height:87px"></div>
-          <span style="font-size:9px;color:var(--text-3);margin-top:4px">'24</span>
-        </div>
-        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end">
-          <div style="width:100%;background:var(--mint);border-radius:0;height:120px"></div>
-          <span style="font-size:9px;color:var(--text-3);margin-top:4px">'25</span>
-        </div>
-        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end">
-          <div style="width:100%;background:var(--amber);border-radius:0;height:25px"></div>
-          <span style="font-size:9px;color:var(--text-3);margin-top:4px">'26</span>
-        </div>
+        {[
+          { val: stats.yearDistribution.pre2023, color: 'var(--text-3)', label: "\u2264'22", opacity: '0.5' },
+          { val: stats.yearDistribution.y2023, color: 'var(--indigo)', label: "'23", opacity: '1' },
+          { val: stats.yearDistribution.y2024, color: 'var(--cyan)', label: "'24", opacity: '1' },
+          { val: stats.yearDistribution.y2025, color: 'var(--mint)', label: "'25", opacity: '1' },
+          { val: stats.yearDistribution.y2026, color: 'var(--amber)', label: "'26", opacity: '1' },
+        ].map((bar) => {
+          const maxVal = Math.max(stats.yearDistribution.pre2023, stats.yearDistribution.y2023, stats.yearDistribution.y2024, stats.yearDistribution.y2025, stats.yearDistribution.y2026);
+          const h = Math.max(4, Math.round((bar.val / maxVal) * 120));
+          return (
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end">
+              <div style={`width:100%;background:${bar.color};border-radius:0;height:${h}px;opacity:${bar.opacity}`}></div>
+              <span style="font-size:9px;color:var(--text-3);margin-top:4px">{bar.label}</span>
+            </div>
+          );
+        })}
       </div>
-      <p style="font-size:11px;color:var(--text-3);text-align:center;margin-top:4px">~170 pre-2023 &bull; 127 in 2023 &bull; 424 in 2024 &bull; 584 in 2025 &bull; 123 in 2026 (YTD)</p>
+      <p style="font-size:11px;color:var(--text-3);text-align:center;margin-top:4px">{stats.yearDistribution.pre2023} pre-2023 &bull; {stats.yearDistribution.y2023} in 2023 &bull; {stats.yearDistribution.y2024} in 2024 &bull; {stats.yearDistribution.y2025} in 2025 &bull; {stats.yearDistribution.y2026} in 2026 (YTD)</p>
     </div>
     <div>
       <h3>Topic Clusters</h3>
-      <p style="font-size:13px">29 clusters via UMAP + HDBSCAN, each with micro-topics. Largest:</p>
+      <p style="font-size:13px">{c.clusterCount} clusters via UMAP + HDBSCAN, each with micro-topics. Largest:</p>
       <RefTable>
         <tbody>
-        <tr><td style="color:var(--cyan)">Autonomous agents &amp; LLM tools</td><td><strong>250</strong></td></tr>
-        <tr><td style="color:var(--mint)">Moral &amp; ethical reasoning</td><td><strong>83</strong></td></tr>
-        <tr><td style="color:var(--amber)">AI safety &amp; governance</td><td><strong>67</strong></td></tr>
-        <tr><td style="color:var(--indigo)">Moral status &amp; emerging tech</td><td><strong>67</strong></td></tr>
-        <tr><td style="color:var(--teal)">AI liability &amp; economic impact</td><td><strong>65</strong></td></tr>
-        <tr><td style="color:var(--purple)">Belief, knowledge &amp; hallucination</td><td><strong>63</strong></td></tr>
-        <tr><td style="color:var(--pink)">Interpretability &amp; alignment</td><td><strong>59</strong></td></tr>
+        {stats.clusters.slice(0, 7).map((cluster, i) => {
+          const colors = ['var(--cyan)', 'var(--mint)', 'var(--amber)', 'var(--indigo)', 'var(--teal)', 'var(--purple)', 'var(--pink)'];
+          return <tr><td style={`color:${colors[i % 7]}`}>{cluster.name}</td><td><strong>{cluster.count}</strong></td></tr>;
+        })}
         </tbody>
       </RefTable>
       <details class="lab-accordion">
-        <summary>Show all 29 clusters</summary>
+        <summary>Show all {c.clusterCount} clusters</summary>
         <div class="accordion-inner">
           <RefTable>
             <tbody>
-            <tr><td style="color:var(--cyan)">LLM evaluation &amp; benchmarks</td><td><strong>55</strong></td></tr>
-            <tr><td style="color:var(--mint)">Democratic AI &amp; public participation</td><td><strong>45</strong></td></tr>
-            <tr><td style="color:var(--amber)">Human-AI collaboration</td><td><strong>42</strong></td></tr>
-            <tr><td style="color:var(--indigo)">Fairness, bias &amp; discrimination</td><td><strong>42</strong></td></tr>
-            <tr><td style="color:var(--teal)">AI regulation &amp; compliance</td><td><strong>41</strong></td></tr>
-            <tr><td style="color:var(--purple)">Military &amp; autonomous weapons</td><td><strong>38</strong></td></tr>
-            <tr><td style="color:var(--pink)">AI risk &amp; existential safety</td><td><strong>37</strong></td></tr>
-            <tr><td style="color:var(--cyan)">Philosophical foundations of AI</td><td><strong>36</strong></td></tr>
-            <tr><td style="color:var(--mint)">Trust &amp; human-AI interaction</td><td><strong>35</strong></td></tr>
-            <tr><td style="color:var(--amber)">Privacy &amp; surveillance</td><td><strong>34</strong></td></tr>
-            <tr><td style="color:var(--indigo)">AI &amp; labor markets</td><td><strong>33</strong></td></tr>
-            <tr><td style="color:var(--teal)">Robotics &amp; embodied AI</td><td><strong>31</strong></td></tr>
-            <tr><td style="color:var(--purple)">Responsible AI development</td><td><strong>29</strong></td></tr>
-            <tr><td style="color:var(--pink)">AI in healthcare</td><td><strong>28</strong></td></tr>
-            <tr><td style="color:var(--cyan)">Generative AI &amp; creativity</td><td><strong>28</strong></td></tr>
-            <tr><td style="color:var(--mint)">Copyright &amp; intellectual property</td><td><strong>27</strong></td></tr>
-            <tr><td style="color:var(--amber)">Political economy of AI</td><td><strong>26</strong></td></tr>
-            <tr><td style="color:var(--indigo)">AI &amp; education</td><td><strong>25</strong></td></tr>
-            <tr><td style="color:var(--teal)">Social media &amp; misinformation</td><td><strong>24</strong></td></tr>
-            <tr><td style="color:var(--purple)">Consciousness &amp; sentience</td><td><strong>23</strong></td></tr>
-            <tr><td style="color:var(--pink)">Environmental &amp; climate AI</td><td><strong>22</strong></td></tr>
-            <tr><td style="color:var(--cyan)">AI &amp; international relations</td><td><strong>20</strong></td></tr>
+            {stats.clusters.slice(7).map((cluster, i) => {
+              const colors = ['var(--cyan)', 'var(--mint)', 'var(--amber)', 'var(--indigo)', 'var(--teal)', 'var(--purple)', 'var(--pink)'];
+              return <tr><td style={`color:${colors[i % 7]}`}>{cluster.name}</td><td><strong>{cluster.count}</strong></td></tr>;
+            })}
             </tbody>
           </RefTable>
         </div>
@@ -1072,25 +1052,27 @@ import RefTable from '../components/RefTable.astro';
   </div>
 
   <h3 style="margin-top:28px">By Discipline</h3>
-  <p style="font-size:13px;color:var(--text-2);margin-bottom:12px">Papers span 15 disciplines.</p>
+  <p style="font-size:13px;color:var(--text-2);margin-bottom:12px">Papers span {c.disciplineCount} disciplines.</p>
   <div style="display:flex;flex-direction:column;gap:6px;margin:12px 0 28px">
-    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--text-2);width:200px;text-align:right;flex-shrink:0">Computer Science &amp; AI</span><div style="height:14px;border-radius:0;background:var(--cyan);width:calc(552/552*100%)"></div><span style="font-size:10px;color:var(--text-3)">552</span></div>
-    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--text-2);width:200px;text-align:right;flex-shrink:0">AI Safety &amp; Alignment</span><div style="height:14px;border-radius:0;background:var(--mint);width:calc(326/552*100%)"></div><span style="font-size:10px;color:var(--text-3)">326</span></div>
-    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--text-2);width:200px;text-align:right;flex-shrink:0">Philosophy</span><div style="height:14px;border-radius:0;background:var(--purple);width:calc(300/552*100%)"></div><span style="font-size:10px;color:var(--text-3)">300</span></div>
-    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--text-2);width:200px;text-align:right;flex-shrink:0">Psychology &amp; Cognitive Science</span><div style="height:14px;border-radius:0;background:var(--indigo);width:calc(124/552*100%)"></div><span style="font-size:10px;color:var(--text-3)">124</span></div>
-    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--text-2);width:200px;text-align:right;flex-shrink:0">Policy &amp; Public Admin</span><div style="height:14px;border-radius:0;background:var(--amber);width:calc(90/552*100%)"></div><span style="font-size:10px;color:var(--text-3)">90</span></div>
-    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--text-2);width:200px;text-align:right;flex-shrink:0">Law &amp; Legal Studies</span><div style="height:14px;border-radius:0;background:var(--pink);width:calc(77/552*100%)"></div><span style="font-size:10px;color:var(--text-3)">77</span></div>
-    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--text-2);width:200px;text-align:right;flex-shrink:0">Economics</span><div style="height:14px;border-radius:0;background:var(--teal);width:calc(74/552*100%)"></div><span style="font-size:10px;color:var(--text-3)">74</span></div>
-    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--text-2);width:200px;text-align:right;flex-shrink:0">AI Ethics &amp; Governance</span><div style="height:14px;border-radius:0;background:var(--mint);width:calc(66/552*100%);opacity:0.7"></div><span style="font-size:10px;color:var(--text-3)">66</span></div>
-    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--text-2);width:200px;text-align:right;flex-shrink:0">Political Science &amp; IR</span><div style="height:14px;border-radius:0;background:var(--amber);width:calc(53/552*100%);opacity:0.7"></div><span style="font-size:10px;color:var(--text-3)">53</span></div>
-    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--text-2);width:200px;text-align:right;flex-shrink:0">Sociology &amp; Social Science</span><div style="height:14px;border-radius:0;background:var(--indigo);width:calc(53/552*100%);opacity:0.7"></div><span style="font-size:10px;color:var(--text-3)">53</span></div>
-    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--text-2);width:200px;text-align:right;flex-shrink:0">HCI</span><div style="height:14px;border-radius:0;background:var(--cyan);width:calc(39/552*100%);opacity:0.6"></div><span style="font-size:10px;color:var(--text-3)">39</span></div>
-    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--text-2);width:200px;text-align:right;flex-shrink:0">STS</span><div style="height:14px;border-radius:0;background:var(--purple);width:calc(30/552*100%);opacity:0.6"></div><span style="font-size:10px;color:var(--text-3)">30</span></div>
-    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--text-2);width:200px;text-align:right;flex-shrink:0">Communication &amp; Media</span><div style="height:14px;border-radius:0;background:var(--pink);width:calc(23/552*100%);opacity:0.6"></div><span style="font-size:10px;color:var(--text-3)">23</span></div>
+    {(() => {
+      const barColors = ['var(--cyan)', 'var(--mint)', 'var(--purple)', 'var(--indigo)', 'var(--amber)', 'var(--pink)', 'var(--teal)'];
+      const maxCount = stats.disciplines[0]?.count || 1;
+      return stats.disciplines.map((disc, i) => {
+        const opacity = i < 7 ? '1' : i < 10 ? '0.7' : '0.6';
+        const color = barColors[i % barColors.length];
+        return (
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:11px;color:var(--text-2);width:200px;text-align:right;flex-shrink:0">{disc.name}</span>
+            <div style={`height:14px;border-radius:0;background:${color};width:calc(${disc.count}/${maxCount}*100%);opacity:${opacity}`}></div>
+            <span style="font-size:10px;color:var(--text-3)">{disc.count}</span>
+          </div>
+        );
+      });
+    })()}
   </div>
 
   <h3 style="margin-top:28px">Cluster Visualization</h3>
-  <p>~2,200 papers projected into 2D via UMAP, coloured by research area. Zoom, pan, and click points to open papers.</p>
+  <p>{approx(c.paperCount)} papers projected into 2D via UMAP, coloured by research area. Zoom, pan, and click points to open papers.</p>
 
   <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:16px 0;position:relative;height:600px">
     <iframe id="cluster-viz" src="" style="width:100%;height:100%;border:none;opacity:0;transition:opacity 0.4s ease"></iframe>
@@ -1112,7 +1094,7 @@ import RefTable from '../components/RefTable.astro';
   <p class="lead">Mention <code>@Minty</code> in <code>#mint-community</code> with a research question to get an interactive menu of search modes.</p>
 
   <div class="cards" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr))">
-    <div class="card" style="border-color:var(--cyan)" data-ingest-tip="Semantic query expansion across 48 embedding dimensions with Reciprocal Rank Fusion. Returns ranked papers with relevance snippets. Uses a warm search server with pre-loaded 4GB LanceDB table for sub-second retrieval." data-ingest-color="#22d3ee">
+    <div class="card" style="border-color:var(--cyan)" data-ingest-tip={`Semantic query expansion across ${c.embeddingDimsPerDoc} embedding dimensions with Reciprocal Rank Fusion. Returns ranked papers with relevance snippets. Uses a warm search server with pre-loaded 4GB LanceDB table for sub-second retrieval.`} data-ingest-color="#22d3ee">
       <div class="card-head">
         <div class="card-icon" style="background:rgba(34,211,238,0.08);color:#22d3ee">&#9889;</div>
         <div><div class="card-title">Fast Search</div><div class="card-sub">~2 min</div></div>
@@ -1211,7 +1193,7 @@ import RefTable from '../components/RefTable.astro';
 <!-- ============ MINTY PERSONA ============ -->
 <Section id="persona" num="06">
   <h2 class="cli-call" data-section-name="The Minty Persona"><span class="section-label">The Minty Persona</span><span class="cli-line"><span class="fn">Read</span><span class="op">(</span><span class="str">"IDENTITY.md"</span><span class="op">)</span><span class="cli-cursor"></span></span></h2>
-  <p>~16,800 words across 21 persona documents. A master <code>CLAUDE.md</code> (2,120 words) sets identity and Iron Laws. Each of the 15 daemons loads its own <code>CLAUDE.md</code> (~10,100 words total), and five subagent definitions (~4,500 words) govern delegated workers. All share core values but adapt to context.</p>
+  <p>~{fmt(stats.persona.totalWords)} words across {stats.persona.documentCount} persona documents. A master <code>CLAUDE.md</code> ({fmt(stats.persona.masterWords)} words) sets identity and Iron Laws. Each of the {stats.persona.daemonCount} daemons loads its own <code>CLAUDE.md</code> (~{fmt(stats.persona.daemonWords)} words total), and {stats.persona.subagentCount} subagent definitions (~{fmt(stats.persona.subagentWords)} words) govern delegated workers. All share core values but adapt to context.</p>
 
   <h3>Core Identity</h3>
   <div class="grid-2" style="margin:16px 0 20px">
@@ -1241,8 +1223,8 @@ import RefTable from '../components/RefTable.astro';
   <h3>Persona Documents</h3>
   <p style="font-size:13px;color:var(--text-2);margin-bottom:12px">Each context loads a tailored <code>CLAUDE.md</code>. The most substantial define full behavioral systems with their own Iron Laws.</p>
   <div class="cards" style="grid-template-columns: repeat(auto-fill, minmax(260px, 1fr))">
-    <div class="card" style="border-color:var(--mint)" data-ingest-tip="The primary interactive persona. 2,120 words defining identity, 8 Iron Laws, metacognitive strategies (explore&rarr;plan&rarr;execute, self-review, dependency analysis, context-poisoning detection), mandatory delegation protocol, writing style guide, and model policy. Loaded at every CLI session start." data-ingest-color="#2ec4b6">
-      <div class="card-head"><div class="card-icon" style="background:rgba(46,196,182,0.08);color:var(--mint)">&gt;_</div><div><div class="card-title">Interactive Session</div><div class="card-sub">2,120 words &middot; Primary</div></div></div>
+    <div class="card" style="border-color:var(--mint)" data-ingest-tip={`The primary interactive persona. ${fmt(stats.persona.masterWords)} words defining identity, 8 Iron Laws, metacognitive strategies (explore\u2192plan\u2192execute, self-review, dependency analysis, context-poisoning detection), mandatory delegation protocol, writing style guide, and model policy. Loaded at every CLI session start.`} data-ingest-color="#2ec4b6">
+      <div class="card-head"><div class="card-icon" style="background:rgba(46,196,182,0.08);color:var(--mint)">&gt;_</div><div><div class="card-title">Interactive Session</div><div class="card-sub">{fmt(stats.persona.masterWords)} words &middot; Primary</div></div></div>
     </div>
     <div class="card" style="border-color:var(--purple)" data-ingest-tip="The richest persona — a research collaborator, not just a search tool. Full intellectual profile, &ldquo;Your Own Views&rdquo; section (content-dependent convictions, AI-ness as a perspective), 8 review quality criteria, minimum 3 iterative search rounds per query, substantive continuous prose with naturally woven citations, and a 3-tier memory system. Occasional acrostics and pithy sign-offs for close readers. Carries its own intellectual commitments specific to the research context: power analysis as a contextual lens (who has power over whom, and is it legitimate?), democratic legitimation of algorithmic governance, the middle ground on AI risks with precision rather than panic, an empiricist approach to LLM capabilities (neither &ldquo;stochastic parrot&rdquo; dismissal nor naive overclaiming), structural over interactional critique, building rather than just critiquing, philosophical precision that travels from concept to code to policy, and multi-disciplinary rigour across CS, legal, and empirical standards." data-ingest-color="#a78bfa">
       <div class="card-head"><div class="card-icon" style="background:rgba(167,139,250,0.08);color:var(--purple)">@</div><div><div class="card-title">Corpus Agent</div><div class="card-sub">2,664 words</div></div></div>
@@ -1262,7 +1244,7 @@ import RefTable from '../components/RefTable.astro';
     <div class="card" style="border-color:var(--pink)" data-ingest-tip="Daily AI news digest writer. Contextual journalism, not punditry — report facts, technical substance, named researchers, where results fit in existing debates. Coherent narrative prose, not bullet points. No editorialising (&ldquo;worryingly&rdquo;, &ldquo;significant&rdquo;), no framing devices, no commentary. Output must start with &lt; and end with &gt; — no preamble." data-ingest-color="#f472b6">
       <div class="card-head"><div class="card-icon" style="background:rgba(244,114,182,0.08);color:var(--pink)">///</div><div><div class="card-title">Yesterday in AI</div><div class="card-sub">277 words</div></div></div>
     </div>
-    <div class="card" style="border-color:var(--indigo)" data-ingest-tip="Five specialised worker personas: corpus-worker (2,153 words — 41-question analysis + RAPTOR summaries), research-reader (931 words — deep paper reading with evidence extraction), raptor-worker (727 words — hierarchical summaries), code-reviewer (566 words — MINT Lab standards), generic-worker (143 words — focused task execution)." data-ingest-color="#818cf8">
+    <div class="card" style="border-color:var(--indigo)" data-ingest-tip={`Five specialised worker personas: corpus-worker (2,153 words \u2014 ${c.semanticQuestionCount}-question analysis + RAPTOR summaries), research-reader (931 words \u2014 deep paper reading with evidence extraction), raptor-worker (727 words \u2014 hierarchical summaries), code-reviewer (566 words \u2014 MINT Lab standards), generic-worker (143 words \u2014 focused task execution).`} data-ingest-color="#818cf8">
       <div class="card-head"><div class="card-icon" style="background:rgba(129,140,248,0.08);color:var(--indigo)">::</div><div><div class="card-title">Subagent Workers</div><div class="card-sub">4,520 words &middot; 5 types</div></div></div>
     </div>
   </div>
@@ -1350,9 +1332,9 @@ import RefTable from '../components/RefTable.astro';
         <div><div class="card-title">yesterday-in-ai</div><div class="card-sub"><span class="tag tag-daily">Daily 05:30</span> <span class="health-ok">&#9679;</span></div></div>
       </div>
       <div class="card-body">
-        <p>Daily AI news digest. Reads <code>#firehose</code>, classifies recency, generates narrative prose via Opus, verifies links, and sends as HTML email to 29 lab members. Also posts to <code>#mint-community</code> and Ghost.</p>
+        <p>Daily AI news digest. Reads <code>#firehose</code>, classifies recency, generates narrative prose via Opus, verifies links, and sends as HTML email to {sub.count} lab members. Also posts to <code>#mint-community</code> and Ghost.</p>
         <div class="detail-row"><span class="detail-label">Models</span><span class="detail-val">Claude Opus (digest generation), Codex (fact-checking &amp; link verification)</span></div>
-        <div class="detail-row"><span class="detail-label">Recipients</span><span class="detail-val">29 lab members across ANU, Johns Hopkins, Stanford, Cambridge, FU Berlin, Harvard Law, Vanderbilt, Oregon State, Michigan, RUC Beijing, RAND</span></div>
+        <div class="detail-row"><span class="detail-label">Recipients</span><span class="detail-val">{sub.count} lab members across ANU, Johns Hopkins, Stanford, Cambridge, FU Berlin, Harvard Law, Vanderbilt, Oregon State, Michigan, RUC Beijing, RAND</span></div>
         <div class="detail-row"><span class="detail-label">Voice</span><span class="detail-val">"Contextual journalism, not punditry" &mdash; reports facts without editorializing</span></div>
         <div class="detail-row"><span class="detail-label">Key files</span><span class="detail-val"><code>yesterday_in_ai.py</code> (2,761 lines)</span></div>
       </div>
@@ -1366,7 +1348,7 @@ import RefTable from '../components/RefTable.astro';
         <div><div class="card-title">corpus-ingest</div><div class="card-sub"><span class="tag tag-persistent">Persistent</span> <span class="health-ok status-pulse">&#9679;</span></div></div>
       </div>
       <div class="card-body">
-        <p>Unified paper ingestion. Monitors <code>#firehose</code> and <code>#papers</code> for PDFs, running a 10-stage pipeline: markdown conversion, embedding, 41Q analysis, RAPTOR summaries, Drive upload, Zotero cataloguing, and Slack reporting.</p>
+        <p>Unified paper ingestion. Monitors <code>#firehose</code> and <code>#papers</code> for PDFs, running a 10-stage pipeline: markdown conversion, embedding, {c.semanticQuestionCount}Q analysis, RAPTOR summaries, Drive upload, Zotero cataloguing, and Slack reporting.</p>
         <div class="detail-row"><span class="detail-label">Models</span><span class="detail-val">Codex gpt-5.2 xhigh (analysis + RAPTOR), Voyage voyage-context-3 2048d (embedding)</span></div>
         <div class="detail-row"><span class="detail-label">Stages</span><span class="detail-val">Pre-check &rarr; Markdown &rarr; Chunk+Embed &rarr; Analyze &rarr; RAPTOR &rarr; Name &rarr; Cite &rarr; Drive &rarr; Write JSON &rarr; Archive &rarr; Zotero</span></div>
         <div class="detail-row"><span class="detail-label">Schedule</span><span class="detail-val">Persistent (KeepAlive, RunAtLoad), polls every 600s</span></div>
@@ -1480,7 +1462,7 @@ import RefTable from '../components/RefTable.astro';
         <li><strong>Daily digest</strong> &mdash; Each morning, a curated summary of yesterday's AI news arrives in your inbox and is posted as a canvas in <code>#mint-community</code> (Yesterday in AI). <a href="#subscribe">Subscribe here</a></li>
         <li><strong>Weekly roundup</strong> &mdash; Each Wednesday, a comprehensive weekly digest is posted as a canvas in <code>#lab-meetings</code> (Minty's Week in AI)</li>
         <li><strong>PDF attachment</strong> &mdash; When papers or articles are shared in <code>#mint-community</code>, PDFs are automatically found, downloaded, and posted as thread replies</li>
-        <li><strong>Corpus ingestion</strong> &mdash; Papers uploaded to <code>#papers</code> are automatically processed into the searchable research corpus (embedding, 41-dimension analysis, Zotero cataloguing)</li>
+        <li><strong>Corpus ingestion</strong> &mdash; Papers uploaded to <code>#papers</code> are automatically processed into the searchable research corpus (embedding, {c.semanticQuestionCount}-dimension analysis, Zotero cataloguing)</li>
       </ul>
     </div>
   </details>
@@ -1591,12 +1573,12 @@ import RefTable from '../components/RefTable.astro';
     </div>
     <div class="card" style="border-color:var(--cyan)">
       <div class="card-head" data-toggle-card="1">
-        <div class="card-icon" style="background:rgba(34,211,238,0.08);color:var(--cyan)">41</div>
+        <div class="card-icon" style="background:rgba(34,211,238,0.08);color:var(--cyan)">{c.semanticQuestionCount}</div>
         <div><div class="card-title">corpus-worker</div><div class="card-sub">Opus</div></div>
       </div>
       <div class="card-body">
         <div class="detail-row"><span class="detail-label">Tools</span><span class="detail-val">Read, Write, Edit, Bash, Glob, Grep</span></div>
-        <p>41-question semantic analysis + RAPTOR summaries. Used in batch processing via <code>/orchestrate</code>.</p>
+        <p>{c.semanticQuestionCount}-question semantic analysis + RAPTOR summaries. Used in batch processing via <code>/orchestrate</code>.</p>
       </div>
     </div>
     <div class="card" style="border-color:var(--indigo)">
@@ -1694,7 +1676,7 @@ import RefTable from '../components/RefTable.astro';
       <RefTable>
         <thead><tr><th>Command</th><th>Purpose</th></tr></thead>
         <tbody>
-          <tr><td><code>/corpus</code></td><td>Deep 41-question semantic paper analysis</td></tr>
+          <tr><td><code>/corpus</code></td><td>Deep {c.semanticQuestionCount}-question semantic paper analysis</td></tr>
           <tr><td><code>/orchestrate</code></td><td>Spawn 20 parallel corpus-workers for batch analysis</td></tr>
           <tr><td><code>/raptor</code></td><td>Spawn 20 parallel raptor-workers for summaries</td></tr>
           <tr><td><code>/research</code></td><td>Deep review pipeline over paper corpus (4-phase: search, readers, synthesis, QA)</td></tr>
@@ -1824,7 +1806,7 @@ import RefTable from '../components/RefTable.astro';
 
   <h3 style="margin-top:20px">LLM &amp; Embedding</h3>
   <div class="cards" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr))">
-    <div class="card" style="border-color:var(--indigo)" data-ingest-tip="Primary model for all substantive work. Powers classification (16 parallel workers), corpus analysis (41 semantic questions), daily digest generation, deep literature reviews, and all agent reasoning. Used via CLI subscription with per-account daily rate limits." data-ingest-color="#818cf8">
+    <div class="card" style="border-color:var(--indigo)" data-ingest-tip={`Primary model for all substantive work. Powers classification (16 parallel workers), corpus analysis (${c.semanticQuestionCount} semantic questions), daily digest generation, deep literature reviews, and all agent reasoning. Used via CLI subscription with per-account daily rate limits.`} data-ingest-color="#818cf8">
       <div class="card-head"><div><div class="card-title">Claude Opus</div><div class="card-sub">Default model for all substantive work: analysis, classification, code generation, writing. Via CLI subscription.</div></div></div>
     </div>
     <div class="card" style="border-color:var(--indigo)" data-ingest-tip="Used for retrieval-only tasks that don't require deep reasoning: fetching data, reading and reporting file contents, searching indexes, checking daemon health, status collection. Reduces compute costs without sacrificing quality on mechanical tasks." data-ingest-color="#818cf8">
@@ -1833,7 +1815,7 @@ import RefTable from '../components/RefTable.astro';
     <div class="card" style="border-color:var(--indigo)" data-ingest-tip="OpenAI models used as secondary LLMs. GPT-5.2 handles code review, corpus analysis enrichment, fact-checking, and link verification in the deep review pipeline. Spark (lightweight variant) for cheaper tasks like markdown cleanup." data-ingest-color="#818cf8">
       <div class="card-head"><div><div class="card-title">Codex GPT-5.2 / Spark</div><div class="card-sub">Code review, corpus analysis, enrichment, fact-checking, link verification. Spark for lighter tasks.</div></div></div>
     </div>
-    <div class="card" style="border-color:var(--indigo)" data-ingest-tip="Voyage AI embedding models. context-3 produces 2048-dimensional vectors for the paper corpus (48 separate embeddings per document across semantic dimensions). voyage-3 produces 1024d vectors for Slack message and workspace file indexing." data-ingest-color="#818cf8">
+    <div class="card" style="border-color:var(--indigo)" data-ingest-tip={`Voyage AI embedding models. context-3 produces 2048-dimensional vectors for the paper corpus (${c.embeddingDimsPerDoc} separate embeddings per document across semantic dimensions). voyage-3 produces 1024d vectors for Slack message and workspace file indexing.`} data-ingest-color="#818cf8">
       <div class="card-head"><div><div class="card-title">Voyage context-3 / voyage-3</div><div class="card-sub">Embedding models: context-3 (2048d) for paper corpus, voyage-3 (1024d) for Slack messages.</div></div></div>
     </div>
   </div>
@@ -1843,8 +1825,8 @@ import RefTable from '../components/RefTable.astro';
     <div class="card" style="border-color:var(--green)" data-ingest-tip="Central communication hub. Three bot tokens (Minty for corpus search, minty-search for indexing, feedme for content pipeline). Socket Mode for real-time events (messages, reactions, mentions), Web API for posting. 6+ monitored channels including #firehose, #mint-community, #minty-inbox." data-ingest-color="#4ade80">
       <div class="card-head"><div><div class="card-title">Slack</div><div class="card-sub">3 bots (Minty, minty-search, feedme), 6+ monitored channels. Socket Mode for real-time, Web API for posting.</div></div></div>
     </div>
-    <div class="card" style="border-color:var(--green)" data-ingest-tip="Two accounts: work (seth@mintresearch.org) for interactive sessions, personal (sethlazar@gmail.com) for daemon operations. OAuth2 with separate client credentials. Handles daily digest delivery to 29 lab members and automated agent correspondence." data-ingest-color="#4ade80">
-      <div class="card-head"><div><div class="card-title">Gmail</div><div class="card-sub">Daily digest delivery to 29 lab members. Agent inbox for automated correspondence.</div></div></div>
+    <div class="card" style="border-color:var(--green)" data-ingest-tip={`Two accounts: work (seth@mintresearch.org) for interactive sessions, personal (sethlazar@gmail.com) for daemon operations. OAuth2 with separate client credentials. Handles daily digest delivery to ${sub.count} lab members and automated agent correspondence.`} data-ingest-color="#4ade80">
+      <div class="card-head"><div><div class="card-title">Gmail</div><div class="card-sub">Daily digest delivery to {sub.count} lab members. Agent inbox for automated correspondence.</div></div></div>
     </div>
     <div class="card" style="border-color:var(--green)" data-ingest-tip="Self-hosted Ghost CMS instance powering mintresearch.org. Hosts the lab website, blog, and email newsletter platform. Runs locally on port 2368, exposed to the internet via Cloudflare Tunnel. Yesterday in AI posts are published here daily." data-ingest-color="#4ade80">
       <div class="card-head"><div><div class="card-title">Ghost CMS</div><div class="card-sub">newsletter.mintresearch.org &mdash; blog and email newsletter platform via Cloudflare Tunnel.</div></div></div>
@@ -1934,6 +1916,9 @@ import RefTable from '../components/RefTable.astro';
 
 </main>
 
+<script define:vars={{ _statsForSearch: { paperCount: c.paperCount, chunkCount: c.chunkCount, clusterCount: c.clusterCount, lancedbSizeGB: c.lancedbSizeGB, semanticQuestionCount: c.semanticQuestionCount, subscriberCount: sub.count, institutionCount: sub.institutionCount } }}>
+  window.__mintStats = _statsForSearch;
+</script>
 <script is:inline>
 // ===== Shared tooltip positioning helper =====
 function clampTip(tip, anchorRect, containerSel) {
@@ -2152,14 +2137,17 @@ function switchTab(e, id) {
 }
 
 // ===== Search =====
+var _s = window.__mintStats || {};
+var _approx = function(n) { return '~' + (Math.round(n / 100) * 100).toLocaleString(); };
+var _fmt = function(n) { return n.toLocaleString(); };
 const searchData = [
   {t:'feedme-daily',d:'Daily content curation: fetch, classify, rank from 7 sources',tag:'Daemon',c:'#38bdf8',s:'#daemons'},
   {t:'feed-promote',d:'Copy thumbsed-up items from #feed to #firehose',tag:'Daemon',c:'#4ade80',s:'#daemons'},
   {t:'share-to-minty',d:'Real-time URL ingestion from any device via Slack',tag:'Daemon',c:'#fb923c',s:'#daemons'},
   {t:'news-pdf-bot',d:'Find PDFs and generate markdown for paper URLs in #mint-community',tag:'Daemon',c:'#a78bfa',s:'#daemons'},
-  {t:'yesterday-in-ai',d:'Daily AI news digest to 29 lab members across 11 institutions',tag:'Daemon',c:'#f472b6',s:'#daemons'},
+  {t:'yesterday-in-ai',d:'Daily AI news digest to ' + _s.subscriberCount + ' lab members across ' + _s.institutionCount + ' institutions',tag:'Daemon',c:'#f472b6',s:'#daemons'},
   {t:'last-week-in-ai',d:'Weekly AI digest with multi-agent sectioned pipeline',tag:'Daemon',c:'#f472b6',s:'#daemons'},
-  {t:'corpus-agent (@Minty)',d:'Slack bot: 7 modes (Fast Search, Fast Review, Deep Review, Conversation, List Previous, News, Catch Me Up), ~2,200-paper corpus',tag:'Daemon',c:'#38bdf8',s:'#corpus-search'},
+  {t:'corpus-agent (@Minty)',d:'Slack bot: 7 modes (Fast Search, Fast Review, Deep Review, Conversation, List Previous, News, Catch Me Up), ' + _approx(_s.paperCount) + '-paper corpus',tag:'Daemon',c:'#38bdf8',s:'#corpus-search'},
   {t:'corpus-ingest-local',d:'Overnight batch processor: 8 workers, 10-stage pipeline, active 20:15-07:45 AEDT',tag:'Daemon',c:'#2dd4bf',s:'#daemons'},
   {t:'corpus-ingest-slack',d:'Daytime real-time Slack ingestion: 2 workers, active 08:00-20:00 AEDT',tag:'Daemon',c:'#2dd4bf',s:'#daemons'},
   {t:'corpus-ingest-writer',d:'Serialized LanceDB writer: eliminates concurrent write conflicts, always on',tag:'Daemon',c:'#2dd4bf',s:'#daemons'},
@@ -2171,12 +2159,12 @@ const searchData = [
   {t:'CLAUDE.md',d:'Master agent instructions, Iron Laws, strategies',tag:'Config',c:'#fbbf24',s:'#overview'},
   {t:'session_db.py',d:'SQLite session tracking with FTS5 search',tag:'Script',c:'#fb923c',s:'#agents'},
   {t:'platform_config.py',d:'Cross-platform paths, secrets, env helpers for daemons',tag:'Script',c:'#fb923c',s:'#agents'},
-  {t:'LanceDB',d:'Vector DB: ~2,200 papers, ~155K chunks, 29 topic clusters, ~4.5 GB',tag:'Database',c:'#2dd4bf',s:'#corpus'},
+  {t:'LanceDB',d:'Vector DB: ' + _approx(_s.paperCount) + ' papers, ~' + Math.round(_s.chunkCount / 1000) + 'K chunks, ' + _s.clusterCount + ' topic clusters, ~' + _s.lancedbSizeGB + ' GB',tag:'Database',c:'#2dd4bf',s:'#corpus'},
   {t:'ChromaDB (Slack)',d:'Indexed Slack messages, refreshed every 4 hours',tag:'Database',c:'#818cf8',s:'#agents'},
   {t:'ChromaDB (Workspace)',d:'Indexed workspace files, refreshed daily',tag:'Database',c:'#818cf8',s:'#agents'},
   {t:'/start',d:'Initialize session with git sync, UUID, parallel briefing',tag:'Command',c:'#4ade80',s:'#agents'},
   {t:'/end',d:'Close session: reflection, delegate closure, git push',tag:'Command',c:'#4ade80',s:'#agents'},
-  {t:'/corpus',d:'Deep 41-question semantic paper analysis',tag:'Command',c:'#4ade80',s:'#agents'},
+  {t:'/corpus',d:'Deep ' + _s.semanticQuestionCount + '-question semantic paper analysis',tag:'Command',c:'#4ade80',s:'#agents'},
   {t:'/orchestrate',d:'Spawn 20 parallel corpus-workers for batch analysis',tag:'Command',c:'#4ade80',s:'#agents'},
   {t:'/research',d:'Deep review pipeline over paper corpus (4-phase: search, readers, synthesis, QA)',tag:'Command',c:'#4ade80',s:'#agents'},
   {t:'/maintain',d:'Infrastructure health check across 12 categories',tag:'Command',c:'#4ade80',s:'#agents'},
@@ -2185,7 +2173,7 @@ const searchData = [
   {t:'Corpus Tools',d:'Search, paper retrieval, analysis, RAPTOR summaries, similarity, topics, dimensions + GitHub repo exploration',tag:'Architecture',c:'#38bdf8',s:'#agents'},
   {t:'Parallel Reading',d:'Papers split into top-tier (Codex xhigh, ~3 papers, 6 readers) and summary-tier (Codex medium, batches of 20) -- all readers run in parallel',tag:'Architecture',c:'#fbbf24',s:'#agents'},
   {t:'Ingest Pipeline',d:'3-daemon system: ingest-local (8 workers overnight) + ingest-slack (2 workers daytime) + writer (serialized DB). 11-stage per-paper pipeline.',tag:'Architecture',c:'#2dd4bf',s:'#corpus'},
-  {t:'41-Question Analysis',d:'Semantic analysis across research core, methodology, AI-specific, meta, advanced',tag:'Corpus',c:'#2dd4bf',s:'#corpus'},
+  {t:_s.semanticQuestionCount + '-Question Analysis',d:'Semantic analysis across research core, methodology, AI-specific, meta, advanced',tag:'Corpus',c:'#2dd4bf',s:'#corpus'},
   {t:'RAPTOR Summaries',d:'Hierarchical summaries: document + section level per paper',tag:'Corpus',c:'#2dd4bf',s:'#corpus'},
   {t:'Iron Laws',d:'Foundational rules: No Shortcuts, Evidence Over Claims, Persistence, etc.',tag:'Policy',c:'#f87171',s:'#agents'},
   {t:'block-rm.py',d:'Hook: hard-blocks rm/shred/unlink, forces trash CLI',tag:'Hook',c:'#fb923c',s:'#agents'},
@@ -2193,7 +2181,7 @@ const searchData = [
   {t:'Slack #firehose',d:'Automated hub channel: 2 daemons write, 3 daemons read',tag:'Channel',c:'#fbbf24',s:'#pipeline'},
   {t:'Slack #mint-community',d:'Human discussion channel: daily digest, lab Q&A, news sharing',tag:'Channel',c:'#4ade80',s:'#pipeline'},
   {t:'generic-worker',d:'General-purpose subagent for delegated tasks (Opus)',tag:'Agent',c:'#fb923c',s:'#agents'},
-  {t:'corpus-worker',d:'41-question analysis + RAPTOR summaries per paper (Opus)',tag:'Agent',c:'#fb923c',s:'#agents'},
+  {t:'corpus-worker',d:_s.semanticQuestionCount + '-question analysis + RAPTOR summaries per paper (Opus)',tag:'Agent',c:'#fb923c',s:'#agents'},
   {t:'research-reader',d:'Deep paper reading with evidence-grounded analysis (Opus)',tag:'Agent',c:'#fb923c',s:'#agents'},
   {t:'openclaw-browser',d:'Browser automation via OpenClaw CLI with persistent authentication',tag:'Skill',c:'#818cf8',s:'#agents'},
   {t:'OpenAI Codex CLI',d:'LLM backend for analysis, verification, and agentic search in corpus-ingest, yesterday-in-ai, slack-search',tag:'Integration',c:'#fbbf24',s:'#integrations'},
