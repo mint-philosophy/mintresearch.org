@@ -2030,24 +2030,24 @@ function makeDraggable(tip) {
 })();
 
 // ===== Hover/tap tooltips (ingest stages, corpus search cards, etc.) =====
+// Simplified: single global click handler, no IIFE scope issues.
 (function() {
   var tip = document.getElementById('ingestTip');
   if (!tip) return;
-  var isTouch = 'ontouchstart' in window;
-  var activeEl = null;
   makeDraggable(tip);
+  var activeEl = null;
 
-  document.querySelectorAll('[data-ingest-tip]').forEach(function(el) {
-    if (!isTouch) {
-      el.addEventListener('mouseenter', function(e) {
+  // Desktop hover (non-touch only)
+  if (!('ontouchstart' in window)) {
+    document.querySelectorAll('[data-ingest-tip]').forEach(function(el) {
+      el.addEventListener('mouseenter', function() {
         tip.innerHTML = this.getAttribute('data-ingest-tip');
         tip.style.borderColor = this.getAttribute('data-ingest-color') || 'var(--mint)';
         tip.classList.add('visible');
         activeEl = this;
       });
       el.addEventListener('mousemove', function(e) {
-        var x = e.clientX + 14;
-        var y = e.clientY + 14;
+        var x = e.clientX + 14, y = e.clientY + 14;
         if (x + 350 > window.innerWidth) x = window.innerWidth - 360;
         if (x < 10) x = 10;
         if (y + 100 > window.innerHeight) y = e.clientY - 80;
@@ -2058,40 +2058,40 @@ function makeDraggable(tip) {
         tip.classList.remove('visible');
         activeEl = null;
       });
+    });
+  }
+
+  // Universal click handler — works on both touch AND mouse as fallback.
+  document.addEventListener('click', function(e) {
+    // Ignore clicks on the tip itself (for dragging)
+    if (tip.contains(e.target)) return;
+
+    var target = e.target.closest('[data-ingest-tip]');
+
+    // Clicked outside any tooltip target — dismiss
+    if (!target) {
+      if (activeEl) { tip.classList.remove('visible'); activeEl = null; }
+      return;
     }
 
-  });
+    // Clicked the same target — toggle off
+    if (activeEl === target && tip.classList.contains('visible')) {
+      tip.classList.remove('visible');
+      activeEl = null;
+      return;
+    }
 
-  // Click delegation for tooltips — works for both touch and mouse.
-  // Uses document-level delegation so taps on child elements (e.g.
-  // .card-head inside .card[data-ingest-tip]) still trigger the tooltip.
-  document.addEventListener('click', function(e) {
-      var target = e.target.closest('[data-ingest-tip]');
-      // Dismiss if tapping outside any tooltip element
-      if (!target && !tip.contains(e.target)) {
-        if (activeEl) {
-          tip.classList.remove('visible');
-          activeEl = null;
-        }
-        return;
-      }
-      if (!target) return;
-      // Toggle off if tapping same element
-      if (activeEl === target && tip.classList.contains('visible')) {
-        tip.classList.remove('visible');
-        activeEl = null;
-        return;
-      }
-      tip.innerHTML = target.getAttribute('data-ingest-tip');
-      tip.style.borderColor = target.getAttribute('data-ingest-color') || 'var(--mint)';
-      var elRect = target.getBoundingClientRect();
-      var section = target.closest('section');
-      var ar = {left: elRect.left, right: elRect.right, top: elRect.top, bottom: elRect.bottom, width: elRect.width, height: elRect.height};
-      ar._container = section ? section.getBoundingClientRect() : null;
-      tip.classList.add('visible');
-      requestAnimationFrame(function() { clampTip(tip, ar); });
-      activeEl = target;
-    });
+    // Show tooltip
+    tip.innerHTML = target.getAttribute('data-ingest-tip');
+    tip.style.borderColor = target.getAttribute('data-ingest-color') || 'var(--mint)';
+    var r = target.getBoundingClientRect();
+    var sec = target.closest('section');
+    var ar = {left:r.left, right:r.right, top:r.top, bottom:r.bottom, width:r.width, height:r.height};
+    ar._container = sec ? sec.getBoundingClientRect() : null;
+    tip.classList.add('visible');
+    requestAnimationFrame(function() { clampTip(tip, ar); });
+    activeEl = target;
+  }, true);  // useCapture=true — fires BEFORE any other click handlers
 })();
 
 // Mobile menu is handled by BaseLayout.astro — no duplicate listeners here.
