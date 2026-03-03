@@ -1890,6 +1890,19 @@ import RefTable from '../components/RefTable.astro';
   </div>
 </Section>
 
+<!-- ============ MINTY GAME ============ -->
+<section id="minty-game" class="no-brackets" style="text-align:center;padding:48px 24px;max-width:780px">
+  <h2 style="justify-content:center;font-size:14px;letter-spacing:1px;color:var(--text-3);margin-bottom:4px">BUILD THE CORPUS</h2>
+  <p style="color:var(--text-3);font-size:12px;margin-bottom:16px">Catch papers. Dodge spam. Arrow keys or drag to move.</p>
+  <div style="position:relative;width:100%;max-width:720px;margin:0 auto">
+    <canvas id="corpusGame" style="width:100%;background:var(--bg-0);border:1px dashed var(--border);cursor:none;image-rendering:pixelated" width="720" height="400"></canvas>
+    <div id="gameOverlay" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(10,10,10,0.85);cursor:pointer;transition:opacity 0.3s">
+      <div style="font-size:11px;color:var(--accent);letter-spacing:1px;margin-bottom:8px">&#x25B6; CLICK TO START</div>
+      <div style="font-size:10px;color:var(--text-3)">Arrow keys / drag to move &bull; catch papers, dodge spam</div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ SUBSCRIBE ============ -->
 <section id="subscribe" class="no-brackets" style="text-align:center;padding:48px;max-width:700px">
   <span class="section-num" style="opacity:0.3">&#10022;</span>
@@ -2375,6 +2388,391 @@ document.getElementById('subscribe-form').addEventListener('submit', function(e)
     dot.style.top = (rect.top + rect.height / 2 - 2) + 'px';
     document.body.appendChild(dot);
   });
+})();
+
+// ===== Build the Corpus mini-game =====
+(function() {
+  var canvas = document.getElementById('corpusGame');
+  var overlay = document.getElementById('gameOverlay');
+  if (!canvas || !overlay) return;
+  var ctx = canvas.getContext('2d');
+  var W = 720, H = 400;
+  var dpr = window.devicePixelRatio || 1;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  // Colors matching site
+  var COL = {
+    bg: '#0a0a0a', hud: '#5c6370', hudBright: '#abb2bf', accent: '#2ec4b6',
+    paper: '#2dd4bf', paperAlt: '#818cf8', spam: '#e06c75', spamAlt: '#f5a623',
+    platform: '#222222', platformBorder: 'rgba(46,196,182,0.4)',
+    flash: 'rgba(46,196,182,0.15)', shakeFlash: 'rgba(224,108,117,0.12)'
+  };
+
+  // Load Minty sprites
+  var mintyColors = ['teal', 'green', 'purple', 'indigo', 'yellow'];
+  var sprites = {};
+  var spritesLoaded = 0;
+  var basePath = document.querySelector('link[rel="icon"]');
+  // Detect base path from existing asset references
+  var bp = '';
+  var existingImg = document.querySelector('img[src*="minty-"]');
+  if (existingImg) {
+    var src = existingImg.getAttribute('src');
+    bp = src.substring(0, src.lastIndexOf('/') + 1);
+  } else {
+    bp = '/assets/';
+  }
+  mintyColors.forEach(function(c) {
+    var img = new Image();
+    img.src = bp + 'minty-' + c + '.png';
+    img.onload = function() { spritesLoaded++; };
+    sprites[c] = img;
+  });
+
+  // Game state
+  var state = 'idle'; // idle | playing | win
+  var score = 0, spam = 0, missed = 0, targetScore = 50;
+  var platformX = W / 2, platformW = 120, platformY = H - 52;
+  var items = [];
+  var particles = [];
+  var shakeTimer = 0, flashTimer = 0, flashColor = COL.flash;
+  var speed = 1, spawnTimer = 0, elapsed = 0;
+  var keysDown = {};
+  var dragActive = false, dragStartX = 0, dragPlatformStart = 0;
+  var winTimer = 0;
+
+  // Paper labels
+  var paperLabels = [
+    'Lazar 2024', 'AI Safety', 'Alignment', 'LLM Ethics', 'Governance',
+    'Normative AI', 'Agent Risk', 'Calibration', 'Interpretability',
+    'Democracy+AI', 'Model Welfare', 'arXiv:2406', 'Capabilities',
+    'Value Lock-in', 'AI Policy', 'Political AI', 'Benchmark', 'RLHF',
+    'Constitutional AI', 'Scalable Oversight', 'Corrigibility', 'Evals',
+    'AI Economics', 'Progress', 'Philosophy', 'Anthropic', 'DeepMind',
+    'Risk Assessment', 'Frontier Safety', 'Sycophancy'
+  ];
+  var spamLabels = [
+    'crypto', 'hype', 'ethics-slop', 'marketing', 'webinar invite',
+    'culture war', 'celebrity AI', 'NFT x AI', 'vaporware', 'spam',
+    'engagement bait', 'hot take', 'AI doomer porn'
+  ];
+
+  function randomPick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function spawnItem() {
+    var isSpam = Math.random() < 0.25;
+    items.push({
+      x: 30 + Math.random() * (W - 60),
+      y: -20,
+      w: isSpam ? 70 : 80,
+      h: 18,
+      vy: (0.8 + Math.random() * 0.6) * speed,
+      vx: (Math.random() - 0.5) * 0.3,
+      spam: isSpam,
+      label: isSpam ? randomPick(spamLabels) : randomPick(paperLabels),
+      rot: (Math.random() - 0.5) * 0.1
+    });
+  }
+
+  function spawnParticles(x, y, color, count) {
+    for (var i = 0; i < count; i++) {
+      particles.push({
+        x: x, y: y,
+        vx: (Math.random() - 0.5) * 3,
+        vy: -Math.random() * 2 - 1,
+        life: 30 + Math.random() * 20,
+        maxLife: 50,
+        color: color,
+        size: 2 + Math.random() * 2
+      });
+    }
+  }
+
+  function update(dt) {
+    if (state !== 'playing') return;
+    elapsed += dt;
+    speed = 1 + elapsed / 30000; // gradually speed up
+
+    // Spawn
+    spawnTimer -= dt;
+    if (spawnTimer <= 0) {
+      spawnItem();
+      spawnTimer = Math.max(400, 1200 - elapsed / 50);
+    }
+
+    // Platform movement
+    var moveSpeed = 5;
+    if (keysDown['ArrowLeft'] || keysDown['a']) platformX -= moveSpeed;
+    if (keysDown['ArrowRight'] || keysDown['d']) platformX += moveSpeed;
+    platformX = Math.max(platformW / 2, Math.min(W - platformW / 2, platformX));
+
+    // Items
+    for (var i = items.length - 1; i >= 0; i--) {
+      var it = items[i];
+      it.y += it.vy;
+      it.x += it.vx;
+
+      // Catch check
+      if (it.y + it.h >= platformY && it.y <= platformY + 20) {
+        if (it.x + it.w / 2 > platformX - platformW / 2 && it.x - it.w / 2 < platformX + platformW / 2) {
+          if (it.spam) {
+            spam++;
+            shakeTimer = 12;
+            flashTimer = 8; flashColor = COL.shakeFlash;
+            spawnParticles(it.x, it.y, COL.spam, 6);
+          } else {
+            score++;
+            flashTimer = 6; flashColor = COL.flash;
+            spawnParticles(it.x, it.y, COL.paper, 8);
+            if (score >= targetScore) {
+              state = 'win'; winTimer = 0;
+              // Burst of particles
+              for (var c = 0; c < 5; c++) {
+                spawnParticles(W / 2 + (Math.random() - 0.5) * 300, H / 2, ['#2ec4b6','#818cf8','#f472b6','#2dd4bf','#fbbf24'][c], 15);
+              }
+            }
+          }
+          items.splice(i, 1);
+          continue;
+        }
+      }
+
+      // Fell off screen
+      if (it.y > H + 20) {
+        if (!it.spam) missed++;
+        items.splice(i, 1);
+      }
+    }
+
+    // Particles
+    for (var p = particles.length - 1; p >= 0; p--) {
+      var pt = particles[p];
+      pt.x += pt.vx; pt.y += pt.vy;
+      pt.vy += 0.08;
+      pt.life--;
+      if (pt.life <= 0) particles.splice(p, 1);
+    }
+
+    // Timers
+    if (shakeTimer > 0) shakeTimer--;
+    if (flashTimer > 0) flashTimer--;
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Shake offset
+    var sx = shakeTimer > 0 ? (Math.random() - 0.5) * 4 : 0;
+    var sy = shakeTimer > 0 ? (Math.random() - 0.5) * 4 : 0;
+    ctx.save();
+    ctx.translate(sx, sy);
+
+    // Background
+    ctx.fillStyle = COL.bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Flash overlay
+    if (flashTimer > 0) {
+      ctx.fillStyle = flashColor;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    // Grid lines (subtle)
+    ctx.strokeStyle = 'rgba(255,255,255,0.02)';
+    ctx.lineWidth = 1;
+    for (var gx = 0; gx < W; gx += 40) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
+    for (var gy = 0; gy < H; gy += 40) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke(); }
+
+    // HUD
+    ctx.font = '11px "JetBrains Mono", monospace';
+    ctx.fillStyle = COL.hud;
+    ctx.textAlign = 'left';
+    ctx.fillText('CORPUS: ', 12, 18);
+    ctx.fillStyle = COL.accent;
+    ctx.fillText(score + '/' + targetScore, 72, 18);
+    ctx.fillStyle = COL.hud;
+    ctx.fillText('SPAM BLOCKED: ' + spam, 160, 18);
+    ctx.fillText('MISSED: ' + missed, 340, 18);
+
+    // Progress bar
+    var barX = 460, barW = 240, barH = 8, barY = 11;
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.strokeRect(barX, barY, barW, barH);
+    var fill = Math.min(score / targetScore, 1);
+    if (fill > 0) {
+      ctx.fillStyle = COL.accent;
+      ctx.globalAlpha = 0.6;
+      ctx.fillRect(barX + 1, barY + 1, (barW - 2) * fill, barH - 2);
+      ctx.globalAlpha = 1;
+    }
+
+    // Separator line
+    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(0, 28); ctx.lineTo(W, 28); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Falling items
+    items.forEach(function(it) {
+      ctx.save();
+      ctx.translate(it.x, it.y);
+      ctx.rotate(it.rot);
+      var hw = it.w / 2, hh = it.h / 2;
+      ctx.fillStyle = it.spam ? 'rgba(224,108,117,0.12)' : 'rgba(45,212,191,0.08)';
+      ctx.fillRect(-hw, -hh, it.w, it.h);
+      ctx.strokeStyle = it.spam ? COL.spam : (it.label.indexOf('arXiv') >= 0 ? COL.paperAlt : COL.paper);
+      ctx.lineWidth = 1;
+      ctx.setLineDash(it.spam ? [2, 2] : []);
+      ctx.strokeRect(-hw, -hh, it.w, it.h);
+      ctx.setLineDash([]);
+      ctx.font = '9px "JetBrains Mono", monospace';
+      ctx.fillStyle = it.spam ? COL.spam : COL.hudBright;
+      ctx.textAlign = 'center';
+      ctx.fillText(it.label, 0, 3);
+      ctx.restore();
+    });
+
+    // Platform
+    var px = platformX - platformW / 2;
+    ctx.fillStyle = COL.platform;
+    ctx.fillRect(px, platformY, platformW, 6);
+    ctx.strokeStyle = COL.platformBorder;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 3]);
+    ctx.strokeRect(px, platformY, platformW, 6);
+    ctx.setLineDash([]);
+
+    // Minties on platform
+    var mintySize = 28;
+    var spacing = platformW / (mintyColors.length + 1);
+    mintyColors.forEach(function(c, idx) {
+      var mx = px + spacing * (idx + 1) - mintySize / 2;
+      var my = platformY - mintySize + 2;
+      if (sprites[c] && sprites[c].complete) {
+        ctx.drawImage(sprites[c], mx, my, mintySize, mintySize * (128/115));
+      }
+    });
+
+    // Particles
+    particles.forEach(function(pt) {
+      ctx.globalAlpha = pt.life / pt.maxLife;
+      ctx.fillStyle = pt.color;
+      ctx.fillRect(pt.x - pt.size / 2, pt.y - pt.size / 2, pt.size, pt.size);
+    });
+    ctx.globalAlpha = 1;
+
+    // Win state
+    if (state === 'win') {
+      winTimer++;
+      var alpha = Math.min(winTimer / 30, 0.85);
+      ctx.fillStyle = 'rgba(10,10,10,' + alpha + ')';
+      ctx.fillRect(0, 0, W, H);
+      if (winTimer > 20) {
+        ctx.font = '16px "JetBrains Mono", monospace';
+        ctx.fillStyle = COL.accent;
+        ctx.textAlign = 'center';
+        ctx.fillText('CORPUS COMPLETE!', W / 2, H / 2 - 20);
+        ctx.font = '11px "JetBrains Mono", monospace';
+        ctx.fillStyle = COL.hudBright;
+        ctx.fillText(score + ' papers ingested, ' + spam + ' spam blocked, ' + missed + ' missed', W / 2, H / 2 + 8);
+        ctx.fillStyle = COL.hud;
+        ctx.fillText('click to play again', W / 2, H / 2 + 32);
+      }
+    }
+
+    ctx.restore(); // shake
+  }
+
+  var lastTime = 0;
+  function gameLoop(t) {
+    var dt = lastTime ? t - lastTime : 16;
+    lastTime = t;
+    if (dt > 100) dt = 16; // tab-away guard
+    update(dt);
+    draw();
+    requestAnimationFrame(gameLoop);
+  }
+
+  function startGame() {
+    state = 'playing';
+    score = 0; spam = 0; missed = 0;
+    items = []; particles = [];
+    speed = 1; spawnTimer = 0; elapsed = 0;
+    shakeTimer = 0; flashTimer = 0;
+    platformX = W / 2;
+    overlay.style.opacity = '0';
+    overlay.style.pointerEvents = 'none';
+  }
+
+  overlay.addEventListener('click', function() {
+    startGame();
+  });
+
+  canvas.addEventListener('click', function() {
+    if (state === 'win') startGame();
+  });
+
+  // Keyboard
+  document.addEventListener('keydown', function(e) {
+    if (state !== 'playing') return;
+    keysDown[e.key] = true;
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') e.preventDefault();
+  });
+  document.addEventListener('keyup', function(e) { keysDown[e.key] = false; });
+
+  // Mouse drag
+  canvas.addEventListener('mousedown', function(e) {
+    if (state !== 'playing') return;
+    dragActive = true;
+    var rect = canvas.getBoundingClientRect();
+    var scale = W / rect.width;
+    dragStartX = e.clientX * scale;
+    dragPlatformStart = platformX;
+  });
+  document.addEventListener('mousemove', function(e) {
+    if (!dragActive) return;
+    var rect = canvas.getBoundingClientRect();
+    var scale = W / rect.width;
+    platformX = dragPlatformStart + (e.clientX * scale - dragStartX);
+    platformX = Math.max(platformW / 2, Math.min(W - platformW / 2, platformX));
+  });
+  document.addEventListener('mouseup', function() { dragActive = false; });
+
+  // Touch
+  canvas.addEventListener('touchstart', function(e) {
+    if (state === 'idle') { startGame(); e.preventDefault(); return; }
+    if (state === 'win') { startGame(); e.preventDefault(); return; }
+    if (state !== 'playing') return;
+    dragActive = true;
+    var rect = canvas.getBoundingClientRect();
+    var scale = W / rect.width;
+    dragStartX = e.touches[0].clientX * scale;
+    dragPlatformStart = platformX;
+    e.preventDefault();
+  }, {passive: false});
+  canvas.addEventListener('touchmove', function(e) {
+    if (!dragActive) return;
+    var rect = canvas.getBoundingClientRect();
+    var scale = W / rect.width;
+    platformX = dragPlatformStart + (e.touches[0].clientX * scale - dragStartX);
+    platformX = Math.max(platformW / 2, Math.min(W - platformW / 2, platformX));
+    e.preventDefault();
+  }, {passive: false});
+  canvas.addEventListener('touchend', function() { dragActive = false; });
+
+  // Only run game loop when visible
+  var gameVisible = false;
+  var gameObserver = new IntersectionObserver(function(entries) {
+    gameVisible = entries[0].isIntersecting;
+  }, { threshold: 0.1 });
+  gameObserver.observe(canvas);
+
+  // Initial draw
+  draw();
+
+  // Start loop
+  requestAnimationFrame(gameLoop);
 })();
 
 // ===== Token counter (scroll-based output token estimate) =====
