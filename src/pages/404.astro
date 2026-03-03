@@ -1,20 +1,118 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <BaseLayout title="404 — Not Found">
 
 <main>
-<section class="hero" id="not-found" style="padding-top: 60px;">
-  <img src={`${import.meta.env.BASE_URL}assets/minty-cool.png`} alt="Sunglasses Minty" style="width: 120px; height: 120px; image-rendering: pixelated; margin-bottom: 24px;" />
-  <h1 style="font-size: 48px; color: var(--red);">404</h1>
-  <p class="subtitle" style="margin-top: 12px;">
-    <span style="color: var(--red);">bash: </span>page not found
-  </p>
-  <p style="color: var(--text-3); font-size: 12px; margin-top: 24px;">
-    <span style="color: var(--green);">$</span> cd <a href={import.meta.env.BASE_URL} style="color: var(--accent);">/home</a>
-  </p>
+<section class="hero" id="not-found" style="padding: 60px 24px 48px; position: relative; overflow: hidden;">
+
+  <!-- Scanline overlay -->
+  <div class="scanlines"></div>
+
+  <div class="four-oh-four-wrap">
+    <img src={`${base}/assets/wireframe-squid.png`} alt="" class="four-oh-four-squid" />
+
+    <div class="four-oh-four-terminal">
+      <div class="term-line"><span class="t-green">seth@mint</span><span class="t-text3">:</span><span class="t-cyan">~</span><span class="t-text3">$</span> <span class="t-text1">curl mintresearch.org<span class="t-text3">/this-page</span></span></div>
+      <div class="term-line term-blank">&nbsp;</div>
+      <div class="term-line"><span class="t-red">Error 404</span><span class="t-text3">: Not Found</span></div>
+      <div class="term-line"><span class="t-text3">The requested resource does not exist on this server.</span></div>
+      <div class="term-line"><span class="t-text3">Maybe Minty ate it.</span></div>
+      <div class="term-line term-blank">&nbsp;</div>
+      <div class="term-line"><span class="t-green">seth@mint</span><span class="t-text3">:</span><span class="t-cyan">~</span><span class="t-text3">$</span> <span class="t-text1">cd <a href={`${base}/`} class="term-link">/home</a></span><span class="term-cursor"></span></div>
+    </div>
+  </div>
+
 </section>
 </main>
+
+<style>
+  .four-oh-four-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .four-oh-four-squid {
+    width: 180px;
+    height: auto;
+    opacity: 0.7;
+    filter: drop-shadow(0 0 20px rgba(46, 196, 182, 0.3));
+    animation: squidFloat 4s ease-in-out infinite;
+  }
+
+  @keyframes squidFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .four-oh-four-terminal {
+    width: 100%;
+    max-width: 520px;
+    background: rgba(10, 10, 10, 0.8);
+    border: 1px dashed var(--border);
+    padding: 20px 24px;
+    text-align: left;
+  }
+
+  .term-line {
+    font-size: 13px;
+    line-height: 1.8;
+    white-space: nowrap;
+  }
+
+  .term-blank { line-height: 0.8; }
+
+  .t-green { color: var(--green); }
+  .t-cyan { color: var(--cyan); }
+  .t-red { color: var(--red); font-weight: 700; }
+  .t-text1 { color: var(--text-1); }
+  .t-text3 { color: var(--text-3); }
+
+  .term-link {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--accent);
+  }
+  .term-link:hover {
+    color: var(--accent-bright);
+    border-color: var(--accent-bright);
+  }
+
+  .term-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: var(--accent);
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: blink 1s step-end infinite;
+  }
+
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 2px,
+      rgba(0, 0, 0, 0.15) 2px,
+      rgba(0, 0, 0, 0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  @media (max-width: 500px) {
+    .four-oh-four-squid { width: 120px; }
+    .term-line { font-size: 11px; }
+    .four-oh-four-terminal { padding: 14px 16px; }
+  }
+</style>
 
 </BaseLayout>
