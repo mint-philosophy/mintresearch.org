@@ -2776,35 +2776,6 @@ document.getElementById('subscribe-form').addEventListener('submit', function(e)
   requestAnimationFrame(gameLoop);
 })();
 
-// ===== Token counter (scroll-based output token estimate) =====
-// Deferred: tokenDisplay is in BaseLayout statusline which renders AFTER this script
-document.addEventListener('DOMContentLoaded', function() {
-  var tokenEl = document.getElementById('tokenDisplay');
-  var main = document.querySelector('main');
-  if (!tokenEl || !main) return;
-  var totalChars = main.textContent.length;
-  var lastToken = 0;
-  function updateTokens() {
-    var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    if (docHeight <= 0) return;
-    var ratio = Math.min(scrollTop / docHeight, 1);
-    var tokens = Math.round((totalChars * ratio) / 4);
-    if (tokens !== lastToken) {
-      lastToken = tokens;
-      tokenEl.innerHTML = '<span class="arrow">\u2193</span> ' + tokens.toLocaleString() + ' tokens';
-    }
-  }
-  var ticking = false;
-  window.addEventListener('scroll', function() {
-    if (!ticking) {
-      requestAnimationFrame(function() { updateTokens(); ticking = false; });
-      ticking = true;
-    }
-  });
-  updateTokens();
-});
-
-// Section indicator removed — statusline handles current section display.
+// Token counter now handled by BaseLayout statusline.
 </script>
 </BaseLayout>
