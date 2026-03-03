@@ -31,6 +31,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
   <Sidebar currentPath={currentPath} />
 
+  <!-- Sidebar collapse toggle (desktop only) -->
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">«</button>
+
   <!-- Top Banner -->
   <div class="top-banner">
     <div class="top-banner-inner">
@@ -84,6 +87,18 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           overlay?.classList.remove('open');
         }
       });
+    });
+
+    // Sidebar collapse toggle (desktop)
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    if (localStorage.getItem('sidebar-collapsed') === '1') {
+      document.body.classList.add('sidebar-collapsed');
+      if (sidebarToggle) sidebarToggle.textContent = '»';
+    }
+    sidebarToggle?.addEventListener('click', () => {
+      const collapsed = document.body.classList.toggle('sidebar-collapsed');
+      if (sidebarToggle) sidebarToggle.textContent = collapsed ? '»' : '«';
+      localStorage.setItem('sidebar-collapsed', collapsed ? '1' : '0');
     });
 
     // Search overlay
@@ -221,6 +236,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           // Keep the Minty cursor blinking at the end — don't remove it
           typing = false;
           typed = true;
+          // Start delayed SVG animations now that title has finished
+          document.querySelectorAll('[data-anim-delayed] animate, [data-anim-delayed] animateTransform').forEach(el => {
+            try { (el as any).beginElement(); } catch (_) {}
+          });
           if (heroSub) {
             const subText = heroSub.getAttribute('data-typing-sub') || '';
             setTimeout(() => typeElement(heroSub, subText, 28), 300);
