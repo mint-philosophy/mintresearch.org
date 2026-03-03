@@ -1,4 +1,11 @@
 
+## 2026-03-03 | Lab-Minty-273d6c8e
+
+**Work**: Fixed paper map fonts by patching datamapplot source library (`datamap.js` line 183: `fontFamily = "Roboto"` -> `"JetBrains Mono"`). Regenerated map twice from Python with terminal styling baked into `create_paper_map.py` (border-radius:0, ANSI colors, teal accents, JetBrains Mono throughout). Applied terminal design to filter panel CSS in source.
+**Decisions**: Patching generated HTML was futile -- every regeneration re-inlined Roboto from the library default. Fixed at source in the venv. SDF rendering disabled (`fontSettings: {sdf: false}`) to use Canvas 2D text which respects fontFamily.
+**State**: Live with JetBrains Mono. datamapplot venv patch will be lost on upgrade -- needs fork or post-install script.
+**Session**: `7031c6af-7a01-44fe-b9a0-e3ce273d6c8e`
+
 ## 2026-03-02 | TerMinty-97e1fac9
 
 **Work**: Recovered hung session c0ca2e6b via SpecStory API. Re-clustered full corpus (1891 to 1996 papers, 28 clusters) using fixed `recluster_corpus.py`. Eliminated "Other" category (21 micro-topics reassigned). Added discipline classification (15 buckets). Built interactive filter panel with 3-way toggle (Research Areas / Both / Disciplines). Backfilled 113 embeddings. Queued 139 papers for 41q/RAPTOR re-ingestion via corpus-ingest.
