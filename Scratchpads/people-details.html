@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>People — Roles & Disciplines</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'SF Mono', 'JetBrains Mono', monospace; background: #0a0a0a; color: #abb2bf; padding: 24px; font-size: 13px; }
+  h1 { color: #2ec4b6; font-size: 18px; margin-bottom: 4px; }
+  .subtitle { color: #5c6370; margin-bottom: 20px; font-size: 12px; }
+  h2 { color: #f5a623; font-size: 14px; margin: 24px 0 8px; border-bottom: 1px dashed #222; padding-bottom: 4px; }
+  .summary { padding: 10px 14px; background: #111; border: 1px dashed #2ec4b6; font-size: 12px; margin-bottom: 16px; }
+  .summary span { color: #2ec4b6; font-weight: 600; }
+
+  .person-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 10px; border-bottom: 1px solid #151515;
+    flex-wrap: wrap;
+  }
+  .person-row:hover { background: #151515; }
+  .person-row.complete { opacity: 0.5; }
+  .person-name { color: #d4d4d4; font-weight: 600; min-width: 180px; font-size: 13px; }
+  .current-info { color: #5c6370; font-size: 10px; min-width: 140px; }
+  .current-info em { color: #818cf8; font-style: normal; }
+
+  .tag-group { display: flex; gap: 3px; flex-wrap: wrap; }
+  .tag-group.roles { margin-right: 8px; }
+
+  .tag {
+    display: inline-block; padding: 2px 8px; font-size: 10px; cursor: pointer;
+    border: 1px solid #222; color: #5c6370; transition: all 0.15s;
+    user-select: none; font-family: inherit;
+  }
+  .tag:hover { border-color: #444; }
+  .tag.selected { color: #0a0a0a; font-weight: 700; }
+
+  /* Role colors */
+  .tag[data-type="role"].selected { background: #2ec4b6; border-color: #2ec4b6; }
+
+  /* Discipline colors */
+  .tag[data-val="Philosophy"].selected { background: #818cf8; border-color: #818cf8; }
+  .tag[data-val="Computer Science"].selected { background: #22d3ee; border-color: #22d3ee; }
+  .tag[data-val="Psychology"].selected { background: #f472b6; border-color: #f472b6; }
+  .tag[data-val="Political Science"].selected { background: #f59e0b; border-color: #f59e0b; }
+  .tag[data-val="Law"].selected { background: #e06c75; border-color: #e06c75; }
+  .tag[data-val="Economics"].selected { background: #98c379; border-color: #98c379; }
+  .tag[data-val="Cognitive Science"].selected { background: #c678dd; border-color: #c678dd; }
+  .tag[data-val="Linguistics"].selected { background: #56b6c2; border-color: #56b6c2; }
+  .tag[data-val="Statistics"].selected { background: #d19a66; border-color: #d19a66; }
+  .tag[data-val="STS"].selected { background: #61afef; border-color: #61afef; }
+
+  .section-label { color: #5c6370; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; margin-right: 4px; }
+
+  .actions { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; }
+  button { font-family: inherit; font-size: 12px; padding: 8px 16px; cursor: pointer; border: 1px dashed; background: #1a1a1a; }
+  #exportBtn { color: #2ec4b6; border-color: #2ec4b6; }
+  #exportBtn:hover { background: #2ec4b6; color: #0a0a0a; }
+  #copyBtn { color: #818cf8; border-color: #818cf8; }
+  #copyBtn:hover { background: #818cf8; color: #0a0a0a; }
+  #clearBtn { color: #e06c75; border-color: #e06c75; }
+  #clearBtn:hover { background: #e06c75; color: #0a0a0a; }
+  #output { margin-top: 16px; padding: 12px; background: #111; border: 1px solid #222; white-space: pre-wrap; font-size: 11px; display: none; color: #abb2bf; max-height: 500px; overflow-y: auto; }
+  .copied { color: #98c379 !important; border-color: #98c379 !important; }
+</style>
+</head>
+<body>
+
+<h1>People — Roles & Disciplines</h1>
+<div class="subtitle">Click tags to assign. Roles apply to Team only. Disciplines apply to everyone. Selections persist in localStorage.</div>
+
+<div class="summary">Done: <span id="countDone">0</span> / <span id="countTotal">0</span> &nbsp;|&nbsp; Team needs role + discipline &nbsp;|&nbsp; Affiliates need discipline only</div>
+
+<h2>Team</h2>
+<div id="team"></div>
+
+<h2>Affiliates</h2>
+<div id="affiliates"></div>
+
+<div class="actions">
+  <button id="exportBtn">Export decisions</button>
+  <button id="copyBtn">Copy to clipboard</button>
+  <button id="clearBtn">Clear all</button>
+</div>
+<pre id="output"></pre>
+
+<script>
+const roles = ['Research Assistant','PhD Student','Research Fellow','Research Engineer','Visiting Student','Visiting Fellow'];
+const disciplines = ['Philosophy','Computer Science','Psychology','Political Science','Law','Economics','Cognitive Science','Linguistics','Statistics','STS'];
+
+const people = [
+  // Team — need role + discipline
+  {s:'team', name:'Seth Lazar', curRole:'Principal Investigator', curDisc:'Philosophy', locked:true},
+  {s:'team', name:'Daniel Kilov', curRole:'Research Fellow', curDisc:'Philosophy, Cybernetics'},
+  {s:'team', name:'Caroline Hendy', curRole:'Research Assistant', curDisc:null},
+  {s:'team', name:'Secil Yanik Guyot', curRole:'Research Officer', curDisc:null},
+  {s:'team', name:'Jake Stone', curRole:'Research Assistant, PhD', curDisc:'Philosophy'},
+  {s:'team', name:'Andrew Smart', curRole:'PhD Student', curDisc:'Philosophy'},
+  {s:'team', name:'Jennifer Munt', curRole:'PhD Student', curDisc:'Philosophy'},
+  {s:'team', name:'Tim Dubber', curRole:'PhD Student', curDisc:'Philosophy'},
+  {s:'team', name:'Zhihe (Vincent) Zhang', curRole:'PhD Student', curDisc:'Philosophy'},
+  {s:'team', name:'Iman Ferestade', curRole:'PhD Student', curDisc:'Philosophy'},
+  {s:'team', name:'Theo Murray', curRole:'Research Officer', curDisc:'Philosophy'},
+  {s:'team', name:'Cameron Pattison', curRole:null, curDisc:'Philosophy'},
+  {s:'team', name:'ChunYan (CY)', curRole:null, curDisc:null},
+  {s:'team', name:'Sichao Li', curRole:null, curDisc:null},
+  {s:'team', name:'Ned Howells-Whitaker', curRole:null, curDisc:null},
+  {s:'team', name:'Lorenzo Manuali', curRole:null, curDisc:null},
+  {s:'team', name:'Angelica Chowdhury', curRole:null, curDisc:null},
+  {s:'team', name:'Kira Breithaupt', curRole:null, curDisc:null},
+  {s:'team', name:'Elena Ajayi', curRole:null, curDisc:null},
+  {s:'team', name:'Charis Yang', curRole:null, curDisc:null},
+  // Affiliates — discipline only
+  {s:'affiliates', name:'Aaron Snoswell', curDisc:null},
+  {s:'affiliates', name:'Roberta Fischli', curDisc:'Philosophy'},
+  {s:'affiliates', name:'Michael Bennett', curDisc:null},
+  {s:'affiliates', name:'Syed AbuMusab', curDisc:'Philosophy'},
+  {s:'affiliates', name:'Luke Thorburn', curDisc:null},
+  {s:'affiliates', name:'Ninell Oldenburg', curDisc:'Philosophy'},
+  {s:'affiliates', name:'Michael Barnes', curDisc:'Philosophy'},
+  {s:'affiliates', name:'Kangyu (KY) Wang', curDisc:null},
+  {s:'affiliates', name:'Beba Cibralic', curDisc:'Philosophy, Industry'},
+  {s:'affiliates', name:'Sina Fazelpour', curDisc:null},
+  {s:'team', name:'Lena Wang', curRole:'Visiting Student', curDisc:null},
+  {s:'affiliates', name:'Bec Johnson', curDisc:null},
+  {s:'affiliates', name:'Noam Kolt', curDisc:'Law'},
+  {s:'affiliates', name:'Ned Cooper', curDisc:null},
+  {s:'affiliates', name:'Nick Schuster', curDisc:'Philosophy'},
+  {s:'affiliates', name:'Sean Donahue', curDisc:'Philosophy'},
+  {s:'affiliates', name:'David Thorstad', curDisc:'Philosophy'},
+  {s:'team', name:'Changbai Li', curRole:'Visiting Student', curDisc:null},
+  {s:'affiliates', name:'Henrik Kugelberg', curDisc:'Philosophy'},
+  {s:'affiliates', name:'Luise Mueller', curDisc:'Philosophy'},
+  {s:'affiliates', name:'Jen Semler', curDisc:'Philosophy'},
+  {s:'affiliates', name:'Paul de Font-Reaulx', curDisc:null},
+  {s:'affiliates', name:'Sayash Kapoor', curDisc:null},
+  {s:'affiliates', name:'Matt Boulos', curDisc:null},
+  {s:'affiliates', name:'Tiziano Piccardi', curDisc:null},
+  {s:'team', name:'Noah Birnbaum', curRole:'Visiting Student', curDisc:null},
+  {s:'affiliates', name:'Simon Taylor', curDisc:null},
+  {s:'affiliates', name:'Elsa Kugelberg', curDisc:'Philosophy'},
+  {s:'team', name:'Abbas Bagwala', curRole:'Visiting Student', curDisc:null},
+  {s:'team', name:'Shira Gur Arieh', curRole:'Visiting Student', curDisc:null},
+  {s:'affiliates', name:'Tiberio Caetano', curDisc:'Computer Science'},
+  {s:'affiliates', name:'Kimberlee Weatherall', curDisc:'Law'},
+  {s:'affiliates', name:'Iason Gabriel', curDisc:'Philosophy, CS'},
+  {s:'affiliates', name:'Jacqueline Harding', curDisc:'Philosophy'},
+  {s:'affiliates', name:'Anton Leicht', curDisc:'Philosophy'},
+  {s:'affiliates', name:'Anna Leshinskaya', curDisc:'Cognitive Science', isNew:true},
+  {s:'affiliates', name:'Sydney Levine', curDisc:'Cognitive Science', isNew:true},
+  {s:'affiliates', name:'Xinyue Xu', curDisc:null, isNew:true},
+];
+
+const saved = JSON.parse(localStorage.getItem('people-details') || '{}');
+
+function getSaved(name) { return saved[name] || {}; }
+function setSaved(name, key, val) {
+  if (!saved[name]) saved[name] = {};
+  saved[name][key] = val;
+  localStorage.setItem('people-details', JSON.stringify(saved));
+  updateCounts();
+}
+function clearSaved(name, key) {
+  if (saved[name]) { delete saved[name][key]; if (!Object.keys(saved[name]).length) delete saved[name]; }
+  localStorage.setItem('people-details', JSON.stringify(saved));
+  updateCounts();
+}
+
+function updateCounts() {
+  let done = 0, total = 0;
+  people.forEach(p => {
+    if (p.locked) return;
+    const s = getSaved(p.name);
+    const isTeam = p.s === 'team';
+    const needsRole = isTeam && !p.curRole;
+    const needsDisc = !p.curDisc;
+    if (needsRole || needsDisc) total++;
+    const hasRole = !needsRole || s.role;
+    const hasDisc = !needsDisc || (s.disciplines && s.disciplines.length);
+    if (hasRole && hasDisc) done++;
+  });
+  document.getElementById('countDone').textContent = done;
+  document.getElementById('countTotal').textContent = total;
+}
+
+people.forEach((p, i) => {
+  const container = document.getElementById(p.s);
+  if (!container) return;
+
+  const row = document.createElement('div');
+  row.className = 'person-row';
+  if (p.locked) { row.style.opacity = '0.35'; row.style.fontStyle = 'italic'; }
+
+  // Name
+  const nameEl = document.createElement('div');
+  nameEl.className = 'person-name';
+  nameEl.textContent = p.name;
+  if (p.isNew) nameEl.innerHTML += ' <span style="color:#98c379;font-size:9px;font-weight:400">NEW</span>';
+  row.appendChild(nameEl);
+
+  // Current info
+  const curEl = document.createElement('div');
+  curEl.className = 'current-info';
+  const parts = [];
+  if (p.curRole) parts.push('<em>' + p.curRole + '</em>');
+  if (p.curDisc) parts.push(p.curDisc);
+  curEl.innerHTML = parts.length ? parts.join(' · ') : '<span style="color:#e06c75">needs info</span>';
+  row.appendChild(curEl);
+
+  if (p.locked) { container.appendChild(row); return; }
+
+  const s = getSaved(p.name);
+
+  // Role tags (team only, only if no current role)
+  if (p.s === 'team' && !p.curRole) {
+    const roleGroup = document.createElement('div');
+    roleGroup.className = 'tag-group roles';
+    const label = document.createElement('span');
+    label.className = 'section-label';
+    label.textContent = 'Role:';
+    roleGroup.appendChild(label);
+    roles.forEach(r => {
+      const tag = document.createElement('span');
+      tag.className = 'tag' + (s.role === r ? ' selected' : '');
+      tag.dataset.type = 'role';
+      tag.textContent = r;
+      tag.addEventListener('click', () => {
+        if (s.role === r) { clearSaved(p.name, 'role'); tag.classList.remove('selected'); }
+        else {
+          roleGroup.querySelectorAll('.tag').forEach(t => t.classList.remove('selected'));
+          setSaved(p.name, 'role', r); tag.classList.add('selected');
+        }
+      });
+      roleGroup.appendChild(tag);
+    });
+    row.appendChild(roleGroup);
+  }
+
+  // Discipline tags (everyone without full discipline info)
+  if (!p.curDisc || p.curDisc === null) {
+    const discGroup = document.createElement('div');
+    discGroup.className = 'tag-group';
+    const label = document.createElement('span');
+    label.className = 'section-label';
+    label.textContent = 'Disc:';
+    discGroup.appendChild(label);
+    const selectedDiscs = s.disciplines || [];
+    disciplines.forEach(d => {
+      const tag = document.createElement('span');
+      tag.className = 'tag' + (selectedDiscs.includes(d) ? ' selected' : '');
+      tag.dataset.type = 'disc';
+      tag.dataset.val = d;
+      tag.textContent = d;
+      tag.addEventListener('click', () => {
+        let cur = getSaved(p.name).disciplines || [];
+        if (cur.includes(d)) { cur = cur.filter(x => x !== d); tag.classList.remove('selected'); }
+        else { cur.push(d); tag.classList.add('selected'); }
+        setSaved(p.name, 'disciplines', cur);
+      });
+      discGroup.appendChild(tag);
+    });
+    row.appendChild(discGroup);
+  }
+
+  container.appendChild(row);
+});
+
+updateCounts();
+
+document.getElementById('exportBtn').addEventListener('click', async () => {
+  const out = document.getElementById('output');
+  let text = '# People Details\n\n';
+
+  text += '## Team\n';
+  people.filter(p => p.s === 'team').forEach(p => {
+    const s = getSaved(p.name);
+    const role = s.role || p.curRole || '';
+    const disc = (s.disciplines && s.disciplines.length) ? s.disciplines.join(', ') : (p.curDisc || '');
+    text += `- ${p.name} | ${role} | ${disc}\n`;
+  });
+
+  text += '\n## Affiliates\n';
+  people.filter(p => p.s === 'affiliates').forEach(p => {
+    const s = getSaved(p.name);
+    const disc = (s.disciplines && s.disciplines.length) ? s.disciplines.join(', ') : (p.curDisc || '');
+    text += `- ${p.name} | ${disc}\n`;
+  });
+
+  out.textContent = text;
+  out.style.display = 'block';
+
+  // Write to file so Minty can read it directly
+  try {
+    const blob = new Blob([text], {type: 'text/plain'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'people-export.md';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    const btn = document.getElementById('exportBtn');
+    btn.textContent = 'Exported! (downloaded as people-export.md)';
+    btn.style.color = '#98c379'; btn.style.borderColor = '#98c379';
+    setTimeout(() => { btn.textContent = 'Export decisions'; btn.style.color = ''; btn.style.borderColor = ''; }, 3000);
+  } catch(e) {}
+});
+
+document.getElementById('copyBtn').addEventListener('click', () => {
+  const out = document.getElementById('output');
+  if (out.style.display === 'none') document.getElementById('exportBtn').click();
+  navigator.clipboard.writeText(out.textContent).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy to clipboard'; btn.classList.remove('copied'); }, 2000);
+  });
+});
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  if (!confirm('Clear all selections?')) return;
+  localStorage.removeItem('people-details');
+  location.reload();
+});
+</script>
+</body>
+</html>

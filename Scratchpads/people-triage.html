@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>People Triage</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'SF Mono', 'JetBrains Mono', monospace; background: #0a0a0a; color: #abb2bf; padding: 24px; font-size: 13px; }
+  h1 { color: #2ec4b6; font-size: 18px; margin-bottom: 4px; }
+  .subtitle { color: #5c6370; margin-bottom: 24px; font-size: 12px; }
+  h2 { color: #f5a623; font-size: 14px; margin: 24px 0 8px; border-bottom: 1px dashed #222; padding-bottom: 4px; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+  th { text-align: left; padding: 6px 8px; color: #5c6370; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #222; }
+  td { padding: 5px 8px; border-bottom: 1px solid #151515; }
+  tr:hover { background: #151515; }
+  tr.settled { opacity: 0.4; }
+  tr.settled td { font-style: italic; }
+  .name { color: #d4d4d4; font-weight: 600; }
+  .msgs { color: #2ec4b6; text-align: right; font-variant-numeric: tabular-nums; }
+  .current { color: #5c6370; font-size: 11px; }
+  .current.new { color: #e06c75; font-weight: 600; }
+  .radio-group { display: flex; gap: 2px; }
+  .radio-group label {
+    display: block; padding: 3px 8px; font-size: 10px; cursor: pointer;
+    border: 1px solid #222; color: #5c6370; transition: all 0.15s; text-align: center;
+  }
+  .radio-group input { display: none; }
+  .radio-group input:checked + span { color: #0a0a0a; font-weight: 700; }
+  .radio-group label:has(input:checked) { border-color: #2ec4b6; }
+  label:has(input[value="team"]:checked) { background: #2ec4b6; }
+  label:has(input[value="affiliate"]:checked) { background: #818cf8; }
+  label:has(input[value="alumni"]:checked) { background: #f5a623; }
+  label:has(input[value="skip"]:checked) { background: #333; }
+  .radio-group label:hover { border-color: #444; }
+  .actions { margin-top: 24px; display: flex; gap: 12px; }
+  button { font-family: inherit; font-size: 12px; padding: 8px 16px; cursor: pointer; border: 1px dashed; background: #1a1a1a; }
+  #exportBtn { color: #2ec4b6; border-color: #2ec4b6; }
+  #exportBtn:hover { background: #2ec4b6; color: #0a0a0a; }
+  #clearBtn { color: #e06c75; border-color: #e06c75; }
+  #clearBtn:hover { background: #e06c75; color: #0a0a0a; }
+  #output { margin-top: 16px; padding: 12px; background: #111; border: 1px solid #222; white-space: pre-wrap; font-size: 11px; display: none; color: #abb2bf; max-height: 400px; overflow-y: auto; }
+  .summary { margin-top: 16px; padding: 12px; background: #111; border: 1px dashed #2ec4b6; font-size: 12px; }
+  .summary span { color: #2ec4b6; font-weight: 600; }
+  h3 { color: #818cf8; font-size: 12px; margin: 20px 0 6px; }
+  .inactive-list { color: #5c6370; font-size: 12px; line-height: 1.8; }
+</style>
+</head>
+<body>
+
+<h1>People Triage</h1>
+<div class="subtitle">Slack activity Dec 2025 – Mar 2026 vs mintresearch.org. Click a category for each person.</div>
+
+<div class="summary" id="summary">Decisions made: <span id="countDone">0</span> / <span id="countTotal">0</span></div>
+
+<h2>Active Contributors (10+ messages)</h2>
+<table><thead><tr><th>Person</th><th style="text-align:right">Msgs</th><th>Current</th><th>Assign to</th></tr></thead><tbody id="active"></tbody></table>
+
+<h2>Light Activity (1–9 messages)</h2>
+<table><thead><tr><th>Person</th><th style="text-align:right">Msgs</th><th>Current</th><th>Assign to</th></tr></thead><tbody id="light"></tbody></table>
+
+<h2>On Website, Zero Slack Activity</h2>
+<h3>Affiliates (no activity in 3 months)</h3>
+<table><thead><tr><th>Person</th><th style="text-align:right">Msgs</th><th>Current</th><th>Assign to</th></tr></thead><tbody id="inactive-aff"></tbody></table>
+
+<div class="actions">
+  <button id="exportBtn">Export decisions</button>
+  <button id="clearBtn">Clear all</button>
+</div>
+<pre id="output"></pre>
+
+<script>
+const people = [
+  // Active contributors
+  {s:"active", name:"Seth Lazar", msgs:654, current:"Team", settled:true},
+  {s:"active", name:"Aaron Snoswell", msgs:142, current:null},
+  {s:"active", name:"Daniel Kilov", msgs:94, current:"Team", settled:true},
+  {s:"active", name:"Theo Murray", msgs:90, current:"Team", settled:true},
+  {s:"active", name:"Cameron Pattison", msgs:71, current:"Affiliate"},
+  {s:"active", name:"Secil Yanik Guyot", msgs:62, current:"Team", settled:true},
+  {s:"active", name:"ChunYan (CY)", msgs:47, current:null},
+  {s:"active", name:"Roberta Fischli", msgs:28, current:"Affiliate"},
+  {s:"active", name:"Sichao Li", msgs:25, current:null},
+  {s:"active", name:"Jake Stone", msgs:20, current:"Team", settled:true},
+  {s:"active", name:"Caroline Hendy", msgs:18, current:"Team", settled:true},
+  {s:"active", name:"Michael Bennett", msgs:18, current:null},
+  {s:"active", name:"Iman Ferestade", msgs:16, current:"Team", settled:true},
+  {s:"active", name:"Syed AbuMusab", msgs:15, current:"Affiliate"},
+  {s:"active", name:"Ned Howells-Whitaker", msgs:13, current:null},
+  {s:"active", name:"Lorenzo Manuali", msgs:12, current:null},
+  {s:"active", name:"Angelica Chowdhury", msgs:11, current:null},
+  // Light activity
+  {s:"light", name:"Luke Thorburn", msgs:9, current:null},
+  {s:"light", name:"Kira Breithaupt", msgs:9, current:null},
+  {s:"light", name:"Elena Ajayi", msgs:8, current:null},
+  {s:"light", name:"Ninell Oldenburg", msgs:6, current:"Affiliate"},
+  {s:"light", name:"Mike Barnes", msgs:6, current:"Affiliate"},
+  {s:"light", name:"Kangyu (KY) Wang", msgs:6, current:null},
+  {s:"light", name:"Beba Cibralic", msgs:5, current:"Affiliate"},
+  {s:"light", name:"Sina Fazelpour", msgs:4, current:null},
+  {s:"light", name:"Tim Dubber", msgs:4, current:"Team", settled:true},
+  {s:"light", name:"Lena Wang", msgs:4, current:null},
+  {s:"light", name:"Bec Johnson", msgs:4, current:null},
+  {s:"light", name:"Noam Kolt", msgs:3, current:"Affiliate"},
+  {s:"light", name:"Ned Cooper", msgs:3, current:null},
+  {s:"light", name:"Ben Robinson", msgs:3, current:"Alumni", settled:true},
+  {s:"light", name:"Nick Schuster", msgs:3, current:"Affiliate"},
+  {s:"light", name:"Sean Donahue", msgs:3, current:"Affiliate"},
+  {s:"light", name:"David Thorstad", msgs:3, current:"Affiliate"},
+  {s:"light", name:"Changbai Li", msgs:3, current:null},
+  {s:"light", name:"Henrik Kugelberg", msgs:3, current:"Affiliate"},
+  {s:"light", name:"Glen Berman", msgs:3, current:"Alumni", settled:true},
+  {s:"light", name:"Charles Beasley", msgs:3, current:null},
+  {s:"light", name:"Nick Laskowski", msgs:2, current:"Alumni", settled:true},
+  {s:"light", name:"Luise Mueller", msgs:2, current:"Affiliate"},
+  {s:"light", name:"Jen Semler", msgs:2, current:"Affiliate"},
+  {s:"light", name:"Charis Yang", msgs:2, current:null},
+  {s:"light", name:"Andrew Smart", msgs:2, current:"Team", settled:true},
+  {s:"light", name:"Alexandra Oprea", msgs:2, current:null},
+  {s:"light", name:"Cedric Whitney", msgs:2, current:"Alumni", settled:true},
+  {s:"light", name:"Paul de Font-Reaulx", msgs:2, current:null},
+  {s:"light", name:"Jenny Munt", msgs:2, current:"Team", settled:true},
+  {s:"light", name:"Sayash Kapoor", msgs:2, current:null},
+  {s:"light", name:"Matt", msgs:2, current:null},
+  {s:"light", name:"marrosamuele", msgs:2, current:null},
+  {s:"light", name:"Tiziano Piccardi", msgs:2, current:null},
+  {s:"light", name:"Noah Birnbaum", msgs:1, current:null},
+  {s:"light", name:"Elija Perrier", msgs:1, current:"Alumni", settled:true},
+  {s:"light", name:"Vincent Zhang", msgs:1, current:"Team", settled:true},
+  {s:"light", name:"Lo Vanel", msgs:1, current:null},
+  {s:"light", name:"simon taylor", msgs:1, current:null},
+  {s:"light", name:"tegan.jrm", msgs:1, current:null},
+  {s:"light", name:"Christine Balasa", msgs:1, current:"Alumni", settled:true},
+  {s:"light", name:"Shang Long Yeo", msgs:1, current:"Alumni", settled:true},
+  {s:"light", name:"Elsa Kugelberg", msgs:1, current:"Affiliate"},
+  {s:"light", name:"Harriet", msgs:1, current:null},
+  {s:"light", name:"Xinyue Xu", msgs:1, current:null},
+  {s:"light", name:"Abbas Bagwala", msgs:1, current:null},
+  {s:"light", name:"dhm", msgs:1, current:null},
+  {s:"light", name:"Shira Gur Arieh", msgs:1, current:null},
+  // Inactive affiliates
+  {s:"inactive-aff", name:"Tiberio Caetano", msgs:0, current:"Affiliate"},
+  {s:"inactive-aff", name:"Kimberlee Weatherall", msgs:0, current:"Affiliate"},
+  {s:"inactive-aff", name:"Iason Gabriel", msgs:0, current:"Affiliate"},
+  {s:"inactive-aff", name:"Giada Pistilli", msgs:0, current:"Affiliate"},
+  {s:"inactive-aff", name:"Damian Clifford", msgs:0, current:"Affiliate"},
+  {s:"inactive-aff", name:"Jacqueline Harding", msgs:0, current:"Affiliate"},
+  {s:"inactive-aff", name:"Anton Leicht", msgs:0, current:"Affiliate"},
+];
+
+const saved = JSON.parse(localStorage.getItem('people-triage') || '{}');
+const opts = ['team','affiliate','alumni','skip'];
+const labels = {team:'Team', affiliate:'Affiliate', alumni:'Alumni', skip:'Not website'};
+let totalNeedDecision = 0;
+
+function updateCount() {
+  const done = Object.keys(saved).length;
+  document.getElementById('countDone').textContent = done;
+  document.getElementById('countTotal').textContent = totalNeedDecision;
+}
+
+people.forEach((p, i) => {
+  const tbody = document.getElementById(p.s);
+  if (!tbody) return;
+  const tr = document.createElement('tr');
+  if (p.settled) tr.className = 'settled';
+
+  const tdName = document.createElement('td');
+  tdName.innerHTML = `<span class="name">${p.name}</span>`;
+  const tdMsgs = document.createElement('td');
+  tdMsgs.className = 'msgs';
+  tdMsgs.textContent = p.msgs;
+  const tdCur = document.createElement('td');
+  tdCur.innerHTML = p.current
+    ? `<span class="current">${p.current}</span>`
+    : `<span class="current new">NOT ON SITE</span>`;
+  const tdRadio = document.createElement('td');
+
+  if (!p.settled) {
+    totalNeedDecision++;
+    const group = document.createElement('div');
+    group.className = 'radio-group';
+    opts.forEach(opt => {
+      const label = document.createElement('label');
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = `p${i}`;
+      input.value = opt;
+      if (saved[p.name] === opt) input.checked = true;
+      input.addEventListener('change', () => {
+        saved[p.name] = opt;
+        localStorage.setItem('people-triage', JSON.stringify(saved));
+        updateCount();
+      });
+      const span = document.createElement('span');
+      span.textContent = labels[opt];
+      label.appendChild(input);
+      label.appendChild(span);
+      group.appendChild(label);
+    });
+    tdRadio.appendChild(group);
+  } else {
+    tdRadio.innerHTML = `<span class="current">${p.current}</span>`;
+  }
+
+  tr.append(tdName, tdMsgs, tdCur, tdRadio);
+  tbody.appendChild(tr);
+});
+
+updateCount();
+
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const out = document.getElementById('output');
+  const lines = {team:[], affiliate:[], alumni:[], skip:[]};
+  for (const [name, cat] of Object.entries(saved)) {
+    lines[cat]?.push(name);
+  }
+  let text = '# People Triage Decisions\n\n';
+  text += `## Team (${lines.team.length})\n${lines.team.map(n => '- ' + n).join('\n') || '(none)'}\n\n`;
+  text += `## Affiliate (${lines.affiliate.length})\n${lines.affiliate.map(n => '- ' + n).join('\n') || '(none)'}\n\n`;
+  text += `## Alumni (${lines.alumni.length})\n${lines.alumni.map(n => '- ' + n).join('\n') || '(none)'}\n\n`;
+  text += `## Not website (${lines.skip.length})\n${lines.skip.map(n => '- ' + n).join('\n') || '(none)'}\n`;
+  out.textContent = text;
+  out.style.display = 'block';
+});
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  if (!confirm('Clear all selections?')) return;
+  localStorage.removeItem('people-triage');
+  location.reload();
+});
+</script>
+</body>
+</html>
