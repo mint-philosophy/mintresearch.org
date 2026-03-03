@@ -334,12 +334,12 @@ nav.sidebar a.sub-link { padding-left: 32px; font-size: 11px; }
   position: fixed; top: 0;
   left: var(--sidebar-w);
   right: 0;
-  height: 192px;
   background: var(--bg-0);
   border-bottom: 1px solid var(--border);
   z-index: 90;
   display: flex;
   align-items: center;
+  padding: 16px 0;
 }
 .top-banner-inner {
   width: 100%;
@@ -348,9 +348,10 @@ nav.sidebar a.sub-link { padding-left: 32px; font-size: 11px; }
   align-items: center;
   justify-content: center;
   gap: 16px;
+  flex-wrap: wrap;
 }
 .top-banner-logo {
-  height: 100px;
+  height: min(100px, 12vh);
   width: auto;
   image-rendering: pixelated;
   flex-shrink: 0;
@@ -359,10 +360,12 @@ nav.sidebar a.sub-link { padding-left: 32px; font-size: 11px; }
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 .top-banner-minty {
-  width: 80px;
-  height: 80px;
+  width: min(80px, 10vh);
+  height: min(80px, 10vh);
   object-fit: contain;
   image-rendering: pixelated;
   opacity: 0;
@@ -410,8 +413,8 @@ nav.sidebar a.sidebar-header:hover {
 /* ===== Main Content ===== */
 main {
   margin-left: var(--sidebar-w);
-  margin-top: 192px;
-  min-height: calc(100vh - var(--statusline-h) - 192px);
+  margin-top: var(--banner-h, 192px);
+  min-height: calc(100vh - var(--statusline-h) - var(--banner-h, 192px));
   display: flex; flex-direction: column; align-items: center;
   position: relative;
 }
@@ -1051,12 +1054,6 @@ ul.clean li:last-child::before { content: '└── '; }
 
 /* iPad / medium viewport — sidebar visible but content area narrower */
 @media (max-width: 1200px) and (min-width: 901px) {
-  .top-banner { height: auto; min-height: 120px; }
-  .top-banner-inner { flex-wrap: wrap; justify-content: center; padding: 12px 20px; gap: 10px; }
-  .top-banner-logo { height: 64px; }
-  .top-banner-minties { flex-wrap: wrap; justify-content: center; gap: 6px; }
-  .top-banner-minty { width: 48px; height: 48px; }
-  main { margin-top: 140px; }
   .hero { padding: 48px 24px 32px; }
   .hero h1 { font-size: 22px; }
   section { padding: 32px 24px 48px; }
