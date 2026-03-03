@@ -7,7 +7,19 @@ interface Props {
   pageSize?: number;
 }
 
-const { items, label = 'items', pageSize = 5 } = Astro.props;
+const { items: rawItems, label = 'items', pageSize = 5 } = Astro.props;
+
+// Auto-sort by date descending (most recent first)
+// Parses MM/YYYY into a sortable number, falls back to year * 100
+function sortKey(item: PickerItem): number {
+  if (item.date) {
+    const [mm, yyyy] = item.date.split('/');
+    return parseInt(yyyy) * 100 + parseInt(mm);
+  }
+  return item.year * 100;
+}
+const items = [...rawItems].sort((a, b) => sortKey(b) - sortKey(a));
+
 const totalPages = Math.ceil(items.length / pageSize);
 const barWidth = 3; // block chars per page segment
 ---
