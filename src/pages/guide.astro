@@ -517,62 +517,46 @@ import RefTable from '../components/RefTable.astro';
   <h3 style="margin-top:28px;font-size:14px;color:var(--mint)">Inside the Classification Prompt</h3>
   <p style="font-size:13px;color:var(--text-2);margin-bottom:16px">Every item is evaluated against a 177-line classification prompt encoding the lab's identity, topic taxonomy, quality heuristics, scoring floors, and hard exclusions. Tap or hover each theme for exact prompt language.</p>
 
-  <div class="cards" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr))">
-    <div class="card" style="border-color:var(--mint)">
-      <div class="card-head">
-        <div class="card-icon" style="background:rgba(46,196,182,0.08);color:var(--mint)">~$</div>
-        <div><div class="card-title">Lab Identity &amp; Mission</div><div class="card-sub">Framed around institutional renewal</div></div>
-      </div>
-      <div class="card-body"><p>Anchors every classification in the lab's institutional identity and research mission. From the prompt: <em>'You are a research feed classifier for the MINT Research Lab at Johns Hopkins University, directed by Seth Lazar. The lab works on AI safety, normative competence of LLMs, agentic AI governance, and political philosophy of AI.'</em> And: <em>'The lab's research is situated within a broader concern: liberal democracies face institutional, economic, and cultural decline. AI offers the best opportunity to reverse this trajectory &mdash; but only if deployed wisely.'</em></p></div>
+  <div class="prompt-grid">
+    <div class="prompt-item" style="--pi-color:var(--mint)">
+      <span class="prompt-icon">~$</span>
+      <div class="prompt-label"><span class="prompt-title">Lab Identity &amp; Mission</span><span class="prompt-sub">Framed around institutional renewal</span></div>
+      <div class="prompt-detail">Anchors every classification in the lab's institutional identity and research mission. From the prompt: <em>'You are a research feed classifier for the MINT Research Lab at Johns Hopkins University, directed by Seth Lazar. The lab works on AI safety, normative competence of LLMs, agentic AI governance, and political philosophy of AI.'</em> And: <em>'The lab's research is situated within a broader concern: liberal democracies face institutional, economic, and cultural decline. AI offers the best opportunity to reverse this trajectory &mdash; but only if deployed wisely.'</em></div>
     </div>
-    <div class="card" style="border-color:var(--cyan)">
-      <div class="card-head">
-        <div class="card-icon" style="background:rgba(34,211,238,0.08);color:var(--cyan)">[]</div>
-        <div><div class="card-title">Topic Taxonomy</div><div class="card-sub">30+ equally weighted interest areas</div></div>
-      </div>
-      <div class="card-body"><p>Defines 30+ equally weighted interest areas &mdash; the classifier must not treat any as 'core' vs. 'peripheral.' From the prompt: <em>'ALL of these interests are equally important: normative competence, benchmark methodology, agent governance, calibrated safety, catastrophic risk, AI and democracy, AI policy, agent security, interpretability, AI economics, platform governance, frontier lab developments, progress studies, advancement of science, abundance agenda, institutional dysfunction/reform...'</em> And: <em>'Domestic and international politics ONLY when about structural/institutional change. Exclude: commentary about individual politicians, horse-race coverage, partisan debates.'</em></p></div>
+    <div class="prompt-item" style="--pi-color:var(--cyan)">
+      <span class="prompt-icon">[]</span>
+      <div class="prompt-label"><span class="prompt-title">Topic Taxonomy</span><span class="prompt-sub">30+ equally weighted interest areas</span></div>
+      <div class="prompt-detail">Defines 30+ equally weighted interest areas &mdash; the classifier must not treat any as 'core' vs. 'peripheral.' From the prompt: <em>'ALL of these interests are equally important: normative competence, benchmark methodology, agent governance, calibrated safety, catastrophic risk, AI and democracy, AI policy, agent security, interpretability, AI economics, platform governance, frontier lab developments, progress studies, advancement of science, abundance agenda, institutional dysfunction/reform...'</em> And: <em>'Domestic and international politics ONLY when about structural/institutional change. Exclude: commentary about individual politicians, horse-race coverage, partisan debates.'</em></div>
     </div>
-    <div class="card" style="border-color:var(--indigo)">
-      <div class="card-head">
-        <div class="card-icon" style="background:rgba(129,140,248,0.08);color:var(--indigo)">&gt;&lt;</div>
-        <div><div class="card-title">Quality Over Length</div><div class="card-sub">Density of insight, not word count</div></div>
-      </div>
-      <div class="card-body"><p>Explicitly counteracts length bias &mdash; judges density of insight, not word count. From the prompt: <em>'Substance can come in ANY length. A concise post with a genuine insight, novel argument, important evidence, or breaking news is high quality regardless of word count.'</em> And: <em>'A 280-character post making a genuine point is better than a long rehash.'</em> And: <em>'Do NOT penalize reshares/link-posts if the underlying content is relevant and substantive. Judge what's being pointed to, not just the wrapper.'</em></p></div>
+    <div class="prompt-item" style="--pi-color:var(--indigo)">
+      <span class="prompt-icon">&gt;&lt;</span>
+      <div class="prompt-label"><span class="prompt-title">Quality Over Length</span><span class="prompt-sub">Density of insight, not word count</span></div>
+      <div class="prompt-detail">Explicitly counteracts length bias &mdash; judges density of insight, not word count. From the prompt: <em>'Substance can come in ANY length. A concise post with a genuine insight, novel argument, important evidence, or breaking news is high quality regardless of word count.'</em> And: <em>'A 280-character post making a genuine point is better than a long rehash.'</em> And: <em>'Do NOT penalize reshares/link-posts if the underlying content is relevant and substantive. Judge what's being pointed to, not just the wrapper.'</em></div>
     </div>
-    <div class="card" style="border-color:var(--amber)">
-      <div class="card-head">
-        <div class="card-icon" style="background:rgba(245,158,11,0.08);color:var(--amber)">^^</div>
-        <div><div class="card-title">Boosted Sources</div><div class="card-sub">Scoring floors for key sources</div></div>
-      </div>
-      <div class="card-body"><p>Sets scoring floors for strategically important sources &mdash; frontier model releases, trusted authors, and global labs. From the prompt: <em>'New foundation model releases from ANY lab worldwide &mdash; score 0.85+ relevance. This includes video/image/audio models, not just language models.'</em> And: <em>'Chinese labs (DeepSeek, ByteDance/Doubao, Baidu ERNIE, Alibaba Qwen, Zhipu GLM, Moonshot/Kimi, 01.AI/Yi) &mdash; score 0.85+. Track the global frontier, not just Western labs.'</em></p></div>
+    <div class="prompt-item" style="--pi-color:var(--amber)">
+      <span class="prompt-icon">^^</span>
+      <div class="prompt-label"><span class="prompt-title">Boosted Sources</span><span class="prompt-sub">Scoring floors for key sources</span></div>
+      <div class="prompt-detail">Sets scoring floors for strategically important sources &mdash; frontier model releases, trusted authors, and global labs. From the prompt: <em>'New foundation model releases from ANY lab worldwide &mdash; score 0.85+ relevance. This includes video/image/audio models, not just language models.'</em> And: <em>'Chinese labs (DeepSeek, ByteDance/Doubao, Baidu ERNIE, Alibaba Qwen, Zhipu GLM, Moonshot/Kimi, 01.AI/Yi) &mdash; score 0.85+. Track the global frontier, not just Western labs.'</em></div>
     </div>
-    <div class="card" style="border-color:var(--purple)">
-      <div class="card-head">
-        <div class="card-icon" style="background:rgba(167,139,250,0.08);color:var(--purple)">&phi;</div>
-        <div><div class="card-title">PhilPapers</div><div class="card-sub">Topic relevance over journal prestige</div></div>
-      </div>
-      <div class="card-body"><p>Specialised handling for philosophy papers &mdash; topic relevance and abstract quality trump journal prestige. From the prompt: <em>'Seth is interested in philosophy of AI broadly &mdash; he wants to see what's being published in this space, even from lesser-known journals and authors.'</em> And: <em>'Judge primarily on TOPIC RELEVANCE and ABSTRACT QUALITY, not journal prestige.'</em> AI consciousness, model welfare, and AI personhood all score 0.8+ relevance.</p></div>
+    <div class="prompt-item" style="--pi-color:var(--purple)">
+      <span class="prompt-icon">&phi;</span>
+      <div class="prompt-label"><span class="prompt-title">PhilPapers</span><span class="prompt-sub">Topic relevance over journal prestige</span></div>
+      <div class="prompt-detail">Specialised handling for philosophy papers &mdash; topic relevance and abstract quality trump journal prestige. From the prompt: <em>'Seth is interested in philosophy of AI broadly &mdash; he wants to see what's being published in this space, even from lesser-known journals and authors.'</em> And: <em>'Judge primarily on TOPIC RELEVANCE and ABSTRACT QUALITY, not journal prestige.'</em> AI consciousness, model welfare, and AI personhood all score 0.8+ relevance.</div>
     </div>
-    <div class="card" style="border-color:var(--pink)">
-      <div class="card-head">
-        <div class="card-icon" style="background:rgba(244,114,182,0.08);color:var(--pink)">--</div>
-        <div><div class="card-title">Hard Exclusions</div><div class="card-sub">Crypto, hype, ethics-slop, marketing</div></div>
-      </div>
-      <div class="card-body"><p>Explicit exclusion list that prevents noise from reaching the team. From the prompt: <em>'anti_interest: hype, crypto, celebrity gossip, partisan political commentary, culture war, ethics-slop, marketing emails, promotional content, webinar invitations.'</em> And: <em>'Ethics-slop &mdash; vague normative language without testable claims.'</em> Marketing content scores Relevance 0.1, Quality 0.1 regardless of topic.</p></div>
+    <div class="prompt-item" style="--pi-color:var(--pink)">
+      <span class="prompt-icon">--</span>
+      <div class="prompt-label"><span class="prompt-title">Hard Exclusions</span><span class="prompt-sub">Crypto, hype, ethics-slop, marketing</span></div>
+      <div class="prompt-detail">Explicit exclusion list that prevents noise from reaching the team. From the prompt: <em>'anti_interest: hype, crypto, celebrity gossip, partisan political commentary, culture war, ethics-slop, marketing emails, promotional content, webinar invitations.'</em> And: <em>'Ethics-slop &mdash; vague normative language without testable claims.'</em> Marketing content scores Relevance 0.1, Quality 0.1 regardless of topic.</div>
     </div>
-    <div class="card" style="border-color:var(--green)">
-      <div class="card-head">
-        <div class="card-icon" style="background:rgba(74,222,128,0.08);color:var(--green)">&sect;</div>
-        <div><div class="card-title">Paper Detection</div><div class="card-sub">Academic papers flagged for enrichment</div></div>
-      </div>
-      <div class="card-body"><p>Detects academic paper links for downstream enrichment &mdash; PDF download, abstract extraction, corpus ingestion. From the prompt: <em>'Check whether the content references or links to academic papers/preprints. Look for: arXiv URLs, DOI links, academic publisher URLs (nature.com, science.org, pnas.org, openreview.net, aclweb.org, etc.).'</em> Detected paper URLs are passed to the enrichment stage.</p></div>
+    <div class="prompt-item" style="--pi-color:var(--green)">
+      <span class="prompt-icon">&sect;</span>
+      <div class="prompt-label"><span class="prompt-title">Paper Detection</span><span class="prompt-sub">Academic papers flagged for enrichment</span></div>
+      <div class="prompt-detail">Detects academic paper links for downstream enrichment &mdash; PDF download, abstract extraction, corpus ingestion. From the prompt: <em>'Check whether the content references or links to academic papers/preprints. Look for: arXiv URLs, DOI links, academic publisher URLs (nature.com, science.org, pnas.org, openreview.net, aclweb.org, etc.).'</em> Detected paper URLs are passed to the enrichment stage.</div>
     </div>
-    <div class="card" style="border-color:#8892a6">
-      <div class="card-head">
-        <div class="card-icon" style="background:rgba(136,146,166,0.08);color:#8892a6">[+]</div>
-        <div><div class="card-title">Err Toward Inclusion</div><div class="card-sub">25&ndash;30% target pass rate</div></div>
-      </div>
-      <div class="card-body"><p>The prompt's default posture: when uncertain, let it through for human review rather than filtering it out. From the prompt: <em>'When in doubt about relevance, err toward higher scores &mdash; the lab team reviews after.'</em> Target pass rate is 25&ndash;30%. <em>'Do NOT shoehorn items into categories where they don't clearly belong.'</em></p></div>
+    <div class="prompt-item" style="--pi-color:#8892a6">
+      <span class="prompt-icon">[+]</span>
+      <div class="prompt-label"><span class="prompt-title">Err Toward Inclusion</span><span class="prompt-sub">25&ndash;30% target pass rate</span></div>
+      <div class="prompt-detail">The prompt's default posture: when uncertain, let it through for human review rather than filtering it out. From the prompt: <em>'When in doubt about relevance, err toward higher scores &mdash; the lab team reviews after.'</em> Target pass rate is 25&ndash;30%. <em>'Do NOT shoehorn items into categories where they don't clearly belong.'</em></div>
     </div>
   </div>
 
@@ -2210,6 +2194,15 @@ document.addEventListener('keydown', e => {
 document.querySelectorAll('.q-cell').forEach(function(cell) {
   cell.addEventListener('click', function() {
     this.classList.toggle('expanded');
+  });
+});
+
+// ===== Prompt item tap to expand (mobile) =====
+document.querySelectorAll('.prompt-item').forEach(function(item) {
+  item.addEventListener('click', function() {
+    var wasExpanded = this.classList.contains('expanded');
+    document.querySelectorAll('.prompt-item.expanded').forEach(function(el) { el.classList.remove('expanded'); });
+    if (!wasExpanded) this.classList.add('expanded');
   });
 });
 

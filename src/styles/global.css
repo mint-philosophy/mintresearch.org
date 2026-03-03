@@ -626,6 +626,22 @@ details.lab-accordion .accordion-inner p { font-size: 12px; }
 .q-cell.expanded { grid-column: 1 / -1; text-align: left; display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; background: var(--bg-3); border-color: var(--accent-dim); }
 .q-cell.expanded .q-tooltip { display: block; position: relative; top: auto; left: auto; transform: none; flex-basis: 100%; width: auto; pointer-events: auto; margin-top: 0; }
 
+/* ===== Prompt Items (tooltip grid) ===== */
+.prompt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 6px; }
+.prompt-item { position: relative; display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--bg-2); border: 1px dashed color-mix(in srgb, var(--pi-color, var(--accent)) 40%, transparent); cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+.prompt-item:hover { border-color: var(--pi-color, var(--accent)); background: var(--bg-3); }
+.prompt-icon { font-size: 11px; color: var(--pi-color, var(--accent)); flex-shrink: 0; width: 20px; text-align: center; opacity: 0.8; }
+.prompt-label { min-width: 0; }
+.prompt-title { display: block; font-size: 11px; font-weight: 600; color: var(--text-1); line-height: 1.3; }
+.prompt-sub { display: block; font-size: 9px; color: var(--text-3); line-height: 1.3; margin-top: 1px; }
+.prompt-detail { display: none; position: absolute; top: 100%; left: 0; background: var(--bg-0); border: 1px solid var(--pi-color, var(--accent)); padding: 12px; width: min(340px, calc(100vw - 40px)); z-index: 20; font-size: 11px; color: var(--text-1); line-height: 1.55; margin-top: 2px; }
+.prompt-detail em { color: var(--pi-color, var(--accent)); font-style: normal; }
+.prompt-item:hover .prompt-detail { display: block; }
+.prompt-item.expanded .prompt-detail { display: block; position: relative; top: auto; left: auto; width: auto; margin-top: 8px; pointer-events: auto; }
+.prompt-item.expanded { grid-column: 1 / -1; flex-wrap: wrap; background: var(--bg-3); border-color: var(--pi-color, var(--accent)); }
+@media (max-width: 768px) { .prompt-grid { grid-template-columns: 1fr 1fr; } .prompt-item:hover .prompt-detail { display: none; } .prompt-item.expanded .prompt-detail { display: block; } }
+@media (max-width: 480px) { .prompt-grid { grid-template-columns: 1fr; } }
+
 /* ===== Iron Laws ===== */
 .iron-laws { max-width: 640px; margin: 0 auto; padding: 32px 0; }
 .law { text-align: center; padding: 20px 0; border-top: 1px dashed var(--border); }
