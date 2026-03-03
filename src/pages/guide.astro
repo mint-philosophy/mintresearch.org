@@ -1889,10 +1889,7 @@ import RefTable from '../components/RefTable.astro';
   <p style="margin-top:4px">Updated March 2026</p>
 </section>
 
-<!-- Token counter (Claude Code output indicator homage) -->
-<div class="token-counter" id="tokenCounter">
-  <span class="arrow">↓</span> <span id="tokenCount">0</span> tokens
-</div>
+<!-- Token counter now lives in the statusline (statusline-tokens span in BaseLayout) -->
 
 <!-- Section indicator removed — statusline already shows current section -->
 
@@ -2348,12 +2345,9 @@ document.getElementById('subscribe-form').addEventListener('submit', function(e)
 
 // ===== Token counter (scroll-based output token estimate) =====
 (function() {
-  var counter = document.getElementById('tokenCounter');
-  var countEl = document.getElementById('tokenCount');
-  if (!counter || !countEl) return;
+  var tokenEl = document.getElementById('tokenDisplay');
   var main = document.querySelector('main');
-  if (!main) return;
-  // Pre-compute total text length for token estimation
+  if (!tokenEl || !main) return;
   var totalChars = main.textContent.length;
   var lastToken = 0;
   function updateTokens() {
@@ -2361,16 +2355,10 @@ document.getElementById('subscribe-form').addEventListener('submit', function(e)
     var docHeight = document.documentElement.scrollHeight - window.innerHeight;
     if (docHeight <= 0) return;
     var ratio = Math.min(scrollTop / docHeight, 1);
-    // ~4 chars per token (rough GPT/Claude tokenizer approximation)
     var tokens = Math.round((totalChars * ratio) / 4);
     if (tokens !== lastToken) {
       lastToken = tokens;
-      countEl.textContent = tokens.toLocaleString();
-    }
-    if (scrollTop > 200) {
-      counter.classList.add('visible');
-    } else {
-      counter.classList.remove('visible');
+      tokenEl.innerHTML = '<span class="arrow">\u2193</span> ' + tokens.toLocaleString() + ' tokens';
     }
   }
   var ticking = false;
