@@ -26,7 +26,7 @@ export const siteNav: PageNav[] = [
   },
   {
     path: "/guide/",
-    label: "Guide",
+    label: "Lab Infrastructure",
     icon: "▸",
     sections: [
       { href: "#overview", label: "Overview" },
