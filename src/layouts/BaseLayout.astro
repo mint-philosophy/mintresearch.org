@@ -184,6 +184,18 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     window.addEventListener('scroll', updateStatusline, { passive: true });
     updateStatusline();
 
+    // Exclusive accordion — opening one closes siblings
+    document.querySelectorAll('[data-exclusive-accordion]').forEach(container => {
+      container.addEventListener('toggle', (e) => {
+        const target = e.target as HTMLDetailsElement;
+        if (target.open) {
+          container.querySelectorAll('details[open]').forEach(d => {
+            if (d !== target) (d as HTMLDetailsElement).open = false;
+          });
+        }
+      }, true);
+    });
+
     // Fade-in observer
     const fadeEls = document.querySelectorAll('.fade-in');
     if (fadeEls.length > 0) {
