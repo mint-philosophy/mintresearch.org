@@ -8,20 +8,46 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 <main>
 <section class="hero" id="not-found" style="padding: 60px 24px 48px; position: relative; overflow: hidden;">
 
-  <!-- Scanline overlay -->
-  <div class="scanlines"></div>
+  <div class="four-oh-four-outer">
+    <!-- Big 404 with scanlines -->
+    <div class="four-oh-four-big">
+      <span class="four-oh-four-num">404</span>
+      <div class="four-oh-four-scanlines"></div>
+    </div>
 
-  <div class="four-oh-four-wrap">
-    <img src={`${base}/assets/wireframe-squid.png`} alt="" class="four-oh-four-squid" />
+    <!-- Minty floating over the terminal -->
+    <div class="four-oh-four-scene">
+      <img src={`${base}/assets/wireframe-squid.png`} alt="" class="four-oh-four-squid" />
 
-    <div class="four-oh-four-terminal">
-      <div class="term-line"><span class="t-green">seth@mint</span><span class="t-text3">:</span><span class="t-cyan">~</span><span class="t-text3">$</span> <span class="t-text1">curl mintresearch.org<span class="t-text3">/this-page</span></span></div>
-      <div class="term-line term-blank">&nbsp;</div>
-      <div class="term-line"><span class="t-red">Error 404</span><span class="t-text3">: Not Found</span></div>
-      <div class="term-line"><span class="t-text3">The requested resource does not exist on this server.</span></div>
-      <div class="term-line"><span class="t-text3">Maybe Minty ate it.</span></div>
-      <div class="term-line term-blank">&nbsp;</div>
-      <div class="term-line"><span class="t-green">seth@mint</span><span class="t-text3">:</span><span class="t-cyan">~</span><span class="t-text3">$</span> <span class="t-text1">cd <a href={`${base}/`} class="term-link">/home</a></span><span class="term-cursor"></span></div>
+      <div class="four-oh-four-terminal">
+        <div class="term-titlebar">
+          <span class="term-dot" style="background:var(--red)"></span>
+          <span class="term-dot" style="background:var(--yellow)"></span>
+          <span class="term-dot" style="background:var(--green)"></span>
+          <span class="term-title">minty — bash — 80×24</span>
+        </div>
+        <div class="term-body">
+          <div class="term-line"><span class="t-green">seth@mint</span><span class="t-text3">:</span><span class="t-cyan">~</span><span class="t-text3">$</span> curl -I mintresearch.org<span class="t-text3">/this-page</span></div>
+          <div class="term-line t-text3">HTTP/1.1 <span class="t-red">404 Not Found</span></div>
+          <div class="term-line t-text3">server: github-pages</div>
+          <div class="term-line t-text3">x-powered-by: <span class="t-cyan">minty/2.0</span></div>
+          <div class="term-line t-text3">x-blame: <span class="t-purple">the squid did it</span></div>
+          <div class="term-line">&nbsp;</div>
+          <div class="term-line"><span class="t-green">seth@mint</span><span class="t-text3">:</span><span class="t-cyan">~</span><span class="t-text3">$</span> <span class="t-yellow">echo</span> "trying to find your page..."</div>
+          <div class="term-line t-text3">trying to find your page...</div>
+          <div class="term-line">&nbsp;</div>
+          <div class="term-line"><span class="t-green">seth@mint</span><span class="t-text3">:</span><span class="t-cyan">~</span><span class="t-text3">$</span> cd <a href={`${base}/`} class="term-link">/home</a><span class="term-cursor"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="four-oh-four-hint">
+      <span class="t-text3">Or try:</span>
+      <a href={`${base}/`} class="hint-link">About the Lab</a>
+      <span class="t-text3">·</span>
+      <a href={`${base}/guide/`} class="hint-link">Infrastructure</a>
+      <span class="t-text3">·</span>
+      <a href={`${base}/corpus-map/`} class="hint-link">Corpus Map</a>
     </div>
   </div>
 
@@ -29,49 +55,103 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 </main>
 
 <style>
-  .four-oh-four-wrap {
+  .four-oh-four-outer {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 32px;
+    gap: 24px;
+  }
+
+  /* ---- Giant 404 ---- */
+  .four-oh-four-big {
     position: relative;
-    z-index: 1;
+    overflow: hidden;
+    line-height: 1;
+  }
+  .four-oh-four-num {
+    font-size: clamp(80px, 20vw, 160px);
+    font-weight: 800;
+    color: transparent;
+    -webkit-text-stroke: 2px var(--red);
+    letter-spacing: 0.05em;
+    opacity: 0.35;
+  }
+  .four-oh-four-scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px, transparent 3px,
+      rgba(0,0,0,0.25) 3px, rgba(0,0,0,0.25) 6px
+    );
+    pointer-events: none;
+  }
+
+  /* ---- Scene: squid + terminal ---- */
+  .four-oh-four-scene {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    max-width: 640px;
+    width: 100%;
   }
 
   .four-oh-four-squid {
-    width: 180px;
+    width: 140px;
     height: auto;
-    opacity: 0.7;
-    filter: drop-shadow(0 0 20px rgba(46, 196, 182, 0.3));
+    flex-shrink: 0;
+    opacity: 0.8;
+    filter: drop-shadow(0 0 16px rgba(46,196,182,0.3));
     animation: squidFloat 4s ease-in-out infinite;
   }
-
   @keyframes squidFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-6px) rotate(1deg); }
+    75% { transform: translateY(2px) rotate(-1deg); }
   }
 
+  /* ---- Terminal window ---- */
   .four-oh-four-terminal {
-    width: 100%;
-    max-width: 520px;
-    background: rgba(10, 10, 10, 0.8);
-    border: 1px dashed var(--border);
-    padding: 20px 24px;
-    text-align: left;
+    flex: 1;
+    border: 1px dashed var(--accent-dim);
+    background: var(--bg-0);
+    overflow: hidden;
+  }
+
+  .term-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: var(--bg-2);
+    border-bottom: 1px dashed var(--border);
+  }
+  .term-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    opacity: 0.7;
+  }
+  .term-title {
+    margin-left: auto;
+    font-size: 9px;
+    color: var(--text-3);
+  }
+
+  .term-body {
+    padding: 12px 14px;
   }
 
   .term-line {
-    font-size: 13px;
-    line-height: 1.8;
+    font-size: 12px;
+    line-height: 1.7;
     white-space: nowrap;
   }
-
-  .term-blank { line-height: 0.8; }
 
   .t-green { color: var(--green); }
   .t-cyan { color: var(--cyan); }
   .t-red { color: var(--red); font-weight: 700; }
-  .t-text1 { color: var(--text-1); }
+  .t-yellow { color: var(--yellow); }
+  .t-purple { color: var(--purple); }
   .t-text3 { color: var(--text-3); }
 
   .term-link {
@@ -79,39 +159,42 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     text-decoration: none;
     border-bottom: 1px dashed var(--accent);
   }
-  .term-link:hover {
-    color: var(--accent-bright);
-    border-color: var(--accent-bright);
-  }
+  .term-link:hover { color: var(--accent-bright); border-color: var(--accent-bright); }
 
   .term-cursor {
     display: inline-block;
-    width: 8px;
-    height: 14px;
+    width: 8px; height: 13px;
     background: var(--accent);
     margin-left: 2px;
     vertical-align: text-bottom;
     animation: blink 1s step-end infinite;
   }
 
-  .scanlines {
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-      to bottom,
-      transparent 0px,
-      transparent 2px,
-      rgba(0, 0, 0, 0.15) 2px,
-      rgba(0, 0, 0, 0.15) 4px
-    );
-    pointer-events: none;
-    z-index: 2;
+  /* ---- Navigation hints ---- */
+  .four-oh-four-hint {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 12px;
+    padding-top: 8px;
   }
+  .hint-link {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px dashed transparent;
+  }
+  .hint-link:hover { border-color: var(--accent); }
 
-  @media (max-width: 500px) {
-    .four-oh-four-squid { width: 120px; }
-    .term-line { font-size: 11px; }
-    .four-oh-four-terminal { padding: 14px 16px; }
+  /* ---- Mobile ---- */
+  @media (max-width: 600px) {
+    .four-oh-four-scene {
+      flex-direction: column;
+      align-items: center;
+    }
+    .four-oh-four-squid { width: 100px; }
+    .term-line { font-size: 10px; }
+    .term-body { padding: 10px 12px; }
+    .four-oh-four-hint { flex-wrap: wrap; justify-content: center; }
   }
 </style>
 
