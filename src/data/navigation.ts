@@ -22,6 +22,7 @@ export const siteNav: PageNav[] = [
       { href: "#people", label: "People" },
       { href: "#publications", label: "Publications" },
       { href: "#events", label: "Events" },
+      { href: "#news", label: "News" },
     ],
   },
   {

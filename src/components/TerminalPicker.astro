@@ -1,0 +1,212 @@
+---
+import type { PickerItem } from '../data/deliverables';
+
+interface Props {
+  items: PickerItem[];
+  label?: string;
+  pageSize?: number;
+}
+
+const { items, label = 'items', pageSize = 5 } = Astro.props;
+const totalPages = Math.ceil(items.length / pageSize);
+const barWidth = 3; // block chars per page segment
+---
+
+<div class="tp" tabindex="0" data-tp data-tp-page-size={pageSize} data-tp-total-pages={totalPages}>
+
+  {Array.from({ length: totalPages }, (_, pageIdx) => (
+    <div class:list={["tp-page", { "tp-page--active": pageIdx === 0 }]} data-tp-page={pageIdx}>
+      {items.slice(pageIdx * pageSize, (pageIdx + 1) * pageSize).map((item, i) => {
+        const globalIdx = pageIdx * pageSize + i;
+        return (
+          <div class="tp-entry" data-tp-entry={globalIdx}>
+            <div
+              class:list={["tp-row", { "tp-row--active": globalIdx === 0 }]}
+              data-tp-row
+              data-index={globalIdx}
+            >
+              <span class="tp-chevron">&#10095;</span>
+              <span class="tp-num">{globalIdx + 1}.</span>
+              <div class="tp-body">
+                <div class="tp-head">
+                  {item.tag && <span class={`tp-tag tp-tag--${item.tag}`}>{item.tag}</span>}
+                  <span class="tp-title">{item.title}</span>
+                  <span class="tp-date">{item.date || item.year}</span>
+                </div>
+                <div class="tp-meta">
+                  {item.subtitle}
+                  {item.detail && <span class="tp-venue"> · {item.detail}</span>}
+                </div>
+              </div>
+            </div>
+            <div class="tp-expand" data-tp-expand>
+              {item.blurb && <p class="tp-blurb">{item.blurb}</p>}
+              {item.url && (
+                <a class="tp-source" href={item.url} target="_blank" rel="noopener noreferrer">
+                  View source &rarr;
+                </a>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  ))}
+
+  <div class="tp-status">
+    <span class="tp-bar">{Array.from({ length: totalPages }, (_, i) => (
+      <span class:list={["tp-seg", { "tp-seg--active": i === 0 }]} data-tp-seg={i}>{(i === 0 ? '\u2593' : '\u2591').repeat(barWidth)}</span>
+    ))}</span>
+    <span class="tp-counter" data-tp-counter>1&ndash;{Math.min(pageSize, items.length)} of {items.length}</span>
+    <span class="tp-hint">&uarr;&darr; navigate &middot; &larr;&rarr; page &middot; enter expand</span>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-tp]').forEach(tp => {
+    const pages = Array.from(tp.querySelectorAll<HTMLElement>('[data-tp-page]'));
+    const rows = Array.from(tp.querySelectorAll<HTMLElement>('[data-tp-row]'));
+    const entries = Array.from(tp.querySelectorAll<HTMLElement>('[data-tp-entry]'));
+    const segs = Array.from(tp.querySelectorAll<HTMLElement>('[data-tp-seg]'));
+    const counter = tp.querySelector<HTMLElement>('[data-tp-counter]');
+    const pageSize = parseInt(tp.dataset.tpPageSize || '5', 10);
+    const total = rows.length;
+    const totalPages = pages.length;
+
+    if (totalPages === 0) return;
+
+    let currentPage = 0;
+    let activeRow = 0;
+    let expandedIdx: number | null = null;
+
+    function updateBar() {
+      segs.forEach((seg, i) => {
+        seg.textContent = (i === currentPage ? '\u2593' : '\u2591').repeat(3);
+        seg.classList.toggle('tp-seg--active', i === currentPage);
+      });
+    }
+
+    function goToPage(p: number) {
+      if (p < 0 || p >= totalPages || p === currentPage) return;
+      collapseAll();
+      pages[currentPage].classList.remove('tp-page--active');
+      currentPage = p;
+      pages[currentPage].classList.add('tp-page--active');
+
+      const first = currentPage * pageSize + 1;
+      const last = Math.min(first + pageSize - 1, total);
+      if (counter) counter.textContent = `${first}\u2013${last} of ${total}`;
+      updateBar();
+    }
+
+    function setActiveRow(idx: number) {
+      if (idx < 0 || idx >= total) return;
+      rows[activeRow]?.classList.remove('tp-row--active');
+      activeRow = idx;
+      rows[activeRow]?.classList.add('tp-row--active');
+    }
+
+    function toggleExpand(idx: number) {
+      if (expandedIdx === idx) {
+        entries[idx]?.classList.remove('tp-entry--open');
+        expandedIdx = null;
+      } else {
+        if (expandedIdx !== null) entries[expandedIdx]?.classList.remove('tp-entry--open');
+        entries[idx]?.classList.add('tp-entry--open');
+        expandedIdx = idx;
+      }
+    }
+
+    function collapseAll() {
+      if (expandedIdx !== null) {
+        entries[expandedIdx]?.classList.remove('tp-entry--open');
+        expandedIdx = null;
+      }
+    }
+
+    // Mousewheel pages through
+    let wheelAccum = 0;
+    tp.addEventListener('wheel', (e: WheelEvent) => {
+      e.preventDefault();
+      wheelAccum += e.deltaY;
+      const threshold = 60;
+      if (wheelAccum > threshold) {
+        goToPage(currentPage + 1);
+        wheelAccum = 0;
+      } else if (wheelAccum < -threshold) {
+        goToPage(currentPage - 1);
+        wheelAccum = 0;
+      }
+    }, { passive: false });
+
+    // Clickable progress bar segments
+    segs.forEach((seg, i) => {
+      seg.addEventListener('click', () => {
+        goToPage(i);
+        setActiveRow(i * pageSize);
+      });
+    });
+
+    // Row interactions
+    rows.forEach((row, i) => {
+      row.addEventListener('mouseenter', () => setActiveRow(i));
+      row.addEventListener('click', (e) => {
+        if ((e.target as HTMLElement).closest('.tp-source')) return;
+        toggleExpand(i);
+      });
+    });
+
+    // Keyboard
+    tp.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Tab' && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+        if (currentPage < totalPages - 1) {
+          e.preventDefault();
+          goToPage(currentPage + 1);
+          setActiveRow(currentPage * pageSize);
+        }
+      } else if (e.key === 'Tab' && e.shiftKey) {
+        if (currentPage > 0) {
+          e.preventDefault();
+          goToPage(currentPage - 1);
+          setActiveRow(currentPage * pageSize);
+        }
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        goToPage(currentPage + 1);
+        setActiveRow(currentPage * pageSize);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        goToPage(currentPage - 1);
+        setActiveRow(currentPage * pageSize);
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        const next = activeRow + 1;
+        const pageEnd = Math.min((currentPage + 1) * pageSize, total);
+        if (next < pageEnd) {
+          setActiveRow(next);
+        } else if (currentPage < totalPages - 1) {
+          // Cross page boundary
+          goToPage(currentPage + 1);
+          setActiveRow(currentPage * pageSize);
+        }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const pageStart = currentPage * pageSize;
+        if (activeRow - 1 >= pageStart) {
+          setActiveRow(activeRow - 1);
+        } else if (currentPage > 0) {
+          // Cross page boundary
+          goToPage(currentPage - 1);
+          const lastOnPage = Math.min((currentPage + 1) * pageSize, total) - 1;
+          setActiveRow(lastOnPage);
+        }
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        toggleExpand(activeRow);
+      } else if (e.key === 'Escape') {
+        collapseAll();
+      }
+    });
+  });
+</script>

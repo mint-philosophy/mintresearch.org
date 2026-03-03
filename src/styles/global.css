@@ -1043,6 +1043,160 @@ ul.clean li:last-child::before { content: '└── '; }
 .event-title { font-size: 13px; font-weight: 600; color: var(--text-bright); }
 .event-desc { font-size: 11px; color: var(--text-2); margin-top: 1px; }
 
+/* ===== Terminal Picker ===== */
+.tp {
+  position: relative;
+  outline: none;
+  padding: 4px 0;
+}
+
+/* Pages */
+.tp-page { display: none; }
+.tp-page--active { display: block; }
+
+/* Rows — clean list like Claude Code question UI */
+.tp-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.tp-row:hover,
+.tp-row--active {
+  background: rgba(46, 196, 182, 0.04);
+}
+
+.tp-chevron {
+  color: var(--accent);
+  font-size: 11px;
+  width: 16px;
+  flex-shrink: 0;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.1s;
+  padding-top: 1px;
+}
+.tp-row--active .tp-chevron,
+.tp-row:hover .tp-chevron { opacity: 1; }
+
+.tp-num {
+  font-size: 12px;
+  color: var(--text-3);
+  min-width: 22px;
+  flex-shrink: 0;
+  text-align: right;
+  padding-top: 1px;
+}
+
+.tp-body {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Title line — date right-aligned */
+.tp-head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.tp-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-bright, #d4d4d4);
+  flex: 1;
+  min-width: 0;
+}
+.tp-date {
+  font-size: 10px;
+  color: var(--yellow);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Meta line — indented under title */
+.tp-meta {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+.tp-venue {
+  color: var(--text-3);
+}
+
+/* Tags */
+.tp-tag {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 600;
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+.tp-tag::before { content: '['; }
+.tp-tag::after { content: ']'; }
+.tp-tag--keynote { color: var(--amber, #f59e0b); }
+.tp-tag--talk { color: var(--cyan, #22d3ee); }
+.tp-tag--media { color: var(--purple, #a78bfa); }
+.tp-tag--appointment { color: var(--pink, #f472b6); }
+
+/* Status line — terminal-style, text-based */
+.tp-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 8px 2px;
+  border-top: 1px dashed var(--border);
+  margin-top: 4px;
+}
+.tp-bar {
+  font-size: 11px;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+.tp-seg {
+  color: var(--text-3);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.tp-seg:hover { color: var(--accent-dim, rgba(46, 196, 182, 0.5)); }
+.tp-seg--active { color: var(--accent); }
+.tp-counter {
+  font-size: 10px;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+.tp-hint {
+  font-size: 10px;
+  color: var(--text-3);
+  margin-left: auto;
+}
+
+/* Expand area */
+.tp-entry { position: relative; }
+.tp-expand {
+  display: none;
+  padding: 2px 8px 10px 44px;
+}
+.tp-entry--open .tp-expand { display: block; }
+.tp-entry--open .tp-row { background: rgba(46, 196, 182, 0.04); }
+.tp-blurb {
+  font-size: 11px;
+  color: var(--text-2);
+  line-height: 1.6;
+  margin: 0 0 6px;
+  max-width: 560px;
+}
+.tp-source {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.tp-source:hover { color: var(--accent-bright, #5de8da); }
+
 /* ===== Mobile ===== */
 .mobile-menu-btn {
   display: none; position: fixed; top: 12px; right: 12px; z-index: 150;
@@ -1106,7 +1260,16 @@ ul.clean li:last-child::before { content: '└── '; }
   .statusline-site { font-size: 9px; }
 }
 
+@media (max-width: 768px) {
+  .tp-line1 { flex-wrap: wrap; }
+  .tp-title { white-space: normal; }
+  .tp-line2 { flex-wrap: wrap; }
+  .tp-hint { display: none; }
+}
+
 @media (max-width: 400px) {
   .stats { grid-template-columns: repeat(2, 1fr); }
   .hero h1 { font-size: 18px; }
+  .tp-num { display: none; }
+  .tp-row { padding: 6px 8px 6px 2px; }
 }
