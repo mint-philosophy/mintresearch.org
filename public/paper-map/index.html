@@ -663,17 +663,19 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
       var basePath = window.location.pathname.replace(/\/paper-map\/?.*/, '');
       var assetsPath = basePath + '/assets/';
 
-      // Top 7 disciplines → unique Minty colors; everything else → cool
+      // Top 7 disciplines → Minty colors matched to filter chip colors
+      // Chip colors: CS=#7eb5d6, Phil=#d6a87e, Safety=#9ed67e,
+      //   Psych=#d67eb5, Policy=#d6d67e, Law=#7ed6c4, Econ=#b57ed6
       var disciplineMap = {
-        'Computer Science & AI':              'minty-teal.png',
-        'Philosophy':                         'minty-brown.png',
-        'AI Safety & Alignment':              'minty-green.png',
-        'Psychology & Cognitive Science':      'minty-purple.png',
-        'Policy & Public Administration':      'minty-yellow.png',
-        'Law & Legal Studies':                'minty-indigo.png',
-        'Economics':                          'minty-red.png',
+        'Computer Science & AI':              'minty-cool.png',    // blue ≈ #7eb5d6
+        'Philosophy':                         'minty-brown.png',   // brown ≈ #d6a87e
+        'AI Safety & Alignment':              'minty-green.png',   // green ≈ #9ed67e
+        'Psychology & Cognitive Science':      'minty-purple.png',  // purple ≈ #d67eb5
+        'Policy & Public Administration':      'minty-yellow.png',  // yellow ≈ #d6d67e
+        'Law & Legal Studies':                'minty-teal.png',    // teal ≈ #7ed6c4
+        'Economics':                          'minty-indigo.png',  // indigo ≈ #b57ed6
       };
-      var defaultIcon = 'minty-cool.png';
+      var defaultIcon = 'minty-red.png';
 
       var numPoints = pointData.x.length;
       var iconData = [];
@@ -684,6 +686,7 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
           position: [pointData.x[i], pointData.y[i]],
           size: pointData.size ? pointData.size[i] : 1,
           icon: sprite,
+          index: i,
         });
       }
 
@@ -708,9 +711,10 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
         highlightColor: [46, 196, 182, 120],
         alphaCutoff: 0.1,
         extensions: [new deck.DataFilterExtension({filterSize: 1})],
-        getFilterValue: function() { return 1.0; },
+        getFilterValue: function(d) { return datamap.selected[d.index]; },
         filterRange: [-0.5, 1.5],
         filterSoftRange: [0.75, 1.25],
+        updateTriggers: { getFilterValue: datamap.updateTriggerCounter },
         parameters: {depthTest: false},
       });
 
@@ -720,6 +724,22 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
       datamap.layers.sort(function(a, b) { return getLayerIndex(a) - getLayerIndex(b); });
       datamap.iconLayer = iconLayer;
       datamap.deckgl.setProps({layers: datamap.layers.slice()});
+
+      // Monkey-patch highlightPoints so filters also update the icon layer
+      var origHighlight = datamap.highlightPoints.bind(datamap);
+      datamap.highlightPoints = function(itemId) {
+        origHighlight(itemId);
+        if (this.iconLayer) {
+          var newIconLayer = this.iconLayer.clone({
+            getFilterValue: function(d) { return datamap.selected[d.index]; },
+            updateTriggers: { getFilterValue: this.updateTriggerCounter },
+          });
+          var idx = this.layers.indexOf(this.iconLayer);
+          if (idx >= 0) { this.layers[idx] = newIconLayer; }
+          this.iconLayer = newIconLayer;
+          this.deckgl.setProps({layers: this.layers.slice()});
+        }
+      };
     }
 
     function loadPointDataLayer() {
@@ -817,12 +837,13 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
             searchField: "searchable",
           });
 
-          // Click-to-show tooltip panel
+          // Click-to-show info panel
           (function() {
             var panel = document.createElement('div');
             panel.id = 'paper-panel';
             panel.style.cssText = 'display:none; position:fixed; z-index:1000; background:#000000ee; border:1px solid rgba(46,196,182,0.3); border-radius:12px; backdrop-filter:blur(6px); box-shadow:2px 3px 10px #00000044; padding:14px; max-width:360px; font-family:"JetBrains Mono",monospace; pointer-events:auto; max-height:70vh; overflow-y:auto;';
             document.body.appendChild(panel);
+            var justShowed = false;
 
             function showPanel(index, x, y) {
               var url = hoverData.url ? hoverData.url[index] : null;
@@ -840,17 +861,21 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
                 '<div style="font-size:11px; color:#ccc; line-height:1.4;">' + hoverData.abstract[index] + '</div>' +
                 linkHtml;
               panel.style.display = 'block';
+              justShowed = true;
+              setTimeout(function() { justShowed = false; }, 200);
               // Position near click, clamped to viewport
-              var pw = panel.offsetWidth || 340;
-              var ph = panel.offsetHeight || 200;
-              var vw = window.innerWidth;
-              var vh = window.innerHeight;
-              var left = Math.min(x + 12, vw - pw - 12);
-              var top = Math.min(y + 12, vh - ph - 12);
-              if (left < 12) left = 12;
-              if (top < 12) top = 12;
-              panel.style.left = left + 'px';
-              panel.style.top = top + 'px';
+              requestAnimationFrame(function() {
+                var pw = panel.offsetWidth || 340;
+                var ph = panel.offsetHeight || 200;
+                var vw = window.innerWidth;
+                var vh = window.innerHeight;
+                var left = Math.min(x + 12, vw - pw - 12);
+                var top = Math.min(y + 12, vh - ph - 12);
+                if (left < 12) left = 12;
+                if (top < 12) top = 12;
+                panel.style.left = left + 'px';
+                panel.style.top = top + 'px';
+              });
             }
 
             function hidePanel() { panel.style.display = 'none'; }
@@ -868,12 +893,12 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
               getTooltip: function() { return null; },
             });
 
-            // Click on background → dismiss
+            // Click on background → dismiss (guarded against race)
             document.addEventListener('click', function(e) {
+              if (justShowed) return;
               if (panel.style.display === 'none') return;
               if (panel.contains(e.target)) return;
-              // Small delay to avoid race with deck.gl onClick
-              setTimeout(function() { hidePanel(); }, 50);
+              hidePanel();
             });
           })();
 
