@@ -320,19 +320,7 @@
       <div class="content-wrapper">
         <div class="stack top-left">
           
-          <div id="title-container" class="container-box">
-            <span
-              style="font-family:JetBrains Mono;font-size:clamp(16pt, 3vw, 28pt);color:#ffffff"
-            >
-              MINT Lab Research Corpus
-            </span>
-            <br />
-            <span
-              style="font-family:JetBrains Mono;font-size:clamp(10pt, 1.5vw, 15pt);color:#777777"
-            >
-              2,045 papers across 22 research areas
-            </span>
-          </div>
+          <!-- Title removed — shown in parent page instead -->
           
 
           
@@ -663,7 +651,75 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
       if (allLoaded) {
         document.getElementById("loading").style.display = "none";
         document.getElementById("progress-container").style.display = "none";
+        // Build Minty icon layer now that we have both point data and metadata
+        if (window._mintyPointData && datamap.metaData && !window._mintyIconsBuilt) {
+          window._mintyIconsBuilt = true;
+          buildMintyIcons(window._mintyPointData, datamap.metaData);
+        }
       }
+    }
+
+    function buildMintyIcons(pointData, metaData) {
+      var basePath = window.location.pathname.replace(/\/paper-map\/?.*/, '');
+      var assetsPath = basePath + '/assets/';
+
+      // Top 7 disciplines → unique Minty colors; everything else → cool
+      var disciplineMap = {
+        'Computer Science & AI':              'minty-teal.png',
+        'Philosophy':                         'minty-brown.png',
+        'AI Safety & Alignment':              'minty-green.png',
+        'Psychology & Cognitive Science':      'minty-purple.png',
+        'Policy & Public Administration':      'minty-yellow.png',
+        'Law & Legal Studies':                'minty-indigo.png',
+        'Economics':                          'minty-red.png',
+      };
+      var defaultIcon = 'minty-cool.png';
+
+      var numPoints = pointData.x.length;
+      var iconData = [];
+      for (var i = 0; i < numPoints; i++) {
+        var disc = metaData.discipline ? metaData.discipline[i] : '';
+        var sprite = disciplineMap[disc] || defaultIcon;
+        iconData.push({
+          position: [pointData.x[i], pointData.y[i]],
+          size: pointData.size ? pointData.size[i] : 1,
+          icon: sprite,
+        });
+      }
+
+      var iconLayer = new deck.IconLayer({
+        id: 'mintyIconLayer',
+        data: iconData,
+        getPosition: function(d) { return d.position; },
+        getIcon: function(d) {
+          return {
+            url: assetsPath + d.icon,
+            width: 115,
+            height: 128,
+            anchorY: 64,
+          };
+        },
+        getSize: function(d) { return Math.max(d.size * 0.6, 0.4); },
+        sizeUnits: 'common',
+        sizeMinPixels: 6,
+        sizeMaxPixels: 28,
+        pickable: true,
+        autoHighlight: true,
+        highlightColor: [46, 196, 182, 120],
+        alphaCutoff: 0.1,
+        extensions: [new deck.DataFilterExtension({filterSize: 1})],
+        getFilterValue: function() { return 1.0; },
+        filterRange: [-0.5, 1.5],
+        filterSoftRange: [0.75, 1.25],
+        parameters: {depthTest: false},
+      });
+
+      // Swap out the scatter layer
+      datamap.layers = datamap.layers.filter(function(l) { return l.id !== 'dataPointLayer'; });
+      datamap.layers.push(iconLayer);
+      datamap.layers.sort(function(a, b) { return getLayerIndex(a) - getLayerIndex(b); });
+      datamap.iconLayer = iconLayer;
+      datamap.deckgl.setProps({layers: datamap.layers.slice()});
     }
 
     function loadPointDataLayer() {
@@ -694,54 +750,8 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
             }
           );
 
-          // Replace scatter dots with Minty icons
-          (function() {
-            var numPoints = pointData.x.length;
-            var iconData = [];
-            for (var i = 0; i < numPoints; i++) {
-              iconData.push({
-                position: [pointData.x[i], pointData.y[i]],
-                color: [pointData.r[i], pointData.g[i], pointData.b[i], pointData.a[i]],
-                size: pointData.size ? pointData.size[i] : 1,
-              });
-            }
-            // Detect base path from current location
-            var basePath = window.location.pathname.replace(/\/paper-map\/?.*/, '');
-            var mintyIcon = basePath + '/assets/minty-teal.png';
-            var iconLayer = new deck.IconLayer({
-              id: 'mintyIconLayer',
-              data: iconData,
-              getPosition: function(d) { return d.position; },
-              getIcon: function() {
-                return {
-                  url: mintyIcon,
-                  width: 115,
-                  height: 128,
-                  anchorY: 128,
-                };
-              },
-              getSize: function(d) { return Math.max(d.size * 0.6, 0.4); },
-              sizeUnits: 'common',
-              sizeMinPixels: 6,
-              sizeMaxPixels: 28,
-              pickable: true,
-              autoHighlight: true,
-              highlightColor: [46, 196, 182, 120],
-              alphaCutoff: 0.1,
-              extensions: [new deck.DataFilterExtension({filterSize: 1})],
-              getFilterValue: function() { return 1.0; },
-              filterRange: [-0.5, 1.5],
-              filterSoftRange: [0.75, 1.25],
-              parameters: {depthTest: false},
-            });
-            // Remove the scatter layer from datamap.layers and add icon layer
-            datamap.layers = datamap.layers.filter(function(l) { return l.id !== 'dataPointLayer'; });
-            datamap.layers.push(iconLayer);
-            datamap.layers.sort(function(a, b) { return getLayerIndex(a) - getLayerIndex(b); });
-            // Register icon layer for filtering/selection
-            datamap.iconLayer = iconLayer;
-            datamap.deckgl.setProps({layers: datamap.layers.slice()});
-          })();
+          // Store point data for Minty icon layer (created after metadata loads)
+          window._mintyPointData = pointData;
 
           document.getElementById("loading").style.display = "none";
           updateProgressBar('point-data-progress', 100);
@@ -800,36 +810,72 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
         } else {
           const { data } = event.data;
           const hoverData = combineTableChunks(data);
+          // Disable built-in hover tooltip — we use click-to-show instead
           datamap.addMetaData(hoverData, {
-            tooltipFunction: ({index, picked, layer}) => {
-              if (!picked) return null;
-              const url = hoverData.url ? hoverData.url[index] : null;
-              const linkHtml = url
-                ? `<a class="pdf-link" href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open PDF &#x2192;</a>`
-                : '';
-              return {"html": `
-    <div style="max-width:350px; font-family: 'JetBrains Mono', monospace;">
-        <div style="font-size:14px; font-weight:600; color:#fff; margin-bottom:6px;">
-            ${hoverData.title[index]}
-        </div>
-        <div style="font-size:11px; color:#aaa; margin-bottom:4px;">
-            ${hoverData.authors[index]}
-        </div>
-        <div style="display:flex; gap:12px; font-size:11px; color:#888; margin-bottom:8px;">
-            <span>${hoverData.year[index]}</span>
-            <span style="color:#6b9; font-weight:500;">${hoverData.category[index]}</span>
-            <span style="color:#7eb5d6;">${hoverData.discipline[index]}</span>
-        </div>
-        <div style="font-size:11px; color:#ccc; line-height:1.4;">
-            ${hoverData.abstract[index]}
-        </div>
-        ${linkHtml}
-    </div>
-    `};
-            },
+            tooltipFunction: () => null,
             onClickFunction: null,
             searchField: "searchable",
           });
+
+          // Click-to-show tooltip panel
+          (function() {
+            var panel = document.createElement('div');
+            panel.id = 'paper-panel';
+            panel.style.cssText = 'display:none; position:fixed; z-index:1000; background:#000000ee; border:1px solid rgba(46,196,182,0.3); border-radius:12px; backdrop-filter:blur(6px); box-shadow:2px 3px 10px #00000044; padding:14px; max-width:360px; font-family:"JetBrains Mono",monospace; pointer-events:auto; max-height:70vh; overflow-y:auto;';
+            document.body.appendChild(panel);
+
+            function showPanel(index, x, y) {
+              var url = hoverData.url ? hoverData.url[index] : null;
+              var linkHtml = url
+                ? '<a class="pdf-link" href="' + url + '" target="_blank" rel="noopener">Open PDF &#x2192;</a>'
+                : '';
+              panel.innerHTML =
+                '<div style="font-size:14px; font-weight:600; color:#fff; margin-bottom:6px;">' + hoverData.title[index] + '</div>' +
+                '<div style="font-size:11px; color:#aaa; margin-bottom:4px;">' + hoverData.authors[index] + '</div>' +
+                '<div style="display:flex; gap:12px; font-size:11px; color:#888; margin-bottom:8px;">' +
+                  '<span>' + hoverData.year[index] + '</span>' +
+                  '<span style="color:#6b9; font-weight:500;">' + hoverData.category[index] + '</span>' +
+                  '<span style="color:#7eb5d6;">' + hoverData.discipline[index] + '</span>' +
+                '</div>' +
+                '<div style="font-size:11px; color:#ccc; line-height:1.4;">' + hoverData.abstract[index] + '</div>' +
+                linkHtml;
+              panel.style.display = 'block';
+              // Position near click, clamped to viewport
+              var pw = panel.offsetWidth || 340;
+              var ph = panel.offsetHeight || 200;
+              var vw = window.innerWidth;
+              var vh = window.innerHeight;
+              var left = Math.min(x + 12, vw - pw - 12);
+              var top = Math.min(y + 12, vh - ph - 12);
+              if (left < 12) left = 12;
+              if (top < 12) top = 12;
+              panel.style.left = left + 'px';
+              panel.style.top = top + 'px';
+            }
+
+            function hidePanel() { panel.style.display = 'none'; }
+
+            // Click on a point → show panel
+            datamap.deckgl.setProps({
+              onClick: function(info, event) {
+                if (info.picked && info.index >= 0) {
+                  var srcEvent = event && event.srcEvent ? event.srcEvent : (info.srcEvent || {});
+                  showPanel(info.index, srcEvent.clientX || 100, srcEvent.clientY || 100);
+                } else {
+                  hidePanel();
+                }
+              },
+              getTooltip: function() { return null; },
+            });
+
+            // Click on background → dismiss
+            document.addEventListener('click', function(e) {
+              if (panel.style.display === 'none') return;
+              if (panel.contains(e.target)) return;
+              // Small delay to avoid race with deck.gl onClick
+              setTimeout(function() { hidePanel(); }, 50);
+            });
+          })();
 
           
           /* Search */
