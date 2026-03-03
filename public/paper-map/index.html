@@ -85,7 +85,7 @@
         background: #000000;
       }
       .deck-tooltip {
-          
+
             font-size: 0.8em;
             font-family: JetBrains Mono;
             font-weight: 300;
@@ -95,7 +95,18 @@
             backdrop-filter: blur(6px);
             box-shadow: 2px 3px 10px #00000044;
             max-width: 25%;
+            pointer-events: auto !important;
       }
+      .deck-tooltip a.pdf-link {
+            display: inline-flex; align-items: center; gap: 4px;
+            margin-top: 8px; padding: 5px 10px;
+            font-size: 11px; font-family: 'JetBrains Mono', monospace;
+            color: #2ec4b6; text-decoration: none;
+            border: 1px dashed rgba(46,196,182,0.4);
+            background: rgba(46,196,182,0.08);
+            -webkit-tap-highlight-color: rgba(46,196,182,0.2);
+      }
+      .deck-tooltip a.pdf-link:hover { border-color: #2ec4b6; background: rgba(46,196,182,0.15); }
       input {
         margin: 2px;
         padding: 4px;
@@ -438,7 +449,7 @@
     </a>
     </body>
   <script>
-    LAYER_ORDER=['imageLayer','dataPointLayer','boundaryLayer','labelLayer'];function getLayerIndex(object){return LAYER_ORDER.indexOf(object.id);}
+    LAYER_ORDER=['imageLayer','dataPointLayer','mintyIconLayer','boundaryLayer','labelLayer'];function getLayerIndex(object){return LAYER_ORDER.indexOf(object.id);}
 function isFontLoaded(fontName){return document.fonts.check(`12px "${fontName}"`);}
 function waitForFont(fontName,maxWait=10000){return new Promise((resolve,reject)=>{if(isFontLoaded(fontName)){resolve();}else{const startTime=Date.now();const interval=setInterval(()=>{if(isFontLoaded(fontName)){clearInterval(interval);resolve();}else if(Date.now()-startTime>maxWait){clearInterval(interval);reject(new Error(`Font ${fontName} did not load within ${maxWait}ms`));}},50);}});}
 function getInitialViewportSize(){const width=document.documentElement.clientWidth;const height=document.documentElement.clientHeight;return{viewportWidth:width,viewportHeight:height};}
@@ -683,6 +694,55 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
             }
           );
 
+          // Replace scatter dots with Minty icons
+          (function() {
+            var numPoints = pointData.x.length;
+            var iconData = [];
+            for (var i = 0; i < numPoints; i++) {
+              iconData.push({
+                position: [pointData.x[i], pointData.y[i]],
+                color: [pointData.r[i], pointData.g[i], pointData.b[i], pointData.a[i]],
+                size: pointData.size ? pointData.size[i] : 1,
+              });
+            }
+            // Detect base path from current location
+            var basePath = window.location.pathname.replace(/\/paper-map\/?.*/, '');
+            var mintyIcon = basePath + '/assets/minty-teal.png';
+            var iconLayer = new deck.IconLayer({
+              id: 'mintyIconLayer',
+              data: iconData,
+              getPosition: function(d) { return d.position; },
+              getIcon: function() {
+                return {
+                  url: mintyIcon,
+                  width: 115,
+                  height: 128,
+                  anchorY: 128,
+                };
+              },
+              getSize: function(d) { return Math.max(d.size * 0.6, 0.4); },
+              sizeUnits: 'common',
+              sizeMinPixels: 6,
+              sizeMaxPixels: 28,
+              pickable: true,
+              autoHighlight: true,
+              highlightColor: [46, 196, 182, 120],
+              alphaCutoff: 0.1,
+              extensions: [new deck.DataFilterExtension({filterSize: 1})],
+              getFilterValue: function() { return 1.0; },
+              filterRange: [-0.5, 1.5],
+              filterSoftRange: [0.75, 1.25],
+              parameters: {depthTest: false},
+            });
+            // Remove the scatter layer from datamap.layers and add icon layer
+            datamap.layers = datamap.layers.filter(function(l) { return l.id !== 'dataPointLayer'; });
+            datamap.layers.push(iconLayer);
+            datamap.layers.sort(function(a, b) { return getLayerIndex(a) - getLayerIndex(b); });
+            // Register icon layer for filtering/selection
+            datamap.iconLayer = iconLayer;
+            datamap.deckgl.setProps({layers: datamap.layers.slice()});
+          })();
+
           document.getElementById("loading").style.display = "none";
           updateProgressBar('point-data-progress', 100);
           checkAllDataLoaded();}
@@ -741,7 +801,13 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
           const { data } = event.data;
           const hoverData = combineTableChunks(data);
           datamap.addMetaData(hoverData, {
-            tooltipFunction: ({index, picked, layer}) => picked ? {"html": `
+            tooltipFunction: ({index, picked, layer}) => {
+              if (!picked) return null;
+              const url = hoverData.url ? hoverData.url[index] : null;
+              const linkHtml = url
+                ? `<a class="pdf-link" href="${url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open PDF &#x2192;</a>`
+                : '';
+              return {"html": `
     <div style="max-width:350px; font-family: 'JetBrains Mono', monospace;">
         <div style="font-size:14px; font-weight:600; color:#fff; margin-bottom:6px;">
             ${hoverData.title[index]}
@@ -757,8 +823,10 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
         <div style="font-size:11px; color:#ccc; line-height:1.4;">
             ${hoverData.abstract[index]}
         </div>
+        ${linkHtml}
     </div>
-    `} : null,
+    `};
+            },
             onClickFunction: null,
             searchField: "searchable",
           });
@@ -934,19 +1002,8 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
 
     setTimeout(initFilters, 2000);
 
-    // Click-to-Drive handler
-    setTimeout(() => {
-        if (typeof datamap !== 'undefined' && datamap.deckgl) {
-            datamap.deckgl.setProps({
-                onClick: ({index, picked}) => {
-                    if (picked && datamap.metaData && datamap.metaData.url) {
-                        const url = datamap.metaData.url[index];
-                        if (url) window.open(url, '_blank');
-                    }
-                }
-            });
-        }
-    }, 1000);
+    // Click-to-Drive handler removed — PDF link is now inside the tooltip
+    // so users can tap a dot to see info without accidentally opening the PDF.
     
     </script>
 </html>
