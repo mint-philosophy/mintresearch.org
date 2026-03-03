@@ -25,8 +25,8 @@ b"@font-face {\n  font-family: 'JetBrains Mono';\n  font-style: normal;\n  font-
       rel="stylesheet"
     />
     
-    <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script>
     <script src="https://unpkg.com/apache-arrow@latest/Arrow.es2015.min.js"></script>
+    <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script>
     <style>
       .content-wrapper{top:0;left:0;width:100%;height:100%;z-index:1;padding:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;min-height:calc(100vh - 16px);pointer-events:none}.stack{display:flex;flex-direction:column;gap:0;padding:0;pointer-events:none;max-height:50vh;overflow-y:visible}.top-left{grid-column:1;grid-row:1;justify-self:start;align-self:start;align-items:start}.bottom-left{grid-column:1;grid-row:2;justify-self:start;align-self:end;align-items:start;display:flex;flex-direction:column-reverse;transform:scaleY(-1);z-index:2}.top-right{grid-column:2;grid-row:1;justify-self:end;justify-items:end;align-self:start;align-items:end}.bottom-right{grid-column:2;grid-row:2;justify-self:end;justify-items:end;align-self:end;align-items:end;display:flex;flex-direction:column-reverse;transform:scaleY(-1)}.stack.bottom-left .stack-box{transform:scaleY(-1)}.stack.bottom-right .stack-box{transform:scaleY(-1)}#loading{width:100%;height:100%;top:0px;left:0px;position:absolute;display:block;z-index:99}#loading-image{position:absolute;top:45%;left:47.5%;z-index:100}#title-container{top:0;left:0;max-width:calc(100vw - 32px)}
     </style><style>
@@ -288,7 +288,7 @@ b"@font-face {\n  font-family: 'JetBrains Mono';\n  font-style: normal;\n  font-
       />
     </div>
     <div style="isolation: isolate; position: relative;">
-      <div id="deck-container" style="position: fixed; z-index: -1; top: 0; left: 0; width: 100%; height: 100%;"></div>
+      <span style="font-family:'JetBrains Mono';font-weight:400;position:absolute;visibility:hidden;pointer-events:none">.</span><span style="font-family:'JetBrains Mono';font-weight:700;position:absolute;visibility:hidden;pointer-events:none">.</span><div id="deck-container" style="position: fixed; z-index: -1; top: 0; left: 0; width: 100%; height: 100%;"></div>
       <div class="content-wrapper">
         <div class="stack top-left">
           
@@ -685,7 +685,7 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
           const labelData = data[0].chunkData;
           datamap.labelData = labelData;
           // Only build labels where we have a position.
-          await document.fonts.load('600 12px "JetBrains Mono"'); datamap.addLabels(labelData, {
+          await document.fonts.load('400 12px "JetBrains Mono"'); await document.fonts.load('700 12px "JetBrains Mono"'); datamap.addLabels(labelData, {
             labelTextColor: d => [d.r, d.g, d.b],
             textMinPixelSize: 18,
             textMaxPixelSize: 36,
@@ -693,7 +693,7 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
             textOutlineColor: [17, 17, 17, 221],
             textBackgroundColor: [0, 0, 0, 64],
             fontFamily: "JetBrains Mono",
-            fontWeight: 600,
+            fontWeight: 700,
             lineSpacing: 0.95,
             textCollisionSizeScale: 3,
             pickable: false,
