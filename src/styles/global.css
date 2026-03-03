@@ -1022,16 +1022,21 @@ ul.clean li:last-child::before { content: '└── '; }
   .bleed-line { display: none; }
   section::before, section::after { display: none; }
   .statusline {
-    padding: 4px 8px;
+    padding: 2px 8px;
     font-size: 10px;
     height: auto;
     min-height: var(--statusline-h);
-    flex-wrap: wrap;
-    gap: 4px 10px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 0 8px;
+    align-items: center;
   }
-  .statusline-progress { min-width: auto; flex: 1 1 100%; }
-  .statusline-section { flex: 1; min-width: 0; }
-  .statusline-site { font-size: 9px; }
+  .statusline-minty { grid-row: 1 / 3; }
+  .statusline-progress { grid-column: 2 / 4; }
+  .statusline-sep { display: none; }
+  .statusline-section { grid-column: 2; font-size: 9px; }
+  .statusline-site { grid-column: 3; font-size: 9px; }
 }
 
 @media (max-width: 400px) {
