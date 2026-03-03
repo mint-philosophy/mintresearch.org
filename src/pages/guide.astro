@@ -670,7 +670,7 @@ import RefTable from '../components/RefTable.astro';
     <div class="ingest-stages">
 
       <div class="ingest-stage">
-        <div class="ingest-dot" style="background:#2dd4bf;box-shadow:0 0 6px rgba(45,212,191,0.4)"></div>
+        <img class="ingest-dot" src="/assets/minty-teal.png" alt="" style="filter:drop-shadow(0 0 4px rgba(45,212,191,0.5))">
         <div class="ingest-line" style="background:#2dd4bf"></div>
         <div class="ingest-box" style="border-color:#2dd4bf" data-ingest-tip="Fetches PDFs from Slack (#firehose, #papers) or the local-PDFs catchup folder. SHA-256 hash deduplication prevents re-downloading papers already in the corpus. Supports arXiv, Semantic Scholar, direct PDF links, and 15+ publisher-specific download strategies." data-ingest-color="#2dd4bf">
           <span class="ingest-num" style="color:#2dd4bf">1</span>
@@ -682,7 +682,7 @@ import RefTable from '../components/RefTable.astro';
       </div>
 
       <div class="ingest-stage">
-        <div class="ingest-dot" style="background:#2dd4bf;box-shadow:0 0 6px rgba(45,212,191,0.4)"></div>
+        <img class="ingest-dot" src="/assets/minty-teal.png" alt="" style="filter:drop-shadow(0 0 4px rgba(45,212,191,0.5))">
         <div class="ingest-line" style="background:#2dd4bf"></div>
         <div class="ingest-box" style="border-color:#2dd4bf" data-ingest-tip="Extracts metadata (title, authors, year) from the PDF and renames the file to a standardised format: Author1_Author2_Year_ShortTitle.pdf. Uses CrossRef and Semantic Scholar APIs for metadata resolution." data-ingest-color="#2dd4bf">
           <span class="ingest-num" style="color:#2dd4bf">2</span>
@@ -694,7 +694,7 @@ import RefTable from '../components/RefTable.astro';
       </div>
 
       <div class="ingest-stage ingest-stage--highlight">
-        <div class="ingest-dot" style="background:#fb923c;box-shadow:0 0 8px rgba(251,146,60,0.5)"></div>
+        <img class="ingest-dot" src="/assets/minty-brown.png" alt="" style="filter:drop-shadow(0 0 5px rgba(251,146,60,0.6))">
         <div class="ingest-line" style="background:#fb923c"></div>
         <div class="ingest-box" style="border-color:#fb923c;border-width:1.5px;background:rgba(251,146,60,0.04)" data-ingest-tip="Converts PDF to searchable markdown via a 6-tier cascade: Companion (pre-extracted) &rarr; arXiv HTML &rarr; ar5iv &rarr; Marker &rarr; PyMuPDF &rarr; Tesseract OCR. Each tier is tried only if the previous fails. This is the most failure-prone stage — highlighted because conversion quality directly determines downstream embedding and analysis quality." data-ingest-color="#fb923c">
           <span class="ingest-num" style="color:#fb923c">3</span>
@@ -706,7 +706,7 @@ import RefTable from '../components/RefTable.astro';
       </div>
 
       <div class="ingest-stage">
-        <div class="ingest-dot" style="background:#818cf8;box-shadow:0 0 6px rgba(129,140,248,0.4)"></div>
+        <img class="ingest-dot" src="/assets/minty-indigo.png" alt="" style="filter:drop-shadow(0 0 4px rgba(129,140,248,0.5))">
         <div class="ingest-line" style="background:#818cf8"></div>
         <div class="ingest-box" style="border-color:#818cf8" data-ingest-tip="Generates 2048-dimensional vector embeddings via Voyage AI. Each document receives 48 separate embeddings — one per semantic dimension — enabling multi-lens retrieval. Chunks are also embedded separately for passage-level search." data-ingest-color="#818cf8">
           <span class="ingest-num" style="color:#818cf8">4</span>
@@ -718,7 +718,7 @@ import RefTable from '../components/RefTable.astro';
       </div>
 
       <div class="ingest-stage">
-        <div class="ingest-dot" style="background:#2dd4bf;box-shadow:0 0 6px rgba(45,212,191,0.4)"></div>
+        <img class="ingest-dot" src="/assets/minty-teal.png" alt="" style="filter:drop-shadow(0 0 4px rgba(45,212,191,0.5))">
         <div class="ingest-line" style="background:#2dd4bf"></div>
         <div class="ingest-box" style="border-color:#2dd4bf" data-ingest-tip="Fetches bibliographic metadata from CrossRef and Semantic Scholar: citation counts, DOI, publication venue, abstract, references, and author affiliations. Resolves arXiv IDs to published versions where available." data-ingest-color="#2dd4bf">
           <span class="ingest-num" style="color:#2dd4bf">5</span>
@@ -730,7 +730,7 @@ import RefTable from '../components/RefTable.astro';
       </div>
 
       <div class="ingest-stage">
-        <div class="ingest-dot" style="background:#a78bfa;box-shadow:0 0 6px rgba(167,139,250,0.4)"></div>
+        <img class="ingest-dot" src="/assets/minty-purple.png" alt="" style="filter:drop-shadow(0 0 4px rgba(167,139,250,0.5))">
         <div class="ingest-line" style="background:#a78bfa"></div>
         <div class="ingest-box" style="border-color:#a78bfa" data-ingest-tip="Deep semantic analysis via Claude Opus across 41 questions spanning research core (thesis, claims, evidence), methodology, AI-specific dimensions, meta-analysis, and advanced categories. Each answer becomes a searchable text field with its own 2048d embedding vector." data-ingest-color="#a78bfa">
           <span class="ingest-num" style="color:#a78bfa">6</span>
@@ -742,7 +742,7 @@ import RefTable from '../components/RefTable.astro';
       </div>
 
       <div class="ingest-stage">
-        <div class="ingest-dot" style="background:#a78bfa;box-shadow:0 0 6px rgba(167,139,250,0.4)"></div>
+        <img class="ingest-dot" src="/assets/minty-purple.png" alt="" style="filter:drop-shadow(0 0 4px rgba(167,139,250,0.5))">
         <div class="ingest-line" style="background:#a78bfa"></div>
         <div class="ingest-box" style="border-color:#a78bfa" data-ingest-tip="Generates hierarchical summaries at section and document level using Claude Opus. RAPTOR (Recursive Abstractive Processing for Tree-Organized Retrieval) summaries enable fast corpus-wide search via compact summary embeddings rather than full-text." data-ingest-color="#a78bfa">
           <span class="ingest-num" style="color:#a78bfa">7</span>
@@ -754,7 +754,7 @@ import RefTable from '../components/RefTable.astro';
       </div>
 
       <div class="ingest-stage">
-        <div class="ingest-dot" style="background:#2dd4bf;box-shadow:0 0 6px rgba(45,212,191,0.4)"></div>
+        <img class="ingest-dot" src="/assets/minty-teal.png" alt="" style="filter:drop-shadow(0 0 4px rgba(45,212,191,0.5))">
         <div class="ingest-line" style="background:#2dd4bf"></div>
         <div class="ingest-box" style="border-color:#2dd4bf" data-ingest-tip="Validates that all database fields are populated correctly: embeddings present, analysis complete, summaries generated, metadata resolved. Papers failing verification are flagged for manual review." data-ingest-color="#2dd4bf">
           <span class="ingest-num" style="color:#2dd4bf">8</span>
@@ -766,7 +766,7 @@ import RefTable from '../components/RefTable.astro';
       </div>
 
       <div class="ingest-stage">
-        <div class="ingest-dot" style="background:#4ade80;box-shadow:0 0 6px rgba(74,222,128,0.4)"></div>
+        <img class="ingest-dot" src="/assets/minty-green.png" alt="" style="filter:drop-shadow(0 0 4px rgba(74,222,128,0.5))">
         <div class="ingest-line" style="background:#4ade80"></div>
         <div class="ingest-box" style="border-color:#4ade80" data-ingest-tip="Uploads the original PDF and generated markdown file to the lab's Google Shared Drive via rclone, organised in folders by topic cluster. Provides browser-accessible copies for lab members without local corpus access." data-ingest-color="#4ade80">
           <span class="ingest-num" style="color:#4ade80">9</span>
@@ -778,7 +778,7 @@ import RefTable from '../components/RefTable.astro';
       </div>
 
       <div class="ingest-stage">
-        <div class="ingest-dot" style="background:#38bdf8;box-shadow:0 0 6px rgba(56,189,248,0.4)"></div>
+        <img class="ingest-dot" src="/assets/minty-cool.png" alt="" style="filter:drop-shadow(0 0 4px rgba(56,189,248,0.5))">
         <div class="ingest-line" style="background:#38bdf8"></div>
         <div class="ingest-box" style="border-color:#38bdf8" data-ingest-tip="Creates a catalog entry in the lab's Zotero library with full bibliographic metadata, tags, and links to the Drive copies. Enables citation management and BibTeX export for lab members writing papers." data-ingest-color="#38bdf8">
           <span class="ingest-num" style="color:#38bdf8">10</span>
@@ -790,7 +790,7 @@ import RefTable from '../components/RefTable.astro';
       </div>
 
       <div class="ingest-stage ingest-stage--last">
-        <div class="ingest-dot" style="background:#f472b6;box-shadow:0 0 6px rgba(244,114,182,0.4)"></div>
+        <img class="ingest-dot" src="/assets/minty-red.png" alt="" style="filter:drop-shadow(0 0 4px rgba(244,114,182,0.5))">
         <div class="ingest-box" style="border-color:#f472b6" data-ingest-tip="Posts a completion notification to the #corpus-updates Slack channel with paper title, authors, processing statistics, and any warnings from earlier stages. Lab members can react to trigger further actions." data-ingest-color="#f472b6">
           <span class="ingest-num" style="color:#f472b6">11</span>
           <div class="ingest-info">
