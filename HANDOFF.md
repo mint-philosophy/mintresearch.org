@@ -62,12 +62,17 @@ mintresearch.org/
 |   |   |-- StatCard.astro        # Stat display (number + label)
 |   |-- layouts/
 |   |   |-- BaseLayout.astro      # HTML shell, font loading, mobile menu
+|   |-- data/
+|   |   |-- stats.json            # Centralised stats (auto-updated by daemon + manual)
+|   |   |-- navigation.ts         # Sidebar navigation config
 |   |-- pages/
 |   |   |-- index.astro           # Landing page (placeholder)
-|   |   |-- guide.astro           # Lab infrastructure guide (partial migration)
+|   |   |-- guide.astro           # Lab infrastructure guide
+|   |   |-- corpus-map.astro      # Interactive corpus map (paper-map iframe)
+|   |   |-- newsletter.astro      # Newsletter subscribe page
 |   |   |-- test.astro            # Component test/demo page
 |   |-- styles/
-|       |-- global.css            # Full design system CSS (~908 lines)
+|       |-- global.css            # Full design system CSS
 |
 |-- public/                       # Served as-is by Astro (no processing)
 |   |-- .nojekyll                 # Tells GitHub Pages not to use Jekyll
@@ -215,14 +220,35 @@ npx astro preview
 
 ## External Dependencies
 
+### Centralised Stats (`src/data/stats.json`)
+
+**All quantitative claims on the site come from this one file.** Paper count, subscriber count, cluster breakdowns, discipline counts, year distribution — everything. Astro pages import it and use template expressions; nothing is hardcoded.
+
+```astro
+---
+import stats from '../data/stats.json';
+const fmt = (n) => n.toLocaleString();
+const approx = (n) => '~' + (Math.round(n / 100) * 100).toLocaleString();
+const c = stats.corpus;
+---
+<p>{approx(c.paperCount)} papers across {c.clusterCount} research areas</p>
+```
+
+**Auto-updated fields** (by paper-map-updater daemon from LanceDB): `corpus.*`, `clusters`, `disciplines`, `yearDistribution`. These update daily.
+
+**Manually maintained fields**: `subscribers` (count + institutions), `persona` (word counts for agent documents). Update these by hand when they change.
+
+**If you add a new stat to the site**, put it in `stats.json` and reference it — don't hardcode. If the stat comes from LanceDB, add it to `update_site_stats()` in the daemon.
+
 ### Paper Map Updater Daemon
 
 The `paper-map-updater` daemon (in the Minty workspace at `daemons/paper-map-updater/`) pushes generated paper map files to `public/paper-map/` in this repo. The daemon:
 - Runs the DataMapPlot pipeline to generate an interactive visualization of the research corpus
-- Commits and pushes updated files directly to this repo's `public/paper-map/` directory
-- Runs on a schedule (multiple times daily)
+- Updates `src/data/stats.json` with current corpus stats from LanceDB
+- Commits and pushes both to this repo
+- Runs daily at 04:00 AEDT
 
-**Do not restructure `public/paper-map/` without updating the daemon's output paths.** The pipeline scripts inside `paper-map/` (the various `.py` files) are run externally by the daemon -- they are not part of the Astro build.
+**Do not restructure `public/paper-map/` or `src/data/stats.json` without updating the daemon's output paths.** The pipeline scripts inside `paper-map/` (the various `.py` files) are run externally by the daemon -- they are not part of the Astro build.
 
 ---
 
