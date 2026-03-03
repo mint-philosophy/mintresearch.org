@@ -1024,15 +1024,16 @@ ul.clean li:last-child::before { content: '└── '; }
   .top-banner-minties { flex-wrap: wrap; justify-content: center; gap: 6px; }
   .top-banner-minty { width: 32px; height: 32px; }
 }
-/* Phone landscape: banner side-by-side, compact */
+/* Phone landscape: banner side-by-side, compact, Dynamic Island safe */
 @media (max-width: 900px) and (orientation: landscape) {
-  main { margin-top: 60px; }
-  .top-banner { min-height: 50px; }
+  main { margin-top: 60px; padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+  .top-banner { min-height: 50px; padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
   .top-banner-inner { flex-direction: row; gap: 10px; padding: 6px 16px; }
   .top-banner-logo { height: 32px; }
   .top-banner-minty { width: 22px; height: 22px; }
   .top-banner-minties { flex-wrap: nowrap; gap: 3px; }
-  section { padding: 16px 16px 24px; }
+  .statusline { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+  section { padding: 16px calc(16px + env(safe-area-inset-left, 0px)) 24px calc(16px + env(safe-area-inset-right, 0px)); }
   .hero { padding: 40px 16px 24px; }
   .hero h1 { font-size: 20px; }
   .cards { grid-template-columns: 1fr; }
