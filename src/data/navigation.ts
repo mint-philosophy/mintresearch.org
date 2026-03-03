@@ -15,7 +15,7 @@ export interface PageNav {
 export const siteNav: PageNav[] = [
   {
     path: "/",
-    label: "Lab",
+    label: "About the Lab",
     icon: "◆",
     sections: [
       { href: "#about", label: "About" },
