@@ -17,7 +17,7 @@ import RefTable from '../components/RefTable.astro';
 <section id="pipeline" class="fade-in no-brackets">
 
   <div class="pipeline-wrap">
-    <svg viewBox="0 0 960 710" width="100%" xmlns="http://www.w3.org/2000/svg" style="font-family:'JetBrains Mono',monospace">
+    <svg viewBox="0 0 960 710" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="font-family:'JetBrains Mono',monospace">
       <defs>
         <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#22d3ee"/></marker>
         <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#2ec4b6"/></marker>
@@ -191,7 +191,7 @@ import RefTable from '../components/RefTable.astro';
 
       <!-- ===== Animated dots ===== -->
       <g opacity="0" filter="url(#glow)">
-        <image href="/mintresearch.org/assets/minty-teal.png" x="-9" y="-10" width="18" height="20" style="image-rendering:pixelated"/>
+        <image href="/mintresearch.org/assets/minty-teal.png" xlink:href="/mintresearch.org/assets/minty-teal.png" x="-9" y="-10" width="18" height="20" style="image-rendering:pixelated"/>
         <animateTransform attributeName="transform" type="translate" dur="12s" repeatCount="indefinite" calcMode="linear"
           keyTimes="0;0.01;0.05;0.09;0.12;0.16;0.19;0.22;0.25;0.28;0.32;0.34;0.38;0.41;0.43;0.47;0.49;0.50;0.51;0.57;0.62;0.68;0.76;0.84;0.93;0.97;1"
           values="88,39;88,39;243,39;379,39;489,39;617,39;617,85;510,85;510,137;580,130;723,133;723,158;723,237;633,245;605,245;605,152;580,152;510,152;510,170;510,253;510,325;510,398;510,499;510,584;510,584;510,584;88,39"/>
@@ -224,7 +224,7 @@ import RefTable from '../components/RefTable.astro';
   </div>
 
   <div class="pipeline-mobile">
-    <svg viewBox="0 0 450 750" width="100%" xmlns="http://www.w3.org/2000/svg" style="font-family:'JetBrains Mono',monospace">
+    <svg viewBox="0 0 450 750" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="font-family:'JetBrains Mono',monospace">
       <defs>
         <marker id="mArrCyan" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="#22d3ee"/></marker>
         <marker id="mArrGreen" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto"><path d="M0,0 L7,2.5 L0,5" fill="#2ec4b6"/></marker>
@@ -388,7 +388,7 @@ import RefTable from '../components/RefTable.astro';
 
       <!-- Mobile animated Minty -->
       <g opacity="0" filter="url(#mGlow)">
-        <image href="/mintresearch.org/assets/minty-teal.png" x="-6" y="-7" width="12" height="14" style="image-rendering:pixelated"/>
+        <image href="/mintresearch.org/assets/minty-teal.png" xlink:href="/mintresearch.org/assets/minty-teal.png" x="-6" y="-7" width="12" height="14" style="image-rendering:pixelated"/>
         <animateTransform attributeName="transform" type="translate" dur="16s" repeatCount="indefinite" calcMode="linear"
           keyTimes="0;0.01;0.04;0.07;0.09;0.11;0.13;0.16;0.20;0.24;0.28;0.32;0.36;0.39;0.43;0.48;0.53;0.58;0.63;0.68;0.73;0.88;0.95;1"
           values="65,29;65,29;195,29;320,29;320,91;320,151;320,200;250,245;80,245;80,265;80,321;150,321;270,321;270,265;328,265;328,418;328,489;328,560;328,636;328,713;328,713;328,713;328,713;65,29"/>
@@ -496,7 +496,21 @@ import RefTable from '../components/RefTable.astro';
     </tbody>
   </RefTable>
 
-  <p><strong>Deduplication</strong> uses a union-find algorithm with multiple keys per item &mdash; content hash, URL hash, and canonical IDs (arXiv, DOI, YouTube). Items sharing any key are grouped; the canonical item is chosen by engagement, then length, then timestamp. Unique items advance to classification.</p>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0;padding:14px 16px;background:var(--bg-0);border:1px solid var(--border)">
+    <div style="font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:0.5px">RAW ITEMS</div>
+    <div style="color:var(--text-3);font-family:var(--font)">&#x2192;</div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap">
+      <code style="font-size:10px;padding:2px 6px;background:var(--bg-3);color:var(--cyan);border:1px solid rgba(34,211,238,0.2)">Content hash</code>
+      <code style="font-size:10px;padding:2px 6px;background:var(--bg-3);color:var(--cyan);border:1px solid rgba(34,211,238,0.2)">URL hash</code>
+      <code style="font-size:10px;padding:2px 6px;background:var(--bg-3);color:var(--cyan);border:1px solid rgba(34,211,238,0.2)">Canonical IDs</code>
+    </div>
+    <div style="color:var(--text-3);font-family:var(--font)">&#x2192;</div>
+    <div style="cursor:pointer;font-size:11px;color:var(--mint);font-weight:600;border-bottom:1px dashed var(--mint)" data-ingest-tip="Union-find algorithm: items sharing ANY key (content hash, URL, arXiv ID, DOI, YouTube ID) are grouped together. The canonical item is chosen by engagement, then length, then timestamp." data-ingest-color="#2ec4b6">Union-Find</div>
+    <div style="color:var(--text-3);font-family:var(--font)">&#x2192;</div>
+    <div style="font-size:10px;color:var(--text-2)">best by <span style="color:var(--amber)">engagement</span> &gt; <span style="color:var(--cyan)">length</span> &gt; <span style="color:var(--text-3)">time</span></div>
+    <div style="color:var(--text-3);font-family:var(--font)">&#x2192;</div>
+    <div style="font-size:10px;font-weight:700;color:var(--green);letter-spacing:0.5px">UNIQUE ITEMS</div>
+  </div>
 
   <p><strong>Classification</strong> uses Claude Opus with 16 concurrent workers in ~40K-token batches. Each item is scored across six dimensions:</p>
 
@@ -512,7 +526,24 @@ import RefTable from '../components/RefTable.astro';
     </tbody>
   </RefTable>
 
-  <p>Thresholds are source-specific: arXiv &ge;0.60, PhilPapers &ge;0.45, everything else &ge;0.50. Topics <code>progress_studies</code> and <code>ai_science</code> get a +0.06 boost. Allowlisted accounts bypass classification entirely.</p>
+  <div style="margin:16px 0 20px">
+    <div style="font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:0.5px;margin-bottom:10px">COMPOSITE SCORE THRESHOLDS</div>
+    <div style="display:grid;grid-template-columns:90px 1fr 44px;gap:6px 12px;align-items:center;font-size:11px">
+      <div style="color:var(--green);font-weight:600">arXiv</div>
+      <div style="background:var(--bg-0);height:6px;position:relative;border:1px solid var(--border)"><div style="position:absolute;left:0;top:0;height:100%;width:60%;background:var(--green);opacity:0.5"></div></div>
+      <div style="color:var(--text-2)">&ge; 0.60</div>
+      <div style="color:var(--text-1);font-weight:600">Default</div>
+      <div style="background:var(--bg-0);height:6px;position:relative;border:1px solid var(--border)"><div style="position:absolute;left:0;top:0;height:100%;width:50%;background:var(--accent);opacity:0.4"></div></div>
+      <div style="color:var(--text-2)">&ge; 0.50</div>
+      <div style="color:var(--purple);font-weight:600">PhilPapers</div>
+      <div style="background:var(--bg-0);height:6px;position:relative;border:1px solid var(--border)"><div style="position:absolute;left:0;top:0;height:100%;width:45%;background:var(--purple);opacity:0.5"></div></div>
+      <div style="color:var(--text-2)">&ge; 0.45</div>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--text-3)">
+      <span><code style="font-size:10px">progress_studies</code> <code style="font-size:10px">ai_science</code> <span style="color:var(--amber)">+0.06 boost</span></span>
+      <span>Allowlisted accounts <span style="color:var(--green)">bypass classification</span></span>
+    </div>
+  </div>
 
   <h3 style="margin-top:28px;font-size:14px;color:var(--mint)">Inside the Classification Prompt</h3>
   <p style="font-size:13px;color:var(--text-2);margin-bottom:16px">Every item is evaluated against a 177-line classification prompt encoding the lab's identity, topic taxonomy, quality heuristics, scoring floors, and hard exclusions. Tap or hover each theme for exact prompt language.</p>
@@ -561,74 +592,83 @@ import RefTable from '../components/RefTable.astro';
   </div>
 
   <h3 style="margin-top:28px;font-size:14px;color:var(--mint)">After Classification: Upsampling &amp; Delivery</h3>
-  <p style="font-size:13px;color:var(--text-2);margin-bottom:16px">Classification also transforms each item into a structured record. Four further stages prepare items for delivery.</p>
+  <p style="font-size:13px;color:var(--text-2);margin-bottom:16px">Five stages transform classified items into structured records and route them to Slack. Hover or tap each stage for details.</p>
 
-  <div style="display:grid;grid-template-columns:3px 1fr;gap:0 16px;margin:20px 0">
-    <div style="background:var(--mint);border-radius:0"></div>
-    <div style="padding:12px 0">
-      <div style="font-size:13px;font-weight:700;color:var(--mint);margin-bottom:4px">Upsampling</div>
-      <div style="font-size:12.5px;color:var(--text-2);line-height:1.6">Generates a <strong>5&ndash;10 word headline</strong>, assigns one of <strong>16 categories</strong>, writes a <strong>classification reason</strong>, and flags <strong>paper links</strong>. Every item emerges with six scores, a category, a headline, and a reason.</div>
+  <div class="pipeline-flow pipeline-flow--5" style="margin:16px 0 24px">
+    <div class="pf-card" style="border-left:3px solid var(--mint);cursor:pointer"
+         data-ingest-tip="Generates a 5&ndash;10 word headline, assigns one of 16 categories, writes a classification reason, and flags paper links. Every item emerges with six scores, a category, a headline, and a reason."
+         data-ingest-color="#2ec4b6">
+      <div style="font-size:12px;font-weight:700;color:var(--mint)">Upsample</div>
+      <div style="font-size:10px;color:var(--text-3)">Headlines + 16 categories</div>
     </div>
-    <div style="background:var(--cyan);border-radius:0"></div>
-    <div style="padding:12px 0;border-top:1px solid var(--border)">
-      <div style="font-size:13px;font-weight:700;color:var(--cyan);margin-bottom:4px">Summarisation</div>
-      <div style="font-size:12.5px;color:var(--text-2);line-height:1.6">Parallel Opus pass for long-form content (RSS, Substack, email, posts &gt;3K chars). Generates an intelligent reading &mdash; central insight first, supporting arguments with data, original word count. Honest about partial sources.</div>
+    <div class="pf-card" style="border-left:3px solid var(--cyan);cursor:pointer"
+         data-ingest-tip="Parallel Opus pass for long-form content (RSS, Substack, email, posts &gt;3K chars). Generates an intelligent reading &mdash; central insight first, supporting arguments with data, original word count. Honest about partial sources."
+         data-ingest-color="#56b6c2">
+      <div style="font-size:12px;font-weight:700;color:var(--cyan)">Summarise</div>
+      <div style="font-size:10px;color:var(--text-3)">Opus, long-form only</div>
     </div>
-    <div style="background:var(--amber);border-radius:0"></div>
-    <div style="padding:12px 0;border-top:1px solid var(--border)">
-      <div style="font-size:13px;font-weight:700;color:var(--amber);margin-bottom:4px">Enrichment</div>
-      <div style="font-size:12.5px;color:var(--text-2);line-height:1.6">Resolves shortlinks, scrapes <strong>abstracts</strong> from 30+ publisher domains, and downloads <strong>PDFs</strong> via publisher-specific URL transforms and the ANU institutional proxy.</div>
+    <div class="pf-card" style="border-left:3px solid var(--amber);cursor:pointer"
+         data-ingest-tip="Resolves shortlinks, scrapes abstracts from 30+ publisher domains, and downloads PDFs via publisher-specific URL transforms and the ANU institutional proxy."
+         data-ingest-color="#f5a623">
+      <div style="font-size:12px;font-weight:700;color:var(--amber)">Enrich</div>
+      <div style="font-size:10px;color:var(--text-3)">Abstracts + PDFs</div>
     </div>
-    <div style="background:var(--indigo);border-radius:0"></div>
-    <div style="padding:12px 0;border-top:1px solid var(--border)">
-      <div style="font-size:13px;font-weight:700;color:var(--indigo);margin-bottom:4px">Posting to Slack</div>
-      <div style="font-size:12.5px;color:var(--text-2);line-height:1.6">Sorted by composite score and posted to daily <code style="font-size:11px">#feed-{'{'}dayname{'}'}</code> channels. Headline in bold, inline content or summary depending on length. Metadata footer with score, category, and reason. Abstracts and PDFs as thread replies.</div>
+    <div class="pf-card" style="border-left:3px solid var(--indigo);cursor:pointer"
+         data-ingest-tip="Sorted by composite score and posted to daily #feed-{dayname} channels. Headline in bold, inline content or summary depending on length. Metadata footer with score, category, and reason. Abstracts and PDFs as thread replies."
+         data-ingest-color="#818cf8">
+      <div style="font-size:12px;font-weight:700;color:var(--indigo)">Post</div>
+      <div style="font-size:10px;color:var(--text-3)">#feed-{'{'}day{'}'} channels</div>
     </div>
-    <div style="background:var(--pink);border-radius:0"></div>
-    <div style="padding:12px 0;border-top:1px solid var(--border)">
-      <div style="font-size:13px;font-weight:700;color:var(--pink);margin-bottom:4px">Promotion</div>
-      <div style="font-size:12.5px;color:var(--text-2);line-height:1.6">Seth reviews <code style="font-size:11px">#feed</code> each morning and reacts with &#x1F44D;. The <strong>feed-promote</strong> daemon copies promoted messages to <code style="font-size:11px">#firehose</code> (including PDF attachments) and tracks IDs to prevent duplicates.</div>
+    <div class="pf-card" style="border-left:3px solid var(--pink);cursor:pointer"
+         data-ingest-tip="Seth reviews #feed each morning and reacts with &#x1F44D;. The feed-promote daemon copies promoted messages to #firehose (including PDF attachments) and tracks IDs to prevent duplicates."
+         data-ingest-color="#f472b6">
+      <div style="font-size:12px;font-weight:700;color:var(--pink)">Promote</div>
+      <div style="font-size:10px;color:var(--text-3)">&#x1F44D; &#x2192; #firehose</div>
     </div>
   </div>
 
   <h3 style="margin-top:24px;font-size:14px;color:var(--amber)">Intake Path 2: Manual Sharing</h3>
 
-  <p>The <strong>share-to-minty</strong> daemon provides real-time intake via Slack Socket Mode. URLs shared from any device (iPhone, Mac hotkey, Chrome extension, or <code>#minty-inbox</code>) are immediately classified, enriched, and posted to <code>#firehose</code> &mdash; bypassing the daily batch cycle.</p>
-
-  <h3 style="margin-top:24px;font-size:14px;color:var(--pink)">Reader 1: yesterday-in-ai</h3>
-
-  <p>Generates a narrative daily digest from yesterday's <code>#firehose</code> posts &mdash; intelligent prose, not a list. Sent as HTML email to 29 lab members across 11 institutions, posted to <code>#mint-community</code>, and published to Ghost. A weekly summary also ships before lab meetings.</p>
-
-  <h3 style="margin-top:24px;font-size:14px;color:var(--purple)">Reader 2: news-pdf-bot</h3>
-
-  <p style="font-size:13px;color:var(--text-2);margin-bottom:16px">Polls <code>#firehose</code> for messages with links lacking an attached PDF. Three-tier acquisition, escalating until found.</p>
-
-  <div style="display:grid;grid-template-columns:3px 1fr;gap:0 16px;margin:20px 0">
-    <div style="background:var(--purple);border-radius:0"></div>
-    <div style="padding:12px 0">
-      <div style="font-size:13px;font-weight:700;color:var(--purple);margin-bottom:4px">Tier 1 &mdash; Programmatic Pattern Matching</div>
-      <div style="font-size:12.5px;color:var(--text-2);line-height:1.6">Resolves shortlinks and matches against known academic URL patterns (arXiv, OpenReview, bioRxiv, 30+ publishers). Downloads and validates via <code style="font-size:11px">%PDF</code> magic bytes.</div>
-    </div>
-    <div style="background:var(--purple);border-radius:0"></div>
-    <div style="padding:12px 0;border-top:1px solid var(--border)">
-      <div style="font-size:13px;font-weight:700;color:var(--purple);margin-bottom:4px">Tier 2 &mdash; Thread Expansion</div>
-      <div style="font-size:12.5px;color:var(--text-2);line-height:1.6">If the message links to a tweet that looks like a thread (reply count &gt; 0, or contains &#x1F9F5;, &ldquo;thread&rdquo;, or &ldquo;1/&rdquo;), fetches the full self-reply chain via Twitter API and scans all tweets for paper URLs.</div>
-    </div>
-    <div style="background:var(--purple);border-radius:0"></div>
-    <div style="padding:12px 0;border-top:1px solid var(--border)">
-      <div style="font-size:13px;font-weight:700;color:var(--purple);margin-bottom:4px">Tier 3 &mdash; Sandboxed Claude Agent</div>
-      <div style="font-size:12.5px;color:var(--text-2);line-height:1.6">Sandboxed Claude Opus agent (max 12 turns, 8 Bash calls) with URL resolution, Semantic Scholar, and Unpaywall. For paywalled content: SeleniumBase headless browser with ANU institutional proxy authentication, or OpenClaw browser automation for sites requiring JavaScript rendering.</div>
-    </div>
-    <div style="background:var(--text-3);border-radius:0"></div>
-    <div style="padding:12px 0;border-top:1px solid var(--border)">
-      <div style="font-size:13px;font-weight:700;color:var(--text-2);margin-bottom:4px">Delivery</div>
-      <div style="font-size:12.5px;color:var(--text-2);line-height:1.6">PDFs uploaded as thread replies with canonical filenames (<code style="font-size:11px">Author et al - Year - Title.pdf</code>) and abstracts where available. Deduplicates by reply history.</div>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0 24px;padding:12px 16px;background:var(--bg-0);border-left:3px solid var(--amber)">
+    <div style="font-size:12px;font-weight:700;color:var(--amber)">share-to-minty</div>
+    <div style="font-size:12px;color:var(--text-2)">Real-time intake via Slack Socket Mode &mdash; URLs from any device bypass the daily batch.</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">
+      <code style="font-size:10px;padding:1px 6px;background:var(--bg-3);color:var(--text-3)">iPhone</code>
+      <code style="font-size:10px;padding:1px 6px;background:var(--bg-3);color:var(--text-3)">Mac hotkey</code>
+      <code style="font-size:10px;padding:1px 6px;background:var(--bg-3);color:var(--text-3)">Chrome ext</code>
+      <code style="font-size:10px;padding:1px 6px;background:var(--bg-3);color:var(--text-3)">#minty-inbox</code>
     </div>
   </div>
 
-  <h3 style="margin-top:24px;font-size:14px;color:var(--teal)">Reader 3: corpus-ingest</h3>
+  <h3 style="margin-top:28px;font-size:14px;color:var(--text-1)">Downstream: Three Readers on #firehose</h3>
+  <p style="font-size:13px;color:var(--text-2);margin-bottom:16px">Three daemons consume from <code style="font-size:12px">#firehose</code>, each for a different purpose. Hover or tap for details.</p>
 
-  <p>Picks up papers from <code>#firehose</code> and runs the 11-stage ingestion pipeline. Detailed in &sect;03 below.</p>
+  <div class="cards" style="grid-template-columns:repeat(auto-fill, minmax(220px, 1fr))">
+    <div class="card" style="border-color:var(--pink);cursor:pointer"
+         data-ingest-tip="Generates a narrative daily digest from yesterday's #firehose posts &mdash; intelligent prose, not a list. Sent as HTML email to 29 lab members across 11 institutions, posted to #mint-community, and published to Ghost. A weekly &lsquo;Minty's Week in AI&rsquo; summary also ships before lab meetings."
+         data-ingest-color="#f472b6">
+      <div class="card-head"><div>
+        <div class="card-title" style="color:var(--pink)">yesterday-in-ai</div>
+        <div class="card-sub">Daily narrative digest &rarr; 29 lab members. Weekly summary for lab meetings.</div>
+      </div></div>
+    </div>
+    <div class="card" style="border-color:var(--purple);cursor:pointer"
+         data-ingest-tip="Polls #firehose for messages with links lacking an attached PDF. Three-tier escalation: <strong>Tier 1</strong> &mdash; programmatic pattern matching against 30+ academic URL patterns (arXiv, OpenReview, bioRxiv). <strong>Tier 2</strong> &mdash; Twitter thread expansion via API to find paper URLs in self-reply chains. <strong>Tier 3</strong> &mdash; sandboxed Claude Opus agent (max 12 turns, 8 Bash calls) with Semantic Scholar, Unpaywall, and browser automation for paywalled content. PDFs uploaded as thread replies with canonical filenames."
+         data-ingest-color="#a78bfa">
+      <div class="card-head"><div>
+        <div class="card-title" style="color:var(--purple)">news-pdf-bot</div>
+        <div class="card-sub">3-tier PDF acquisition. Pattern matching &rarr; thread expansion &rarr; Claude agent.</div>
+      </div></div>
+    </div>
+    <div class="card" style="border-color:var(--teal);cursor:pointer"
+         data-ingest-tip="Picks up papers from #firehose and runs the 11-stage ingestion pipeline: download, rename, markdown conversion, chunking, embedding, metadata extraction, cataloguing (Zotero), analysis (41 semantic questions), RAPTOR summaries, clustering, and Google Drive upload. Detailed in &sect;03 below."
+         data-ingest-color="#2dd4bf">
+      <div class="card-head"><div>
+        <div class="card-title" style="color:var(--teal)">corpus-ingest</div>
+        <div class="card-sub">11-stage pipeline &rarr; embedded, analyzed, searchable corpus. See &sect;03.</div>
+      </div></div>
+    </div>
+  </div>
 
   <h3 style="margin-top:24px;font-size:14px;color:var(--cyan)">The Result</h3>
 
