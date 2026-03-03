@@ -2344,7 +2344,8 @@ document.getElementById('subscribe-form').addEventListener('submit', function(e)
 })();
 
 // ===== Token counter (scroll-based output token estimate) =====
-(function() {
+// Deferred: tokenDisplay is in BaseLayout statusline which renders AFTER this script
+document.addEventListener('DOMContentLoaded', function() {
   var tokenEl = document.getElementById('tokenDisplay');
   var main = document.querySelector('main');
   if (!tokenEl || !main) return;
@@ -2369,7 +2370,7 @@ document.getElementById('subscribe-form').addEventListener('submit', function(e)
     }
   });
   updateTokens();
-})();
+});
 
 // Section indicator removed — statusline handles current section display.
 </script>
