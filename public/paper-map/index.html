@@ -43,8 +43,8 @@
       rel="stylesheet"
     />
     
-    <script src="https://unpkg.com/apache-arrow@latest/Arrow.es2015.min.js"></script>
     <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script>
+    <script src="https://unpkg.com/apache-arrow@latest/Arrow.es2015.min.js"></script>
     <style>
       .content-wrapper{top:0;left:0;width:100%;height:100%;z-index:1;padding:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;min-height:calc(100vh - 16px);pointer-events:none}.stack{display:flex;flex-direction:column;gap:0;padding:0;pointer-events:none;max-height:50vh;overflow-y:visible}.top-left{grid-column:1;grid-row:1;justify-self:start;align-self:start;align-items:start}.bottom-left{grid-column:1;grid-row:2;justify-self:start;align-self:end;align-items:start;display:flex;flex-direction:column-reverse;transform:scaleY(-1);z-index:2}.top-right{grid-column:2;grid-row:1;justify-self:end;justify-items:end;align-self:start;align-items:end}.bottom-right{grid-column:2;grid-row:2;justify-self:end;justify-items:end;align-self:end;align-items:end;display:flex;flex-direction:column-reverse;transform:scaleY(-1)}.stack.bottom-left .stack-box{transform:scaleY(-1)}.stack.bottom-right .stack-box{transform:scaleY(-1)}#loading{width:100%;height:100%;top:0px;left:0px;position:absolute;display:block;z-index:99}#loading-image{position:absolute;top:45%;left:47.5%;z-index:100}#title-container{top:0;left:0;max-width:calc(100vw - 32px)}
     </style><style>
@@ -836,7 +836,7 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
         } else {
           const { data } = event.data;
           const hoverData = combineTableChunks(data);
-          datamap.addMetaData(hoverData, /* patched below */ {
+          datamap.addMetaData(hoverData, {
             tooltipFunction: ({index, picked, layer}) => picked ? {"html": `
     <div style="max-width:350px; font-family: 'JetBrains Mono', monospace;">
         <div style="font-size:14px; font-weight:600; color:#fff; margin-bottom:6px;">
@@ -860,6 +860,77 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
           });
 
           
+
+          // Click-to-show info panel (replaces hover tooltip)
+          (function() {
+            var panel = document.createElement('div');
+            panel.id = 'paper-panel';
+            panel.style.cssText = 'display:none; position:fixed; z-index:1000; '
+              + 'background:#000000ee; border:1px solid rgba(46,196,182,0.3); '
+              + 'border-radius:12px; backdrop-filter:blur(6px); '
+              + 'box-shadow:2px 3px 10px #00000044; padding:14px; '
+              + 'max-width:360px; font-family:"JetBrains Mono",monospace; '
+              + 'pointer-events:auto; max-height:70vh; overflow-y:auto;';
+            document.body.appendChild(panel);
+            var justShowed = false;
+
+            function showPanel(index, x, y) {
+              var url = hoverData.url ? hoverData.url[index] : null;
+              var linkHtml = url
+                ? '<a class="pdf-link" href="' + url + '" target="_blank" rel="noopener">Open PDF &#x2192;</a>'
+                : '';
+              panel.innerHTML =
+                '<div style="font-size:14px; font-weight:600; color:#fff; margin-bottom:6px;">'
+                  + hoverData.title[index] + '</div>' +
+                '<div style="font-size:11px; color:#aaa; margin-bottom:4px;">'
+                  + hoverData.authors[index] + '</div>' +
+                '<div style="display:flex; gap:12px; font-size:11px; color:#888; margin-bottom:8px;">' +
+                  '<span>' + hoverData.year[index] + '</span>' +
+                  '<span style="color:#6b9; font-weight:500;">' + hoverData.category[index] + '</span>' +
+                  '<span style="color:#7eb5d6;">' + hoverData.discipline[index] + '</span>' +
+                '</div>' +
+                '<div style="font-size:11px; color:#ccc; line-height:1.4;">'
+                  + hoverData.abstract[index] + '</div>' +
+                linkHtml;
+              panel.style.display = 'block';
+              justShowed = true;
+              setTimeout(function() { justShowed = false; }, 200);
+              requestAnimationFrame(function() {
+                var pw = panel.offsetWidth || 340;
+                var ph = panel.offsetHeight || 200;
+                var vw = window.innerWidth;
+                var vh = window.innerHeight;
+                var left = Math.min(x + 12, vw - pw - 12);
+                var top  = Math.min(y + 12, vh - ph - 12);
+                if (left < 12) left = 12;
+                if (top  < 12) top  = 12;
+                panel.style.left = left + 'px';
+                panel.style.top  = top  + 'px';
+              });
+            }
+
+            function hidePanel() { panel.style.display = 'none'; }
+
+            datamap.deckgl.setProps({
+              onClick: function(info, event) {
+                if (info.picked && info.index >= 0) {
+                  var srcEvent = event && event.srcEvent ? event.srcEvent : (info.srcEvent || {});
+                  showPanel(info.index, srcEvent.clientX || 100, srcEvent.clientY || 100);
+                } else {
+                  hidePanel();
+                }
+              },
+              getTooltip: function() { return null; },
+            });
+
+            document.addEventListener('click', function(e) {
+              if (justShowed) return;
+              if (panel.style.display === 'none') return;
+              if (panel.contains(e.target)) return;
+              hidePanel();
+            });
+          })();
+
           /* Search */
           searchItem.addEventListener("input", debounce(event => datamap.searchText(event.target.value)));
           updateProgressBar('meta-data-progress', 100);
@@ -1029,20 +1100,6 @@ const otherSelectionItems=Object.keys(this.selectedIndicesByItem).filter(key=>ke
     }
 
     setTimeout(initFilters, 2000);
-
-    // Click-to-Drive handler
-    setTimeout(() => {
-        if (typeof datamap !== 'undefined' && datamap.deckgl) {
-            datamap.deckgl.setProps({
-                onClick: ({index, picked}) => {
-                    if (picked && datamap.metaData && datamap.metaData.url) {
-                        const url = datamap.metaData.url[index];
-                        if (url) window.open(url, '_blank');
-                    }
-                }
-            });
-        }
-    }, 1000);
     
     </script>
 </html>
