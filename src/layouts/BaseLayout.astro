@@ -99,6 +99,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       const collapsed = document.body.classList.toggle('sidebar-collapsed');
       if (sidebarToggle) sidebarToggle.textContent = collapsed ? '»' : '«';
       localStorage.setItem('sidebar-collapsed', collapsed ? '1' : '0');
+      setTimeout(syncBannerHeight, 350); // re-sync after transition
     });
 
     // Search overlay
@@ -120,6 +121,19 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       }
       if (e.key === 'Escape') searchOverlay?.classList.remove('open');
     });
+
+    // Sync main margin-top with actual banner height
+    const banner = document.querySelector('.top-banner') as HTMLElement | null;
+    function syncBannerHeight() {
+      if (banner) {
+        const h = banner.offsetHeight;
+        document.documentElement.style.setProperty('--banner-h', h + 'px');
+      }
+    }
+    syncBannerHeight();
+    window.addEventListener('resize', syncBannerHeight);
+    // Re-check after fonts/images load
+    window.addEventListener('load', syncBannerHeight);
 
     // Statusline scroll progress
     const BAR_LEN = 16;
