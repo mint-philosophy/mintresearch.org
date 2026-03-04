@@ -1198,85 +1198,177 @@ ul.clean li:last-child::before { content: '└── '; }
 }
 .tp-source:hover { color: var(--accent-bright, #5de8da); }
 
-/* ===== Contact Form (terminal style) ===== */
-.contact-intro {
-  color: var(--text-2);
-  margin-bottom: 24px;
-  font-size: 13px;
+/* ===== Contact Form (terminal window style) ===== */
+.contact-scene {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  max-width: 700px;
 }
 
-.terminal-form {
-  max-width: 560px;
+.contact-squid {
+  width: 120px;
+  height: auto;
+  flex-shrink: 0;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 18px rgba(46,196,182,0.35));
+  animation: contactFloat 4s ease-in-out infinite;
+  align-self: center;
+}
+@keyframes contactFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-8px) rotate(1.5deg); }
+  75% { transform: translateY(4px) rotate(-1deg); }
 }
 
-.tf-field {
-  margin-bottom: 16px;
-}
-
-.tf-label {
-  display: block;
-  font-size: 12px;
-  color: var(--text-2);
-  margin-bottom: 4px;
-}
-
-.tf-prompt {
-  color: var(--green);
-  font-weight: 700;
-  margin-right: 6px;
-}
-
-.tf-optional {
-  color: var(--text-3);
-  font-size: 11px;
-}
-
-.terminal-form input[type="text"],
-.terminal-form input[type="email"],
-.terminal-form textarea {
-  width: 100%;
-  font-family: var(--font);
-  font-size: 13px;
-  color: var(--accent);
+.contact-terminal {
+  flex: 1;
+  border: 1px dashed var(--accent-dim);
   background: var(--bg-0);
-  border: 1px solid var(--border);
-  padding: 8px 12px;
+  overflow: hidden;
+}
+
+.ct-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: var(--bg-2);
+  border-bottom: 1px dashed var(--border);
+}
+.ct-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  opacity: 0.7;
+}
+.ct-title {
+  margin-left: auto;
+  font-size: 9px;
+  color: var(--text-3);
+}
+
+.ct-body {
+  padding: 14px 16px;
+}
+
+.ct-line {
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: nowrap;
+}
+
+.t-accent { color: var(--accent); }
+
+.ct-field {
+  margin: 4px 0;
+}
+.ct-field label {
+  cursor: pointer;
+}
+
+.ct-input-row {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.ct-input-label {
+  color: var(--accent);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ct-input-row input {
+  flex: 1;
+  font-family: var(--font);
+  font-size: 12px;
+  color: var(--accent);
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--border);
+  padding: 2px 0;
   outline: none;
+  line-height: 1.7;
   transition: border-color 0.2s;
 }
-
-.terminal-form input::placeholder,
-.terminal-form textarea::placeholder {
+.ct-input-row input:focus {
+  border-bottom-color: var(--accent-dim);
+}
+.ct-input-row input::placeholder {
   color: var(--text-3);
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
-.terminal-form input:focus,
-.terminal-form textarea:focus {
+.contact-terminal textarea {
+  width: 100%;
+  font-family: var(--font);
+  font-size: 12px;
+  color: var(--accent);
+  background: var(--bg-1);
+  border: 1px dashed var(--border);
+  padding: 8px 10px;
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.6;
+  margin: 4px 0 2px;
+  transition: border-color 0.2s;
+}
+.contact-terminal textarea:focus {
   border-color: var(--accent-dim);
 }
-
-.terminal-form textarea {
-  resize: vertical;
-  min-height: 100px;
-  line-height: 1.6;
+.contact-terminal textarea::placeholder {
+  color: var(--text-3);
+  opacity: 0.5;
 }
 
-.tf-submit {
+.ct-submit-row {
+  font-size: 12px;
+  line-height: 1.7;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  white-space: nowrap;
+}
+
+.ct-submit {
   font-family: var(--font);
-  font-size: 13px;
+  font-size: 12px;
   color: var(--green);
-  background: var(--bg-0);
-  border: 1px dashed var(--border);
-  padding: 8px 20px;
+  background: transparent;
+  border: none;
   cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
-  margin-top: 8px;
+  padding: 0;
+  margin-left: 8px;
+  transition: color 0.2s;
+}
+.ct-submit:hover {
+  color: var(--accent-bright);
 }
 
-.tf-submit:hover {
-  border-color: var(--green);
-  color: var(--accent-bright);
+.ct-cursor {
+  display: inline-block;
+  width: 7px; height: 13px;
+  background: var(--accent);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink 1s step-end infinite;
+}
+
+/* Contact mobile */
+@media (max-width: 600px) {
+  .contact-scene {
+    flex-direction: column;
+    align-items: center;
+  }
+  .contact-squid { width: 80px; }
+  .ct-line { font-size: 10px; }
+  .ct-input-row { font-size: 10px; }
+  .ct-input-row input { font-size: 10px; }
+  .contact-terminal textarea { font-size: 10px; }
+  .ct-body { padding: 10px 12px; }
+  .ct-submit { font-size: 10px; }
+  .ct-submit-row { font-size: 10px; }
 }
 
 /* ===== Mobile ===== */
