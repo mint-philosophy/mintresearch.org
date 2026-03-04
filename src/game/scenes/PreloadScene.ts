@@ -37,6 +37,8 @@ export class PreloadScene extends Phaser.Scene {
   private generateSprites(): void {
     // Platform texture
     this.generatePlatform();
+    // Level-specific platform textures
+    this.generateLevelPlatforms();
     // Paper collectible
     this.generatePaper();
     // Ink projectile
@@ -66,6 +68,94 @@ export class PreloadScene extends Phaser.Scene {
     }
     g.generateTexture('platform', 64, 16);
     g.destroy();
+  }
+
+  private generateLevelPlatforms(): void {
+    // Level 1 — Twitter: dark card with blue top accent
+    const g1 = this.add.graphics();
+    g1.fillStyle(0x15202b);
+    g1.fillRect(0, 0, 64, 16);
+    g1.fillStyle(0x1DA1F2);
+    g1.fillRect(0, 0, 64, 3);
+    g1.fillStyle(0x1a2d3d, 0.5);
+    g1.fillRect(8, 7, 20, 1);
+    g1.fillRect(8, 10, 30, 1);
+    g1.fillRect(8, 13, 15, 1);
+    g1.generateTexture('platform-twitter', 64, 16);
+    g1.destroy();
+
+    // Level 2 — LinkedIn: white-ish card with blue left border
+    const g2 = this.add.graphics();
+    g2.fillStyle(0x2a2a2e);
+    g2.fillRect(0, 0, 64, 16);
+    g2.fillStyle(0x0A66C2);
+    g2.fillRect(0, 0, 3, 16);
+    g2.fillStyle(0x3a3a3e);
+    g2.fillRect(0, 0, 64, 2);
+    g2.generateTexture('platform-linkedin', 64, 16);
+    g2.destroy();
+
+    // Level 3 — Bluesky: cloud-like with soft blue glow on top
+    const g3 = this.add.graphics();
+    g3.fillStyle(0x1a2a3a);
+    g3.fillRect(0, 0, 64, 16);
+    g3.fillStyle(0x0085FF, 0.3);
+    g3.fillRect(0, 0, 64, 4);
+    g3.fillStyle(0x2a3a4a);
+    g3.fillCircle(10, 2, 8);
+    g3.fillCircle(30, 3, 10);
+    g3.fillCircle(50, 2, 7);
+    g3.generateTexture('platform-bluesky', 64, 16);
+    g3.destroy();
+
+    // Level 4 — ArXiv: red-maroon bookshelf
+    const g4 = this.add.graphics();
+    g4.fillStyle(0x4a1515);
+    g4.fillRect(0, 0, 64, 16);
+    g4.fillStyle(0x6b2020);
+    g4.fillRect(0, 0, 64, 3);
+    g4.fillStyle(0x3a0e0e);
+    g4.fillRect(0, 13, 64, 3);
+    // Shelf detail lines
+    g4.fillStyle(0x5a1818);
+    for (let x = 0; x < 64; x += 16) {
+      g4.fillRect(x, 4, 1, 8);
+    }
+    g4.generateTexture('platform-arxiv', 64, 16);
+    g4.destroy();
+
+    // Level 5 — PhilPapers: faded parchment with dark border
+    const g5 = this.add.graphics();
+    g5.fillStyle(0x2a2820);
+    g5.fillRect(0, 0, 64, 16);
+    g5.fillStyle(0x3a3830);
+    g5.fillRect(1, 1, 62, 14);
+    g5.lineStyle(1, 0x1a1815);
+    g5.strokeRect(0, 0, 64, 16);
+    // Aged texture
+    g5.fillStyle(0x32302a);
+    g5.fillRect(5, 4, 24, 1);
+    g5.fillRect(10, 8, 30, 1);
+    g5.fillRect(8, 12, 18, 1);
+    g5.generateTexture('platform-philpapers', 64, 16);
+    g5.destroy();
+
+    // Level 6 — SSRN: green brick
+    const g6 = this.add.graphics();
+    g6.fillStyle(0x1E4D2B);
+    g6.fillRect(0, 0, 64, 16);
+    // Brick pattern
+    g6.lineStyle(1, 0x153d20);
+    g6.strokeRect(0, 0, 32, 8);
+    g6.strokeRect(32, 0, 32, 8);
+    g6.strokeRect(16, 8, 32, 8);
+    g6.strokeRect(48, 8, 16, 8);
+    g6.strokeRect(0, 8, 16, 8);
+    // Highlight
+    g6.fillStyle(0x256b38, 0.3);
+    g6.fillRect(0, 0, 64, 2);
+    g6.generateTexture('platform-ssrn', 64, 16);
+    g6.destroy();
   }
 
   private generatePaper(): void {
