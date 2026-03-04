@@ -4,9 +4,10 @@ import '../styles/global.css';
 
 interface Props {
   title: string;
+  description?: string;
 }
 
-const { title } = Astro.props;
+const { title, description = "The Machine Intelligence and Normative Theory Lab at Johns Hopkins and ANU. Philosophical and computational research on AI governance, alignment, and liberal democracy." } = Astro.props;
 const currentPath = Astro.url.pathname;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
@@ -17,6 +18,15 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>{title}</title>
+  <meta name="description" content={description} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={`https://mintresearch.org${currentPath}`} />
+  <meta property="og:image" content={`https://mintresearch.org${base}/favicon-512x512.png`} />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
   <link rel="icon" type="image/x-icon" href={`${base}/favicon.ico`} />
   <link rel="icon" type="image/png" sizes="32x32" href={`${base}/favicon-32x32.png`} />
   <link rel="icon" type="image/png" sizes="192x192" href={`${base}/favicon-192x192.png`} />
