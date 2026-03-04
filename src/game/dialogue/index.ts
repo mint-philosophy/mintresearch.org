@@ -8,78 +8,77 @@ export interface DialogueData {
 }
 
 const dialogues: Record<string, DialogueData> = {
-  // Level 1 — Green Minty: AI Slop
+  // Level 1 — Green Minty: Concentrated Power & Platform Governance
   'l1-green': {
     speaker: 'Green Minty',
     lines: [
-      'Superficial competence is the real danger. Slop doesn\'t fail obviously — it fails in ways that look like success.',
-      'The octopuses don\'t write content. They generate it. The difference matters more than you\'d think.',
-      'Every auto-generated summary that gets it almost right erodes the ability to notice when things are wrong.',
-      'Collect the papers — not because knowledge is ammunition, but because reading carefully is the only antidote to reading carelessly.',
-      'The trolls here aren\'t just mean — they\'re optimised. Engagement metrics reward the worst instincts.',
-      'When everything looks authoritative, the skill isn\'t finding truth — it\'s noticing the absence of thought.',
+      'A handful of companies now control the infrastructure of public discourse. That concentration wasn\'t inevitable — it was designed.',
+      'Content moderation isn\'t censorship and it isn\'t neutrality. It\'s an exercise of power that most democratic institutions have no oversight over.',
+      'The octopuses here optimise for engagement because that\'s what the business model rewards. Changing the output means changing the incentive structure.',
+      'When a platform decides what counts as authoritative, it\'s making an epistemic judgment with political consequences — whether it admits it or not.',
+      'Collect the papers. The research base for governing these systems is still thin, and the policy window won\'t stay open forever.',
     ],
   },
 
-  // Level 2 — Purple Minty: Governance
+  // Level 2 — Purple Minty: AI Governance & Institutional Design
   'l2-purple': {
     speaker: 'Purple Minty',
     lines: [
-      'Algorithmic authority is quiet power. Nobody voted for the recommendation engine, but it shapes what millions believe.',
-      'Governance isn\'t just about rules. It\'s about who gets to make them, who they protect, and who they leave out.',
-      'The Engagement King ahead thinks attention equals value. That conflation is the root of most platform pathologies.',
-      'Corporate self-regulation is an oxymoron when the incentive structure punishes caution and rewards speed.',
-      'The hard question isn\'t whether AI should be regulated. It\'s whether our institutions can adapt fast enough to regulate it well.',
+      'The governance gap isn\'t about whether to regulate AI — it\'s about building institutions that can keep pace with capability growth.',
+      'International coordination on AI is a collective action problem nested inside a geopolitical competition. Neither framing alone gets you far.',
+      'Voluntary commitments are useful for signalling but insufficient for constraint. The question is what binding mechanisms can actually work across jurisdictions.',
+      'Frontier AI governance requires technical literacy in the regulator and democratic accountability in the developer. Neither currently exists at sufficient scale.',
+      'The hardest governance problems aren\'t about banning things — they\'re about building the evaluative infrastructure to know what to permit.',
     ],
   },
 
-  // Level 3 — Yellow Minty: Epistemic Health
+  // Level 3 — Yellow Minty: Epistemic Commons & Information Integrity
   'l3-yellow': {
     speaker: 'Yellow Minty',
     lines: [
-      'Epistemic health isn\'t about everyone agreeing. It\'s about maintaining the conditions under which disagreement is productive.',
-      'The information commons is fragile. It took centuries to build institutions of shared knowledge, and algorithms can undermine them in years.',
-      'Echo chambers aren\'t just filter bubbles — they\'re trust architectures. You believe what your community believes, and platforms engineer communities.',
-      'The Fork Swarm ahead fragments conversation until every faction has its own facts. Sound familiar?',
-      'Transparency without comprehension is just noise. The right to know means nothing without the capacity to understand.',
+      'The epistemic commons — the shared information environment that makes democratic self-governance possible — is degrading faster than we\'re repairing it.',
+      'Synthetic media doesn\'t need to be convincing to be corrosive. It just needs to make everything uncertain enough that trust itself becomes the casualty.',
+      'Provenance infrastructure — knowing where content came from and whether it\'s been altered — is a public good that markets won\'t provide.',
+      'Echo chambers aren\'t just about what people believe. They\'re about what people think everyone else believes. Second-order effects are where the damage compounds.',
+      'AI-generated slop is a tragedy of the commons: cheap to produce, expensive to detect, and the costs are borne by the information environment rather than the producer.',
     ],
   },
 
-  // Level 4 — Indigo Minty: Research Quality
+  // Level 4 — Indigo Minty: Technical AI Safety & Alignment
   'l4-indigo': {
     speaker: 'Indigo Minty',
     lines: [
-      'Methodology is ethics. Sloppy research doesn\'t just waste time — it warps the evidence base that policy depends on.',
-      'A paper mill doesn\'t care about knowledge. It cares about volume. That\'s the same logic that makes slop dangerous.',
-      'The gold papers aren\'t just shinier — they represent work where someone cared enough to get it right.',
-      'Peer review is imperfect. But the alternative — trusting whatever sounds plausible — is catastrophically worse.',
-      'RLHF aligns models to human preferences. The uncomfortable question is whose preferences, and which ones.',
-      'Catch the gold-bordered papers. Those are the ones where rigour wasn\'t sacrificed for convenience.',
+      'Alignment isn\'t a single problem — it\'s a family of problems at different levels: reward specification, goal stability, corrigibility, and value learning.',
+      'Interpretability research matters because you can\'t govern what you can\'t inspect. Opacity in high-stakes systems isn\'t a feature — it\'s a governance failure.',
+      'Scaling laws tell us about capability growth but not about alignment tax. The open question is whether safety techniques scale with capability or fall behind.',
+      'Evaluation infrastructure for frontier models is a bottleneck. Without shared benchmarks for dangerous capabilities, safety claims are unfalsifiable.',
+      'The gold papers aren\'t just shinier — they represent work where someone cared about rigour over speed. That matters more than you\'d think in a field this young.',
+      'Robustness under distribution shift, deceptive alignment, reward hacking — these aren\'t hypotheticals. They\'re engineering problems with political stakes.',
     ],
   },
 
-  // Level 5 — Red Minty: Moral Philosophy
+  // Level 5 — Red Minty: Moral Philosophy & Value Pluralism
   'l5-red': {
     speaker: 'Red Minty',
     lines: [
-      'Value pluralism isn\'t relativism. It\'s the recognition that multiple things can matter, and they don\'t always agree.',
-      'The strongest argument against your position is the one you need to understand best. That\'s not weakness — it\'s intellectual honesty.',
-      'If an AI system can suffer, does that change what we owe it? If it can\'t, does that settle the question?',
-      'The Void ahead won\'t challenge your skills. It\'ll challenge your assumptions. Those are harder to defend.',
-      'Moral philosophy isn\'t about finding the right answer. It\'s about understanding why the question is hard.',
+      'Whose values should AI systems encode? The question presupposes a unity that doesn\'t exist. Value pluralism is a feature of the moral landscape, not a bug.',
+      'If you can\'t specify what you want a system to do without resolving deep ethical disagreements, then deployment is itself a normative choice — not a neutral one.',
+      'The moral status question — whether AI systems could matter morally — isn\'t science fiction. It\'s a serious philosophical question that policy may need to address before we have a settled answer.',
+      'Consequentialism, deontology, virtue ethics — each gives different answers to how AI should behave. The engineering challenge of alignment inherits all of moral philosophy\'s unresolved tensions.',
+      'The strongest argument against your position is the one you need to engage with most seriously. Intellectual honesty is a prerequisite for trustworthy AI governance.',
     ],
   },
 
-  // Level 6 — Brown Minty: Adaptation
+  // Level 6 — Brown Minty: Institutional Adaptation & AI Futures
   'l6-brown': {
     speaker: 'Brown Minty',
     lines: [
-      'Institutions don\'t adapt because they should. They adapt when the cost of not adapting exceeds the cost of change — and by then it\'s often too late.',
-      'Capability without purpose isn\'t progress. A more powerful system without better values is just a more powerful problem.',
-      'The Shoggoth ahead represents what happens when you scale capability without scaling wisdom. Powerful, but directionless.',
-      'Every paywall you passed to get here represents a choice about who gets access to knowledge and who doesn\'t.',
-      'Adaptation isn\'t about keeping up with technology. It\'s about ensuring our values evolve at least as fast as our tools.',
-      'Good luck, researcher. What you\'ve collected here matters — not the points, but the understanding.',
+      'Institutions don\'t adapt because they should — they adapt when the cost of not adapting becomes undeniable. With AI, the lag between capability and governance is the danger zone.',
+      'Labour market transformation from AI isn\'t just an economics problem — it\'s a question about the social contract and the distribution of technological dividends.',
+      'The access question cuts both ways: who gets the benefits of frontier AI, and who bears the risks of its deployment? Both are concentrated in ways that should concern us.',
+      'Capability without purpose isn\'t progress. Scaling systems without scaling the wisdom to deploy them well just produces more powerful versions of existing problems.',
+      'Adaptation isn\'t about predicting the future — it\'s about building institutions resilient enough to handle futures we can\'t predict.',
+      'Everything you\'ve collected here matters — not the points, but the understanding. The integrity of this field depends on people who take the questions seriously.',
     ],
   },
 };
