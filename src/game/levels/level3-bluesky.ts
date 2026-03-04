@@ -61,7 +61,8 @@ export function getLevel3Config(): LevelConfig {
       { type: 'speedBolt', x: 620, y: GAME_HEIGHT - 170 },
       { type: 'dataLeak', x: 1320, y: GAME_HEIGHT - 300 },
       { type: 'shield', x: 2050, y: GAME_HEIGHT - 280 },
-      { type: 'timeFreeze', x: 3000, y: GAME_HEIGHT - 180 },
+      { type: 'openclaw', x: 1800, y: GAME_HEIGHT - 160 },
+      { type: 'ssi', x: 3000, y: GAME_HEIGHT - 180 },
     ],
     npcs: [
       { color: 'yellow', x: 200, y: GAME_HEIGHT - 60, dialogueKey: 'l3-yellow' },

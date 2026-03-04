@@ -54,7 +54,8 @@ export const POWERUP_DURATION = {
   shield: 15000,
   openai: 15000,
   speedBolt: 18000,
-  timeFreeze: 10000,
+  ssi: 10000,
+  deepseek: 20000,
 } as const;
 
 // Power-downs
@@ -62,6 +63,10 @@ export const POWERDOWN_DURATION = {
   clippy: 8000,
   fogCloud: 8000,
   grok: 8000,
+  copilot: 10000,
+  meta: 10000,
+  qwen: 0,
+  openclaw: 12000,
 } as const;
 
 export const POWERDOWN_PAPER_LOSS = 3;
@@ -134,6 +139,7 @@ export const SCENES = {
   DIALOGUE: 'DialogueScene',
   PAUSE: 'PauseScene',
   GAMEOVER: 'GameOverScene',
+  CREDITS: 'Credits',
 } as const;
 
 // Types
@@ -153,7 +159,7 @@ export interface PlatformData {
 }
 
 export interface EnemySpawn {
-  type: 'octopus' | 'troll' | 'influencer' | 'critic' | 'paperFlood' | 'cloudflareWall' | 'parrot';
+  type: 'octopus' | 'troll' | 'influencer' | 'critic' | 'paperFlood' | 'cloudflareWall' | 'parrot' | 'macII';
   x: number;
   y: number;
   tier?: EnemyTier;

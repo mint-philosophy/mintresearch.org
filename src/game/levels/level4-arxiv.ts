@@ -29,14 +29,14 @@ export function getLevel4Config(): LevelConfig {
     enemies: [
       { type: 'octopus', x: 350, y: GAME_HEIGHT - 130, tier: 'red', patrolRange: 80 },
       { type: 'paperFlood', x: 600, y: GAME_HEIGHT - 210, tier: 'peach', patrolRange: 60 },
-      { type: 'octopus', x: 800, y: GAME_HEIGHT - 50, tier: 'peach', patrolRange: 100 },
+      { type: 'macII', x: 800, y: GAME_HEIGHT - 50, tier: 'peach', patrolRange: 100 },
       { type: 'paperFlood', x: 1100, y: GAME_HEIGHT - 50, tier: 'peach', patrolRange: 80 },
       { type: 'octopus', x: 1350, y: GAME_HEIGHT - 240, tier: 'red', patrolRange: 80 },
       { type: 'paperFlood', x: 1600, y: GAME_HEIGHT - 320, tier: 'peach', patrolRange: 60 },
-      { type: 'octopus', x: 1850, y: GAME_HEIGHT - 50, tier: 'red', patrolRange: 100 },
+      { type: 'macII', x: 1850, y: GAME_HEIGHT - 50, tier: 'red', patrolRange: 100 },
       { type: 'octopus', x: 2150, y: GAME_HEIGHT - 270, tier: 'orange', patrolRange: 80 },
       { type: 'paperFlood', x: 2450, y: GAME_HEIGHT - 50, tier: 'peach', patrolRange: 100 },
-      { type: 'octopus', x: 2700, y: GAME_HEIGHT - 240, tier: 'red', patrolRange: 80 },
+      { type: 'macII', x: 2700, y: GAME_HEIGHT - 240, tier: 'red', patrolRange: 80 },
       { type: 'octopus', x: 3100, y: GAME_HEIGHT - 200, tier: 'orange', patrolRange: 60 },
     ],
     papers: [
@@ -60,6 +60,8 @@ export function getLevel4Config(): LevelConfig {
       { type: 'shield', x: 2250, y: GAME_HEIGHT - 140 },
       { type: 'speedBolt', x: 3000, y: GAME_HEIGHT - 200 },
       { type: 'fogCloud', x: 3350, y: GAME_HEIGHT - 280 },
+      { type: 'deepseek', x: 500, y: GAME_HEIGHT - 210 },
+      { type: 'qwen', x: 3350, y: GAME_HEIGHT - 280 },
     ],
     npcs: [
       { color: 'indigo', x: 180, y: GAME_HEIGHT - 60, dialogueKey: 'l4-indigo' },

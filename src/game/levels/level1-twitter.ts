@@ -52,6 +52,7 @@ export function getLevel1Config(): LevelConfig {
       { type: 'shield', x: 900, y: GAME_HEIGHT - 240 },
       { type: 'clippy', x: 1600, y: GAME_HEIGHT - 140 },
       { type: 'speedBolt', x: 2350, y: GAME_HEIGHT - 240 },
+      { type: 'copilot', x: 2550, y: GAME_HEIGHT - 160 },
     ],
     npcs: [
       { color: 'green', x: 350, y: GAME_HEIGHT - 60, dialogueKey: 'l1-green' },
