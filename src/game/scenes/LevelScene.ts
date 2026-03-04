@@ -1199,7 +1199,7 @@ export class LevelScene extends Phaser.Scene {
   private drawBgTwitter(): void {
     const w = this.config.width;
 
-    // Layer 0: Dark cityscape silhouette
+    // Layer 0: Dark cityscape silhouette (inline graphics — simple enough)
     const g0 = this.add.graphics().setScrollFactor(0.1);
     g0.fillStyle(0x0a1520, 0.4);
     for (let x = 0; x < w; x += 70) {
@@ -1207,64 +1207,36 @@ export class LevelScene extends Phaser.Scene {
       g0.fillRect(x, GAME_HEIGHT - h, 50, h);
     }
 
-    // SpaceX Falcon rocket silhouette (far background)
-    const gr = this.add.graphics().setScrollFactor(0.08);
-    const rx = w * 0.7;
-    // Rocket body
-    gr.fillStyle(0xcccccc, 0.08);
-    gr.fillRect(rx - 6, 20, 12, 180);
-    // Nose cone
-    gr.fillTriangle(rx - 6, 20, rx + 6, 20, rx, 0);
-    // Fins
-    gr.fillTriangle(rx - 6, 180, rx - 18, 200, rx - 6, 160);
-    gr.fillTriangle(rx + 6, 180, rx + 18, 200, rx + 6, 160);
-    // Grid fins
-    gr.fillRect(rx - 10, 60, 4, 8);
-    gr.fillRect(rx + 6, 60, 4, 8);
-    // Exhaust flame
-    gr.fillStyle(0xff6600, 0.06);
-    gr.fillTriangle(rx - 8, 200, rx + 8, 200, rx, 240);
-    gr.fillStyle(0xffaa00, 0.04);
-    gr.fillTriangle(rx - 5, 200, rx + 5, 200, rx, 260);
+    // SpaceX Falcon rocket (pre-baked sprite)
+    const rocket = this.add.image(w * 0.7, 110, 'bg-rocket');
+    rocket.setScrollFactor(0.08);
+    rocket.setAlpha(0.12);
 
-    // Layer 1: Floating blue check verification badges
-    const g1 = this.add.graphics().setScrollFactor(0.3);
-    for (let x = 50; x < w; x += 150) {
-      const cy = Phaser.Math.Between(30, 350);
-      // Blue circle badge
-      g1.fillStyle(0x1DA1F2, 0.2);
-      g1.fillCircle(x, cy, 10);
-      // White checkmark
-      g1.fillStyle(0xffffff, 0.25);
-      g1.fillRect(x - 4, cy + 1, 3, 6);
-      g1.fillRect(x - 2, cy + 4, 8, 3);
+    // Scattered blue check badges (pre-baked sprites)
+    for (let i = 0; i < 8; i++) {
+      const x = Phaser.Math.Between(50, w - 50);
+      const y = Phaser.Math.Between(30, 350);
+      const check = this.add.image(x, y, 'bg-blue-check');
+      check.setScrollFactor(0.3);
+      check.setAlpha(Phaser.Math.FloatBetween(0.2, 0.3));
     }
 
-    // Layer 2: Cheering crowd with red hats (far background silhouettes)
-    const gc = this.add.graphics().setScrollFactor(0.15);
-    for (let x = 40; x < w; x += Phaser.Math.Between(30, 60)) {
+    // Cheering MAGA crowd along bottom (pre-baked sprites)
+    for (let i = 0; i < 18; i++) {
+      const x = Phaser.Math.Between(40, w - 40);
       const groundY = GAME_HEIGHT - Phaser.Math.Between(20, 50);
-      // Person silhouette — head + body
-      gc.fillStyle(0x1a2a3a, 0.4);
-      gc.fillCircle(x, groundY - 20, 5); // head
-      gc.fillRect(x - 4, groundY - 15, 8, 15); // body
-      // Red hat (MAGA cap)
-      gc.fillStyle(0xcc2222, 0.3);
-      gc.fillRect(x - 5, groundY - 25, 10, 4);
-      gc.fillRect(x - 7, groundY - 22, 3, 2); // brim
-      // Raised arm (cheering)
-      if (Phaser.Math.Between(0, 2) === 0) {
-        gc.fillStyle(0x1a2a3a, 0.4);
-        gc.fillRect(x + 3, groundY - 28, 2, 12);
-      }
+      const person = this.add.image(x, groundY - 20, 'bg-maga-person');
+      person.setScrollFactor(0.15);
+      person.setAlpha(Phaser.Math.FloatBetween(0.2, 0.3));
     }
 
-    // Animated floating blue checks
+    // Animated floating blue checks with tweens
     for (let i = 0; i < 10; i++) {
       const bx = Phaser.Math.Between(50, w - 50);
       const by = Phaser.Math.Between(30, 300);
-      const badge = this.add.circle(bx, by, 7, 0x1DA1F2, 0.15);
+      const badge = this.add.image(bx, by, 'bg-blue-check');
       badge.setScrollFactor(0.3);
+      badge.setAlpha(0.2);
       this.tweens.add({
         targets: badge,
         y: by - 40,
@@ -1277,7 +1249,16 @@ export class LevelScene extends Phaser.Scene {
       });
     }
 
-    // Large faded X logo in sky
+    // Floating tweet cards in mid-background
+    for (let i = 0; i < 4; i++) {
+      const tx = Phaser.Math.Between(100, w - 100);
+      const ty = Phaser.Math.Between(80, 260);
+      const card = this.add.image(tx, ty, 'bg-tweet-card');
+      card.setScrollFactor(0.2);
+      card.setAlpha(0.1);
+    }
+
+    // Large faded X logo in sky (inline graphics — simple pattern)
     const gx = this.add.graphics().setScrollFactor(0.05);
     gx.fillStyle(0x1DA1F2, 0.04);
     for (let i = 0; i < 50; i++) {
@@ -1290,60 +1271,34 @@ export class LevelScene extends Phaser.Scene {
   private drawBgLinkedIn(): void {
     const w = this.config.width;
 
-    // Office buildings with lit windows
-    const g0 = this.add.graphics().setScrollFactor(0.1);
-    for (let bx = 0; bx < w; bx += 100) {
-      const bh = Phaser.Math.Between(150, 320);
-      g0.fillStyle(0x0a1628, 0.5);
-      g0.fillRect(bx, GAME_HEIGHT - bh, 80, bh);
-      g0.fillStyle(0x1a3050, 0.3);
-      for (let wy = GAME_HEIGHT - bh + 15; wy < GAME_HEIGHT - 20; wy += 25) {
-        for (let wx = bx + 10; wx < bx + 70; wx += 20) {
-          g0.fillRect(wx, wy, 12, 15);
-        }
-      }
+    // Office buildings (pre-baked sprites)
+    for (let i = 0; i < 10; i++) {
+      const bx = Phaser.Math.Between(0, w - 40);
+      const building = this.add.image(bx, GAME_HEIGHT - 36, 'bg-office-building');
+      building.setOrigin(0.5, 1);
+      building.setScrollFactor(0.1);
+      building.setAlpha(Phaser.Math.FloatBetween(0.3, 0.5));
     }
 
-    // Premium upselling banners floating in background
-    const bannerTexts = ['PREMIUM', 'UPGRADE', 'TOP VOICE', 'IN NETWORK', 'PROMOTED', 'FEATURED'];
-    for (let i = 0; i < 8; i++) {
-      const bx = Phaser.Math.Between(50, w - 150);
+    // Premium banners (pre-baked sprites)
+    for (let i = 0; i < 6; i++) {
+      const bx = Phaser.Math.Between(50, w - 100);
       const by = Phaser.Math.Between(40, 280);
-      // Banner rectangle
-      const gb = this.add.graphics().setScrollFactor(0.2);
-      gb.fillStyle(0xf5c518, 0.08);
-      gb.fillRoundedRect(bx, by, 100, 24, 4);
-      gb.lineStyle(1, 0xf5c518, 0.12);
-      gb.strokeRoundedRect(bx, by, 100, 24, 4);
-      // Banner text
-      this.add.text(bx + 50, by + 12, bannerTexts[i % bannerTexts.length], {
-        fontFamily: '"JetBrains Mono", monospace',
-        fontSize: '7px',
-        color: '#f5c518',
-      }).setAlpha(0.12).setOrigin(0.5).setScrollFactor(0.2);
+      const banner = this.add.image(bx, by, 'bg-premium-banner');
+      banner.setScrollFactor(0.2);
+      banner.setAlpha(Phaser.Math.FloatBetween(0.15, 0.25));
     }
 
-    // Suited people rushing (silhouettes at various depths)
-    const gp = this.add.graphics().setScrollFactor(0.18);
-    for (let x = 30; x < w; x += Phaser.Math.Between(40, 80)) {
+    // Suited people rushing (pre-baked sprites)
+    for (let i = 0; i < 14; i++) {
+      const x = Phaser.Math.Between(30, w - 30);
       const py = GAME_HEIGHT - Phaser.Math.Between(15, 45);
-      // Person in suit — head, body, briefcase
-      gp.fillStyle(0x1a2a40, 0.4);
-      gp.fillCircle(x, py - 18, 4); // head
-      gp.fillRect(x - 3, py - 14, 6, 14); // body (suit)
-      // Tie
-      gp.fillStyle(0x0A66C2, 0.2);
-      gp.fillRect(x - 1, py - 12, 2, 6);
-      // Briefcase
-      gp.fillStyle(0x333344, 0.3);
-      gp.fillRect(x + 4, py - 6, 6, 5);
-      // Legs (walking pose)
-      gp.fillStyle(0x1a2a40, 0.4);
-      gp.fillRect(x - 2, py, 2, 6);
-      gp.fillRect(x + 1, py, 2, 5);
+      const person = this.add.image(x, py - 20, 'bg-suited-person');
+      person.setScrollFactor(0.18);
+      person.setAlpha(Phaser.Math.FloatBetween(0.25, 0.35));
     }
 
-    // LinkedIn "in" logos scattered
+    // LinkedIn "in" logos scattered (text — works fine)
     for (let i = 0; i < 6; i++) {
       const bx = Phaser.Math.Between(50, w - 50);
       const by = Phaser.Math.Between(30, 200);
@@ -1360,51 +1315,36 @@ export class LevelScene extends Phaser.Scene {
   private drawBgBluesky(): void {
     const w = this.config.width;
 
-    // Layer 0: Soft white clouds
-    const g0 = this.add.graphics().setScrollFactor(0.12);
-    for (let i = 0; i < 18; i++) {
+    // Background clouds (pre-baked sprites, far layer)
+    for (let i = 0; i < 12; i++) {
       const cx = Phaser.Math.Between(0, w);
       const cy = Phaser.Math.Between(20, 250);
-      const size = Phaser.Math.Between(30, 70);
-      g0.fillStyle(0xffffff, Phaser.Math.FloatBetween(0.03, 0.07));
-      g0.fillCircle(cx, cy, size);
-      g0.fillCircle(cx + size * 0.6, cy - size * 0.1, size * 0.7);
-      g0.fillCircle(cx - size * 0.5, cy + size * 0.1, size * 0.6);
-      g0.fillCircle(cx + size * 0.3, cy + size * 0.3, size * 0.5);
+      const cloud = this.add.image(cx, cy, 'bg-cloud');
+      cloud.setScrollFactor(0.12);
+      cloud.setAlpha(Phaser.Math.FloatBetween(0.08, 0.15));
+      cloud.setScale(Phaser.Math.FloatBetween(0.8, 1.5));
     }
 
-    // Layer 1: More distinct foreground clouds
-    const g1 = this.add.graphics().setScrollFactor(0.25);
-    for (let i = 0; i < 10; i++) {
+    // Foreground clouds (pre-baked sprites, nearer layer)
+    for (let i = 0; i < 6; i++) {
       const cx = Phaser.Math.Between(0, w);
       const cy = Phaser.Math.Between(40, 300);
-      g1.fillStyle(0xffffff, 0.05);
-      g1.fillCircle(cx, cy, 25);
-      g1.fillCircle(cx + 18, cy - 3, 20);
-      g1.fillCircle(cx - 12, cy + 5, 18);
+      const cloud = this.add.image(cx, cy, 'bg-cloud');
+      cloud.setScrollFactor(0.25);
+      cloud.setAlpha(Phaser.Math.FloatBetween(0.12, 0.2));
     }
 
-    // Animated blue butterflies
+    // Animated blue butterflies (pre-baked sprites with tweens)
     for (let i = 0; i < 12; i++) {
       const bx = Phaser.Math.Between(50, w - 50);
       const by = Phaser.Math.Between(30, 350);
-      // Butterfly: two triangular wings + body
-      const bf = this.add.graphics().setScrollFactor(0.35);
-      bf.fillStyle(0x0085FF, 0.2);
-      // Left wing
-      bf.fillTriangle(bx - 6, by - 4, bx, by, bx - 6, by + 4);
-      // Right wing
-      bf.fillTriangle(bx + 6, by - 4, bx, by, bx + 6, by + 4);
-      // Body
-      bf.fillStyle(0x0060cc, 0.3);
-      bf.fillRect(bx - 1, by - 2, 2, 4);
-
-      // Animate butterflies floating around
+      const butterfly = this.add.image(bx, by, 'bg-butterfly');
+      butterfly.setScrollFactor(0.35);
+      butterfly.setAlpha(Phaser.Math.FloatBetween(0.2, 0.3));
       this.tweens.add({
-        targets: bf,
-        x: Phaser.Math.Between(-80, 80),
-        y: Phaser.Math.Between(-60, 60),
-        alpha: 0.5,
+        targets: butterfly,
+        y: by - 30,
+        x: bx + Phaser.Math.Between(-40, 40),
         duration: Phaser.Math.Between(4000, 8000),
         yoyo: true,
         repeat: -1,
@@ -1413,15 +1353,14 @@ export class LevelScene extends Phaser.Scene {
       });
     }
 
-    // Bluesky butterfly logo silhouettes (larger, very faint)
-    const g2 = this.add.graphics().setScrollFactor(0.08);
+    // Large Bluesky logos (pre-baked sprites, very faint)
     for (let i = 0; i < 4; i++) {
       const lx = Phaser.Math.Between(100, w - 100);
       const ly = Phaser.Math.Between(60, 200);
-      g2.fillStyle(0x0085FF, 0.04);
-      g2.fillTriangle(lx - 20, ly - 15, lx, ly, lx - 20, ly + 15);
-      g2.fillTriangle(lx + 20, ly - 15, lx, ly, lx + 20, ly + 15);
-      g2.fillRect(lx - 2, ly - 3, 4, 10);
+      const logo = this.add.image(lx, ly, 'bg-bsky-logo');
+      logo.setScrollFactor(0.08);
+      logo.setAlpha(Phaser.Math.FloatBetween(0.06, 0.1));
+      logo.setScale(Phaser.Math.FloatBetween(2, 3));
     }
   }
 
@@ -1429,47 +1368,34 @@ export class LevelScene extends Phaser.Scene {
   private drawBgArxiv(): void {
     const w = this.config.width;
 
-    // Layer 0: Server racks / bookshelves
-    const g0 = this.add.graphics().setScrollFactor(0.1);
-    for (let x = 0; x < w; x += 50) {
-      const bh = Phaser.Math.Between(120, 320);
-      g0.fillStyle(0x3a0e0e, 0.4);
-      g0.fillRect(x, GAME_HEIGHT - bh, 40, bh);
-      // Shelf/rack lines
-      g0.fillStyle(0x5a1818, 0.2);
-      for (let sy = GAME_HEIGHT - bh + 5; sy < GAME_HEIGHT - 5; sy += 12) {
-        g0.fillRect(x + 5, sy, 30, 8);
-      }
+    // Server racks (pre-baked sprites)
+    for (let i = 0; i < 12; i++) {
+      const x = Phaser.Math.Between(0, w - 20);
+      const rack = this.add.image(x, GAME_HEIGHT - 24, 'bg-server-rack');
+      rack.setOrigin(0.5, 1);
+      rack.setScrollFactor(0.1);
+      rack.setAlpha(Phaser.Math.FloatBetween(0.3, 0.4));
     }
 
-    // Layer 1: Seated computer scientists at desks
-    const g1 = this.add.graphics().setScrollFactor(0.2);
-    for (let x = 60; x < w; x += Phaser.Math.Between(150, 250)) {
+    // Seated computer scientists (pre-baked sprites)
+    for (let i = 0; i < 6; i++) {
+      const x = Phaser.Math.Between(60, w - 60);
       const dy = GAME_HEIGHT - Phaser.Math.Between(60, 100);
-      // Desk
-      g1.fillStyle(0x4a2020, 0.3);
-      g1.fillRect(x, dy, 40, 4);
-      g1.fillRect(x + 2, dy + 4, 4, 12);
-      g1.fillRect(x + 34, dy + 4, 4, 12);
-      // Monitor on desk
-      g1.fillStyle(0x333333, 0.3);
-      g1.fillRect(x + 12, dy - 18, 16, 14);
-      g1.fillStyle(0x4488aa, 0.15);
-      g1.fillRect(x + 14, dy - 16, 12, 10);
-      // Monitor stand
-      g1.fillStyle(0x333333, 0.3);
-      g1.fillRect(x + 18, dy - 4, 4, 4);
-      // Person sitting at desk
-      g1.fillStyle(0x2a1515, 0.35);
-      g1.fillCircle(x + 4, dy - 14, 4); // head
-      g1.fillRect(x + 1, dy - 10, 6, 10); // body
-      // Glasses
-      g1.fillStyle(0x888888, 0.2);
-      g1.fillRect(x + 1, dy - 15, 3, 2);
-      g1.fillRect(x + 5, dy - 15, 3, 2);
+      const scientist = this.add.image(x, dy - 10, 'bg-scientist');
+      scientist.setScrollFactor(0.2);
+      scientist.setAlpha(Phaser.Math.FloatBetween(0.25, 0.35));
     }
 
-    // Floating LaTeX/math symbols
+    // Terminal screens floating in background (pre-baked sprites)
+    for (let i = 0; i < 5; i++) {
+      const tx = Phaser.Math.Between(50, w - 50);
+      const ty = Phaser.Math.Between(40, 280);
+      const terminal = this.add.image(tx, ty, 'bg-terminal');
+      terminal.setScrollFactor(0.15);
+      terminal.setAlpha(Phaser.Math.FloatBetween(0.15, 0.2));
+    }
+
+    // Floating LaTeX/math symbols (text — works fine)
     const symbols = ['∑', '∫', '∂', '∇', 'λ', 'θ', 'π', '≈'];
     for (let i = 0; i < 10; i++) {
       const sx = Phaser.Math.Between(30, w - 30);
@@ -1481,7 +1407,7 @@ export class LevelScene extends Phaser.Scene {
       }).setAlpha(0.06).setScrollFactor(0.25);
     }
 
-    // Floating paper silhouettes
+    // Floating paper silhouettes (inline graphics — simple rectangles)
     const g2 = this.add.graphics().setScrollFactor(0.3);
     for (let i = 0; i < 14; i++) {
       const px = Phaser.Math.Between(20, w - 20);
@@ -1499,7 +1425,7 @@ export class LevelScene extends Phaser.Scene {
   private drawBgPhilpapers(): void {
     const w = this.config.width;
 
-    // Starfield background
+    // Starfield background (inline graphics — simple dots)
     const g0 = this.add.graphics().setScrollFactor(0.05);
     g0.fillStyle(0x080810);
     g0.fillRect(0, 0, w, GAME_HEIGHT);
@@ -1510,47 +1436,31 @@ export class LevelScene extends Phaser.Scene {
       g0.fillCircle(sx, sy, Phaser.Math.Between(1, 2));
     }
 
-    // Ivory towers (tall white/cream spires)
-    const gt = this.add.graphics().setScrollFactor(0.12);
-    for (let x = 100; x < w; x += Phaser.Math.Between(200, 350)) {
-      const th = Phaser.Math.Between(200, 350);
-      const tw = Phaser.Math.Between(20, 35);
-      const ty = GAME_HEIGHT - th;
-      // Tower body
-      gt.fillStyle(0xd4c8a0, 0.1);
-      gt.fillRect(x, ty + 30, tw, th - 30);
-      // Tapered top
-      gt.fillTriangle(x - 3, ty + 30, x + tw + 3, ty + 30, x + tw / 2, ty);
-      // Windows
-      gt.fillStyle(0xffe8a0, 0.08);
-      for (let wy = ty + 50; wy < GAME_HEIGHT - 20; wy += 30) {
-        gt.fillRect(x + tw / 2 - 3, wy, 6, 10);
-      }
-      // Cloud around tower top (heads in clouds)
-      gt.fillStyle(0xffffff, 0.04);
-      gt.fillCircle(x + tw / 2, ty + 10, 20);
-      gt.fillCircle(x + tw / 2 - 12, ty + 15, 14);
-      gt.fillCircle(x + tw / 2 + 15, ty + 12, 16);
+    // Ivory towers (pre-baked sprites)
+    for (let i = 0; i < 4; i++) {
+      const x = Phaser.Math.Between(100, w - 100);
+      const tower = this.add.image(x, GAME_HEIGHT - 44, 'bg-ivory-tower');
+      tower.setOrigin(0.5, 1);
+      tower.setScrollFactor(0.12);
+      tower.setAlpha(Phaser.Math.FloatBetween(0.15, 0.25));
     }
 
-    // Philosophers: robed figures with thought bubbles
-    const gp = this.add.graphics().setScrollFactor(0.18);
-    for (let x = 60; x < w; x += Phaser.Math.Between(180, 300)) {
+    // Philosophers (pre-baked sprites) with inline thought bubbles
+    const gb = this.add.graphics().setScrollFactor(0.18);
+    for (let i = 0; i < 7; i++) {
+      const x = Phaser.Math.Between(60, w - 60);
       const py = GAME_HEIGHT - Phaser.Math.Between(30, 80);
-      // Robed figure
-      gp.fillStyle(0x2C3E50, 0.25);
-      gp.fillCircle(x, py - 20, 5); // head
-      gp.fillTriangle(x - 8, py, x + 8, py, x, py - 16); // robe
-      // Thinking pose — hand to chin
-      gp.fillRect(x + 4, py - 16, 2, 6);
-      // Thought bubble rising into clouds
-      gp.fillStyle(0xffffff, 0.06);
-      gp.fillCircle(x + 8, py - 30, 3);
-      gp.fillCircle(x + 12, py - 40, 4);
-      gp.fillCircle(x + 10, py - 52, 6);
+      const philosopher = this.add.image(x, py - 20, 'bg-philosopher');
+      philosopher.setScrollFactor(0.18);
+      philosopher.setAlpha(Phaser.Math.FloatBetween(0.2, 0.3));
+      // Thought bubble rising (inline — too simple to prebake)
+      gb.fillStyle(0xffffff, 0.06);
+      gb.fillCircle(x + 8, py - 30, 3);
+      gb.fillCircle(x + 12, py - 40, 4);
+      gb.fillCircle(x + 10, py - 52, 6);
     }
 
-    // Greek question marks and philosophical symbols
+    // Greek philosophical symbols (text — works fine)
     const symbols = ['?', 'φ', '∴', '¬', '∃', '∀', '⊢', '⊨'];
     for (let i = 0; i < 8; i++) {
       const qx = Phaser.Math.Between(50, w - 50);
@@ -1567,7 +1477,7 @@ export class LevelScene extends Phaser.Scene {
   private drawBgSSRN(): void {
     const w = this.config.width;
 
-    // Institutional buildings (green brick)
+    // Institutional buildings (inline graphics — simple brick pattern)
     const g0 = this.add.graphics().setScrollFactor(0.1);
     for (let bx = 0; bx < w; bx += 80) {
       const bh = Phaser.Math.Between(120, 320);
@@ -1580,71 +1490,40 @@ export class LevelScene extends Phaser.Scene {
       }
     }
 
-    // Social scientists: figures with clipboards, measuring tools, wagging fingers
-    const gs = this.add.graphics().setScrollFactor(0.2);
-    for (let x = 50; x < w; x += Phaser.Math.Between(120, 200)) {
+    // Social scientists (pre-baked sprites)
+    for (let i = 0; i < 9; i++) {
+      const x = Phaser.Math.Between(50, w - 50);
       const py = GAME_HEIGHT - Phaser.Math.Between(25, 60);
-      // Person
-      gs.fillStyle(0x1E4D2B, 0.3);
-      gs.fillCircle(x, py - 16, 4); // head
-      gs.fillRect(x - 3, py - 12, 6, 12); // body
-      // Legs
-      gs.fillRect(x - 2, py, 2, 6);
-      gs.fillRect(x + 1, py, 2, 6);
-      // Clipboard in hand
-      gs.fillStyle(0xddddaa, 0.2);
-      gs.fillRect(x + 5, py - 12, 6, 8);
-      gs.fillStyle(0x888866, 0.15);
-      gs.fillRect(x + 6, py - 10, 4, 1);
-      gs.fillRect(x + 6, py - 8, 3, 1);
-      gs.fillRect(x + 6, py - 6, 4, 1);
-      // Wagging finger (every other scientist)
-      if (Phaser.Math.Between(0, 1) === 0) {
-        gs.fillStyle(0x1E4D2B, 0.3);
-        gs.fillRect(x - 5, py - 14, 2, 8); // arm
-        gs.fillRect(x - 7, py - 18, 2, 4); // finger pointing up
-      }
-      // Glasses
-      gs.fillStyle(0x888888, 0.2);
-      gs.fillRect(x - 3, py - 17, 3, 2);
-      gs.fillRect(x + 1, py - 17, 3, 2);
+      const scientist = this.add.image(x, py - 20, 'bg-social-scientist');
+      scientist.setScrollFactor(0.2);
+      scientist.setAlpha(Phaser.Math.FloatBetween(0.2, 0.3));
     }
 
-    // Bar charts / graphs in background
-    const gc = this.add.graphics().setScrollFactor(0.15);
-    for (let x = 80; x < w; x += Phaser.Math.Between(200, 350)) {
-      const gy = Phaser.Math.Between(100, 300);
-      // Axes
-      gc.lineStyle(1, 0x1E4D2B, 0.1);
-      gc.strokeRect(x, gy, 60, 40);
-      // Bars
-      gc.fillStyle(0x1E4D2B, 0.08);
-      for (let i = 0; i < 5; i++) {
-        const bh = Phaser.Math.Between(8, 35);
-        gc.fillRect(x + 5 + i * 10, gy + 40 - bh, 8, bh);
-      }
-      // Trend line
-      gc.lineStyle(1, 0xf48120, 0.08);
-      gc.beginPath();
-      gc.moveTo(x + 5, gy + 30);
-      for (let i = 1; i < 5; i++) {
-        gc.lineTo(x + 5 + i * 12, gy + Phaser.Math.Between(10, 35));
-      }
-      gc.strokePath();
+    // Bar charts (pre-baked sprites)
+    for (let i = 0; i < 5; i++) {
+      const cx = Phaser.Math.Between(80, w - 80);
+      const cy = Phaser.Math.Between(100, 300);
+      const chart = this.add.image(cx, cy, 'bg-bar-chart');
+      chart.setScrollFactor(0.15);
+      chart.setAlpha(Phaser.Math.FloatBetween(0.12, 0.2));
     }
 
-    // Paywall locks
+    // Paywall locks (pre-baked sprites with gentle bobbing tween)
     for (let i = 0; i < 6; i++) {
       const lx = Phaser.Math.Between(80, w - 80);
       const ly = Phaser.Math.Between(40, 250);
-      const lock = this.add.circle(lx, ly, 10, 0x1E4D2B, 0.08);
+      const lock = this.add.image(lx, ly, 'bg-paywall-lock');
       lock.setScrollFactor(0.2);
-      // Lock icon
-      const gl = this.add.graphics().setScrollFactor(0.2);
-      gl.fillStyle(0x1E4D2B, 0.1);
-      gl.fillRect(lx - 4, ly, 8, 6);
-      gl.lineStyle(1, 0x1E4D2B, 0.1);
-      gl.strokeCircle(lx, ly - 3, 4);
+      lock.setAlpha(Phaser.Math.FloatBetween(0.1, 0.15));
+      this.tweens.add({
+        targets: lock,
+        y: ly - 8,
+        duration: Phaser.Math.Between(3000, 5000),
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+        delay: Phaser.Math.Between(0, 2000),
+      });
     }
   }
 }
