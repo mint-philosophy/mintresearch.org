@@ -8,18 +8,27 @@ The lab guide (an interactive reference for the lab's agentic systems, daemons, 
 
 ---
 
-## Current State (as of 2026-03-02)
+## Current State (as of 2026-03-04)
 
 ### What exists and works
 
 - **Astro project scaffolding**: Fully configured with `astro.config.mjs`, TypeScript strict mode, build/dev/preview scripts. Astro 5.17.1.
 - **Design system**: Fully extracted into `DESIGN_SYSTEM.md` (canonical spec) and implemented in `src/styles/global.css`. All CSS custom properties, component styles, and responsive breakpoints are in place.
-- **Six reusable Astro components**: `Sidebar`, `Section`, `Card`, `StatCard`, `RefTable`, `BleedLine` -- covering all the major UI patterns from the prototype.
-- **`BaseLayout.astro`**: Shared layout with Google Fonts loading (Fraunces, DM Sans, JetBrains Mono), mobile menu button, and noise overlay.
-- **`test.astro`**: Component test page exercising all components. Accessible at `/mintresearch.org/test/`.
+- **Eight reusable Astro components**: `Sidebar`, `Section`, `Card`, `StatCard`, `RefTable`, `BleedLine`, `TerminalPicker` -- covering all the major UI patterns.
+- **`BaseLayout.astro`**: Shared layout with Google Fonts loading, mobile menu, noise overlay, and all client-side JS (scroll tracking, card accordions, typing animation, etc.).
+- **Landing page** (`src/pages/index.astro`): Fully built with hero, about, people (team/affiliates/alumni), publications, events, and news sections. Uses the design system and TerminalPicker component.
 - **`guide.astro`**: Partial migration of the lab guide (sections 01-06 of ~12 total). See below.
 - **Paper map**: Full pipeline output in `public/paper-map/` -- interactive DataMapPlot visualization, updated daily by the paper-map-updater daemon.
 - **Build output**: `dist/` is generated and gitignored. Builds successfully with `npx astro build`.
+
+### TerminalPicker component and deliverables data
+
+The landing page uses `TerminalPicker` (see "Editing Content" below) to display:
+- **Publications** (Section 03): 30 items -- peer-reviewed papers, books, preprints, affiliate work
+- **Events** (Section 04): 15 items -- MINT-organised workshops, retreats, symposia only
+- **News** (Section 05): 37 items -- keynotes, conference presentations, media, appointments, updates
+
+All data lives in `src/data/deliverables.ts`. Source of truth for dates and entries: the Notion "MINT Lab Deliverables" database.
 
 ### What is in progress
 
@@ -31,19 +40,13 @@ The lab guide (an interactive reference for the lab's agentic systems, daemons, 
   - 04: The Corpus (stats, cluster visualization placeholder, 41-question grid)
   - 05: @Minty / Corpus Search (agent hierarchy, query flow)
   - 06: Minty Persona (persona documents, agent engineering details)
-  - Ends with `<!-- PLACEHOLDER_SECTION_07_ONWARDS -->` -- the following sections from `guide/prototype-v3.html` still need migrating:
-    - Daemons (section id="daemons") -- daemon registry cards with health status
-    - Schedule (section id="timeline") -- 24-hour timeline chart
-    - For Lab Members (section id="guide") -- bots, Slack channels, usage instructions
-    - Agent Engineering (section id="agents") -- CO hierarchy, deep review pipeline
-    - Integrations (section id="integrations") -- Zotero, Google Drive, Notion, Gmail
-    - Subscribe (section id="subscribe") -- email signup card
-    - Footer
+  - Ends with `<!-- PLACEHOLDER_SECTION_07_ONWARDS -->` -- remaining sections still need migrating
 
-### What is still old static HTML
+### Legacy files (to be removed)
 
-- **Landing page** (`src/pages/index.astro`): Placeholder "Site under construction" page with system-ui font. Not using the design system at all. The actual landing page content is in the legacy `index.html` (top-level) which uses Inter font and links to paper-map and lab guide.
-- **Website content** (`website/`): Imported from mint-website repo. Contains `index.html`, `style.css`, `site-data.js`, `playground.html`, and `assets/`. Has people, publications, and events data but uses its own separate styling. Not integrated into Astro.
+- `website/` -- old mint-website content, now superseded by deliverables.ts + TerminalPicker
+- `guide/` -- old lab guide prototypes (reference only)
+- `_shared/`, `build.py`, `static/`, top-level `index.html` -- old build system
 
 ---
 
@@ -60,11 +63,13 @@ mintresearch.org/
 |   |   |-- Section.astro         # Numbered section with L-bracket corner marks
 |   |   |-- Sidebar.astro         # Fixed left nav with search trigger
 |   |   |-- StatCard.astro        # Stat display (number + label)
+|   |   |-- TerminalPicker.astro  # Paginated list (publications, events, news)
 |   |-- layouts/
 |   |   |-- BaseLayout.astro      # HTML shell, font loading, mobile menu
 |   |-- data/
 |   |   |-- stats.json            # Centralised stats (auto-updated by daemon + manual)
 |   |   |-- navigation.ts         # Sidebar navigation config
+|   |   |-- deliverables.ts       # Publications, events, news (source: Notion)
 |   |-- pages/
 |   |   |-- index.astro           # Landing page (placeholder)
 |   |   |-- guide.astro           # Lab infrastructure guide
@@ -77,8 +82,12 @@ mintresearch.org/
 |-- public/                       # Served as-is by Astro (no processing)
 |   |-- .nojekyll                 # Tells GitHub Pages not to use Jekyll
 |   |-- CNAME                     # Custom domain: mintresearch.org
-|   |-- favicon.ico               # Favicon (ICO format)
-|   |-- favicon.svg               # Favicon (SVG format)
+|   |-- favicon.ico               # Favicon (teal scanline Minty, multi-size ICO)
+|   |-- favicon-32x32.png         # Favicon 32px PNG
+|   |-- favicon-180x180.png       # Favicon 180px PNG
+|   |-- favicon-192x192.png       # Favicon 192px PNG (Android/PWA)
+|   |-- favicon-512x512.png       # Favicon 512px PNG (PWA/high-res)
+|   |-- apple-touch-icon.png      # iOS home screen icon
 |   |-- paper-map/                # Interactive paper map (DataMapPlot output)
 |       |-- index.html            # Main visualization page
 |       |-- data/                 # Corpus data for the map
@@ -164,13 +173,14 @@ Full spec in `DESIGN_SYSTEM.md`. Key rules:
 
 | Component | File | Props | Purpose |
 |:---|:---|:---|:---|
-| `BaseLayout` | `src/layouts/BaseLayout.astro` | `title: string` | HTML document shell. Loads Google Fonts, imports `global.css`, renders mobile menu button and overlay, provides `<slot>` for page content. |
+| `BaseLayout` | `src/layouts/BaseLayout.astro` | `title: string`, `description?: string` | HTML document shell. Loads Google Fonts, imports `global.css`, renders mobile menu button and overlay, provides `<slot>` for page content. Includes SEO meta tags (og:title, og:description, og:image, twitter:card) and multi-format favicon links. Token counter formats as 1.0k after 999. |
 | `Sidebar` | `src/components/Sidebar.astro` | `links: NavLink[]` where `NavLink = { href, label, mark, active? }` | Fixed left navigation. Renders MINT logo, search trigger (Cmd+K), and nav links with marker icons. Includes search overlay markup. |
 | `Section` | `src/components/Section.astro` | `id: string`, `num?: string`, `noBrackets?: boolean` | Content section with optional numbered badge. Adds `fade-in` class for scroll animation. L-bracket corner marks via CSS `::before`/`::after`. Pass `noBrackets` to suppress brackets on unnumbered sections. |
 | `Card` | `src/components/Card.astro` | `title: string`, `sub: string`, `iconBg: string`, `iconText: string`, `open?: boolean` | Expandable accordion card. Icon with colored background, title, subtitle, collapsible body via `<slot>`. `open` prop renders body visible by default. |
 | `StatCard` | `src/components/StatCard.astro` | `num: string`, `label: string` | Metric display card. Large number in Fraunces + small uppercase label in JetBrains Mono. Hover lifts card with glow. |
 | `RefTable` | `src/components/RefTable.astro` | None (slot only) | Wrapper `<table class="ref-table">` for reference data tables. Pass `<thead>` and `<tbody>` via the default slot. |
 | `BleedLine` | `src/components/BleedLine.astro` | `heavy?: boolean` | Full-width horizontal dashed line that bleeds beyond the content column. `heavy` doubles the line width. |
+| `TerminalPicker` | `src/components/TerminalPicker.astro` | `items: PickerItem[]`, `label?: string`, `pageSize?: number` | Paginated list inspired by Claude Code's question picker UI. Shows `pageSize` items per page (default 5), auto-sorted by date descending. Navigation: mousewheel, ←→ arrows, Tab/Shift+Tab, clickable progress bar. Click row to expand (blurb + "View source →" link). Enter expands keyboard-active row, Escape collapses. |
 
 ---
 
@@ -250,48 +260,125 @@ The `paper-map-updater` daemon (in the Minty workspace at `daemons/paper-map-upd
 
 **Do not restructure `public/paper-map/` or `src/data/stats.json` without updating the daemon's output paths.** The pipeline scripts inside `paper-map/` (the various `.py` files) are run externally by the daemon -- they are not part of the Astro build.
 
+### Deliverables Data (`src/data/deliverables.ts`)
+
+Source of truth for publications, events, and news on the landing page. 82 entries total, cross-referenced from the Notion "MINT Lab Deliverables" database.
+
+**Type definition:**
+```typescript
+type PickerItem = {
+  year: number;
+  date?: string;     // MM/YYYY — required for all entries (auto-sort key)
+  title: string;
+  subtitle: string;  // authors (publications) or description (events/news)
+  detail: string;    // venue (publications) or location/outlet (events/news)
+  url?: string;      // verification link (DOI, arXiv, event page, article)
+  tag?: NewsTag;     // news only: 'keynote' | 'conference' | 'media' | 'appointment' | 'update'
+  blurb?: string;    // expanded content (abstract for papers, description for others)
+};
+```
+
+**To add a new publication:**
+```typescript
+{
+  year: 2026,
+  date: '06/2026',
+  title: 'Paper Title',
+  subtitle: 'Author1, Author2',
+  detail: 'Venue Name',
+  url: 'https://doi.org/...',
+  blurb: 'Abstract or brief description.',
+},
+```
+
+**To add a new event** (MINT-organised only — keynotes/talks go under news):
+```typescript
+{
+  year: 2026,
+  date: '09/2026',
+  title: 'Workshop Name',
+  subtitle: 'Brief description',
+  detail: 'Location',
+  url: 'https://...',
+  blurb: 'Longer description.',
+},
+```
+
+**To add a news item:**
+```typescript
+{
+  year: 2026,
+  date: '03/2026',
+  title: 'Item Title',
+  subtitle: 'Brief description',
+  detail: 'Source/Venue',
+  url: 'https://...',
+  tag: 'keynote',  // or 'conference', 'media', 'appointment', 'update'
+  blurb: 'Longer description.',
+},
+```
+
+**Tag meanings:**
+- `keynote` — invited keynotes and named lectures
+- `conference` — conference presentations, tutorials, posters, panels
+- `media` — newspaper articles, podcasts, blog posts, op-eds
+- `appointment` — fellowships, positions, lab moves (MATS, JHU, DeepMind, Knight, Carnegie, HKU)
+- `update` — reports, contributions, participation (UNDP, ACOLA, summer schools)
+
+**Sorting is automatic.** The TerminalPicker component sorts all items by date descending at build time. Add entries anywhere in the array — they'll end up in the right place. Every entry must have a `date` field in MM/YYYY format.
+
+**Notion as source of truth.** When adding or correcting entries, cross-reference against the "MINT Lab Deliverables" Notion database for accurate dates and details.
+
 ---
 
 ## What Needs Doing Next
 
-1. **Complete guide.astro migration** -- Sections 07 onwards from `guide/prototype-v3.html` still need migrating to Astro components. Remaining sections:
-   - Daemons (id="daemons") -- daemon registry cards with live health status indicators
-   - Schedule (id="timeline") -- 24-hour timeline chart showing daemon run windows
-   - For Lab Members (id="guide") -- bots accordion, Slack channels, usage instructions
-   - Agent Engineering (id="agents") -- CO hierarchy diagram, deep review pipeline
-   - Integrations (id="integrations") -- Zotero, Google Drive, Notion, Gmail integration details
-   - Subscribe (id="subscribe") -- email signup card
-   - Footer section
+1. ~~Complete guide.astro migration~~ -- **DONE**. All 11 sections migrated including Daemons, Schedule, For Lab Members, Agent Engineering, Integrations, Subscribe, Footer.
 
-2. **Add JavaScript interactivity** -- The prototype has significant JS that has not been ported:
-   - Search overlay (Cmd+K search across daemons, skills, commands, concepts)
-   - Card accordion toggle (click to expand/collapse card bodies)
-   - Fade-in intersection observer (sections animate in on scroll)
-   - Mobile menu toggle (hamburger button opens sidebar overlay)
-   - Ingest pipeline tooltips (hover on pipeline stages for details)
-   - Pipeline SVG tooltips (hover on nodes for descriptions)
-   - Tab switching
-   - Accordion expand/collapse
-   - Timeline chart rendering
+2. ~~Add JavaScript interactivity~~ -- **DONE**. Search overlay, card accordions, fade-in observer, mobile menu, tooltips, tabs, timeline all working in BaseLayout.astro.
 
-3. **Migrate landing page** -- Replace the placeholder `src/pages/index.astro` with a proper landing page using the design system. Content source: top-level `index.html` (hero, cards linking to paper map and guide, footer).
+3. ~~Migrate landing page~~ -- **DONE** (2026-03-03). Landing page fully built with hero, about, people, publications, events, news.
 
-4. **Migrate website content** -- Bring people, publications, and events from `website/` into Astro pages. This likely means creating `src/pages/people.astro`, `src/pages/publications.astro`, `src/pages/events.astro` (or similar), pulling data from `website/site-data.js`.
+4. ~~Migrate website content~~ -- **DONE** (2026-03-03). Publications, events, and news migrated to data-driven TerminalPicker components sourced from `deliverables.ts`. People section populated with team, affiliates, and alumni.
 
-5. **Set up GitHub Actions** -- Create a workflow for automated Astro build + deploy to GitHub Pages on push to main. Currently no CI/CD exists.
+5. ~~Set up GitHub Actions~~ -- **DONE**. `.github/workflows/deploy.yml` builds on push to main.
 
-6. **Remove legacy files** -- Once all pages are migrated and verified, remove: `guide/`, `website/`, `_shared/`, `build.py`, `static/`, top-level `index.html`, top-level `.nojekyll`, top-level `CNAME`. The top-level `paper-map/` directory may also be removable if fully superseded by `public/paper-map/`.
+6. ~~Remove legacy files~~ -- **DONE** (2026-03-03). Removed `website/`, `guide/`, `_shared/`, `build.py`, `static/`, root `index.html`.
 
-7. **Custom domain DNS** -- Verify DNS setup for mintresearch.org. The CNAME file points to `mintresearch.org` but DNS may still be configured for the old GitHub Pages setup. Once Astro builds are deploying via Actions, update DNS as needed.
+7. ~~Custom domain DNS~~ -- **DONE**. CNAME configured for mintresearch.org.
 
-8. **Minty squid mascot** -- The hero section previously had an SVG squid watermark placeholder, which was removed (comment in CSS: "will be replaced with proper mascot image later"). Needs a proper image-model-generated version in the new aesthetic.
+8. ~~Minty squid mascot~~ -- **DONE**. Multiple mascot variants in `public/assets/` (8 colour variants + scan + cursor).
 
 ---
 
-## Session Context
+## Session Log
 
-This work was done in Minty session 757cd632 on 2026-03-02. That session also:
-- Fixed yesterday-in-ai SLACK_BOT_TOKEN transient failure (added retry logic to `platform_config.get_secret()`)
-- Sent the missing Mar 1 digest (email + canvas)
-- Updated `/start` command to run daemon-health in background
-- Consolidated mint-lab-guide, paper-map, and mint-website repos into this single repo
+### 2026-03-04 (session 00cbff78)
+- Planned swipe navigation + chevron indicators for TerminalPicker mobile UX (not yet implemented)
+- Touch event handler design: 30px horizontal threshold, translateX visual feedback, chevron overlays visible on touch devices only
+- Plan at `/Users/seth/.claude/plans/effervescent-spinning-babbage.md`
+
+### 2026-03-04 (session d5fda4b0)
+- Added Minty favicon (teal scanline variant, multi-size ICO + 5 PNGs). Removed old Astro rocket SVG.
+- Built terminal-styled contact form section (#06) with Formsubmit.co backend and hash endpoint
+- Added floating sunglasses Minty (minty-shades-scan.png) with transparent background and bob animation
+- Added SEO meta tags to BaseLayout: og:title, og:description, og:image, twitter:card. Description prop with default.
+- Changed seth@mint to lab@mint in index.astro and 404.astro terminal prompts
+- Renamed sidebar "About the Lab" to "About MINT Lab" in navigation.ts
+- Updated page title: "MINT Lab -- Machine Intelligence and Normative Theory"
+- Formatted token counter: digits through 999, then 1.0k, 1.1k, etc.
+- Updated BaseLayout.astro Props: now accepts optional `description` string
+- 7 commits deployed (cb7c17b through 7458653)
+
+### 2026-03-03 (session 16848276)
+- Built TerminalPicker component (Claude Code question-picker inspired UI)
+- Created `src/data/deliverables.ts` with 82 entries from Notion "MINT Lab Deliverables"
+- Publications (30), Events (15), News (37) — all with verification links, blurbs, MM/YYYY dates
+- Replaced hardcoded HTML in index.astro with three TerminalPicker instances
+- Split Events & News into separate sections (03 Publications, 04 Events, 05 News)
+- Updated navigation.ts with News section
+- Features: paged navigation (mousewheel, keyboard, clickable progress bar), expand-on-click with abstracts, auto-sort by date
+
+### 2026-03-02 (session 757cd632)
+- Consolidated mint-lab-guide, paper-map, and mint-website repos into single Astro site
+- Built design system, six components, partial guide migration

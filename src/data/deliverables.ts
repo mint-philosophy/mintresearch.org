@@ -434,7 +434,7 @@ export const events: PickerItem[] = [
   },
   {
     year: 2022,
-    date: '03/2022',
+    date: '07/2022',
     title: 'PAIS Workshop',
     subtitle: 'Philosophy, AI and Society workshop',
     detail: 'Harvard',
@@ -701,6 +701,7 @@ export const news: PickerItem[] = [
   },
   {
     year: 2024,
+    date: '06/2024',
     title: 'Australian AI Safety Forum',
     subtitle: 'Keynote presentation',
     detail: 'Australian AI Safety Forum',
