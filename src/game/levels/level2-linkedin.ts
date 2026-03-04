@@ -56,9 +56,10 @@ export function getLevel2Config(): LevelConfig {
     ],
     powerUps: [
       { type: 'openai', x: 850, y: GAME_HEIGHT - 240 },
-      { type: 'grok', x: 1550, y: GAME_HEIGHT - 300 },
+      { type: 'meta', x: 1550, y: GAME_HEIGHT - 300 },
       { type: 'shield', x: 2300, y: GAME_HEIGHT - 200 },
       { type: 'fogCloud', x: 2750, y: GAME_HEIGHT - 160 },
+      { type: 'ssi', x: 3050, y: GAME_HEIGHT - 240 },
     ],
     npcs: [
       { color: 'purple', x: 250, y: GAME_HEIGHT - 60, dialogueKey: 'l2-purple' },

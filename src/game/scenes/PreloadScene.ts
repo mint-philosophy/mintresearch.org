@@ -44,8 +44,15 @@ export class PreloadScene extends Phaser.Scene {
     this.generateCheckpoint();
     this.generateParticle();
     this.generateEnemies();
+    this.generateBossSprites();
     this.generateClawd();
     this.generateBackgroundSprites();
+    this.generateLobsterSprite();
+    this.generateRedBookSprite();
+    this.generateGreenHatSprite();
+    this.generateMacBombSprite();
+    this.generateLipstickMintySprite();
+    this.generateCreditsAshMinty();
   }
 
   private generatePlatform(): void {
@@ -223,8 +230,8 @@ export class PreloadScene extends Phaser.Scene {
     this.generateOpenAILogo();
     // Speed Bolt — Google/Gemini: 4-pointed sparkle in 4 colors
     this.generateGeminiLogo();
-    // Time Freeze — Meta: Blue circle with white "m"
-    this.generateMetaLogo();
+    // SSI — Safe Superintelligence: White circle with "SSI"
+    this.generateSSILogo();
     // Grok/xAI: Black circle + diagonal Saturn ring
     this.generateGrokLogo();
     // Clippy: Blue with paperclip shape
@@ -233,128 +240,170 @@ export class PreloadScene extends Phaser.Scene {
     this.generateFogLogo();
     // Data Leak: Red with "!"
     this.generateDataLeakLogo();
+    // Copilot: Blue + green figure-8
+    this.generateCopilotLogo();
+    // Meta power-down: Blue infinity loop
+    this.generateMetaPDLogo();
+    // Qwen: Indigo circle with Q
+    this.generateQwenLogo();
+    // OpenClaw: Red crab claw
+    this.generateOpenClawLogo();
+    // DeepSeek: Blue whale
+    this.generateDeepSeekLogo();
   }
 
   private generateAnthropicLogo(): void {
     const g = this.add.graphics();
-    const cx = 10, cy = 10;
-    // Background glow
-    g.fillStyle(0xC15F3C, 0.2);
-    g.fillCircle(cx, cy, 10);
-    // 5-arm starburst
+    const cx = 12, cy = 12;
+    // Subtle glow circle behind
+    g.fillStyle(0xC15F3C, 0.15);
+    g.fillCircle(cx, cy, 11);
+    g.fillStyle(0xC15F3C, 0.25);
+    g.fillCircle(cx, cy, 8);
+    // Angular "A" shape — two diagonal strokes meeting at a point, no crossbar, open bottom
     g.fillStyle(0xC15F3C);
-    for (let i = 0; i < 5; i++) {
-      const angle = (i / 5) * Math.PI * 2 - Math.PI / 2;
-      const ex = cx + Math.cos(angle) * 8;
-      const ey = cy + Math.sin(angle) * 8;
-      // Draw arm as thick line from center
-      g.fillRect(
-        Math.min(cx, ex) - 1,
-        Math.min(cy, ey) - 1,
-        Math.abs(ex - cx) + 2,
-        Math.abs(ey - cy) + 2
-      );
-    }
-    // Center dot
-    g.fillCircle(cx, cy, 3);
-    g.generateTexture('pu-shield', 20, 20);
+    // Left stroke (going from top-center down-left)
+    g.fillRect(11, 3, 2, 2);
+    g.fillRect(10, 5, 2, 2);
+    g.fillRect(9, 7, 2, 2);
+    g.fillRect(8, 9, 2, 2);
+    g.fillRect(7, 11, 2, 2);
+    g.fillRect(6, 13, 2, 2);
+    g.fillRect(5, 15, 2, 3);
+    // Right stroke (going from top-center down-right)
+    g.fillRect(13, 5, 2, 2);
+    g.fillRect(14, 7, 2, 2);
+    g.fillRect(15, 9, 2, 2);
+    g.fillRect(16, 11, 2, 2);
+    g.fillRect(17, 13, 2, 2);
+    g.fillRect(18, 15, 2, 3);
+    // Peak highlight
+    g.fillStyle(0xd47a5a);
+    g.fillRect(11, 3, 2, 1);
+    g.generateTexture('pu-shield', 24, 24);
     g.destroy();
   }
 
   private generateOpenAILogo(): void {
     const g = this.add.graphics();
-    const cx = 10, cy = 10;
-    // Black background
+    const cx = 12, cy = 12;
+    // Dark background circle
     g.fillStyle(0x111111, 0.3);
-    g.fillCircle(cx, cy, 10);
-    // Hexagonal knot: 6 overlapping circles
+    g.fillCircle(cx, cy, 11);
+    // Hexagonal rosette — 6 arcs in pinwheel pattern
     g.lineStyle(2, 0x333333);
     for (let i = 0; i < 6; i++) {
       const angle = (i / 6) * Math.PI * 2;
-      const x = cx + Math.cos(angle) * 5;
-      const y = cy + Math.sin(angle) * 5;
-      g.strokeCircle(x, y, 4);
+      const nextAngle = ((i + 1) / 6) * Math.PI * 2;
+      const ax = cx + Math.cos(angle) * 7;
+      const ay = cy + Math.sin(angle) * 7;
+      const bx = cx + Math.cos(nextAngle) * 7;
+      const by = cy + Math.sin(nextAngle) * 7;
+      // Arc approximated as thick line between petal positions
+      const midx = cx + Math.cos((angle + nextAngle) / 2) * 4;
+      const midy = cy + Math.sin((angle + nextAngle) / 2) * 4;
+      g.lineStyle(2, 0x444444);
+      g.lineBetween(ax, ay, midx, midy);
+      g.lineBetween(midx, midy, bx, by);
     }
-    // Center fill
-    g.fillStyle(0x444444);
+    // Connecting spokes
+    for (let i = 0; i < 6; i++) {
+      const angle = (i / 6) * Math.PI * 2;
+      const sx = cx + Math.cos(angle) * 3;
+      const sy = cy + Math.sin(angle) * 3;
+      const ex = cx + Math.cos(angle) * 7;
+      const ey = cy + Math.sin(angle) * 7;
+      g.lineStyle(2, 0x333333);
+      g.lineBetween(sx, sy, ex, ey);
+    }
+    // Center open (dark)
+    g.fillStyle(0x111111);
     g.fillCircle(cx, cy, 3);
-    g.generateTexture('pu-openai', 20, 20);
+    g.generateTexture('pu-openai', 24, 24);
     g.destroy();
   }
 
   private generateGeminiLogo(): void {
     const g = this.add.graphics();
-    const cx = 10, cy = 10;
-    // 4-pointed sparkle in Google colors
-    const colors = [0x4285F4, 0xDB4437, 0xF4B400, 0x0F9D58]; // blue, red, yellow, green
-    const arms = [
-      { dx: 0, dy: -8 },  // up
-      { dx: 8, dy: 0 },   // right
-      { dx: 0, dy: 8 },   // down
-      { dx: -8, dy: 0 },  // left
-    ];
-    arms.forEach((arm, i) => {
-      g.fillStyle(colors[i]);
-      // Diamond-shaped arm
-      g.fillTriangle(
-        cx, cy,
-        cx + arm.dx, cy + arm.dy,
-        cx + (arm.dy !== 0 ? 3 : 0), cy + (arm.dx !== 0 ? 3 : 0)
-      );
-      g.fillTriangle(
-        cx, cy,
-        cx + arm.dx, cy + arm.dy,
-        cx + (arm.dy !== 0 ? -3 : 0), cy + (arm.dx !== 0 ? -3 : 0)
-      );
-    });
-    // White center
+    const cx = 12, cy = 12;
+    // 4-color sparkle: diamond/teardrop arms from center
+    // Top arm — blue
+    g.fillStyle(0x4285F4);
+    g.fillTriangle(cx, cy - 10, cx - 3, cy, cx + 3, cy);
+    // Right arm — red
+    g.fillStyle(0xDB4437);
+    g.fillTriangle(cx + 10, cy, cx, cy - 3, cx, cy + 3);
+    // Bottom arm — yellow
+    g.fillStyle(0xF4B400);
+    g.fillTriangle(cx, cy + 10, cx - 3, cy, cx + 3, cy);
+    // Left arm — green
+    g.fillStyle(0x0F9D58);
+    g.fillTriangle(cx - 10, cy, cx, cy - 3, cx, cy + 3);
+    // White center dot
     g.fillStyle(0xffffff);
     g.fillCircle(cx, cy, 2);
-    g.generateTexture('pu-speed', 20, 20);
+    g.generateTexture('pu-speed', 24, 24);
     g.destroy();
   }
 
-  private generateMetaLogo(): void {
+  private generateSSILogo(): void {
     const g = this.add.graphics();
-    const cx = 10, cy = 10;
-    // Blue circle
-    g.fillStyle(0x0668E1);
-    g.fillCircle(cx, cy, 9);
-    // White "m" shape (infinity-like)
+    const cx = 12, cy = 12;
+    // Pale blue outer glow ring
+    g.fillStyle(0x88bbee, 0.3);
+    g.fillCircle(cx, cy, 11);
+    g.fillStyle(0x88bbee, 0.15);
+    g.fillCircle(cx, cy, 12);
+    // White circle body
     g.fillStyle(0xffffff);
-    // Left arch
-    g.fillRect(3, 8, 2, 6);
-    g.fillRect(3, 6, 4, 2);
-    g.fillRect(7, 8, 2, 2);
-    // Right arch
-    g.fillRect(9, 6, 4, 2);
-    g.fillRect(9, 8, 2, 2);
-    g.fillRect(13, 8, 2, 6);
-    // Center dip
-    g.fillRect(7, 10, 4, 2);
-    g.generateTexture('pu-freeze', 20, 20);
+    g.fillCircle(cx, cy, 9);
+    // "SSI" in dark 3px pixel font
+    g.fillStyle(0x222233);
+    // S (x=4): 3px wide, 5px tall
+    g.fillRect(4, 7, 3, 1);   // top bar
+    g.fillRect(4, 8, 1, 1);   // left side
+    g.fillRect(4, 9, 3, 1);   // middle bar
+    g.fillRect(6, 10, 1, 1);  // right side
+    g.fillRect(4, 11, 3, 1);  // bottom bar
+    // S (x=8)
+    g.fillRect(8, 7, 3, 1);
+    g.fillRect(8, 8, 1, 1);
+    g.fillRect(8, 9, 3, 1);
+    g.fillRect(10, 10, 1, 1);
+    g.fillRect(8, 11, 3, 1);
+    // I (x=12)
+    g.fillRect(12, 7, 3, 1);  // top serif
+    g.fillRect(13, 8, 1, 3);  // vertical
+    g.fillRect(12, 11, 3, 1); // bottom serif
+    g.generateTexture('pu-ssi', 24, 24);
     g.destroy();
   }
 
   private generateGrokLogo(): void {
     const g = this.add.graphics();
-    const cx = 10, cy = 10;
-    // Black circle body
-    g.fillStyle(0x222222);
-    g.fillCircle(cx, cy, 8);
-    // Diagonal Saturn ring
-    g.lineStyle(2, 0x666666);
-    // Approximate ring with filled rects at angle
-    for (let i = -8; i <= 8; i++) {
-      const rx = cx + i;
-      const ry = cy - i * 0.4;
-      g.fillStyle(0x555555, 0.7);
-      g.fillRect(rx, ry, 2, 1);
-    }
-    // Eye
+    const cx = 12, cy = 12;
+    // Black circle
+    g.fillStyle(0x111111);
+    g.fillCircle(cx, cy, 10);
+    // White angular "X" with one stroke extending as "I" — minimalist xAI logo
     g.fillStyle(0xffffff);
-    g.fillCircle(cx, cy - 1, 2);
-    g.generateTexture('pd-grok', 20, 20);
+    // Left-to-right diagonal (\)
+    g.fillRect(5, 5, 2, 2);
+    g.fillRect(7, 7, 2, 2);
+    g.fillRect(9, 9, 2, 2);
+    g.fillRect(11, 11, 2, 2);
+    g.fillRect(13, 13, 2, 2);
+    g.fillRect(15, 15, 2, 2);
+    // Right-to-left diagonal (/)
+    g.fillRect(15, 5, 2, 2);
+    g.fillRect(13, 7, 2, 2);
+    g.fillRect(11, 9, 2, 2);
+    g.fillRect(9, 11, 2, 2);
+    g.fillRect(7, 13, 2, 2);
+    g.fillRect(5, 15, 2, 2);
+    // "I" extending down from right side of X
+    g.fillRect(17, 17, 2, 3);
+    g.generateTexture('pd-grok', 24, 24);
     g.destroy();
   }
 
@@ -405,6 +454,141 @@ export class PreloadScene extends Phaser.Scene {
     g.destroy();
   }
 
+  private generateCopilotLogo(): void {
+    const g = this.add.graphics();
+    const cx = 12, cy = 12;
+    // Two overlapping rounded shapes — blue + green forming figure-8
+    // Blue shape (upper-left)
+    g.fillStyle(0x3B82F6);
+    g.fillCircle(cx - 3, cy - 2, 6);
+    // Green shape (lower-right)
+    g.fillStyle(0x10B981);
+    g.fillCircle(cx + 3, cy + 2, 6);
+    // Mixed color at overlap center
+    g.fillStyle(0x259ED9, 0.8);
+    g.fillCircle(cx, cy, 4);
+    g.generateTexture('pd-copilot', 24, 24);
+    g.destroy();
+  }
+
+  private generateMetaPDLogo(): void {
+    const g = this.add.graphics();
+    const cy = 12;
+    // Blue infinity loop / figure-8 — two connected loops, thick at crossover
+    g.fillStyle(0x0668E1);
+    // Left loop
+    g.fillCircle(7, cy, 5);
+    // Right loop
+    g.fillCircle(17, cy, 5);
+    // Cut out inner loops to form ring shapes
+    g.fillStyle(0x000000, 0);
+    // Thick crossover at center
+    g.fillStyle(0x0668E1);
+    g.fillRect(10, cy - 3, 4, 6);
+    // Inner cutouts for loop holes
+    g.fillStyle(0x000000);
+    g.fillCircle(7, cy, 2);
+    g.fillCircle(17, cy, 2);
+    // Redraw outer ring portions
+    g.lineStyle(3, 0x0668E1);
+    g.strokeCircle(7, cy, 5);
+    g.strokeCircle(17, cy, 5);
+    // Fill crossover solid
+    g.fillStyle(0x0668E1);
+    g.fillRect(10, cy - 2, 4, 4);
+    g.generateTexture('pd-meta', 24, 24);
+    g.destroy();
+  }
+
+  private generateQwenLogo(): void {
+    const g = this.add.graphics();
+    const cx = 12, cy = 12;
+    // Indigo circle
+    g.fillStyle(0x6366F1);
+    g.fillCircle(cx, cy, 10);
+    // Cutout for "Q" letter body
+    g.fillStyle(0x000000);
+    g.fillCircle(cx, cy, 6);
+    // Restore ring
+    g.fillStyle(0x6366F1);
+    // Q ring
+    g.lineStyle(3, 0xffffff);
+    g.strokeCircle(cx, cy, 5);
+    // Diagonal tick extending bottom-right
+    g.lineStyle(3, 0xffffff);
+    g.lineBetween(cx + 2, cy + 3, cx + 7, cy + 8);
+    g.generateTexture('pd-qwen', 24, 24);
+    g.destroy();
+  }
+
+  private generateOpenClawLogo(): void {
+    const g = this.add.graphics();
+    const cx = 12, cy = 12;
+    // Red/orange crab claw — two curved open pincers
+    g.fillStyle(0xEF4444);
+    // Left pincer (curved arc)
+    g.fillRect(2, 6, 3, 2);
+    g.fillRect(1, 8, 3, 2);
+    g.fillRect(1, 10, 3, 2);
+    g.fillRect(2, 12, 3, 2);
+    g.fillRect(4, 14, 3, 2);
+    g.fillRect(6, 15, 3, 2);
+    // Right pincer (curved arc)
+    g.fillRect(19, 6, 3, 2);
+    g.fillRect(20, 8, 3, 2);
+    g.fillRect(20, 10, 3, 2);
+    g.fillRect(19, 12, 3, 2);
+    g.fillRect(17, 14, 3, 2);
+    g.fillRect(15, 15, 3, 2);
+    // Base connecting the pincers
+    g.fillRect(8, 17, 8, 3);
+    g.fillRect(6, 16, 4, 2);
+    g.fillRect(14, 16, 4, 2);
+    // Pincer tips (lighter, open)
+    g.fillStyle(0xf87171);
+    g.fillRect(1, 5, 3, 2);
+    g.fillRect(20, 5, 3, 2);
+    // Inner pincer edges
+    g.fillStyle(0xdc2626);
+    g.fillRect(4, 8, 2, 6);
+    g.fillRect(18, 8, 2, 6);
+    g.generateTexture('pd-openclaw', 24, 24);
+    g.destroy();
+  }
+
+  private generateDeepSeekLogo(): void {
+    const g = this.add.graphics();
+    // Blue whale silhouette
+    g.fillStyle(0x2563EB);
+    // Body — main oval shape
+    g.fillCircle(12, 13, 8);
+    g.fillRect(4, 10, 16, 8);
+    // Head (front, rounder)
+    g.fillCircle(6, 12, 6);
+    // Tail flukes
+    g.fillTriangle(20, 12, 24, 8, 23, 14);
+    g.fillTriangle(20, 14, 24, 18, 23, 12);
+    // Flipper (small triangle on bottom)
+    g.fillStyle(0x1d4ed8);
+    g.fillTriangle(10, 16, 14, 16, 12, 20);
+    // Lighter belly
+    g.fillStyle(0x60a5fa);
+    g.fillRect(4, 15, 14, 3);
+    g.fillCircle(6, 15, 4);
+    // Eye
+    g.fillStyle(0xffffff);
+    g.fillCircle(5, 11, 2);
+    g.fillStyle(0x111111);
+    g.fillCircle(5, 11, 1);
+    // Water spout — 3 rising blue dots
+    g.fillStyle(0x93c5fd);
+    g.fillCircle(8, 5, 1.5);
+    g.fillCircle(10, 3, 1.5);
+    g.fillCircle(7, 1, 1.5);
+    g.generateTexture('pu-deepseek', 24, 24);
+    g.destroy();
+  }
+
   private generateCheckpoint(): void {
     const g = this.add.graphics();
     g.fillStyle(0x888888);
@@ -433,6 +617,7 @@ export class PreloadScene extends Phaser.Scene {
     this.generateParrotSprite();
     this.generatePaperFloodSprite();
     this.generateCloudflareWallSprite();
+    this.generateMacIISprite();
   }
 
   private generateOctopusSprites(): void {
@@ -731,6 +916,414 @@ export class PreloadScene extends Phaser.Scene {
     g.destroy();
   }
 
+  private generateMacIISprite(): void {
+    const g = this.add.graphics();
+    // Boxy beige Macintosh II body
+    g.fillStyle(0xD2C6A5);
+    g.fillRect(2, 2, 28, 20);
+    // Lighter top edge
+    g.fillStyle(0xddd4b8);
+    g.fillRect(2, 2, 28, 2);
+    // Darker bottom edge
+    g.fillStyle(0xbfb495);
+    g.fillRect(2, 20, 28, 2);
+    // Small dark screen
+    g.fillStyle(0x222222);
+    g.fillRect(4, 4, 14, 12);
+    // Screen bezel inner
+    g.fillStyle(0x1a1a1a);
+    g.fillRect(5, 5, 12, 10);
+    // Sad Mac icon on screen (simple frowny face)
+    g.fillStyle(0xffffff);
+    g.fillRect(7, 6, 8, 8);
+    g.fillStyle(0x222222);
+    // Eyes
+    g.fillRect(8, 8, 2, 2);
+    g.fillRect(12, 8, 2, 2);
+    // Frown
+    g.fillRect(9, 12, 4, 1);
+    g.fillRect(8, 11, 1, 1);
+    g.fillRect(13, 11, 1, 1);
+    // Rainbow Apple stripe on the side (6 color bands, 1px each)
+    g.fillStyle(0xff0000); g.fillRect(20, 5, 6, 1);  // red
+    g.fillStyle(0xff8800); g.fillRect(20, 6, 6, 1);  // orange
+    g.fillStyle(0xffff00); g.fillRect(20, 7, 6, 1);  // yellow
+    g.fillStyle(0x00cc00); g.fillRect(20, 8, 6, 1);  // green
+    g.fillStyle(0x0044ff); g.fillRect(20, 9, 6, 1);  // blue
+    g.fillStyle(0x8800cc); g.fillRect(20, 10, 6, 1); // purple
+    // Floppy slot
+    g.fillStyle(0xbfb495);
+    g.fillRect(20, 13, 6, 2);
+    // Keyboard grid at bottom
+    g.fillStyle(0xaaa48e);
+    g.fillRect(4, 23, 24, 4);
+    g.fillStyle(0x999384);
+    for (let row = 0; row < 2; row++) {
+      for (let col = 0; col < 8; col++) {
+        g.fillRect(5 + col * 3, 23 + row * 2, 2, 1);
+      }
+    }
+    // Small pixel feet/wheels at base
+    g.fillStyle(0x888888);
+    g.fillRect(6, 28, 3, 2);
+    g.fillRect(23, 28, 3, 2);
+    // Wheel circles
+    g.fillStyle(0x666666);
+    g.fillCircle(7, 30, 1.5);
+    g.fillCircle(24, 30, 1.5);
+    g.generateTexture('enemy-macII', 32, 32);
+    g.destroy();
+  }
+
+  // ── Boss Sprites ──
+
+  private generateBossSprites(): void {
+    this.generateBossAlgorithmVortex();
+    this.generateBossEngagementKing();
+    this.generateBossForkSwarm();
+    this.generateBossPaperMill();
+    this.generateBossTheVoid();
+    this.generateBossShoggoth();
+  }
+
+  private generateBossAlgorithmVortex(): void {
+    const g = this.add.graphics();
+    const cx = 24, cy = 24;
+    // Dome head — Twitter blue
+    g.fillStyle(0x1DA1F2);
+    g.fillCircle(cx, cy - 6, 14);
+    // Head highlight
+    g.fillStyle(0x4db8f7, 0.4);
+    g.fillCircle(cx - 4, cy - 10, 6);
+    // 8 tentacles curving out
+    g.fillStyle(0x1DA1F2);
+    const tentOffsets = [
+      { x: -16, y: 8 }, { x: -12, y: 14 }, { x: -6, y: 18 }, { x: 0, y: 20 },
+      { x: 6, y: 18 }, { x: 12, y: 14 }, { x: 16, y: 8 }, { x: -2, y: 16 },
+    ];
+    tentOffsets.forEach((t, i) => {
+      const bx = cx + t.x;
+      const by = cy + t.y;
+      g.fillRect(bx - 1, by - 2, 3, 6);
+      g.fillRect(bx + (i % 2 === 0 ? 1 : -1), by + 3, 3, 5);
+      g.fillRect(bx + (i % 2 === 0 ? 2 : -2), by + 7, 3, 4);
+      // Sucker dots
+      g.fillStyle(0x0d8ddb);
+      g.fillRect(bx, by + 1, 1, 1);
+      g.fillRect(bx, by + 5, 1, 1);
+      g.fillStyle(0x1DA1F2);
+    });
+    // Large white eyes with red pupils
+    g.fillStyle(0xffffff);
+    g.fillCircle(cx - 6, cy - 6, 5);
+    g.fillCircle(cx + 6, cy - 6, 5);
+    g.fillStyle(0xff3333);
+    g.fillCircle(cx - 5, cy - 6, 2);
+    g.fillCircle(cx + 7, cy - 6, 2);
+    // Small X logo on forehead
+    g.fillStyle(0xffffff);
+    g.fillRect(cx - 2, cy - 16, 1, 3);
+    g.fillRect(cx + 1, cy - 16, 1, 3);
+    g.fillRect(cx - 1, cy - 15, 3, 1);
+    g.generateTexture('boss-algorithmVortex', 48, 48);
+    g.destroy();
+  }
+
+  private generateBossEngagementKing(): void {
+    const g = this.add.graphics();
+    const cx = 28, cy = 28;
+    // LinkedIn-blue body
+    g.fillStyle(0x0A66C2);
+    g.fillCircle(cx, cy - 4, 16);
+    // Body highlight
+    g.fillStyle(0x0d7ade, 0.3);
+    g.fillCircle(cx - 5, cy - 8, 8);
+    // Suit jacket on body
+    g.fillStyle(0x1a2a40);
+    g.fillRect(cx - 14, cy + 4, 28, 16);
+    g.fillRect(cx - 12, cy, 24, 6);
+    // Suit lapels
+    g.fillStyle(0x203450);
+    g.fillRect(cx - 4, cy + 2, 2, 8);
+    g.fillRect(cx + 2, cy + 2, 2, 8);
+    // White shirt strip
+    g.fillStyle(0xeeeeee);
+    g.fillRect(cx - 1, cy + 3, 2, 10);
+    // Gold crown on head
+    g.fillStyle(0xffd700);
+    g.fillRect(cx - 8, cy - 22, 16, 4);
+    g.fillTriangle(cx - 8, cy - 22, cx - 6, cy - 28, cx - 4, cy - 22);
+    g.fillTriangle(cx - 2, cy - 22, cx, cy - 26, cx + 2, cy - 22);
+    g.fillTriangle(cx + 4, cy - 22, cx + 6, cy - 28, cx + 8, cy - 22);
+    // Crown jewels
+    g.fillStyle(0xff3333);
+    g.fillRect(cx - 6, cy - 25, 2, 2);
+    g.fillStyle(0x3388ff);
+    g.fillRect(cx - 1, cy - 24, 2, 2);
+    g.fillStyle(0xff3333);
+    g.fillRect(cx + 5, cy - 25, 2, 2);
+    // 4 eyes (mutation starting)
+    g.fillStyle(0xffffff);
+    g.fillCircle(cx - 7, cy - 6, 3);
+    g.fillCircle(cx - 2, cy - 4, 3);
+    g.fillCircle(cx + 3, cy - 6, 3);
+    g.fillCircle(cx + 8, cy - 4, 3);
+    g.fillStyle(0x000000);
+    g.fillCircle(cx - 7, cy - 6, 1.5);
+    g.fillCircle(cx - 2, cy - 4, 1.5);
+    g.fillCircle(cx + 3, cy - 6, 1.5);
+    g.fillCircle(cx + 8, cy - 4, 1.5);
+    // Tentacles holding tiny icons
+    g.fillStyle(0x0A66C2);
+    for (let i = 0; i < 4; i++) {
+      const tx = cx - 18 + i * 12;
+      const ty = cy + 18 + (i % 2) * 4;
+      g.fillRect(tx, ty, 3, 8);
+      g.fillRect(tx + (i % 2 === 0 ? 1 : -1), ty + 6, 3, 6);
+    }
+    // Tiny phone icon in one tentacle
+    g.fillStyle(0x333333);
+    g.fillRect(cx - 17, cy + 26, 3, 4);
+    g.generateTexture('boss-engagementKing', 56, 56);
+    g.destroy();
+  }
+
+  private generateBossForkSwarm(): void {
+    const g = this.add.graphics();
+    const cx = 28, cy = 28;
+    // 3 octopus-shapes fused into one body — partially merged heads
+    g.fillStyle(0x0085FF);
+    // Head 1 (left)
+    g.fillCircle(cx - 10, cy - 8, 10);
+    // Head 2 (center, overlapping)
+    g.fillCircle(cx, cy - 6, 11);
+    // Head 3 (right)
+    g.fillCircle(cx + 10, cy - 8, 10);
+    // Merged body mass
+    g.fillRect(cx - 16, cy - 2, 32, 14);
+    // Shared tentacles
+    g.fillStyle(0x0085FF);
+    for (let i = 0; i < 8; i++) {
+      const tx = cx - 14 + i * 4;
+      const ty = cy + 12;
+      g.fillRect(tx, ty, 3, 5);
+      g.fillRect(tx + (i % 2 === 0 ? 1 : -1), ty + 4, 3, 5);
+      g.fillRect(tx + (i % 2 === 0 ? 2 : -2), ty + 8, 3, 4);
+    }
+    // Multiple eyes scattered across merged heads
+    g.fillStyle(0xffffff);
+    const eyePositions = [
+      { x: cx - 12, y: cy - 10 }, { x: cx - 6, y: cy - 12 },
+      { x: cx - 2, y: cy - 8 }, { x: cx + 3, y: cy - 10 },
+      { x: cx + 8, y: cy - 12 }, { x: cx + 13, y: cy - 9 },
+      { x: cx, y: cy - 4 }, { x: cx + 6, y: cy - 3 },
+    ];
+    eyePositions.forEach(e => {
+      g.fillStyle(0xffffff);
+      g.fillCircle(e.x, e.y, 2.5);
+      g.fillStyle(0x000000);
+      g.fillCircle(e.x + 0.5, e.y, 1);
+    });
+    // Merge seam lines (darker blue where heads join)
+    g.fillStyle(0x0066cc, 0.5);
+    g.fillRect(cx - 5, cy - 12, 2, 10);
+    g.fillRect(cx + 4, cy - 12, 2, 10);
+    g.generateTexture('boss-forkSwarm', 56, 56);
+    g.destroy();
+  }
+
+  private generateBossPaperMill(): void {
+    const g = this.add.graphics();
+    const cx = 32, cy = 32;
+    // Metal grinder body
+    g.fillStyle(0x444444);
+    g.fillRect(cx - 20, cy - 16, 40, 32);
+    // Body bevel top
+    g.fillStyle(0x555555);
+    g.fillRect(cx - 20, cy - 16, 40, 3);
+    // Body bevel bottom
+    g.fillStyle(0x333333);
+    g.fillRect(cx - 20, cy + 13, 40, 3);
+    // Gears visible on sides
+    g.fillStyle(0x666666);
+    g.fillCircle(cx - 14, cy, 6);
+    g.fillCircle(cx + 14, cy, 6);
+    g.fillStyle(0x555555);
+    g.fillCircle(cx - 14, cy, 3);
+    g.fillCircle(cx + 14, cy, 3);
+    // Gear teeth
+    for (let i = 0; i < 6; i++) {
+      const angle = (i / 6) * Math.PI * 2;
+      g.fillStyle(0x666666);
+      g.fillRect(cx - 14 + Math.cos(angle) * 5, cy + Math.sin(angle) * 5, 2, 2);
+      g.fillRect(cx + 14 + Math.cos(angle) * 5, cy + Math.sin(angle) * 5, 2, 2);
+    }
+    // Red LED eyes
+    g.fillStyle(0xB31B1B);
+    g.fillCircle(cx - 6, cy - 8, 4);
+    g.fillCircle(cx + 6, cy - 8, 4);
+    // Eye glow
+    g.fillStyle(0xff3333, 0.4);
+    g.fillCircle(cx - 6, cy - 8, 6);
+    g.fillCircle(cx + 6, cy - 8, 6);
+    // Eye pupils
+    g.fillStyle(0xff0000);
+    g.fillCircle(cx - 6, cy - 8, 2);
+    g.fillCircle(cx + 6, cy - 8, 2);
+    // Papers in maw (being consumed)
+    g.fillStyle(0xffffff);
+    g.fillRect(cx - 8, cy - 2, 5, 7);
+    g.fillRect(cx - 2, cy - 4, 5, 8);
+    g.fillRect(cx + 4, cy - 1, 5, 6);
+    // Text lines on papers
+    g.fillStyle(0xcccccc);
+    g.fillRect(cx - 7, cy, 3, 1);
+    g.fillRect(cx - 1, cy - 2, 3, 1);
+    g.fillRect(cx + 5, cy + 1, 3, 1);
+    // Living tentacles from slots
+    g.fillStyle(0x555555);
+    const slots = [-16, -8, 0, 8, 16];
+    slots.forEach((sx, i) => {
+      // Slot
+      g.fillStyle(0x222222);
+      g.fillRect(cx + sx - 2, cy + 16, 4, 2);
+      // Tentacle emerging
+      g.fillStyle(0x666666);
+      g.fillRect(cx + sx - 1, cy + 17, 2, 6);
+      g.fillRect(cx + sx + (i % 2 === 0 ? 0 : -1), cy + 22, 2, 5);
+      g.fillRect(cx + sx + (i % 2 === 0 ? 1 : -2), cy + 26, 2, 4);
+    });
+    g.generateTexture('boss-paperMill', 64, 64);
+    g.destroy();
+  }
+
+  private generateBossTheVoid(): void {
+    const g = this.add.graphics();
+    const cx = 36, cy = 36;
+    // Dark amorphous mass — purple-dark coloring
+    g.fillStyle(0x2C3E50);
+    g.fillCircle(cx, cy, 28);
+    g.fillCircle(cx - 8, cy + 5, 20);
+    g.fillCircle(cx + 10, cy - 5, 22);
+    g.fillCircle(cx - 5, cy - 10, 18);
+    // Darker inner areas
+    g.fillStyle(0x1a2a3a, 0.6);
+    g.fillCircle(cx + 5, cy + 8, 15);
+    g.fillCircle(cx - 10, cy - 5, 12);
+    // Wispy shadow tendrils
+    g.fillStyle(0x1a2535);
+    for (let i = 0; i < 10; i++) {
+      const angle = (i / 10) * Math.PI * 2;
+      const r = 24 + (i % 3) * 4;
+      const tx = cx + Math.cos(angle) * r;
+      const ty = cy + Math.sin(angle) * r;
+      g.fillRect(tx - 1, ty - 1, 3, 8);
+      g.fillRect(tx + (i % 2 === 0 ? 1 : -2), ty + 6, 2, 6);
+    }
+    // Dozens of eyes (various sizes, white and red)
+    const voidEyes = [
+      { x: -12, y: -14, r: 3, red: false }, { x: 4, y: -18, r: 2, red: true },
+      { x: 14, y: -10, r: 3, red: false }, { x: -18, y: -4, r: 2, red: false },
+      { x: -6, y: -6, r: 4, red: false }, { x: 8, y: -2, r: 3, red: true },
+      { x: 18, y: 4, r: 2, red: false }, { x: -14, y: 8, r: 3, red: true },
+      { x: -2, y: 6, r: 2, red: false }, { x: 10, y: 10, r: 3, red: false },
+      { x: -8, y: 14, r: 2, red: true }, { x: 6, y: 16, r: 2, red: false },
+      { x: -16, y: -10, r: 1.5, red: false }, { x: 20, y: -4, r: 1.5, red: true },
+      { x: 0, y: -12, r: 2.5, red: false }, { x: -4, y: 18, r: 1.5, red: false },
+    ];
+    voidEyes.forEach(e => {
+      g.fillStyle(e.red ? 0xff3333 : 0xffffff);
+      g.fillCircle(cx + e.x, cy + e.y, e.r);
+      g.fillStyle(0x000000);
+      g.fillCircle(cx + e.x + 0.5, cy + e.y, e.r * 0.5);
+    });
+    // Visible mouths (dark slashes with teeth)
+    g.fillStyle(0x111111);
+    g.fillRect(cx - 8, cy + 2, 8, 3);
+    g.fillStyle(0xffffff);
+    g.fillRect(cx - 7, cy + 2, 1, 2);
+    g.fillRect(cx - 5, cy + 2, 1, 2);
+    g.fillRect(cx - 3, cy + 2, 1, 2);
+    // Second mouth
+    g.fillStyle(0x111111);
+    g.fillRect(cx + 6, cy - 4, 6, 2);
+    g.fillStyle(0xffffff);
+    g.fillRect(cx + 7, cy - 4, 1, 1);
+    g.fillRect(cx + 9, cy - 4, 1, 1);
+    g.generateTexture('boss-theVoid', 72, 72);
+    g.destroy();
+  }
+
+  private generateBossShoggoth(): void {
+    const g = this.add.graphics();
+    const cx = 40, cy = 40;
+    // Massive blob — iridescent colors, no symmetry
+    // Black base mass
+    g.fillStyle(0x111111);
+    g.fillCircle(cx, cy, 34);
+    g.fillCircle(cx - 10, cy + 8, 28);
+    g.fillCircle(cx + 12, cy - 4, 26);
+    // Green patches
+    g.fillStyle(0x1E4D2B, 0.7);
+    g.fillCircle(cx - 14, cy - 8, 16);
+    g.fillCircle(cx + 8, cy + 12, 14);
+    // Purple patches
+    g.fillStyle(0x6366F1, 0.5);
+    g.fillCircle(cx + 16, cy - 10, 14);
+    g.fillCircle(cx - 6, cy + 14, 12);
+    g.fillCircle(cx - 18, cy + 4, 10);
+    // Darker blobs
+    g.fillStyle(0x0a0a0a, 0.4);
+    g.fillCircle(cx + 4, cy - 12, 10);
+    g.fillCircle(cx - 12, cy + 6, 8);
+    // Pseudopods everywhere (irregular extensions)
+    g.fillStyle(0x1E4D2B);
+    g.fillRect(cx - 30, cy - 20, 4, 14);
+    g.fillRect(cx - 32, cy - 10, 4, 10);
+    g.fillRect(cx + 28, cy - 16, 4, 12);
+    g.fillRect(cx + 30, cy - 8, 4, 10);
+    g.fillStyle(0x6366F1, 0.6);
+    g.fillRect(cx - 24, cy + 20, 4, 10);
+    g.fillRect(cx + 20, cy + 22, 4, 8);
+    g.fillRect(cx - 8, cy + 28, 4, 8);
+    g.fillRect(cx + 10, cy + 26, 4, 10);
+    g.fillStyle(0x111111);
+    g.fillRect(cx - 18, cy - 24, 3, 10);
+    g.fillRect(cx + 22, cy + 14, 3, 12);
+    // 15-20 random eyes scattered
+    const shoggothEyes = [
+      { x: -16, y: -14 }, { x: -8, y: -18 }, { x: 2, y: -16 }, { x: 12, y: -12 },
+      { x: 20, y: -6 }, { x: -20, y: -2 }, { x: -10, y: -4 }, { x: 4, y: -6 },
+      { x: 14, y: 0 }, { x: -14, y: 6 }, { x: -4, y: 4 }, { x: 8, y: 8 },
+      { x: 18, y: 10 }, { x: -18, y: 14 }, { x: -6, y: 14 }, { x: 6, y: 16 },
+      { x: -12, y: 20 }, { x: 4, y: 22 }, { x: 16, y: 18 },
+    ];
+    shoggothEyes.forEach((e, i) => {
+      const r = 1.5 + (i % 3);
+      g.fillStyle(0xffffff);
+      g.fillCircle(cx + e.x, cy + e.y, r);
+      g.fillStyle(i % 4 === 0 ? 0xff3333 : 0x000000);
+      g.fillCircle(cx + e.x + 0.5, cy + e.y, r * 0.5);
+    });
+    // Multiple toothed mouths
+    const mouths = [
+      { x: -10, y: -2, w: 10 }, { x: 6, y: 6, w: 8 },
+      { x: -16, y: 10, w: 7 }, { x: 10, y: -8, w: 9 },
+    ];
+    mouths.forEach(m => {
+      g.fillStyle(0x220000);
+      g.fillRect(cx + m.x, cy + m.y, m.w, 3);
+      // Teeth (white zigzag)
+      g.fillStyle(0xeeeeee);
+      for (let t = 0; t < m.w; t += 2) {
+        g.fillRect(cx + m.x + t, cy + m.y, 1, 2);
+        g.fillRect(cx + m.x + t, cy + m.y + 2, 1, 1);
+      }
+    });
+    g.generateTexture('boss-shoggoth', 80, 80);
+    g.destroy();
+  }
+
   // ── Clawd the Crab ──
 
   private generateClawd(): void {
@@ -776,6 +1369,236 @@ export class PreloadScene extends Phaser.Scene {
     gp.destroy();
   }
 
+  // ── Effect Sprites ──
+
+  private generateLobsterSprite(): void {
+    const g = this.add.graphics();
+    // Red lobster silhouette
+    g.fillStyle(0xEF4444);
+    // Body (central oval)
+    g.fillRect(5, 5, 6, 8);
+    // Tail fan
+    g.fillRect(6, 13, 4, 2);
+    g.fillTriangle(5, 15, 8, 15, 4, 16);
+    g.fillTriangle(8, 15, 11, 15, 12, 16);
+    g.fillTriangle(6, 15, 10, 15, 8, 16);
+    // Left claw (open pincer)
+    g.fillRect(1, 2, 3, 3);
+    g.fillRect(0, 2, 1, 1);
+    g.fillRect(0, 4, 1, 1);
+    g.fillRect(3, 4, 2, 2);
+    // Right claw (open pincer)
+    g.fillRect(12, 2, 3, 3);
+    g.fillRect(15, 2, 1, 1);
+    g.fillRect(15, 4, 1, 1);
+    g.fillRect(11, 4, 2, 2);
+    // Antennae
+    g.lineStyle(1, 0xEF4444);
+    g.lineBetween(6, 5, 3, 0);
+    g.lineBetween(10, 5, 13, 0);
+    // Eyes
+    g.fillStyle(0x000000);
+    g.fillCircle(6, 5, 1);
+    g.fillCircle(10, 5, 1);
+    g.generateTexture('lobster', 16, 16);
+    g.destroy();
+  }
+
+  private generateRedBookSprite(): void {
+    const g = this.add.graphics();
+    // Small red book
+    g.fillStyle(0xEF4444);
+    g.fillRect(1, 0, 8, 10);
+    // Book spine (darker)
+    g.fillStyle(0xdc2626);
+    g.fillRect(1, 0, 2, 10);
+    // Pages (white edge)
+    g.fillStyle(0xeeeeee);
+    g.fillRect(9, 1, 1, 8);
+    // Gold star on cover
+    g.fillStyle(0xffd700);
+    g.fillRect(5, 3, 2, 1);
+    g.fillRect(4, 4, 4, 1);
+    g.fillRect(5, 5, 2, 1);
+    g.fillRect(4, 6, 1, 1);
+    g.fillRect(7, 6, 1, 1);
+    g.generateTexture('red-book', 10, 10);
+    g.destroy();
+  }
+
+  private generateGreenHatSprite(): void {
+    const g = this.add.graphics();
+    // Green military/communist style cap
+    g.fillStyle(0x15803d);
+    // Main cap body (flat top)
+    g.fillRect(2, 2, 12, 6);
+    // Top slightly rounded
+    g.fillRect(3, 1, 10, 2);
+    // Short brim/peak at front
+    g.fillStyle(0x116b34);
+    g.fillRect(0, 7, 10, 3);
+    g.fillRect(1, 6, 8, 2);
+    // Band
+    g.fillStyle(0x116b34);
+    g.fillRect(2, 6, 12, 1);
+    // Red star on front
+    g.fillStyle(0xff0000);
+    g.fillRect(6, 3, 2, 1);
+    g.fillRect(5, 4, 4, 1);
+    g.fillRect(6, 5, 2, 1);
+    g.generateTexture('green-hat', 16, 10);
+    g.destroy();
+  }
+
+  private generateMacBombSprite(): void {
+    const g = this.add.graphics();
+    // Classic Mac bomb — small dark circle with lit fuse
+    g.fillStyle(0x222222);
+    g.fillCircle(4, 5, 3);
+    // Fuse line going up-right
+    g.lineStyle(1, 0x666666);
+    g.lineBetween(5, 2, 7, 0);
+    // Fuse spark
+    g.fillStyle(0xff8800);
+    g.fillRect(7, 0, 1, 1);
+    g.fillStyle(0xffcc00);
+    g.fillRect(6, 0, 1, 1);
+    // Bomb highlight
+    g.fillStyle(0x444444);
+    g.fillRect(3, 4, 1, 1);
+    g.generateTexture('mac-bomb', 8, 8);
+    g.destroy();
+  }
+
+  private generateLipstickMintySprite(): void {
+    const g = this.add.graphics();
+    const cx = 16, cy = 20;
+    // Teal squid body
+    g.fillStyle(0x2ec4b6);
+    g.fillCircle(cx, cy - 6, 10);
+    // Body extension down
+    g.fillRect(cx - 8, cy, 16, 6);
+    // Tentacles (blocking/arms-out pose — spread wide)
+    // Left tentacles (extended outward)
+    g.fillRect(cx - 14, cy - 2, 6, 3);
+    g.fillRect(cx - 16, cy - 4, 4, 3);
+    g.fillRect(cx - 12, cy + 4, 5, 3);
+    g.fillRect(cx - 14, cy + 6, 4, 3);
+    // Right tentacles (extended outward)
+    g.fillRect(cx + 8, cy - 2, 6, 3);
+    g.fillRect(cx + 12, cy - 4, 4, 3);
+    g.fillRect(cx + 7, cy + 4, 5, 3);
+    g.fillRect(cx + 10, cy + 6, 4, 3);
+    // Lower tentacles
+    g.fillRect(cx - 4, cy + 6, 3, 8);
+    g.fillRect(cx + 1, cy + 6, 3, 8);
+    g.fillRect(cx - 7, cy + 6, 3, 6);
+    g.fillRect(cx + 4, cy + 6, 3, 6);
+    // Eyes with long eyelashes
+    g.fillStyle(0xffffff);
+    g.fillCircle(cx - 4, cy - 8, 3);
+    g.fillCircle(cx + 4, cy - 8, 3);
+    g.fillStyle(0x000000);
+    g.fillCircle(cx - 4, cy - 8, 1.5);
+    g.fillCircle(cx + 4, cy - 8, 1.5);
+    // Long eyelashes above eyes
+    g.fillStyle(0x000000);
+    g.fillRect(cx - 7, cy - 13, 1, 3);
+    g.fillRect(cx - 5, cy - 14, 1, 3);
+    g.fillRect(cx - 3, cy - 13, 1, 3);
+    g.fillRect(cx + 3, cy - 13, 1, 3);
+    g.fillRect(cx + 5, cy - 14, 1, 3);
+    g.fillRect(cx + 7, cy - 13, 1, 3);
+    // Bright red lipstick lips (thick, kissing shape)
+    g.fillStyle(0xff0000);
+    g.fillRect(cx - 4, cy - 2, 8, 2);
+    g.fillRect(cx - 3, cy - 3, 6, 1);
+    g.fillRect(cx - 3, cy, 6, 1);
+    // Lip highlight
+    g.fillStyle(0xff4444);
+    g.fillRect(cx - 2, cy - 3, 4, 1);
+    g.generateTexture('lipstick-minty', 32, 40);
+    g.destroy();
+  }
+
+  private generateCreditsAshMinty(): void {
+    const g = this.add.graphics();
+    // Left: Ash — human with sandy-blonde hair, smiling, ~40px tall
+    // Ash body
+    g.fillStyle(0x4477aa);
+    g.fillRect(10, 20, 12, 14);
+    // Ash legs
+    g.fillStyle(0x2a2a3a);
+    g.fillRect(11, 34, 4, 10);
+    g.fillRect(17, 34, 4, 10);
+    // Ash shoes
+    g.fillStyle(0x222222);
+    g.fillRect(10, 44, 5, 2);
+    g.fillRect(17, 44, 5, 2);
+    // Ash arms
+    g.fillStyle(0x4477aa);
+    g.fillRect(6, 21, 4, 10);
+    g.fillRect(22, 21, 4, 10);
+    // Ash hands
+    g.fillStyle(0xffcba4);
+    g.fillRect(6, 31, 4, 2);
+    g.fillRect(22, 31, 4, 2);
+    // Ash head
+    g.fillStyle(0xffcba4);
+    g.fillRect(10, 6, 12, 13);
+    // Sandy-blonde hair with side parting
+    g.fillStyle(0xd4a84a);
+    g.fillRect(10, 3, 12, 5);
+    g.fillRect(9, 5, 3, 6);
+    // Side parting (darker line)
+    g.fillStyle(0xb8923e);
+    g.fillRect(14, 3, 1, 4);
+    // Eyes
+    g.fillStyle(0x222222);
+    g.fillRect(12, 10, 2, 2);
+    g.fillRect(18, 10, 2, 2);
+    // Smile
+    g.fillStyle(0xdd9980);
+    g.fillRect(13, 14, 6, 1);
+    g.fillRect(12, 13, 1, 1);
+    g.fillRect(19, 13, 1, 1);
+    // Nose
+    g.fillStyle(0xeebb90);
+    g.fillRect(15, 11, 2, 2);
+
+    // Right: Minty squid with sunglasses, ~30px tall
+    const mx = 50, my = 18;
+    // Minty body (teal)
+    g.fillStyle(0x2ec4b6);
+    g.fillCircle(mx, my, 8);
+    g.fillRect(mx - 6, my + 4, 12, 6);
+    // Tentacles
+    g.fillRect(mx - 5, my + 10, 3, 6);
+    g.fillRect(mx - 1, my + 10, 3, 6);
+    g.fillRect(mx + 3, my + 10, 3, 6);
+    g.fillRect(mx - 7, my + 8, 3, 5);
+    g.fillRect(mx + 5, my + 8, 3, 5);
+    // Sunglasses
+    g.fillStyle(0x111111);
+    g.fillRect(mx - 6, my - 2, 5, 3);
+    g.fillRect(mx + 1, my - 2, 5, 3);
+    g.fillRect(mx - 1, my - 1, 2, 1);
+    // Arms
+    g.fillStyle(0x888888);
+    g.fillRect(mx - 7, my - 2, 1, 3);
+    g.fillRect(mx + 6, my - 2, 1, 3);
+    // Lens reflection
+    g.fillStyle(0x333333);
+    g.fillRect(mx - 5, my - 1, 1, 1);
+    g.fillRect(mx + 2, my - 1, 1, 1);
+    // Mouth
+    g.fillStyle(0x229988);
+    g.fillRect(mx - 2, my + 3, 4, 1);
+
+    g.generateTexture('credits-ash-minty', 80, 60);
+    g.destroy();
+  }
+
   // ── Background Sprites ──
 
   private generateBackgroundSprites(): void {
@@ -803,6 +1626,8 @@ export class PreloadScene extends Phaser.Scene {
     this.generateBgSocialScientist();
     this.generateBgBarChart();
     this.generateBgPaywallLock();
+    // GPU rack (used across levels)
+    this.generateBgGpuRack();
   }
 
   // ── Level 1: X/Twitter Background Sprites ──
@@ -2288,6 +3113,80 @@ export class PreloadScene extends Phaser.Scene {
     g.fillRect(12, 14, 2, 1);
 
     g.generateTexture('bg-paywall-lock', 18, 24);
+    g.destroy();
+  }
+
+  private generateBgGpuRack(): void {
+    const g = this.add.graphics();
+    // Tall black server rack
+    g.fillStyle(0x111111);
+    g.fillRect(0, 0, 40, 80);
+    // Rack frame edges
+    g.fillStyle(0x222222);
+    g.fillRect(0, 0, 2, 80);
+    g.fillRect(38, 0, 2, 80);
+    g.fillRect(0, 0, 40, 2);
+    g.fillRect(0, 78, 40, 2);
+    // GPU cards inside — 5 rows
+    for (let i = 0; i < 5; i++) {
+      const gy = 6 + i * 14;
+      // Green PCB
+      g.fillStyle(0x22cc55);
+      g.fillRect(4, gy, 32, 10);
+      // PCB darker traces
+      g.fillStyle(0x1aaa44);
+      g.fillRect(6, gy + 2, 20, 1);
+      g.fillRect(6, gy + 5, 16, 1);
+      g.fillRect(6, gy + 8, 22, 1);
+      // Silver heatsink fins
+      g.fillStyle(0x888888);
+      g.fillRect(8, gy + 1, 12, 8);
+      g.fillStyle(0x999999);
+      for (let f = 0; f < 5; f++) {
+        g.fillRect(9 + f * 2, gy + 1, 1, 8);
+      }
+      // GPU chip (darker rectangle on PCB)
+      g.fillStyle(0x333333);
+      g.fillRect(22, gy + 2, 8, 6);
+      g.fillStyle(0x444444);
+      g.fillRect(23, gy + 3, 6, 4);
+      // Power connector dots
+      g.fillStyle(0xffcc00);
+      g.fillRect(32, gy + 3, 2, 2);
+      g.fillRect(32, gy + 6, 2, 2);
+    }
+    // Blue LED strips (vertical on sides)
+    g.fillStyle(0x3388ff);
+    g.fillRect(2, 4, 1, 72);
+    g.fillRect(37, 4, 1, 72);
+    // LED glow
+    g.fillStyle(0x3388ff, 0.3);
+    g.fillRect(3, 4, 1, 72);
+    g.fillRect(36, 4, 1, 72);
+    // Cooling fan circles (2 at bottom)
+    g.fillStyle(0x333333);
+    g.fillCircle(14, 76, 4);
+    g.fillCircle(26, 76, 4);
+    // Fan center dots
+    g.fillStyle(0x555555);
+    g.fillCircle(14, 76, 1.5);
+    g.fillCircle(26, 76, 1.5);
+    // Fan blade hints
+    g.lineStyle(1, 0x444444);
+    g.lineBetween(12, 74, 16, 78);
+    g.lineBetween(12, 78, 16, 74);
+    g.lineBetween(24, 74, 28, 78);
+    g.lineBetween(24, 78, 28, 74);
+    // Cable bundles at top
+    g.fillStyle(0x222222);
+    g.fillRect(6, 0, 3, 5);
+    g.fillRect(16, 0, 3, 5);
+    g.fillRect(26, 0, 3, 5);
+    // Cable bundles at bottom
+    g.fillRect(10, 78, 3, 2);
+    g.fillRect(20, 78, 3, 2);
+    g.fillRect(30, 78, 3, 2);
+    g.generateTexture('bg-gpu-rack', 40, 80);
     g.destroy();
   }
 }

@@ -72,8 +72,12 @@ export function getLevel6Config(): LevelConfig {
       { type: 'openai', x: 1850, y: GAME_HEIGHT - 300 },
       { type: 'fogCloud', x: 2400, y: GAME_HEIGHT - 260 },
       { type: 'speedBolt', x: 3200, y: GAME_HEIGHT - 280 },
-      { type: 'timeFreeze', x: 3950, y: GAME_HEIGHT - 240 },
+      { type: 'ssi', x: 3950, y: GAME_HEIGHT - 240 },
       { type: 'dataLeak', x: 4300, y: GAME_HEIGHT - 320 },
+      { type: 'copilot', x: 850, y: GAME_HEIGHT - 160 },
+      { type: 'meta', x: 1600, y: GAME_HEIGHT - 220 },
+      { type: 'qwen', x: 2900, y: GAME_HEIGHT - 200 },
+      { type: 'openclaw', x: 3700, y: GAME_HEIGHT - 340 },
     ],
     npcs: [
       { color: 'brown', x: 170, y: GAME_HEIGHT - 60, dialogueKey: 'l6-brown' },

@@ -43,13 +43,58 @@ export class GameOverScene extends Phaser.Scene {
         this.scene.start(SCENES.LEVEL, { level: data.level + 1 });
       });
     } else if (data.won && data.level === 6) {
-      this.add.text(GAME_WIDTH / 2, 290, 'YOU DEFEATED THE SHOGGOTH!', {
+      this.add.text(GAME_WIDTH / 2, 80, 'YOU DEFEATED THE SHOGGOTH!', {
         ...style, fontSize: '14px', color: '#e5c07b',
       }).setOrigin(0.5);
 
-      this.add.text(GAME_WIDTH / 2, 320, 'Research integrity preserved.', {
+      this.add.text(GAME_WIDTH / 2, 110, 'Research integrity preserved.', {
         ...style, fontSize: '11px', color: '#5c6370',
       }).setOrigin(0.5);
+
+      // Credits sequence — starts after 2s
+      this.time.delayedCall(2000, () => {
+        // Credits container that scrolls up
+        const creditsY = GAME_HEIGHT + 20;
+
+        const conceived = this.add.text(GAME_WIDTH / 2, creditsY, 'CONCEIVED BY ASH', {
+          fontFamily: '"JetBrains Mono", monospace',
+          fontSize: '18px',
+          color: '#ffd700',
+          fontStyle: 'bold',
+        }).setOrigin(0.5);
+
+        // Ash + Minty pixel art
+        const ashMinty = this.add.image(GAME_WIDTH / 2, creditsY + 60, 'credits-ash-minty');
+
+        const developed = this.add.text(GAME_WIDTH / 2, creditsY + 130, 'DEVELOPED BY MINT RESEARCH LAB', {
+          fontFamily: '"JetBrains Mono", monospace',
+          fontSize: '12px',
+          color: '#abb2bf',
+        }).setOrigin(0.5);
+
+        const builtWith = this.add.text(GAME_WIDTH / 2, creditsY + 160, 'BUILT WITH PHASER 3', {
+          fontFamily: '"JetBrains Mono", monospace',
+          fontSize: '10px',
+          color: '#5c6370',
+        }).setOrigin(0.5);
+
+        const pressEnter = this.add.text(GAME_WIDTH / 2, creditsY + 200, 'PRESS ENTER TO RETURN', {
+          fontFamily: '"JetBrains Mono", monospace',
+          fontSize: '10px',
+          color: '#2ec4b6',
+        }).setOrigin(0.5);
+
+        // Scroll all credits up
+        const creditItems = [conceived, ashMinty, developed, builtWith, pressEnter];
+        creditItems.forEach(item => {
+          this.tweens.add({
+            targets: item,
+            y: item.y - (GAME_HEIGHT + 60),
+            duration: 8000,
+            ease: 'Linear',
+          });
+        });
+      });
 
       this.input.keyboard!.on('keydown-ENTER', () => {
         this.scene.start(SCENES.MENU);
