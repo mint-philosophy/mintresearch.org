@@ -55,7 +55,7 @@ export function getLevel4Config(): LevelConfig {
       { x: 3400, y: GAME_HEIGHT - 270, isGold: true },
     ],
     powerUps: [
-      { type: 'brainBoost', x: 750, y: GAME_HEIGHT - 290 },
+      { type: 'openai', x: 750, y: GAME_HEIGHT - 290 },
       { type: 'clippy', x: 1500, y: GAME_HEIGHT - 320 },
       { type: 'shield', x: 2250, y: GAME_HEIGHT - 140 },
       { type: 'speedBolt', x: 3000, y: GAME_HEIGHT - 200 },

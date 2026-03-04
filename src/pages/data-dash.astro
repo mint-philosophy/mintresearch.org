@@ -3,14 +3,38 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const floatingMinties = [
+  // Teal ×3
   { color: 'teal',   size: 120, top: '8%',  left: '260px', delay: '0s',   duration: '8s'  },
+  { color: 'teal',   size: 70,  top: '45%', right: '8%',   delay: '3.5s', duration: '11s' },
+  { color: 'teal',   size: 95,  bottom: '15%', left: '280px', delay: '6s', duration: '9s' },
+  // Green ×3
   { color: 'green',  size: 90,  top: '60%', left: '270px', delay: '1.5s', duration: '10s' },
-  { color: 'purple', size: 110, top: '15%', right: '3%',  delay: '0.8s', duration: '7s'  },
-  { color: 'yellow', size: 80,  top: '70%', right: '2%',  delay: '2.2s', duration: '9s'  },
+  { color: 'green',  size: 60,  top: '5%',  right: '12%',  delay: '4s',   duration: '8s'  },
+  { color: 'green',  size: 110, bottom: '25%', right: '6%', delay: '7s',  duration: '12s' },
+  // Purple ×3
+  { color: 'purple', size: 110, top: '15%', right: '3%',   delay: '0.8s', duration: '7s'  },
+  { color: 'purple', size: 65,  top: '75%', left: '280px', delay: '4.5s', duration: '10s' },
+  { color: 'purple', size: 85,  top: '35%', right: '15%',  delay: '2s',   duration: '9s'  },
+  // Yellow ×3
+  { color: 'yellow', size: 80,  top: '70%', right: '2%',   delay: '2.2s', duration: '9s'  },
+  { color: 'yellow', size: 55,  top: '12%', left: '285px', delay: '5s',   duration: '11s' },
+  { color: 'yellow', size: 100, bottom: '3%', left: '40%', delay: '1s',   duration: '8s'  },
+  // Indigo ×3
   { color: 'indigo', size: 140, top: '40%', left: '265px', delay: '3s',   duration: '11s' },
-  { color: 'red',    size: 85,  top: '3%',  left: '45%',  delay: '0.5s', duration: '9s'  },
+  { color: 'indigo', size: 70,  bottom: '20%', right: '10%', delay: '0.3s', duration: '9s' },
+  { color: 'indigo', size: 90,  top: '2%',  left: '35%',   delay: '5.5s', duration: '7s'  },
+  // Red ×3
+  { color: 'red',    size: 85,  top: '3%',  left: '45%',   delay: '0.5s', duration: '9s'  },
+  { color: 'red',    size: 50,  top: '55%', right: '4%',   delay: '3.8s', duration: '10s' },
+  { color: 'red',    size: 105, bottom: '10%', left: '30%', delay: '6.5s', duration: '8s' },
+  // Cool ×3
   { color: 'cool',   size: 95,  bottom: '5%', left: '35%',  delay: '1.8s', duration: '8s'  },
+  { color: 'cool',   size: 60,  top: '25%', left: '270px', delay: '4.2s', duration: '12s' },
+  { color: 'cool',   size: 75,  top: '80%', right: '12%',  delay: '0.2s', duration: '10s' },
+  // Brown ×3
   { color: 'brown',  size: 75,  bottom: '8%', right: '5%',  delay: '2.5s', duration: '10s' },
+  { color: 'brown',  size: 130, top: '20%', left: '275px', delay: '5.8s', duration: '9s'  },
+  { color: 'brown',  size: 55,  top: '50%', right: '1%',   delay: '1.2s', duration: '11s' },
 ];
 ---
 
@@ -61,7 +85,7 @@ const floatingMinties = [
     <span class="dd-ctrl-sep">·</span>
     <span class="dd-key">↑ / W / Space</span> <span class="dd-ctrl-label">Jump</span>
     <span class="dd-ctrl-sep">·</span>
-    <span class="dd-key">Z / X</span> <span class="dd-ctrl-label">Shoot Ink</span>
+    <span class="dd-key">Z / X</span> <span class="dd-ctrl-label">Fire Paper</span>
     <span class="dd-ctrl-sep">·</span>
     <span class="dd-key">ESC</span> <span class="dd-ctrl-label">Pause</span>
   </div>
@@ -116,14 +140,31 @@ const floatingMinties = [
     animation-fill-mode: both;
   }
 
-  .dd-float-squid-0 { animation-name: ddFloat0; }
-  .dd-float-squid-1 { animation-name: ddFloat1; }
-  .dd-float-squid-2 { animation-name: ddFloat2; }
-  .dd-float-squid-3 { animation-name: ddFloat3; }
-  .dd-float-squid-4 { animation-name: ddFloat4; }
-  .dd-float-squid-5 { animation-name: ddFloat5; }
-  .dd-float-squid-6 { animation-name: ddFloat6; }
-  .dd-float-squid-7 { animation-name: ddFloat7; }
+  /* 24 squid animation classes, reusing 8 keyframes via modulo */
+  .dd-float-squid-0  { animation-name: ddFloat0; }
+  .dd-float-squid-1  { animation-name: ddFloat1; }
+  .dd-float-squid-2  { animation-name: ddFloat2; }
+  .dd-float-squid-3  { animation-name: ddFloat3; }
+  .dd-float-squid-4  { animation-name: ddFloat4; }
+  .dd-float-squid-5  { animation-name: ddFloat5; }
+  .dd-float-squid-6  { animation-name: ddFloat6; }
+  .dd-float-squid-7  { animation-name: ddFloat7; }
+  .dd-float-squid-8  { animation-name: ddFloat0; }
+  .dd-float-squid-9  { animation-name: ddFloat1; }
+  .dd-float-squid-10 { animation-name: ddFloat2; }
+  .dd-float-squid-11 { animation-name: ddFloat3; }
+  .dd-float-squid-12 { animation-name: ddFloat4; }
+  .dd-float-squid-13 { animation-name: ddFloat5; }
+  .dd-float-squid-14 { animation-name: ddFloat6; }
+  .dd-float-squid-15 { animation-name: ddFloat7; }
+  .dd-float-squid-16 { animation-name: ddFloat0; }
+  .dd-float-squid-17 { animation-name: ddFloat1; }
+  .dd-float-squid-18 { animation-name: ddFloat2; }
+  .dd-float-squid-19 { animation-name: ddFloat3; }
+  .dd-float-squid-20 { animation-name: ddFloat4; }
+  .dd-float-squid-21 { animation-name: ddFloat5; }
+  .dd-float-squid-22 { animation-name: ddFloat6; }
+  .dd-float-squid-23 { animation-name: ddFloat7; }
 
   @keyframes ddFloat0 {
     0%, 100% { transform: translate(0, 0) rotate(0deg); }

@@ -15,11 +15,24 @@ export const PLAYER_SPEED = 160;
 export const PLAYER_JUMP = -350;
 export const PLAYER_MAX_HEALTH = 100;
 export const PLAYER_LIVES = 3;
-export const PLAYER_INK_RANGE_BASE = 100;
-export const PLAYER_INK_RANGE_PER_5 = 20;
-export const PLAYER_INK_RANGE_CAP = 300;
-export const PLAYER_INK_SPEED = 400;
-export const PLAYER_INK_COOLDOWN = 300;
+
+// Paper ammunition (replaces ink)
+export const PAPER_AMMO_PER_COLLECT = 5;
+export const PAPER_PROJECTILE_SPEED = 400;
+export const PAPER_FIRE_COOLDOWN = 300;
+export const PAPER_RANGE_BASE = 100;
+export const PAPER_RANGE_PER_5 = 20;
+export const PAPER_RANGE_CAP = 300;
+
+// Double jump
+export const MAX_JUMPS = 2;
+export const DOUBLE_JUMP_FORCE_MULT = 0.8;
+
+// Clawd companion
+export const CLAWD_FIRE_INTERVAL = 500;
+export const CLAWD_DURATION = 10000;
+export const CLAWD_RANGE = 200;
+export const CLAWD_PROJECTILE_SPEED = 350;
 
 // Papers
 export const PAPER_HEAL = 5;
@@ -39,7 +52,7 @@ export const ENEMY_TIERS = {
 // Power-ups
 export const POWERUP_DURATION = {
   shield: 8000,
-  brainBoost: 10000,
+  openai: 10000,
   speedBolt: 12000,
   timeFreeze: 5000,
 } as const;
@@ -48,7 +61,7 @@ export const POWERUP_DURATION = {
 export const POWERDOWN_DURATION = {
   clippy: 5000,
   fogCloud: 5000,
-  sludge: 5000,
+  grok: 5000,
 } as const;
 
 export const POWERDOWN_PAPER_LOSS = 3;

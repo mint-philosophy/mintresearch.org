@@ -55,8 +55,8 @@ export function getLevel2Config(): LevelConfig {
       { x: 3100, y: GAME_HEIGHT - 230, isGold: true },
     ],
     powerUps: [
-      { type: 'brainBoost', x: 850, y: GAME_HEIGHT - 240 },
-      { type: 'sludge', x: 1550, y: GAME_HEIGHT - 300 },
+      { type: 'openai', x: 850, y: GAME_HEIGHT - 240 },
+      { type: 'grok', x: 1550, y: GAME_HEIGHT - 300 },
       { type: 'shield', x: 2300, y: GAME_HEIGHT - 200 },
       { type: 'fogCloud', x: 2750, y: GAME_HEIGHT - 160 },
     ],

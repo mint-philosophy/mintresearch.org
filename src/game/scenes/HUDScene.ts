@@ -8,6 +8,7 @@ export class HUDScene extends Phaser.Scene {
   private papersText!: Phaser.GameObjects.Text;
   private livesText!: Phaser.GameObjects.Text;
   private levelText!: Phaser.GameObjects.Text;
+  private ammoText!: Phaser.GameObjects.Text;
   private muteBtn!: Phaser.GameObjects.Text;
   private muted: boolean = false;
 
@@ -15,7 +16,7 @@ export class HUDScene extends Phaser.Scene {
     super({ key: SCENES.HUD });
   }
 
-  create(data: { health: number; lives: number; score: number; papers: number; level: number; levelName: string }): void {
+  create(data: { health: number; lives: number; score: number; papers: number; ammo: number; level: number; levelName: string }): void {
     const style = {
       fontFamily: '"JetBrains Mono", monospace',
       fontSize: '10px',
@@ -38,6 +39,9 @@ export class HUDScene extends Phaser.Scene {
     // Papers
     this.papersText = this.add.text(8, 48, `PAPERS: ${data.papers}`, style);
 
+    // Ammo
+    this.ammoText = this.add.text(8, 62, `AMMO: ${data.ammo}`, style);
+
     // Lives
     this.livesText = this.add.text(GAME_WIDTH - 8, 20, `♥ ${data.lives}`, {
       ...style, color: '#e06c75',
@@ -55,10 +59,11 @@ export class HUDScene extends Phaser.Scene {
     this.drawHealthBar(data.health);
 
     // Listen for updates from LevelScene
-    this.events.on('hudUpdate', (d: { health: number; lives: number; score: number; papers: number }) => {
+    this.events.on('hudUpdate', (d: { health: number; lives: number; score: number; papers: number; ammo: number }) => {
       this.healthText.setText(`${Math.max(0, d.health)}%`);
       this.scoreText.setText(`SCORE: ${d.score}`);
       this.papersText.setText(`PAPERS: ${d.papers}`);
+      this.ammoText.setText(`AMMO: ${d.ammo}`);
       this.livesText.setText(`♥ ${d.lives}`);
       this.drawHealthBar(d.health);
     });

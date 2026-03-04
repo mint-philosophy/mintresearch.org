@@ -57,7 +57,7 @@ export function getLevel5Config(): LevelConfig {
       { type: 'shield', x: 950, y: GAME_HEIGHT - 220 },
       { type: 'dataLeak', x: 1800, y: GAME_HEIGHT - 200 },
       { type: 'timeFreeze', x: 2850, y: GAME_HEIGHT - 280 },
-      { type: 'sludge', x: 3400, y: GAME_HEIGHT - 340 },
+      { type: 'grok', x: 3400, y: GAME_HEIGHT - 340 },
     ],
     npcs: [
       { color: 'red', x: 220, y: GAME_HEIGHT - 60, dialogueKey: 'l5-red' },
