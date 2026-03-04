@@ -946,7 +946,7 @@ export class LevelScene extends Phaser.Scene {
           this.player.setTexture('minty-bandage');
           this.player.setScale(PLAYER_SCALE);
           this.time.delayedCall(5000, () => {
-            if (this.player?.active) this.player.setTexture('minty-teal');
+            if (this.player?.active) { this.player.setTexture('minty-teal'); this.player.setScale(PLAYER_SCALE); }
           });
           // Brief invincibility
           this.invincible = true;
@@ -1189,10 +1189,11 @@ export class LevelScene extends Phaser.Scene {
 
     // Bandage visual after being hit
     this.player.setTexture('minty-bandage');
-    this.player.setScale(PLAYER_SCALE);
+    this.player.setScale(PLAYER_SCALE * 0.124);
     this.time.delayedCall(5000, () => {
       if (this.player?.active && !this.invincible) {
         this.player.setTexture('minty-teal');
+        this.player.setScale(PLAYER_SCALE);
       }
     });
 
