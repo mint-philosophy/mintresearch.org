@@ -3,38 +3,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const floatingMinties = [
-  // Teal ×3
-  { color: 'teal',   size: 120, top: '8%',  left: '260px', delay: '0s',   duration: '8s'  },
-  { color: 'teal',   size: 70,  top: '45%', right: '8%',   delay: '3.5s', duration: '11s' },
-  { color: 'teal',   size: 95,  bottom: '15%', left: '280px', delay: '6s', duration: '9s' },
-  // Green ×3
-  { color: 'green',  size: 90,  top: '60%', left: '270px', delay: '1.5s', duration: '10s' },
-  { color: 'green',  size: 60,  top: '5%',  right: '12%',  delay: '4s',   duration: '8s'  },
-  { color: 'green',  size: 110, bottom: '25%', right: '6%', delay: '7s',  duration: '12s' },
-  // Purple ×3
-  { color: 'purple', size: 110, top: '15%', right: '3%',   delay: '0.8s', duration: '7s'  },
-  { color: 'purple', size: 65,  top: '75%', left: '280px', delay: '4.5s', duration: '10s' },
-  { color: 'purple', size: 85,  top: '35%', right: '15%',  delay: '2s',   duration: '9s'  },
-  // Yellow ×3
-  { color: 'yellow', size: 80,  top: '70%', right: '2%',   delay: '2.2s', duration: '9s'  },
-  { color: 'yellow', size: 55,  top: '12%', left: '285px', delay: '5s',   duration: '11s' },
-  { color: 'yellow', size: 100, bottom: '3%', left: '40%', delay: '1s',   duration: '8s'  },
-  // Indigo ×3
-  { color: 'indigo', size: 140, top: '40%', left: '265px', delay: '3s',   duration: '11s' },
-  { color: 'indigo', size: 70,  bottom: '20%', right: '10%', delay: '0.3s', duration: '9s' },
-  { color: 'indigo', size: 90,  top: '2%',  left: '35%',   delay: '5.5s', duration: '7s'  },
-  // Red ×3
-  { color: 'red',    size: 85,  top: '3%',  left: '45%',   delay: '0.5s', duration: '9s'  },
-  { color: 'red',    size: 50,  top: '55%', right: '4%',   delay: '3.8s', duration: '10s' },
-  { color: 'red',    size: 105, bottom: '10%', left: '30%', delay: '6.5s', duration: '8s' },
-  // Cool ×3
-  { color: 'cool',   size: 95,  bottom: '5%', left: '35%',  delay: '1.8s', duration: '8s'  },
-  { color: 'cool',   size: 60,  top: '25%', left: '270px', delay: '4.2s', duration: '12s' },
-  { color: 'cool',   size: 75,  top: '80%', right: '12%',  delay: '0.2s', duration: '10s' },
-  // Brown ×3
-  { color: 'brown',  size: 75,  bottom: '8%', right: '5%',  delay: '2.5s', duration: '10s' },
-  { color: 'brown',  size: 130, top: '20%', left: '275px', delay: '5.8s', duration: '9s'  },
-  { color: 'brown',  size: 55,  top: '50%', right: '1%',   delay: '1.2s', duration: '11s' },
+  { color: 'teal',   size: 120 }, { color: 'teal',   size: 70  }, { color: 'teal',   size: 95  },
+  { color: 'green',  size: 90  }, { color: 'green',  size: 60  }, { color: 'green',  size: 110 },
+  { color: 'purple', size: 110 }, { color: 'purple', size: 65  }, { color: 'purple', size: 85  },
+  { color: 'yellow', size: 80  }, { color: 'yellow', size: 55  }, { color: 'yellow', size: 100 },
+  { color: 'indigo', size: 140 }, { color: 'indigo', size: 70  }, { color: 'indigo', size: 90  },
+  { color: 'red',    size: 85  }, { color: 'red',    size: 50  }, { color: 'red',    size: 105 },
+  { color: 'cool',   size: 95  }, { color: 'cool',   size: 60  }, { color: 'cool',   size: 75  },
+  { color: 'brown',  size: 75  }, { color: 'brown',  size: 130 }, { color: 'brown',  size: 55  },
 ];
 ---
 
@@ -47,16 +23,9 @@ const floatingMinties = [
       <img
         src={`${base}/assets/minty-${m.color}.png`}
         alt=""
-        class={`dd-float-squid dd-float-squid-${i}`}
-        style={`
-          width: ${m.size}px;
-          ${m.top ? `top: ${m.top};` : ''}
-          ${m.left ? `left: ${m.left};` : ''}
-          ${m.right ? `right: ${m.right};` : ''}
-          ${m.bottom ? `bottom: ${m.bottom};` : ''}
-          animation-delay: ${m.delay};
-          animation-duration: ${m.duration};
-        `}
+        class="dd-float-squid"
+        data-squid-idx={i}
+        style={`width: ${m.size}px;`}
       />
     ))}
   </div>
@@ -100,16 +69,56 @@ const floatingMinties = [
 <script>
   import { createGame } from '../game/index';
 
-  // Only init game on desktop (or if container exists)
   const container = document.getElementById('game-container');
   if (container) {
-    // Wait for the page to fully load
     if (document.readyState === 'complete') {
       createGame('game-container');
     } else {
       window.addEventListener('load', () => createGame('game-container'));
     }
   }
+
+  // Random wandering Minties
+  const squids = document.querySelectorAll<HTMLImageElement>('.dd-float-squid');
+  const vw = () => window.innerWidth;
+  const vh = () => window.innerHeight;
+
+  squids.forEach((squid) => {
+    const size = squid.offsetWidth || 80;
+    // Random start position
+    let x = Math.random() * (vw() - size);
+    let y = Math.random() * (vh() - size);
+    squid.style.left = `${x}px`;
+    squid.style.top = `${y}px`;
+
+    // Random rotation
+    let rot = Math.random() * 10 - 5;
+
+    function wander() {
+      // Pick a new random destination anywhere on screen
+      const tx = Math.random() * (vw() - size);
+      const ty = Math.random() * (vh() - size);
+      const newRot = Math.random() * 12 - 6;
+      const dist = Math.hypot(tx - x, ty - y);
+      // Duration proportional to distance (speed ~40-80px/s)
+      const speed = 40 + Math.random() * 40;
+      const dur = Math.max(3000, (dist / speed) * 1000);
+
+      squid.style.transition = `left ${dur}ms ease-in-out, top ${dur}ms ease-in-out, transform ${dur}ms ease-in-out`;
+      squid.style.left = `${tx}px`;
+      squid.style.top = `${ty}px`;
+      squid.style.transform = `rotate(${newRot}deg)`;
+
+      x = tx;
+      y = ty;
+      rot = newRot;
+
+      setTimeout(wander, dur + Math.random() * 2000);
+    }
+
+    // Stagger start
+    setTimeout(wander, Math.random() * 4000);
+  });
 </script>
 
 <style>
@@ -132,83 +141,9 @@ const floatingMinties = [
 
   .dd-float-squid {
     position: absolute;
-    opacity: 0.2;
+    opacity: 0.18;
     filter: drop-shadow(0 0 20px rgba(46, 196, 182, 0.3));
-    animation-name: ddFloat;
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
-    animation-fill-mode: both;
-  }
-
-  /* 24 squid animation classes, reusing 8 keyframes via modulo */
-  .dd-float-squid-0  { animation-name: ddFloat0; }
-  .dd-float-squid-1  { animation-name: ddFloat1; }
-  .dd-float-squid-2  { animation-name: ddFloat2; }
-  .dd-float-squid-3  { animation-name: ddFloat3; }
-  .dd-float-squid-4  { animation-name: ddFloat4; }
-  .dd-float-squid-5  { animation-name: ddFloat5; }
-  .dd-float-squid-6  { animation-name: ddFloat6; }
-  .dd-float-squid-7  { animation-name: ddFloat7; }
-  .dd-float-squid-8  { animation-name: ddFloat0; }
-  .dd-float-squid-9  { animation-name: ddFloat1; }
-  .dd-float-squid-10 { animation-name: ddFloat2; }
-  .dd-float-squid-11 { animation-name: ddFloat3; }
-  .dd-float-squid-12 { animation-name: ddFloat4; }
-  .dd-float-squid-13 { animation-name: ddFloat5; }
-  .dd-float-squid-14 { animation-name: ddFloat6; }
-  .dd-float-squid-15 { animation-name: ddFloat7; }
-  .dd-float-squid-16 { animation-name: ddFloat0; }
-  .dd-float-squid-17 { animation-name: ddFloat1; }
-  .dd-float-squid-18 { animation-name: ddFloat2; }
-  .dd-float-squid-19 { animation-name: ddFloat3; }
-  .dd-float-squid-20 { animation-name: ddFloat4; }
-  .dd-float-squid-21 { animation-name: ddFloat5; }
-  .dd-float-squid-22 { animation-name: ddFloat6; }
-  .dd-float-squid-23 { animation-name: ddFloat7; }
-
-  @keyframes ddFloat0 {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    25% { transform: translate(15px, -20px) rotate(3deg); }
-    50% { transform: translate(-10px, -35px) rotate(-2deg); }
-    75% { transform: translate(20px, -15px) rotate(4deg); }
-  }
-  @keyframes ddFloat1 {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    33% { transform: translate(-20px, -25px) rotate(-5deg); }
-    66% { transform: translate(15px, -40px) rotate(3deg); }
-  }
-  @keyframes ddFloat2 {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    25% { transform: translate(-15px, 20px) rotate(-3deg); }
-    50% { transform: translate(10px, -15px) rotate(5deg); }
-    75% { transform: translate(-20px, -30px) rotate(-4deg); }
-  }
-  @keyframes ddFloat3 {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    50% { transform: translate(25px, -35px) rotate(6deg); }
-  }
-  @keyframes ddFloat4 {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    20% { transform: translate(-10px, -15px) rotate(-2deg); }
-    40% { transform: translate(20px, -30px) rotate(4deg); }
-    60% { transform: translate(-15px, -45px) rotate(-3deg); }
-    80% { transform: translate(10px, -20px) rotate(2deg); }
-  }
-  @keyframes ddFloat5 {
-    0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
-    30% { transform: translate(12px, -18px) rotate(4deg) scale(1.05); }
-    60% { transform: translate(-8px, -28px) rotate(-3deg) scale(0.95); }
-  }
-  @keyframes ddFloat6 {
-    0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
-    40% { transform: translate(-15px, 12px) rotate(-4deg) scale(1.08); }
-    70% { transform: translate(10px, -10px) rotate(3deg) scale(0.92); }
-  }
-  @keyframes ddFloat7 {
-    0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
-    25% { transform: translate(18px, 8px) rotate(5deg) scale(1.04); }
-    50% { transform: translate(-12px, -20px) rotate(-5deg) scale(0.96); }
-    75% { transform: translate(8px, 15px) rotate(2deg) scale(1.02); }
+    will-change: left, top, transform;
   }
 
   /* ---- Hero ---- */

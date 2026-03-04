@@ -51,17 +51,17 @@ export const ENEMY_TIERS = {
 
 // Power-ups
 export const POWERUP_DURATION = {
-  shield: 8000,
-  openai: 10000,
-  speedBolt: 12000,
-  timeFreeze: 5000,
+  shield: 15000,
+  openai: 15000,
+  speedBolt: 18000,
+  timeFreeze: 10000,
 } as const;
 
 // Power-downs
 export const POWERDOWN_DURATION = {
-  clippy: 5000,
-  fogCloud: 5000,
-  grok: 5000,
+  clippy: 8000,
+  fogCloud: 8000,
+  grok: 8000,
 } as const;
 
 export const POWERDOWN_PAPER_LOSS = 3;
