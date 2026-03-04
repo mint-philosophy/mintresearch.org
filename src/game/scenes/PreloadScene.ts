@@ -40,6 +40,8 @@ export class PreloadScene extends Phaser.Scene {
     this.generatePaper();
     this.generatePaperProjectile();
     this.generateSlop();
+    this.generateParrotNoSprite();
+    this.generateSlopPoopSprite();
     this.generatePowerUps();
     this.generateCheckpoint();
     this.generateParticle();
@@ -220,6 +222,60 @@ export class PreloadScene extends Phaser.Scene {
     g.fillStyle(0x8b5e3c);
     g.fillRect(5, 10, 2, 2);
     g.generateTexture('slop', 12, 12);
+    g.destroy();
+  }
+
+  private generateParrotNoSprite(): void {
+    const g = this.add.graphics();
+    // White speech bubble shape
+    g.fillStyle(0xffffff);
+    g.fillCircle(7, 4, 4);  // main bubble
+    g.fillRect(3, 1, 8, 7);
+    // Bubble tail (bottom-left triangle)
+    g.fillTriangle(3, 7, 1, 10, 6, 7);
+    // "NO!" text in red (pixel letters)
+    g.fillStyle(0xff0000);
+    // N
+    g.fillRect(3, 2, 1, 5);
+    g.fillRect(4, 3, 1, 1);
+    g.fillRect(5, 4, 1, 1);
+    g.fillRect(6, 2, 1, 5);
+    // O
+    g.fillRect(8, 2, 1, 5);
+    g.fillRect(9, 2, 1, 1);
+    g.fillRect(9, 6, 1, 1);
+    g.fillRect(10, 2, 1, 5);
+    // !
+    g.fillRect(12, 2, 1, 3);
+    g.fillRect(12, 6, 1, 1);
+    g.generateTexture('parrot-no', 14, 10);
+    g.destroy();
+  }
+
+  private generateSlopPoopSprite(): void {
+    const g = this.add.graphics();
+    // Brown coil base (bottom to top)
+    g.fillStyle(0x6b4423);
+    g.fillRect(1, 8, 10, 3);  // base
+    g.fillStyle(0x7a5030);
+    g.fillRect(2, 5, 8, 4);   // mid section
+    g.fillStyle(0x8b5e3c);
+    g.fillRect(3, 2, 6, 4);   // top coil
+    // Peak
+    g.fillStyle(0x9b6e4c);
+    g.fillRect(5, 1, 3, 2);
+    g.fillRect(6, 0, 1, 1);
+    // Eyes (white with pupils)
+    g.fillStyle(0xffffff);
+    g.fillRect(4, 4, 2, 2);
+    g.fillRect(7, 4, 2, 2);
+    g.fillStyle(0x000000);
+    g.fillRect(5, 5, 1, 1);
+    g.fillRect(8, 5, 1, 1);
+    // Slight smile
+    g.fillStyle(0x000000);
+    g.fillRect(5, 7, 3, 1);
+    g.generateTexture('slop-poop', 12, 12);
     g.destroy();
   }
 
@@ -411,14 +467,14 @@ export class PreloadScene extends Phaser.Scene {
     const g = this.add.graphics();
     // Blue background
     g.fillStyle(0x4488cc, 0.3);
-    g.fillRect(0, 0, 20, 20);
+    g.fillRect(0, 0, 24, 24);
     // Paperclip shape
     g.lineStyle(2, 0x4488cc);
     // Outer loop
-    g.strokeRoundedRect(6, 2, 8, 16, 4);
+    g.strokeRoundedRect(7, 2, 10, 19, 5);
     // Inner loop
-    g.strokeRoundedRect(8, 6, 4, 8, 2);
-    g.generateTexture('pd-clippy', 20, 20);
+    g.strokeRoundedRect(10, 7, 5, 10, 2);
+    g.generateTexture('pd-clippy', 24, 24);
     g.destroy();
   }
 
@@ -426,15 +482,15 @@ export class PreloadScene extends Phaser.Scene {
     const g = this.add.graphics();
     // Gray background
     g.fillStyle(0x888888, 0.2);
-    g.fillRect(0, 0, 20, 20);
+    g.fillRect(0, 0, 24, 24);
     // Cloud shape: overlapping circles
     g.fillStyle(0x888888, 0.8);
-    g.fillCircle(7, 10, 5);
-    g.fillCircle(13, 10, 5);
-    g.fillCircle(10, 7, 5);
+    g.fillCircle(8, 12, 6);
+    g.fillCircle(16, 12, 6);
+    g.fillCircle(12, 8, 6);
     // Base
-    g.fillRect(3, 10, 14, 5);
-    g.generateTexture('pd-fog', 20, 20);
+    g.fillRect(4, 12, 17, 6);
+    g.generateTexture('pd-fog', 24, 24);
     g.destroy();
   }
 
@@ -442,15 +498,15 @@ export class PreloadScene extends Phaser.Scene {
     const g = this.add.graphics();
     // Red background
     g.fillStyle(0xe06c75, 0.3);
-    g.fillRect(0, 0, 20, 20);
+    g.fillRect(0, 0, 24, 24);
     // Red border
     g.lineStyle(2, 0xe06c75);
-    g.strokeRect(1, 1, 18, 18);
+    g.strokeRect(1, 1, 22, 22);
     // "!" exclamation
     g.fillStyle(0xe06c75);
-    g.fillRect(8, 4, 4, 8);
-    g.fillRect(8, 14, 4, 3);
-    g.generateTexture('pd-leak', 20, 20);
+    g.fillRect(10, 5, 5, 10);
+    g.fillRect(10, 17, 5, 4);
+    g.generateTexture('pd-leak', 24, 24);
     g.destroy();
   }
 
@@ -621,53 +677,73 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   private generateOctopusSprites(): void {
-    const tiers: Array<{ key: string; color: number; highlight: number }> = [
-      { key: 'enemy-octopus-peach', color: 0xffcba4, highlight: 0xffe0c0 },
-      { key: 'enemy-octopus-red', color: 0xe06c75, highlight: 0xf08888 },
-      { key: 'enemy-octopus-orange', color: 0xf5a623, highlight: 0xffc04a },
+    const tiers: Array<{ key: string; color: number; highlight: number; dark: number }> = [
+      { key: 'enemy-octopus-peach', color: 0xffcba4, highlight: 0xffe0c0, dark: 0xcc9a74 },
+      { key: 'enemy-octopus-red', color: 0xe06c75, highlight: 0xf08888, dark: 0xb04450 },
+      { key: 'enemy-octopus-orange', color: 0xf5a623, highlight: 0xffc04a, dark: 0xc07810 },
     ];
 
-    tiers.forEach(({ key, color, highlight }) => {
+    tiers.forEach(({ key, color, highlight, dark }) => {
       const g = this.add.graphics();
-      const s = 32;
       // Dome head
       g.fillStyle(color);
-      g.fillCircle(16, 10, 10);
-      // Head highlight
+      g.fillCircle(24, 14, 15);
+      // Specular highlight
       g.fillStyle(highlight, 0.5);
-      g.fillCircle(13, 7, 4);
+      g.fillCircle(19, 10, 6);
       // White eyes
       g.fillStyle(0xffffff);
-      g.fillCircle(12, 10, 3);
-      g.fillCircle(20, 10, 3);
+      g.fillCircle(18, 15, 4);
+      g.fillCircle(30, 15, 4);
       // Pupils
       g.fillStyle(0x000000);
-      g.fillCircle(13, 10, 1.5);
-      g.fillCircle(21, 10, 1.5);
-      // 4 wavy tentacles
+      g.fillCircle(19, 15, 2);
+      g.fillCircle(31, 15, 2);
+      // Smiling mouth
+      g.fillStyle(dark);
+      g.fillRect(21, 21, 6, 1);
+      g.fillRect(20, 20, 1, 1);
+      g.fillRect(27, 20, 1, 1);
+      // 6 detailed tentacles with zigzag segments and suckers
       g.fillStyle(color);
-      // Tentacle 1 (left)
-      g.fillRect(6, 18, 3, 4);
-      g.fillRect(5, 22, 3, 4);
-      g.fillRect(6, 26, 3, 4);
+      // Tentacle 1 (far left)
+      g.fillRect(3, 26, 3, 4); g.fillRect(2, 30, 3, 4); g.fillRect(3, 34, 3, 4);
+      g.fillStyle(dark); g.fillCircle(4, 28, 1); g.fillCircle(3, 32, 1); g.fillCircle(4, 36, 1);
       // Tentacle 2
-      g.fillRect(11, 18, 3, 4);
-      g.fillRect(12, 22, 3, 4);
-      g.fillRect(11, 26, 3, 4);
-      // Tentacle 3
-      g.fillRect(17, 18, 3, 4);
-      g.fillRect(18, 22, 3, 4);
-      g.fillRect(17, 26, 3, 4);
-      // Tentacle 4 (right)
-      g.fillRect(23, 18, 3, 4);
-      g.fillRect(22, 22, 3, 4);
-      g.fillRect(23, 26, 3, 4);
-      // Slop bucket between tentacles
+      g.fillStyle(color);
+      g.fillRect(9, 26, 3, 4); g.fillRect(10, 30, 3, 4); g.fillRect(9, 34, 3, 4);
+      g.fillStyle(dark); g.fillCircle(10, 28, 1); g.fillCircle(11, 32, 1); g.fillCircle(10, 36, 1);
+      // Tentacle 3 (center-left)
+      g.fillStyle(color);
+      g.fillRect(15, 26, 3, 4); g.fillRect(16, 30, 3, 4); g.fillRect(15, 34, 3, 4);
+      g.fillStyle(dark); g.fillCircle(16, 28, 1); g.fillCircle(17, 32, 1); g.fillCircle(16, 36, 1);
+      // Tentacle 4 (center-right)
+      g.fillStyle(color);
+      g.fillRect(28, 26, 3, 4); g.fillRect(29, 30, 3, 4); g.fillRect(28, 34, 3, 4);
+      g.fillStyle(dark); g.fillCircle(29, 28, 1); g.fillCircle(30, 32, 1); g.fillCircle(29, 36, 1);
+      // Tentacle 5
+      g.fillStyle(color);
+      g.fillRect(34, 26, 3, 4); g.fillRect(35, 30, 3, 4); g.fillRect(34, 34, 3, 4);
+      g.fillStyle(dark); g.fillCircle(35, 28, 1); g.fillCircle(36, 32, 1); g.fillCircle(35, 36, 1);
+      // Tentacle 6 (far right)
+      g.fillStyle(color);
+      g.fillRect(40, 26, 3, 4); g.fillRect(39, 30, 3, 4); g.fillRect(40, 34, 3, 4);
+      g.fillStyle(dark); g.fillCircle(41, 28, 1); g.fillCircle(40, 32, 1); g.fillCircle(41, 36, 1);
+      // Slop bucket between center tentacles
       g.fillStyle(0x6b4423);
-      g.fillRect(13, 20, 6, 5);
+      g.fillRect(19, 30, 10, 8);
+      // Bucket rim
       g.fillStyle(0x8b5e3c);
-      g.fillRect(12, 19, 8, 2);
-      g.generateTexture(key, s, s);
+      g.fillRect(18, 28, 12, 3);
+      // Handle arc
+      g.fillStyle(0x5a3a1a);
+      g.fillRect(22, 26, 4, 2);
+      // Slop inside (brownish liquid)
+      g.fillStyle(0xa07050);
+      g.fillRect(20, 31, 8, 3);
+      g.fillStyle(0xb08060);
+      g.fillRect(21, 31, 3, 1);
+      g.generateTexture(key, 48, 48);
       g.destroy();
     });
   }
@@ -676,121 +752,178 @@ export class PreloadScene extends Phaser.Scene {
     const g = this.add.graphics();
     // Body (hunched green figure)
     g.fillStyle(0x98c379);
-    // Torso (hunched)
-    g.fillRect(10, 12, 12, 12);
-    g.fillRect(8, 14, 4, 8);
+    // Torso (hunched, larger)
+    g.fillRect(14, 18, 18, 18);
+    // Hunched shoulders
+    g.fillRect(10, 20, 6, 10);
+    g.fillRect(30, 20, 6, 10);
     // Head
-    g.fillCircle(16, 9, 7);
-    // Spiky hair/horns
+    g.fillCircle(24, 13, 10);
+    // Spiky hair/horns (more pronounced)
     g.fillStyle(0x7aa35e);
-    g.fillTriangle(10, 4, 12, 0, 14, 4);
-    g.fillTriangle(16, 3, 18, -1, 20, 3);
-    g.fillTriangle(20, 5, 23, 1, 22, 6);
-    // Angry eyebrows
+    g.fillTriangle(14, 6, 17, 0, 20, 6);
+    g.fillTriangle(20, 5, 24, -2, 28, 5);
+    g.fillTriangle(28, 6, 32, 0, 34, 7);
+    g.fillTriangle(32, 8, 36, 3, 35, 9);
+    // Angry eyebrows (thicker, angled)
     g.fillStyle(0x000000);
-    g.fillRect(12, 6, 4, 1);
-    g.fillRect(18, 6, 4, 1);
-    // Angry eyes
+    g.fillRect(17, 9, 6, 2);
+    g.fillRect(25, 9, 6, 2);
+    // Angry eyes (red, 3x3)
     g.fillStyle(0xff3333);
-    g.fillRect(13, 8, 2, 2);
-    g.fillRect(19, 8, 2, 2);
-    // Angry mouth
+    g.fillRect(18, 12, 3, 3);
+    g.fillRect(26, 12, 3, 3);
+    // Angry mouth (wider, showing teeth)
     g.fillStyle(0x000000);
-    g.fillRect(13, 12, 6, 2);
+    g.fillRect(18, 18, 10, 3);
     g.fillStyle(0xffffff);
-    g.fillRect(14, 12, 1, 1);
-    g.fillRect(17, 12, 1, 1);
-    // Phone in hand
+    g.fillRect(19, 18, 2, 2);
+    g.fillRect(22, 18, 2, 2);
+    g.fillRect(25, 18, 2, 2);
+    // Phone in hand (larger)
     g.fillStyle(0x333333);
-    g.fillRect(22, 16, 5, 8);
+    g.fillRect(32, 24, 7, 12);
+    // Screen glow
     g.fillStyle(0x4488cc);
-    g.fillRect(23, 17, 3, 5);
+    g.fillRect(33, 25, 5, 9);
+    // Text lines on screen
+    g.fillStyle(0xaaddff);
+    g.fillRect(34, 27, 3, 1);
+    g.fillRect(34, 29, 4, 1);
+    g.fillRect(34, 31, 2, 1);
     // Legs
     g.fillStyle(0x98c379);
-    g.fillRect(11, 24, 4, 6);
-    g.fillRect(17, 24, 4, 6);
-    g.generateTexture('enemy-troll', 32, 32);
+    g.fillRect(16, 36, 5, 8);
+    g.fillRect(25, 36, 5, 8);
+    // Shoes (dark, wider than legs)
+    g.fillStyle(0x333333);
+    g.fillRect(14, 43, 9, 3);
+    g.fillRect(23, 43, 9, 3);
+    g.generateTexture('enemy-troll', 48, 48);
     g.destroy();
   }
 
   private generateInfluencerSprite(): void {
     const g = this.add.graphics();
-    // Body (upright purple figure)
+    // Halo glow (behind head)
+    g.fillStyle(0xffd700, 0.2);
+    g.fillCircle(24, 2, 12);
+    g.fillStyle(0xffd700, 0.4);
+    g.fillCircle(24, 2, 8);
+    // Body (upright purple figure, larger)
     g.fillStyle(0xc678dd);
     // Torso
-    g.fillRect(11, 12, 10, 10);
+    g.fillRect(15, 18, 16, 14);
     // Head
-    g.fillCircle(16, 8, 6);
-    // Hair (glamorous)
+    g.fillCircle(24, 12, 9);
+    // Hair (glamorous, multi-layer)
     g.fillStyle(0xd89ef0);
-    g.fillCircle(16, 5, 4);
-    g.fillRect(10, 4, 3, 6);
-    g.fillRect(19, 4, 3, 6);
-    // Sunglasses
+    g.fillCircle(24, 7, 6);
+    g.fillRect(14, 6, 4, 10);
+    g.fillRect(28, 6, 4, 10);
+    // Lighter highlights
+    g.fillStyle(0xe8b0ff, 0.6);
+    g.fillRect(15, 7, 2, 5);
+    g.fillRect(29, 7, 2, 5);
+    // Sunglasses (thicker frames)
     g.fillStyle(0x111111);
-    g.fillRect(11, 6, 4, 3);
-    g.fillRect(17, 6, 4, 3);
-    g.fillRect(15, 7, 2, 1);
-    // Halo glow
-    g.fillStyle(0xffd700, 0.4);
-    g.fillCircle(16, 1, 6);
-    g.fillStyle(0xffd700, 0.2);
-    g.fillCircle(16, 1, 8);
+    g.fillRect(16, 10, 6, 4);
+    g.fillRect(24, 10, 6, 4);
+    g.fillRect(22, 11, 2, 2);
+    // Reflection shine on lenses
+    g.fillStyle(0xffffff, 0.3);
+    g.fillRect(17, 10, 2, 1);
+    g.fillRect(25, 10, 2, 1);
+    // Red lipstick
+    g.fillStyle(0xff3355);
+    g.fillRect(22, 16, 4, 1);
     // Selfie arm extended
     g.fillStyle(0xc678dd);
-    g.fillRect(21, 10, 8, 3);
+    g.fillRect(31, 16, 12, 4);
     // Phone at end of arm
     g.fillStyle(0x333333);
-    g.fillRect(28, 8, 3, 6);
+    g.fillRect(42, 13, 5, 10);
     g.fillStyle(0x5588ee);
-    g.fillRect(29, 9, 1, 4);
-    // Sparkle effects
+    g.fillRect(43, 14, 3, 7);
+    // Camera flash (white rect)
+    g.fillStyle(0xffffff);
+    g.fillRect(44, 14, 1, 1);
+    // Camera lens (dark circle)
+    g.fillStyle(0x111111);
+    g.fillCircle(45, 18, 1);
+    // Sparkle particles (white/gold)
     g.fillStyle(0xffffff, 0.8);
-    g.fillRect(5, 4, 2, 2);
-    g.fillRect(26, 2, 2, 2);
-    g.fillRect(3, 14, 2, 2);
-    // Legs
+    g.fillRect(6, 5, 2, 2);
+    g.fillRect(38, 3, 2, 2);
+    g.fillRect(4, 20, 2, 2);
+    g.fillStyle(0xffd700, 0.7);
+    g.fillRect(10, 14, 2, 2);
+    g.fillRect(36, 8, 2, 2);
+    // Legs (longer)
     g.fillStyle(0xc678dd);
-    g.fillRect(12, 22, 4, 8);
-    g.fillRect(17, 22, 4, 8);
-    g.generateTexture('enemy-influencer', 32, 32);
+    g.fillRect(17, 32, 5, 10);
+    g.fillRect(24, 32, 5, 10);
+    // Heels (wedge shape)
+    g.fillStyle(0x333333);
+    g.fillRect(16, 41, 7, 3);
+    g.fillRect(23, 41, 7, 3);
+    g.fillStyle(0x555555);
+    g.fillRect(22, 43, 2, 2);
+    g.fillRect(29, 43, 2, 2);
+    g.generateTexture('enemy-influencer', 48, 48);
     g.destroy();
   }
 
   private generateCriticSprite(): void {
     const g = this.add.graphics();
-    // Dark robe
+    // Dark robe (larger triangle)
     g.fillStyle(0x2a2a3a);
-    g.fillTriangle(16, 6, 4, 30, 28, 30);
+    g.fillTriangle(24, 8, 6, 46, 42, 46);
+    // Fabric fold lines (darker vertical lines)
+    g.fillStyle(0x1e1e2e);
+    g.fillRect(16, 20, 1, 26);
+    g.fillRect(24, 14, 1, 32);
+    g.fillRect(32, 20, 1, 26);
     // Hood
     g.fillStyle(0x3a3a4a);
-    g.fillCircle(16, 8, 7);
+    g.fillCircle(24, 12, 10);
     g.fillStyle(0x2a2a3a);
-    g.fillCircle(16, 7, 6);
+    g.fillCircle(24, 11, 9);
     // Face in shadow
     g.fillStyle(0x1a1a2a);
-    g.fillCircle(16, 10, 4);
-    // Stern eyes
+    g.fillCircle(24, 15, 6);
+    // Stern eyes (3x3 white)
     g.fillStyle(0xcccccc);
-    g.fillRect(13, 9, 2, 2);
-    g.fillRect(18, 9, 2, 2);
-    // Furrowed brow line
+    g.fillRect(19, 13, 3, 3);
+    g.fillRect(26, 13, 3, 3);
+    // Furrowed thick brow line
     g.fillStyle(0x888888);
-    g.fillRect(13, 8, 7, 1);
-    // Quill in hand (right)
+    g.fillRect(18, 11, 12, 2);
+    // Quill in hand (right, longer with feather barbs)
     g.fillStyle(0xccaa66);
-    g.fillRect(24, 4, 1, 16);
-    g.fillStyle(0xffffff);
-    g.fillTriangle(24, 3, 25, 3, 24, 7);
-    // Inkwell (left hand)
+    g.fillRect(36, 4, 2, 24);
+    // Feather barbs (cream/white, fanning from shaft)
+    g.fillStyle(0xffeedd);
+    g.fillTriangle(36, 3, 38, 3, 36, 8);
+    g.fillTriangle(34, 5, 36, 4, 36, 9);
+    g.fillTriangle(38, 5, 36, 4, 36, 9);
+    g.fillStyle(0xffffee);
+    g.fillTriangle(33, 7, 36, 6, 36, 11);
+    // Inkwell (left hand, larger)
     g.fillStyle(0x111111);
-    g.fillRect(4, 18, 5, 6);
+    g.fillRect(4, 26, 8, 10);
+    // Inkwell rim
     g.fillStyle(0x222233);
-    g.fillRect(3, 17, 7, 2);
-    // Ink level
+    g.fillRect(3, 24, 10, 3);
+    // Ink level visible inside
     g.fillStyle(0x1a1a4a);
-    g.fillRect(5, 20, 3, 3);
-    g.generateTexture('enemy-critic', 32, 32);
+    g.fillRect(5, 29, 6, 5);
+    // Ink drips down the side
+    g.fillStyle(0x1a1a4a);
+    g.fillRect(10, 30, 2, 3);
+    g.fillRect(11, 33, 2, 2);
+    g.fillRect(4, 32, 2, 3);
+    g.generateTexture('enemy-critic', 48, 48);
     g.destroy();
   }
 
@@ -798,180 +931,220 @@ export class PreloadScene extends Phaser.Scene {
     const g = this.add.graphics();
     // Body — bright tropical green
     g.fillStyle(0x22cc55);
-    g.fillCircle(16, 14, 8);
+    g.fillCircle(22, 20, 12);
     // Belly — lighter
     g.fillStyle(0x44ee77);
-    g.fillCircle(16, 16, 5);
+    g.fillCircle(22, 23, 8);
     // Head — slightly brighter
     g.fillStyle(0x33dd66);
-    g.fillCircle(16, 8, 6);
-    // Beak — hooked orange/yellow
-    g.fillStyle(0xf5a623);
-    g.fillTriangle(22, 7, 28, 9, 22, 11);
-    // Beak hook
-    g.fillStyle(0xe09010);
-    g.fillTriangle(26, 9, 28, 9, 26, 12);
-    // Eye — white with black pupil
+    g.fillCircle(22, 10, 9);
+    // Head crest — 3+ colored feather tufts
+    g.fillStyle(0xee3333);
+    g.fillTriangle(14, 5, 17, -2, 20, 5);
+    g.fillStyle(0x3388ff);
+    g.fillTriangle(18, 4, 21, -3, 24, 4);
+    g.fillStyle(0xffcc00);
+    g.fillTriangle(22, 5, 25, -1, 28, 5);
+    // Eye — larger, white with black pupil and eye ring
+    g.fillStyle(0xffffcc);
+    g.fillCircle(27, 9, 4);
     g.fillStyle(0xffffff);
-    g.fillCircle(19, 7, 2.5);
+    g.fillCircle(27, 9, 3);
     g.fillStyle(0x000000);
-    g.fillCircle(19, 7, 1);
-    // Head crest — red/blue feathers
-    g.fillStyle(0xee3333);
-    g.fillTriangle(12, 4, 14, 0, 16, 4);
-    g.fillStyle(0x3388ff);
-    g.fillTriangle(14, 3, 16, -1, 18, 3);
-    // Wing — darker green
-    g.fillStyle(0x119944);
-    g.fillRect(8, 12, 6, 8);
-    g.fillStyle(0x0085FF); // Bluesky blue accent
-    g.fillRect(8, 18, 6, 2);
-    // Tail feathers — fanned out
-    g.fillStyle(0x22cc55);
-    g.fillRect(10, 22, 3, 6);
-    g.fillRect(14, 23, 3, 5);
-    g.fillRect(18, 22, 3, 6);
-    g.fillStyle(0xee3333);
-    g.fillRect(11, 26, 2, 3);
-    g.fillStyle(0x3388ff);
-    g.fillRect(15, 26, 2, 3);
+    g.fillCircle(28, 9, 1.5);
+    // Beak — hooked orange/yellow, larger
     g.fillStyle(0xf5a623);
-    g.fillRect(19, 26, 2, 3);
-    // Feet
+    g.fillTriangle(31, 8, 40, 12, 31, 16);
+    // Beak hook tip
+    g.fillStyle(0xe09010);
+    g.fillTriangle(38, 12, 40, 12, 37, 17);
+    // Wing feathers — layered, 3 colors
+    g.fillStyle(0x119944);
+    g.fillRect(8, 16, 10, 12);
+    g.fillStyle(0x0085FF);
+    g.fillRect(8, 24, 10, 4);
+    g.fillStyle(0xee3333);
+    g.fillRect(8, 28, 10, 2);
+    // Tail fan — 5+ feathers, 3 colors
+    g.fillStyle(0x22cc55);
+    g.fillRect(10, 32, 3, 8);
+    g.fillRect(14, 33, 3, 7);
+    g.fillRect(18, 32, 3, 8);
+    g.fillRect(22, 33, 3, 7);
+    g.fillRect(26, 32, 3, 8);
+    g.fillStyle(0xee3333);
+    g.fillRect(11, 37, 2, 4);
+    g.fillRect(23, 37, 2, 4);
+    g.fillStyle(0x3388ff);
+    g.fillRect(15, 37, 2, 4);
+    g.fillRect(27, 37, 2, 4);
+    g.fillStyle(0xf5a623);
+    g.fillRect(19, 37, 2, 4);
+    // Perch bar
+    g.fillStyle(0x666666);
+    g.fillRect(14, 30, 18, 2);
+    // Talons — grey, 3 toes each foot
     g.fillStyle(0x555555);
-    g.fillRect(13, 22, 2, 3);
-    g.fillRect(17, 22, 2, 3);
-    // Speech bubble (echo chamber!) — small "..." bubble
-    g.fillStyle(0xffffff, 0.6);
-    g.fillCircle(26, 2, 4);
-    g.fillStyle(0x888888, 0.5);
-    g.fillRect(24, 1, 1, 1);
-    g.fillRect(26, 1, 1, 1);
-    g.fillRect(28, 1, 1, 1);
-    g.generateTexture('enemy-parrot', 32, 32);
+    g.fillRect(18, 30, 2, 3);
+    g.fillRect(20, 31, 2, 2);
+    g.fillRect(16, 31, 2, 2);
+    g.fillRect(26, 30, 2, 3);
+    g.fillRect(28, 31, 2, 2);
+    g.fillRect(24, 31, 2, 2);
+    // Speech bubble with "..." — top-right
+    g.fillStyle(0xffffff, 0.8);
+    g.fillCircle(40, 3, 6);
+    g.fillStyle(0x888888, 0.6);
+    g.fillRect(37, 2, 2, 2);
+    g.fillRect(40, 2, 2, 2);
+    g.fillRect(43, 2, 2, 2);
+    g.generateTexture('enemy-parrot', 48, 48);
     g.destroy();
   }
 
   private generatePaperFloodSprite(): void {
     const g = this.add.graphics();
-    // Printer/machine body
+    // Machine body (larger)
     g.fillStyle(0x444444);
-    g.fillRect(4, 8, 24, 18);
-    // Top panel
+    g.fillRect(6, 12, 36, 28);
+    // Panel lines (horizontal lighter lines every 8px)
+    g.fillStyle(0x505050);
+    g.fillRect(6, 20, 36, 1);
+    g.fillRect(6, 28, 36, 1);
+    g.fillRect(6, 36, 36, 1);
+    // Top panel (distinct color)
     g.fillStyle(0x555555);
-    g.fillRect(4, 8, 24, 4);
-    // Red accent stripe
+    g.fillRect(6, 12, 36, 6);
+    // Red accent stripe (wider)
     g.fillStyle(0xb31b1b);
-    g.fillRect(4, 12, 24, 2);
-    // Paper slot
+    g.fillRect(6, 18, 36, 3);
+    // Paper slot at top
     g.fillStyle(0x222222);
-    g.fillRect(8, 6, 16, 3);
-    // Papers spewing from slot
+    g.fillRect(10, 8, 28, 5);
+    // Papers spewing from top slot (3-4 papers with text lines)
     g.fillStyle(0xffffff);
-    g.fillRect(10, 2, 5, 6);
-    g.fillRect(16, 0, 5, 5);
-    g.fillRect(22, 3, 4, 4);
-    // Text on papers
-    g.fillStyle(0xcccccc);
-    g.fillRect(11, 3, 3, 1);
-    g.fillRect(17, 1, 3, 1);
-    // Warning light (top right)
+    g.fillRect(12, 1, 8, 10);
+    g.fillRect(21, -2, 8, 8);
+    g.fillRect(30, 2, 7, 8);
+    g.fillRect(8, 3, 6, 7);
+    // Text lines on papers
+    g.fillStyle(0xbbbbbb);
+    g.fillRect(13, 3, 5, 1);
+    g.fillRect(13, 5, 4, 1);
+    g.fillRect(22, 0, 5, 1);
+    g.fillRect(22, 2, 6, 1);
+    g.fillRect(31, 4, 4, 1);
+    g.fillRect(31, 6, 5, 1);
+    g.fillRect(9, 5, 4, 1);
+    // Warning light at top (larger with yellow glow ring)
+    g.fillStyle(0xffff00, 0.3);
+    g.fillCircle(38, 8, 5);
     g.fillStyle(0xff0000, 0.8);
-    g.fillCircle(25, 6, 2);
-    // Feed tray (bottom)
+    g.fillCircle(38, 8, 3);
+    // Paper tray at bottom (darker rect with white paper stack)
     g.fillStyle(0x333333);
-    g.fillRect(6, 26, 20, 4);
-    g.fillStyle(0xffffff, 0.5);
-    g.fillRect(8, 27, 16, 2);
-    g.generateTexture('enemy-paperFlood', 32, 32);
+    g.fillRect(8, 40, 32, 6);
+    g.fillStyle(0xffffff, 0.6);
+    g.fillRect(10, 41, 28, 4);
+    g.generateTexture('enemy-paperFlood', 48, 48);
     g.destroy();
   }
 
   private generateCloudflareWallSprite(): void {
     const g = this.add.graphics();
-    // Hexagonal shield shape
+    // Hexagonal shield shape (sharper, larger)
     g.fillStyle(0xf48120);
-    // Approximate hexagon
-    g.fillRect(4, 6, 24, 20);
-    g.fillTriangle(4, 6, 16, 0, 28, 6);
-    g.fillTriangle(4, 26, 16, 32, 28, 26);
-    // Inner shield
+    g.fillRect(6, 8, 36, 32);
+    g.fillTriangle(6, 8, 24, 0, 42, 8);
+    g.fillTriangle(6, 40, 24, 48, 42, 40);
+    // Inner shield area (gradient effect — slightly different orange)
     g.fillStyle(0xf09000, 0.5);
-    g.fillRect(8, 8, 16, 16);
-    // Cloud icon
+    g.fillRect(10, 12, 28, 24);
+    // Second orange tone for outer vs inner
+    g.fillStyle(0xffa030, 0.3);
+    g.fillRect(12, 14, 24, 20);
+    // Cloud icon — proper 3 overlapping circles + base rect
     g.fillStyle(0xffffff, 0.8);
-    g.fillCircle(13, 14, 4);
-    g.fillCircle(19, 14, 4);
-    g.fillCircle(16, 11, 4);
-    g.fillRect(10, 14, 12, 4);
-    // Lock icon below cloud
+    g.fillCircle(18, 20, 6);
+    g.fillCircle(30, 20, 6);
+    g.fillCircle(24, 15, 6);
+    g.fillRect(14, 20, 20, 6);
+    // Lock detail (larger, visible keyhole)
     g.fillStyle(0xffffff);
-    g.fillRect(14, 20, 4, 4);
+    g.fillRect(20, 30, 8, 7);
+    // Keyhole
     g.fillStyle(0xf48120);
-    g.fillRect(15, 22, 2, 1);
-    // Lock shackle
-    g.lineStyle(1, 0xffffff);
-    g.strokeCircle(16, 19, 2);
-    g.generateTexture('enemy-cloudflareWall', 32, 32);
+    g.fillCircle(24, 33, 2);
+    g.fillRect(23, 33, 2, 3);
+    // Lock shackle (thicker)
+    g.lineStyle(2, 0xffffff);
+    g.strokeCircle(24, 28, 4);
+    g.generateTexture('enemy-cloudflareWall', 48, 48);
     g.destroy();
   }
 
   private generateMacIISprite(): void {
     const g = this.add.graphics();
-    // Boxy beige Macintosh II body
+    // Boxy beige Macintosh II body (larger)
     g.fillStyle(0xD2C6A5);
-    g.fillRect(2, 2, 28, 20);
+    g.fillRect(3, 3, 42, 30);
     // Lighter top edge
     g.fillStyle(0xddd4b8);
-    g.fillRect(2, 2, 28, 2);
+    g.fillRect(3, 3, 42, 3);
     // Darker bottom edge
     g.fillStyle(0xbfb495);
-    g.fillRect(2, 20, 28, 2);
-    // Small dark screen
+    g.fillRect(3, 31, 42, 2);
+    // Screen area (larger)
     g.fillStyle(0x222222);
-    g.fillRect(4, 4, 14, 12);
+    g.fillRect(6, 6, 21, 18);
     // Screen bezel inner
     g.fillStyle(0x1a1a1a);
-    g.fillRect(5, 5, 12, 10);
-    // Sad Mac icon on screen (simple frowny face)
+    g.fillRect(7, 7, 19, 16);
+    // Sad Mac face (larger white rect for face area)
     g.fillStyle(0xffffff);
-    g.fillRect(7, 6, 8, 8);
+    g.fillRect(10, 8, 12, 12);
     g.fillStyle(0x222222);
-    // Eyes
-    g.fillRect(8, 8, 2, 2);
-    g.fillRect(12, 8, 2, 2);
-    // Frown
-    g.fillRect(9, 12, 4, 1);
-    g.fillRect(8, 11, 1, 1);
-    g.fillRect(13, 11, 1, 1);
-    // Rainbow Apple stripe on the side (6 color bands, 1px each)
-    g.fillStyle(0xff0000); g.fillRect(20, 5, 6, 1);  // red
-    g.fillStyle(0xff8800); g.fillRect(20, 6, 6, 1);  // orange
-    g.fillStyle(0xffff00); g.fillRect(20, 7, 6, 1);  // yellow
-    g.fillStyle(0x00cc00); g.fillRect(20, 8, 6, 1);  // green
-    g.fillStyle(0x0044ff); g.fillRect(20, 9, 6, 1);  // blue
-    g.fillStyle(0x8800cc); g.fillRect(20, 10, 6, 1); // purple
-    // Floppy slot
-    g.fillStyle(0xbfb495);
-    g.fillRect(20, 13, 6, 2);
-    // Keyboard grid at bottom
+    // Sad Mac X's above eyes
+    g.fillRect(11, 9, 1, 1);
+    g.fillRect(13, 9, 1, 1);
+    g.fillRect(12, 10, 1, 1);
+    g.fillRect(17, 9, 1, 1);
+    g.fillRect(19, 9, 1, 1);
+    g.fillRect(18, 10, 1, 1);
+    // Eyes (3x3)
+    g.fillRect(11, 11, 3, 3);
+    g.fillRect(17, 11, 3, 3);
+    // Frown (6px wide)
+    g.fillRect(12, 17, 6, 1);
+    g.fillRect(11, 16, 1, 1);
+    g.fillRect(18, 16, 1, 1);
+    // Rainbow Apple stripe — 6 bands each 2px high on right side
+    g.fillStyle(0xff0000); g.fillRect(30, 7, 10, 2);   // red
+    g.fillStyle(0xff8800); g.fillRect(30, 9, 10, 2);   // orange
+    g.fillStyle(0xffff00); g.fillRect(30, 11, 10, 2);  // yellow
+    g.fillStyle(0x00cc00); g.fillRect(30, 13, 10, 2);  // green
+    g.fillStyle(0x0044ff); g.fillRect(30, 15, 10, 2);  // blue
+    g.fillStyle(0x8800cc); g.fillRect(30, 17, 10, 2);  // purple
+    // Floppy slot on right side of body
+    g.fillStyle(0x333333);
+    g.fillRect(31, 22, 8, 3);
+    // Keyboard keys — grid of 2x2 rects with 1px gaps, 3 rows
     g.fillStyle(0xaaa48e);
-    g.fillRect(4, 23, 24, 4);
+    g.fillRect(6, 34, 36, 8);
     g.fillStyle(0x999384);
-    for (let row = 0; row < 2; row++) {
-      for (let col = 0; col < 8; col++) {
-        g.fillRect(5 + col * 3, 23 + row * 2, 2, 1);
+    for (let row = 0; row < 3; row++) {
+      for (let col = 0; col < 12; col++) {
+        g.fillRect(7 + col * 3, 35 + row * 3, 2, 2);
       }
     }
-    // Small pixel feet/wheels at base
+    // Pixel feet/wheels at base (larger circles)
     g.fillStyle(0x888888);
-    g.fillRect(6, 28, 3, 2);
-    g.fillRect(23, 28, 3, 2);
-    // Wheel circles
+    g.fillRect(8, 43, 5, 3);
+    g.fillRect(35, 43, 5, 3);
     g.fillStyle(0x666666);
-    g.fillCircle(7, 30, 1.5);
-    g.fillCircle(24, 30, 1.5);
-    g.generateTexture('enemy-macII', 32, 32);
+    g.fillCircle(10, 46, 2.5);
+    g.fillCircle(37, 46, 2.5);
+    g.generateTexture('enemy-macII', 48, 48);
     g.destroy();
   }
 
@@ -988,339 +1161,342 @@ export class PreloadScene extends Phaser.Scene {
 
   private generateBossAlgorithmVortex(): void {
     const g = this.add.graphics();
-    const cx = 24, cy = 24;
+    const cx = 36, cy = 36;
     // Dome head — Twitter blue
     g.fillStyle(0x1DA1F2);
-    g.fillCircle(cx, cy - 6, 14);
+    g.fillCircle(cx, cy - 9, 21);
     // Head highlight
     g.fillStyle(0x4db8f7, 0.4);
-    g.fillCircle(cx - 4, cy - 10, 6);
+    g.fillCircle(cx - 6, cy - 15, 9);
     // 8 tentacles curving out
     g.fillStyle(0x1DA1F2);
     const tentOffsets = [
-      { x: -16, y: 8 }, { x: -12, y: 14 }, { x: -6, y: 18 }, { x: 0, y: 20 },
-      { x: 6, y: 18 }, { x: 12, y: 14 }, { x: 16, y: 8 }, { x: -2, y: 16 },
+      { x: -24, y: 12 }, { x: -18, y: 21 }, { x: -9, y: 27 }, { x: 0, y: 30 },
+      { x: 9, y: 27 }, { x: 18, y: 21 }, { x: 24, y: 12 }, { x: -3, y: 24 },
     ];
     tentOffsets.forEach((t, i) => {
       const bx = cx + t.x;
       const by = cy + t.y;
-      g.fillRect(bx - 1, by - 2, 3, 6);
-      g.fillRect(bx + (i % 2 === 0 ? 1 : -1), by + 3, 3, 5);
-      g.fillRect(bx + (i % 2 === 0 ? 2 : -2), by + 7, 3, 4);
+      g.fillRect(bx - 2, by - 3, 5, 9);
+      g.fillRect(bx + (i % 2 === 0 ? 2 : -2), by + 5, 5, 8);
+      g.fillRect(bx + (i % 2 === 0 ? 3 : -3), by + 11, 5, 6);
+      // Extra segment for more detail
+      g.fillRect(bx + (i % 2 === 0 ? 4 : -4), by + 16, 4, 5);
       // Sucker dots
       g.fillStyle(0x0d8ddb);
-      g.fillRect(bx, by + 1, 1, 1);
-      g.fillRect(bx, by + 5, 1, 1);
+      g.fillRect(bx, by + 2, 2, 2);
+      g.fillRect(bx, by + 8, 2, 2);
+      g.fillRect(bx, by + 14, 2, 2);
       g.fillStyle(0x1DA1F2);
     });
     // Large white eyes with red pupils
     g.fillStyle(0xffffff);
-    g.fillCircle(cx - 6, cy - 6, 5);
-    g.fillCircle(cx + 6, cy - 6, 5);
+    g.fillCircle(cx - 9, cy - 9, 8);
+    g.fillCircle(cx + 9, cy - 9, 8);
     g.fillStyle(0xff3333);
-    g.fillCircle(cx - 5, cy - 6, 2);
-    g.fillCircle(cx + 7, cy - 6, 2);
+    g.fillCircle(cx - 8, cy - 9, 3);
+    g.fillCircle(cx + 11, cy - 9, 3);
     // Small X logo on forehead
     g.fillStyle(0xffffff);
-    g.fillRect(cx - 2, cy - 16, 1, 3);
-    g.fillRect(cx + 1, cy - 16, 1, 3);
-    g.fillRect(cx - 1, cy - 15, 3, 1);
-    g.generateTexture('boss-algorithmVortex', 48, 48);
+    g.fillRect(cx - 3, cy - 24, 2, 5);
+    g.fillRect(cx + 2, cy - 24, 2, 5);
+    g.fillRect(cx - 2, cy - 23, 5, 2);
+    g.generateTexture('boss-algorithmVortex', 72, 72);
     g.destroy();
   }
 
   private generateBossEngagementKing(): void {
     const g = this.add.graphics();
-    const cx = 28, cy = 28;
+    const cx = 42, cy = 42;
     // LinkedIn-blue body
     g.fillStyle(0x0A66C2);
-    g.fillCircle(cx, cy - 4, 16);
+    g.fillCircle(cx, cy - 6, 24);
     // Body highlight
     g.fillStyle(0x0d7ade, 0.3);
-    g.fillCircle(cx - 5, cy - 8, 8);
+    g.fillCircle(cx - 8, cy - 12, 12);
     // Suit jacket on body
     g.fillStyle(0x1a2a40);
-    g.fillRect(cx - 14, cy + 4, 28, 16);
-    g.fillRect(cx - 12, cy, 24, 6);
+    g.fillRect(cx - 21, cy + 6, 42, 24);
+    g.fillRect(cx - 18, cy, 36, 9);
     // Suit lapels
     g.fillStyle(0x203450);
-    g.fillRect(cx - 4, cy + 2, 2, 8);
-    g.fillRect(cx + 2, cy + 2, 2, 8);
+    g.fillRect(cx - 6, cy + 3, 3, 12);
+    g.fillRect(cx + 3, cy + 3, 3, 12);
     // White shirt strip
     g.fillStyle(0xeeeeee);
-    g.fillRect(cx - 1, cy + 3, 2, 10);
+    g.fillRect(cx - 2, cy + 5, 3, 15);
     // Gold crown on head
     g.fillStyle(0xffd700);
-    g.fillRect(cx - 8, cy - 22, 16, 4);
-    g.fillTriangle(cx - 8, cy - 22, cx - 6, cy - 28, cx - 4, cy - 22);
-    g.fillTriangle(cx - 2, cy - 22, cx, cy - 26, cx + 2, cy - 22);
-    g.fillTriangle(cx + 4, cy - 22, cx + 6, cy - 28, cx + 8, cy - 22);
+    g.fillRect(cx - 12, cy - 33, 24, 6);
+    g.fillTriangle(cx - 12, cy - 33, cx - 9, cy - 42, cx - 6, cy - 33);
+    g.fillTriangle(cx - 3, cy - 33, cx, cy - 39, cx + 3, cy - 33);
+    g.fillTriangle(cx + 6, cy - 33, cx + 9, cy - 42, cx + 12, cy - 33);
     // Crown jewels
     g.fillStyle(0xff3333);
-    g.fillRect(cx - 6, cy - 25, 2, 2);
+    g.fillRect(cx - 9, cy - 38, 3, 3);
     g.fillStyle(0x3388ff);
-    g.fillRect(cx - 1, cy - 24, 2, 2);
+    g.fillRect(cx - 2, cy - 36, 3, 3);
     g.fillStyle(0xff3333);
-    g.fillRect(cx + 5, cy - 25, 2, 2);
+    g.fillRect(cx + 8, cy - 38, 3, 3);
     // 4 eyes (mutation starting)
     g.fillStyle(0xffffff);
-    g.fillCircle(cx - 7, cy - 6, 3);
-    g.fillCircle(cx - 2, cy - 4, 3);
-    g.fillCircle(cx + 3, cy - 6, 3);
-    g.fillCircle(cx + 8, cy - 4, 3);
+    g.fillCircle(cx - 11, cy - 9, 5);
+    g.fillCircle(cx - 3, cy - 6, 5);
+    g.fillCircle(cx + 5, cy - 9, 5);
+    g.fillCircle(cx + 12, cy - 6, 5);
     g.fillStyle(0x000000);
-    g.fillCircle(cx - 7, cy - 6, 1.5);
-    g.fillCircle(cx - 2, cy - 4, 1.5);
-    g.fillCircle(cx + 3, cy - 6, 1.5);
-    g.fillCircle(cx + 8, cy - 4, 1.5);
+    g.fillCircle(cx - 11, cy - 9, 2);
+    g.fillCircle(cx - 3, cy - 6, 2);
+    g.fillCircle(cx + 5, cy - 9, 2);
+    g.fillCircle(cx + 12, cy - 6, 2);
     // Tentacles holding tiny icons
     g.fillStyle(0x0A66C2);
     for (let i = 0; i < 4; i++) {
-      const tx = cx - 18 + i * 12;
-      const ty = cy + 18 + (i % 2) * 4;
-      g.fillRect(tx, ty, 3, 8);
-      g.fillRect(tx + (i % 2 === 0 ? 1 : -1), ty + 6, 3, 6);
+      const tx = cx - 27 + i * 18;
+      const ty = cy + 27 + (i % 2) * 6;
+      g.fillRect(tx, ty, 5, 12);
+      g.fillRect(tx + (i % 2 === 0 ? 2 : -2), ty + 9, 5, 9);
     }
     // Tiny phone icon in one tentacle
     g.fillStyle(0x333333);
-    g.fillRect(cx - 17, cy + 26, 3, 4);
-    g.generateTexture('boss-engagementKing', 56, 56);
+    g.fillRect(cx - 26, cy + 39, 5, 6);
+    g.generateTexture('boss-engagementKing', 84, 84);
     g.destroy();
   }
 
   private generateBossForkSwarm(): void {
     const g = this.add.graphics();
-    const cx = 28, cy = 28;
+    const cx = 42, cy = 42;
     // 3 octopus-shapes fused into one body — partially merged heads
     g.fillStyle(0x0085FF);
     // Head 1 (left)
-    g.fillCircle(cx - 10, cy - 8, 10);
+    g.fillCircle(cx - 15, cy - 12, 15);
     // Head 2 (center, overlapping)
-    g.fillCircle(cx, cy - 6, 11);
+    g.fillCircle(cx, cy - 9, 17);
     // Head 3 (right)
-    g.fillCircle(cx + 10, cy - 8, 10);
+    g.fillCircle(cx + 15, cy - 12, 15);
     // Merged body mass
-    g.fillRect(cx - 16, cy - 2, 32, 14);
+    g.fillRect(cx - 24, cy - 3, 48, 21);
     // Shared tentacles
     g.fillStyle(0x0085FF);
     for (let i = 0; i < 8; i++) {
-      const tx = cx - 14 + i * 4;
-      const ty = cy + 12;
-      g.fillRect(tx, ty, 3, 5);
-      g.fillRect(tx + (i % 2 === 0 ? 1 : -1), ty + 4, 3, 5);
-      g.fillRect(tx + (i % 2 === 0 ? 2 : -2), ty + 8, 3, 4);
+      const tx = cx - 21 + i * 6;
+      const ty = cy + 18;
+      g.fillRect(tx, ty, 5, 8);
+      g.fillRect(tx + (i % 2 === 0 ? 2 : -2), ty + 6, 5, 8);
+      g.fillRect(tx + (i % 2 === 0 ? 3 : -3), ty + 12, 5, 6);
     }
     // Multiple eyes scattered across merged heads
     g.fillStyle(0xffffff);
     const eyePositions = [
-      { x: cx - 12, y: cy - 10 }, { x: cx - 6, y: cy - 12 },
-      { x: cx - 2, y: cy - 8 }, { x: cx + 3, y: cy - 10 },
-      { x: cx + 8, y: cy - 12 }, { x: cx + 13, y: cy - 9 },
-      { x: cx, y: cy - 4 }, { x: cx + 6, y: cy - 3 },
+      { x: cx - 18, y: cy - 15 }, { x: cx - 9, y: cy - 18 },
+      { x: cx - 3, y: cy - 12 }, { x: cx + 5, y: cy - 15 },
+      { x: cx + 12, y: cy - 18 }, { x: cx + 20, y: cy - 14 },
+      { x: cx, y: cy - 6 }, { x: cx + 9, y: cy - 5 },
     ];
     eyePositions.forEach(e => {
       g.fillStyle(0xffffff);
-      g.fillCircle(e.x, e.y, 2.5);
+      g.fillCircle(e.x, e.y, 4);
       g.fillStyle(0x000000);
-      g.fillCircle(e.x + 0.5, e.y, 1);
+      g.fillCircle(e.x + 1, e.y, 2);
     });
     // Merge seam lines (darker blue where heads join)
     g.fillStyle(0x0066cc, 0.5);
-    g.fillRect(cx - 5, cy - 12, 2, 10);
-    g.fillRect(cx + 4, cy - 12, 2, 10);
-    g.generateTexture('boss-forkSwarm', 56, 56);
+    g.fillRect(cx - 8, cy - 18, 3, 15);
+    g.fillRect(cx + 6, cy - 18, 3, 15);
+    g.generateTexture('boss-forkSwarm', 84, 84);
     g.destroy();
   }
 
   private generateBossPaperMill(): void {
     const g = this.add.graphics();
-    const cx = 32, cy = 32;
+    const cx = 48, cy = 48;
     // Metal grinder body
     g.fillStyle(0x444444);
-    g.fillRect(cx - 20, cy - 16, 40, 32);
+    g.fillRect(cx - 30, cy - 24, 60, 48);
     // Body bevel top
     g.fillStyle(0x555555);
-    g.fillRect(cx - 20, cy - 16, 40, 3);
+    g.fillRect(cx - 30, cy - 24, 60, 5);
     // Body bevel bottom
     g.fillStyle(0x333333);
-    g.fillRect(cx - 20, cy + 13, 40, 3);
+    g.fillRect(cx - 30, cy + 20, 60, 5);
     // Gears visible on sides
     g.fillStyle(0x666666);
-    g.fillCircle(cx - 14, cy, 6);
-    g.fillCircle(cx + 14, cy, 6);
+    g.fillCircle(cx - 21, cy, 9);
+    g.fillCircle(cx + 21, cy, 9);
     g.fillStyle(0x555555);
-    g.fillCircle(cx - 14, cy, 3);
-    g.fillCircle(cx + 14, cy, 3);
+    g.fillCircle(cx - 21, cy, 5);
+    g.fillCircle(cx + 21, cy, 5);
     // Gear teeth
     for (let i = 0; i < 6; i++) {
       const angle = (i / 6) * Math.PI * 2;
       g.fillStyle(0x666666);
-      g.fillRect(cx - 14 + Math.cos(angle) * 5, cy + Math.sin(angle) * 5, 2, 2);
-      g.fillRect(cx + 14 + Math.cos(angle) * 5, cy + Math.sin(angle) * 5, 2, 2);
+      g.fillRect(cx - 21 + Math.cos(angle) * 8, cy + Math.sin(angle) * 8, 3, 3);
+      g.fillRect(cx + 21 + Math.cos(angle) * 8, cy + Math.sin(angle) * 8, 3, 3);
     }
     // Red LED eyes
     g.fillStyle(0xB31B1B);
-    g.fillCircle(cx - 6, cy - 8, 4);
-    g.fillCircle(cx + 6, cy - 8, 4);
+    g.fillCircle(cx - 9, cy - 12, 6);
+    g.fillCircle(cx + 9, cy - 12, 6);
     // Eye glow
     g.fillStyle(0xff3333, 0.4);
-    g.fillCircle(cx - 6, cy - 8, 6);
-    g.fillCircle(cx + 6, cy - 8, 6);
+    g.fillCircle(cx - 9, cy - 12, 9);
+    g.fillCircle(cx + 9, cy - 12, 9);
     // Eye pupils
     g.fillStyle(0xff0000);
-    g.fillCircle(cx - 6, cy - 8, 2);
-    g.fillCircle(cx + 6, cy - 8, 2);
+    g.fillCircle(cx - 9, cy - 12, 3);
+    g.fillCircle(cx + 9, cy - 12, 3);
     // Papers in maw (being consumed)
     g.fillStyle(0xffffff);
-    g.fillRect(cx - 8, cy - 2, 5, 7);
-    g.fillRect(cx - 2, cy - 4, 5, 8);
-    g.fillRect(cx + 4, cy - 1, 5, 6);
+    g.fillRect(cx - 12, cy - 3, 8, 11);
+    g.fillRect(cx - 3, cy - 6, 8, 12);
+    g.fillRect(cx + 6, cy - 2, 8, 9);
     // Text lines on papers
     g.fillStyle(0xcccccc);
-    g.fillRect(cx - 7, cy, 3, 1);
-    g.fillRect(cx - 1, cy - 2, 3, 1);
-    g.fillRect(cx + 5, cy + 1, 3, 1);
+    g.fillRect(cx - 11, cy, 5, 2);
+    g.fillRect(cx - 2, cy - 3, 5, 2);
+    g.fillRect(cx + 8, cy + 2, 5, 2);
     // Living tentacles from slots
     g.fillStyle(0x555555);
-    const slots = [-16, -8, 0, 8, 16];
+    const slots = [-24, -12, 0, 12, 24];
     slots.forEach((sx, i) => {
       // Slot
       g.fillStyle(0x222222);
-      g.fillRect(cx + sx - 2, cy + 16, 4, 2);
+      g.fillRect(cx + sx - 3, cy + 24, 6, 3);
       // Tentacle emerging
       g.fillStyle(0x666666);
-      g.fillRect(cx + sx - 1, cy + 17, 2, 6);
-      g.fillRect(cx + sx + (i % 2 === 0 ? 0 : -1), cy + 22, 2, 5);
-      g.fillRect(cx + sx + (i % 2 === 0 ? 1 : -2), cy + 26, 2, 4);
+      g.fillRect(cx + sx - 2, cy + 26, 3, 9);
+      g.fillRect(cx + sx + (i % 2 === 0 ? 0 : -2), cy + 33, 3, 8);
+      g.fillRect(cx + sx + (i % 2 === 0 ? 2 : -3), cy + 39, 3, 6);
     });
-    g.generateTexture('boss-paperMill', 64, 64);
+    g.generateTexture('boss-paperMill', 96, 96);
     g.destroy();
   }
 
   private generateBossTheVoid(): void {
     const g = this.add.graphics();
-    const cx = 36, cy = 36;
+    const cx = 54, cy = 54;
     // Dark amorphous mass — purple-dark coloring
     g.fillStyle(0x2C3E50);
-    g.fillCircle(cx, cy, 28);
-    g.fillCircle(cx - 8, cy + 5, 20);
-    g.fillCircle(cx + 10, cy - 5, 22);
-    g.fillCircle(cx - 5, cy - 10, 18);
+    g.fillCircle(cx, cy, 42);
+    g.fillCircle(cx - 12, cy + 8, 30);
+    g.fillCircle(cx + 15, cy - 8, 33);
+    g.fillCircle(cx - 8, cy - 15, 27);
     // Darker inner areas
     g.fillStyle(0x1a2a3a, 0.6);
-    g.fillCircle(cx + 5, cy + 8, 15);
-    g.fillCircle(cx - 10, cy - 5, 12);
+    g.fillCircle(cx + 8, cy + 12, 23);
+    g.fillCircle(cx - 15, cy - 8, 18);
     // Wispy shadow tendrils
     g.fillStyle(0x1a2535);
     for (let i = 0; i < 10; i++) {
       const angle = (i / 10) * Math.PI * 2;
-      const r = 24 + (i % 3) * 4;
+      const r = 36 + (i % 3) * 6;
       const tx = cx + Math.cos(angle) * r;
       const ty = cy + Math.sin(angle) * r;
-      g.fillRect(tx - 1, ty - 1, 3, 8);
-      g.fillRect(tx + (i % 2 === 0 ? 1 : -2), ty + 6, 2, 6);
+      g.fillRect(tx - 2, ty - 2, 5, 12);
+      g.fillRect(tx + (i % 2 === 0 ? 2 : -3), ty + 9, 3, 9);
     }
     // Dozens of eyes (various sizes, white and red)
     const voidEyes = [
-      { x: -12, y: -14, r: 3, red: false }, { x: 4, y: -18, r: 2, red: true },
-      { x: 14, y: -10, r: 3, red: false }, { x: -18, y: -4, r: 2, red: false },
-      { x: -6, y: -6, r: 4, red: false }, { x: 8, y: -2, r: 3, red: true },
-      { x: 18, y: 4, r: 2, red: false }, { x: -14, y: 8, r: 3, red: true },
-      { x: -2, y: 6, r: 2, red: false }, { x: 10, y: 10, r: 3, red: false },
-      { x: -8, y: 14, r: 2, red: true }, { x: 6, y: 16, r: 2, red: false },
-      { x: -16, y: -10, r: 1.5, red: false }, { x: 20, y: -4, r: 1.5, red: true },
-      { x: 0, y: -12, r: 2.5, red: false }, { x: -4, y: 18, r: 1.5, red: false },
+      { x: -18, y: -21, r: 5, red: false }, { x: 6, y: -27, r: 3, red: true },
+      { x: 21, y: -15, r: 5, red: false }, { x: -27, y: -6, r: 3, red: false },
+      { x: -9, y: -9, r: 6, red: false }, { x: 12, y: -3, r: 5, red: true },
+      { x: 27, y: 6, r: 3, red: false }, { x: -21, y: 12, r: 5, red: true },
+      { x: -3, y: 9, r: 3, red: false }, { x: 15, y: 15, r: 5, red: false },
+      { x: -12, y: 21, r: 3, red: true }, { x: 9, y: 24, r: 3, red: false },
+      { x: -24, y: -15, r: 2, red: false }, { x: 30, y: -6, r: 2, red: true },
+      { x: 0, y: -18, r: 4, red: false }, { x: -6, y: 27, r: 2, red: false },
     ];
     voidEyes.forEach(e => {
       g.fillStyle(e.red ? 0xff3333 : 0xffffff);
       g.fillCircle(cx + e.x, cy + e.y, e.r);
       g.fillStyle(0x000000);
-      g.fillCircle(cx + e.x + 0.5, cy + e.y, e.r * 0.5);
+      g.fillCircle(cx + e.x + 1, cy + e.y, e.r * 0.5);
     });
     // Visible mouths (dark slashes with teeth)
     g.fillStyle(0x111111);
-    g.fillRect(cx - 8, cy + 2, 8, 3);
+    g.fillRect(cx - 12, cy + 3, 12, 5);
     g.fillStyle(0xffffff);
-    g.fillRect(cx - 7, cy + 2, 1, 2);
-    g.fillRect(cx - 5, cy + 2, 1, 2);
-    g.fillRect(cx - 3, cy + 2, 1, 2);
+    g.fillRect(cx - 11, cy + 3, 2, 3);
+    g.fillRect(cx - 8, cy + 3, 2, 3);
+    g.fillRect(cx - 5, cy + 3, 2, 3);
     // Second mouth
     g.fillStyle(0x111111);
-    g.fillRect(cx + 6, cy - 4, 6, 2);
+    g.fillRect(cx + 9, cy - 6, 9, 3);
     g.fillStyle(0xffffff);
-    g.fillRect(cx + 7, cy - 4, 1, 1);
-    g.fillRect(cx + 9, cy - 4, 1, 1);
-    g.generateTexture('boss-theVoid', 72, 72);
+    g.fillRect(cx + 11, cy - 6, 2, 2);
+    g.fillRect(cx + 14, cy - 6, 2, 2);
+    g.generateTexture('boss-theVoid', 108, 108);
     g.destroy();
   }
 
   private generateBossShoggoth(): void {
     const g = this.add.graphics();
-    const cx = 40, cy = 40;
+    const cx = 60, cy = 60;
     // Massive blob — iridescent colors, no symmetry
     // Black base mass
     g.fillStyle(0x111111);
-    g.fillCircle(cx, cy, 34);
-    g.fillCircle(cx - 10, cy + 8, 28);
-    g.fillCircle(cx + 12, cy - 4, 26);
+    g.fillCircle(cx, cy, 51);
+    g.fillCircle(cx - 15, cy + 12, 42);
+    g.fillCircle(cx + 18, cy - 6, 39);
     // Green patches
     g.fillStyle(0x1E4D2B, 0.7);
-    g.fillCircle(cx - 14, cy - 8, 16);
-    g.fillCircle(cx + 8, cy + 12, 14);
+    g.fillCircle(cx - 21, cy - 12, 24);
+    g.fillCircle(cx + 12, cy + 18, 21);
     // Purple patches
     g.fillStyle(0x6366F1, 0.5);
-    g.fillCircle(cx + 16, cy - 10, 14);
-    g.fillCircle(cx - 6, cy + 14, 12);
-    g.fillCircle(cx - 18, cy + 4, 10);
+    g.fillCircle(cx + 24, cy - 15, 21);
+    g.fillCircle(cx - 9, cy + 21, 18);
+    g.fillCircle(cx - 27, cy + 6, 15);
     // Darker blobs
     g.fillStyle(0x0a0a0a, 0.4);
-    g.fillCircle(cx + 4, cy - 12, 10);
-    g.fillCircle(cx - 12, cy + 6, 8);
+    g.fillCircle(cx + 6, cy - 18, 15);
+    g.fillCircle(cx - 18, cy + 9, 12);
     // Pseudopods everywhere (irregular extensions)
     g.fillStyle(0x1E4D2B);
-    g.fillRect(cx - 30, cy - 20, 4, 14);
-    g.fillRect(cx - 32, cy - 10, 4, 10);
-    g.fillRect(cx + 28, cy - 16, 4, 12);
-    g.fillRect(cx + 30, cy - 8, 4, 10);
+    g.fillRect(cx - 45, cy - 30, 6, 21);
+    g.fillRect(cx - 48, cy - 15, 6, 15);
+    g.fillRect(cx + 42, cy - 24, 6, 18);
+    g.fillRect(cx + 45, cy - 12, 6, 15);
     g.fillStyle(0x6366F1, 0.6);
-    g.fillRect(cx - 24, cy + 20, 4, 10);
-    g.fillRect(cx + 20, cy + 22, 4, 8);
-    g.fillRect(cx - 8, cy + 28, 4, 8);
-    g.fillRect(cx + 10, cy + 26, 4, 10);
+    g.fillRect(cx - 36, cy + 30, 6, 15);
+    g.fillRect(cx + 30, cy + 33, 6, 12);
+    g.fillRect(cx - 12, cy + 42, 6, 12);
+    g.fillRect(cx + 15, cy + 39, 6, 15);
     g.fillStyle(0x111111);
-    g.fillRect(cx - 18, cy - 24, 3, 10);
-    g.fillRect(cx + 22, cy + 14, 3, 12);
+    g.fillRect(cx - 27, cy - 36, 5, 15);
+    g.fillRect(cx + 33, cy + 21, 5, 18);
     // 15-20 random eyes scattered
     const shoggothEyes = [
-      { x: -16, y: -14 }, { x: -8, y: -18 }, { x: 2, y: -16 }, { x: 12, y: -12 },
-      { x: 20, y: -6 }, { x: -20, y: -2 }, { x: -10, y: -4 }, { x: 4, y: -6 },
-      { x: 14, y: 0 }, { x: -14, y: 6 }, { x: -4, y: 4 }, { x: 8, y: 8 },
-      { x: 18, y: 10 }, { x: -18, y: 14 }, { x: -6, y: 14 }, { x: 6, y: 16 },
-      { x: -12, y: 20 }, { x: 4, y: 22 }, { x: 16, y: 18 },
+      { x: -24, y: -21 }, { x: -12, y: -27 }, { x: 3, y: -24 }, { x: 18, y: -18 },
+      { x: 30, y: -9 }, { x: -30, y: -3 }, { x: -15, y: -6 }, { x: 6, y: -9 },
+      { x: 21, y: 0 }, { x: -21, y: 9 }, { x: -6, y: 6 }, { x: 12, y: 12 },
+      { x: 27, y: 15 }, { x: -27, y: 21 }, { x: -9, y: 21 }, { x: 9, y: 24 },
+      { x: -18, y: 30 }, { x: 6, y: 33 }, { x: 24, y: 27 },
     ];
     shoggothEyes.forEach((e, i) => {
-      const r = 1.5 + (i % 3);
+      const r = 2 + (i % 3) * 1.5;
       g.fillStyle(0xffffff);
       g.fillCircle(cx + e.x, cy + e.y, r);
       g.fillStyle(i % 4 === 0 ? 0xff3333 : 0x000000);
-      g.fillCircle(cx + e.x + 0.5, cy + e.y, r * 0.5);
+      g.fillCircle(cx + e.x + 1, cy + e.y, r * 0.5);
     });
     // Multiple toothed mouths
     const mouths = [
-      { x: -10, y: -2, w: 10 }, { x: 6, y: 6, w: 8 },
-      { x: -16, y: 10, w: 7 }, { x: 10, y: -8, w: 9 },
+      { x: -15, y: -3, w: 15 }, { x: 9, y: 9, w: 12 },
+      { x: -24, y: 15, w: 11 }, { x: 15, y: -12, w: 14 },
     ];
     mouths.forEach(m => {
       g.fillStyle(0x220000);
-      g.fillRect(cx + m.x, cy + m.y, m.w, 3);
+      g.fillRect(cx + m.x, cy + m.y, m.w, 5);
       // Teeth (white zigzag)
       g.fillStyle(0xeeeeee);
-      for (let t = 0; t < m.w; t += 2) {
-        g.fillRect(cx + m.x + t, cy + m.y, 1, 2);
-        g.fillRect(cx + m.x + t, cy + m.y + 2, 1, 1);
+      for (let t = 0; t < m.w; t += 3) {
+        g.fillRect(cx + m.x + t, cy + m.y, 2, 3);
+        g.fillRect(cx + m.x + t, cy + m.y + 3, 2, 2);
       }
     });
-    g.generateTexture('boss-shoggoth', 80, 80);
+    g.generateTexture('boss-shoggoth', 120, 120);
     g.destroy();
   }
 
@@ -1330,42 +1506,42 @@ export class PreloadScene extends Phaser.Scene {
     const g = this.add.graphics();
     // Body (orange oval)
     g.fillStyle(0xC15F3C);
-    g.fillCircle(8, 8, 6);
+    g.fillCircle(12, 12, 9);
     // Left claw
     g.fillStyle(0xd47040);
-    g.fillCircle(2, 5, 3);
+    g.fillCircle(3, 8, 5);
     g.fillStyle(0xC15F3C);
-    g.fillRect(1, 3, 2, 1);
+    g.fillRect(2, 5, 3, 2);
     // Right claw
     g.fillStyle(0xd47040);
-    g.fillCircle(14, 5, 3);
+    g.fillCircle(21, 8, 5);
     g.fillStyle(0xC15F3C);
-    g.fillRect(13, 3, 2, 1);
+    g.fillRect(20, 5, 3, 2);
     // Eyes
     g.fillStyle(0xffffff);
-    g.fillCircle(6, 6, 2);
-    g.fillCircle(10, 6, 2);
+    g.fillCircle(9, 9, 3);
+    g.fillCircle(15, 9, 3);
     g.fillStyle(0x000000);
-    g.fillCircle(6, 6, 1);
-    g.fillCircle(10, 6, 1);
+    g.fillCircle(9, 9, 2);
+    g.fillCircle(15, 9, 2);
     // Legs (3 per side)
     g.fillStyle(0xC15F3C);
-    g.fillRect(1, 10, 3, 2);
-    g.fillRect(0, 12, 3, 2);
-    g.fillRect(1, 14, 3, 2);
-    g.fillRect(12, 10, 3, 2);
-    g.fillRect(13, 12, 3, 2);
-    g.fillRect(12, 14, 3, 2);
-    g.generateTexture('clawd', 16, 16);
+    g.fillRect(2, 15, 5, 3);
+    g.fillRect(0, 18, 5, 3);
+    g.fillRect(2, 21, 5, 3);
+    g.fillRect(18, 15, 5, 3);
+    g.fillRect(20, 18, 5, 3);
+    g.fillRect(18, 21, 5, 3);
+    g.generateTexture('clawd', 24, 24);
     g.destroy();
 
     // Clawd projectile (small orange dot)
     const gp = this.add.graphics();
     gp.fillStyle(0xC15F3C);
-    gp.fillCircle(3, 3, 3);
+    gp.fillCircle(4, 4, 4);
     gp.fillStyle(0xd47040);
-    gp.fillRect(2, 1, 2, 2);
-    gp.generateTexture('clawd-projectile', 6, 6);
+    gp.fillRect(3, 2, 3, 3);
+    gp.generateTexture('clawd-projectile', 8, 8);
     gp.destroy();
   }
 
@@ -1376,31 +1552,31 @@ export class PreloadScene extends Phaser.Scene {
     // Red lobster silhouette
     g.fillStyle(0xEF4444);
     // Body (central oval)
-    g.fillRect(5, 5, 6, 8);
+    g.fillRect(8, 8, 9, 12);
     // Tail fan
-    g.fillRect(6, 13, 4, 2);
-    g.fillTriangle(5, 15, 8, 15, 4, 16);
-    g.fillTriangle(8, 15, 11, 15, 12, 16);
-    g.fillTriangle(6, 15, 10, 15, 8, 16);
+    g.fillRect(9, 20, 6, 3);
+    g.fillTriangle(8, 23, 12, 23, 6, 24);
+    g.fillTriangle(12, 23, 17, 23, 18, 24);
+    g.fillTriangle(9, 23, 15, 23, 12, 24);
     // Left claw (open pincer)
-    g.fillRect(1, 2, 3, 3);
-    g.fillRect(0, 2, 1, 1);
-    g.fillRect(0, 4, 1, 1);
-    g.fillRect(3, 4, 2, 2);
+    g.fillRect(2, 3, 5, 5);
+    g.fillRect(0, 3, 2, 2);
+    g.fillRect(0, 6, 2, 2);
+    g.fillRect(5, 6, 3, 3);
     // Right claw (open pincer)
-    g.fillRect(12, 2, 3, 3);
-    g.fillRect(15, 2, 1, 1);
-    g.fillRect(15, 4, 1, 1);
-    g.fillRect(11, 4, 2, 2);
+    g.fillRect(18, 3, 5, 5);
+    g.fillRect(23, 3, 2, 2);
+    g.fillRect(23, 6, 2, 2);
+    g.fillRect(17, 6, 3, 3);
     // Antennae
-    g.lineStyle(1, 0xEF4444);
-    g.lineBetween(6, 5, 3, 0);
-    g.lineBetween(10, 5, 13, 0);
+    g.lineStyle(2, 0xEF4444);
+    g.lineBetween(9, 8, 5, 0);
+    g.lineBetween(15, 8, 20, 0);
     // Eyes
     g.fillStyle(0x000000);
-    g.fillCircle(6, 5, 1);
-    g.fillCircle(10, 5, 1);
-    g.generateTexture('lobster', 16, 16);
+    g.fillCircle(9, 8, 2);
+    g.fillCircle(15, 8, 2);
+    g.generateTexture('lobster', 24, 24);
     g.destroy();
   }
 
@@ -1472,130 +1648,130 @@ export class PreloadScene extends Phaser.Scene {
 
   private generateLipstickMintySprite(): void {
     const g = this.add.graphics();
-    const cx = 16, cy = 20;
+    const cx = 24, cy = 30;
     // Teal squid body
     g.fillStyle(0x2ec4b6);
-    g.fillCircle(cx, cy - 6, 10);
+    g.fillCircle(cx, cy - 9, 15);
     // Body extension down
-    g.fillRect(cx - 8, cy, 16, 6);
+    g.fillRect(cx - 12, cy, 24, 9);
     // Tentacles (blocking/arms-out pose — spread wide)
     // Left tentacles (extended outward)
-    g.fillRect(cx - 14, cy - 2, 6, 3);
-    g.fillRect(cx - 16, cy - 4, 4, 3);
-    g.fillRect(cx - 12, cy + 4, 5, 3);
-    g.fillRect(cx - 14, cy + 6, 4, 3);
+    g.fillRect(cx - 21, cy - 3, 9, 5);
+    g.fillRect(cx - 24, cy - 6, 6, 5);
+    g.fillRect(cx - 18, cy + 6, 8, 5);
+    g.fillRect(cx - 21, cy + 9, 6, 5);
     // Right tentacles (extended outward)
-    g.fillRect(cx + 8, cy - 2, 6, 3);
-    g.fillRect(cx + 12, cy - 4, 4, 3);
-    g.fillRect(cx + 7, cy + 4, 5, 3);
-    g.fillRect(cx + 10, cy + 6, 4, 3);
+    g.fillRect(cx + 12, cy - 3, 9, 5);
+    g.fillRect(cx + 18, cy - 6, 6, 5);
+    g.fillRect(cx + 11, cy + 6, 8, 5);
+    g.fillRect(cx + 15, cy + 9, 6, 5);
     // Lower tentacles
-    g.fillRect(cx - 4, cy + 6, 3, 8);
-    g.fillRect(cx + 1, cy + 6, 3, 8);
-    g.fillRect(cx - 7, cy + 6, 3, 6);
-    g.fillRect(cx + 4, cy + 6, 3, 6);
+    g.fillRect(cx - 6, cy + 9, 5, 12);
+    g.fillRect(cx + 2, cy + 9, 5, 12);
+    g.fillRect(cx - 11, cy + 9, 5, 9);
+    g.fillRect(cx + 6, cy + 9, 5, 9);
     // Eyes with long eyelashes
     g.fillStyle(0xffffff);
-    g.fillCircle(cx - 4, cy - 8, 3);
-    g.fillCircle(cx + 4, cy - 8, 3);
+    g.fillCircle(cx - 6, cy - 12, 5);
+    g.fillCircle(cx + 6, cy - 12, 5);
     g.fillStyle(0x000000);
-    g.fillCircle(cx - 4, cy - 8, 1.5);
-    g.fillCircle(cx + 4, cy - 8, 1.5);
+    g.fillCircle(cx - 6, cy - 12, 2);
+    g.fillCircle(cx + 6, cy - 12, 2);
     // Long eyelashes above eyes
     g.fillStyle(0x000000);
-    g.fillRect(cx - 7, cy - 13, 1, 3);
-    g.fillRect(cx - 5, cy - 14, 1, 3);
-    g.fillRect(cx - 3, cy - 13, 1, 3);
-    g.fillRect(cx + 3, cy - 13, 1, 3);
-    g.fillRect(cx + 5, cy - 14, 1, 3);
-    g.fillRect(cx + 7, cy - 13, 1, 3);
+    g.fillRect(cx - 11, cy - 20, 2, 5);
+    g.fillRect(cx - 8, cy - 21, 2, 5);
+    g.fillRect(cx - 5, cy - 20, 2, 5);
+    g.fillRect(cx + 5, cy - 20, 2, 5);
+    g.fillRect(cx + 8, cy - 21, 2, 5);
+    g.fillRect(cx + 11, cy - 20, 2, 5);
     // Bright red lipstick lips (thick, kissing shape)
     g.fillStyle(0xff0000);
-    g.fillRect(cx - 4, cy - 2, 8, 2);
-    g.fillRect(cx - 3, cy - 3, 6, 1);
-    g.fillRect(cx - 3, cy, 6, 1);
+    g.fillRect(cx - 6, cy - 3, 12, 3);
+    g.fillRect(cx - 5, cy - 5, 9, 2);
+    g.fillRect(cx - 5, cy, 9, 2);
     // Lip highlight
     g.fillStyle(0xff4444);
-    g.fillRect(cx - 2, cy - 3, 4, 1);
-    g.generateTexture('lipstick-minty', 32, 40);
+    g.fillRect(cx - 3, cy - 5, 6, 2);
+    g.generateTexture('lipstick-minty', 48, 60);
     g.destroy();
   }
 
   private generateCreditsAshMinty(): void {
     const g = this.add.graphics();
-    // Left: Ash — human with sandy-blonde hair, smiling, ~40px tall
+    // Left: Ash — human with sandy-blonde hair, smiling, ~60px tall
     // Ash body
     g.fillStyle(0x4477aa);
-    g.fillRect(10, 20, 12, 14);
+    g.fillRect(15, 30, 18, 21);
     // Ash legs
     g.fillStyle(0x2a2a3a);
-    g.fillRect(11, 34, 4, 10);
-    g.fillRect(17, 34, 4, 10);
+    g.fillRect(17, 51, 6, 15);
+    g.fillRect(26, 51, 6, 15);
     // Ash shoes
     g.fillStyle(0x222222);
-    g.fillRect(10, 44, 5, 2);
-    g.fillRect(17, 44, 5, 2);
+    g.fillRect(15, 66, 8, 3);
+    g.fillRect(26, 66, 8, 3);
     // Ash arms
     g.fillStyle(0x4477aa);
-    g.fillRect(6, 21, 4, 10);
-    g.fillRect(22, 21, 4, 10);
+    g.fillRect(9, 32, 6, 15);
+    g.fillRect(33, 32, 6, 15);
     // Ash hands
     g.fillStyle(0xffcba4);
-    g.fillRect(6, 31, 4, 2);
-    g.fillRect(22, 31, 4, 2);
+    g.fillRect(9, 47, 6, 3);
+    g.fillRect(33, 47, 6, 3);
     // Ash head
     g.fillStyle(0xffcba4);
-    g.fillRect(10, 6, 12, 13);
+    g.fillRect(15, 9, 18, 20);
     // Sandy-blonde hair with side parting
     g.fillStyle(0xd4a84a);
-    g.fillRect(10, 3, 12, 5);
-    g.fillRect(9, 5, 3, 6);
+    g.fillRect(15, 5, 18, 8);
+    g.fillRect(14, 8, 5, 9);
     // Side parting (darker line)
     g.fillStyle(0xb8923e);
-    g.fillRect(14, 3, 1, 4);
+    g.fillRect(21, 5, 2, 6);
     // Eyes
     g.fillStyle(0x222222);
-    g.fillRect(12, 10, 2, 2);
-    g.fillRect(18, 10, 2, 2);
+    g.fillRect(18, 15, 3, 3);
+    g.fillRect(27, 15, 3, 3);
     // Smile
     g.fillStyle(0xdd9980);
-    g.fillRect(13, 14, 6, 1);
-    g.fillRect(12, 13, 1, 1);
-    g.fillRect(19, 13, 1, 1);
+    g.fillRect(20, 21, 9, 2);
+    g.fillRect(18, 20, 2, 2);
+    g.fillRect(29, 20, 2, 2);
     // Nose
     g.fillStyle(0xeebb90);
-    g.fillRect(15, 11, 2, 2);
+    g.fillRect(23, 17, 3, 3);
 
-    // Right: Minty squid with sunglasses, ~30px tall
-    const mx = 50, my = 18;
+    // Right: Minty squid with sunglasses, ~45px tall
+    const mx = 75, my = 27;
     // Minty body (teal)
     g.fillStyle(0x2ec4b6);
-    g.fillCircle(mx, my, 8);
-    g.fillRect(mx - 6, my + 4, 12, 6);
+    g.fillCircle(mx, my, 12);
+    g.fillRect(mx - 9, my + 6, 18, 9);
     // Tentacles
-    g.fillRect(mx - 5, my + 10, 3, 6);
-    g.fillRect(mx - 1, my + 10, 3, 6);
-    g.fillRect(mx + 3, my + 10, 3, 6);
-    g.fillRect(mx - 7, my + 8, 3, 5);
-    g.fillRect(mx + 5, my + 8, 3, 5);
+    g.fillRect(mx - 8, my + 15, 5, 9);
+    g.fillRect(mx - 2, my + 15, 5, 9);
+    g.fillRect(mx + 5, my + 15, 5, 9);
+    g.fillRect(mx - 11, my + 12, 5, 8);
+    g.fillRect(mx + 8, my + 12, 5, 8);
     // Sunglasses
     g.fillStyle(0x111111);
-    g.fillRect(mx - 6, my - 2, 5, 3);
-    g.fillRect(mx + 1, my - 2, 5, 3);
-    g.fillRect(mx - 1, my - 1, 2, 1);
+    g.fillRect(mx - 9, my - 3, 8, 5);
+    g.fillRect(mx + 2, my - 3, 8, 5);
+    g.fillRect(mx - 2, my - 2, 3, 2);
     // Arms
     g.fillStyle(0x888888);
-    g.fillRect(mx - 7, my - 2, 1, 3);
-    g.fillRect(mx + 6, my - 2, 1, 3);
+    g.fillRect(mx - 11, my - 3, 2, 5);
+    g.fillRect(mx + 9, my - 3, 2, 5);
     // Lens reflection
     g.fillStyle(0x333333);
-    g.fillRect(mx - 5, my - 1, 1, 1);
-    g.fillRect(mx + 2, my - 1, 1, 1);
+    g.fillRect(mx - 8, my - 2, 2, 2);
+    g.fillRect(mx + 3, my - 2, 2, 2);
     // Mouth
     g.fillStyle(0x229988);
-    g.fillRect(mx - 2, my + 3, 4, 1);
+    g.fillRect(mx - 3, my + 5, 6, 2);
 
-    g.generateTexture('credits-ash-minty', 80, 60);
+    g.generateTexture('credits-ash-minty', 120, 90);
     g.destroy();
   }
 
@@ -1626,6 +1802,7 @@ export class PreloadScene extends Phaser.Scene {
     this.generateBgSocialScientist();
     this.generateBgBarChart();
     this.generateBgPaywallLock();
+    this.generateBgCrumblingBuilding();
     // GPU rack (used across levels)
     this.generateBgGpuRack();
   }
@@ -1798,85 +1975,85 @@ export class PreloadScene extends Phaser.Scene {
     // === Legs (apart, standing pose) ===
     g.fillStyle(0x2a2a3a);
     // Left leg
-    g.fillRect(4, 26, 4, 10);
+    g.fillRect(6, 39, 6, 15);
     // Right leg
-    g.fillRect(12, 26, 4, 10);
+    g.fillRect(18, 39, 6, 15);
     // Shoes
     g.fillStyle(0x222222);
-    g.fillRect(3, 36, 5, 3);
-    g.fillRect(12, 36, 5, 3);
+    g.fillRect(5, 54, 8, 5);
+    g.fillRect(18, 54, 8, 5);
     // Shoe highlights
     g.fillStyle(0x333333);
-    g.fillRect(3, 36, 5, 1);
-    g.fillRect(12, 36, 5, 1);
+    g.fillRect(5, 54, 8, 2);
+    g.fillRect(18, 54, 8, 2);
 
     // === Body / shirt ===
     g.fillStyle(0x333344);
-    g.fillRect(5, 14, 10, 13);
+    g.fillRect(8, 21, 15, 20);
     // Shirt shadow right side
     g.fillStyle(0x2a2a3a);
-    g.fillRect(13, 15, 2, 11);
+    g.fillRect(20, 23, 3, 17);
     // Shirt highlight left
     g.fillStyle(0x3d3d50);
-    g.fillRect(5, 14, 2, 12);
+    g.fillRect(8, 21, 3, 18);
     // Collar
     g.fillStyle(0x3a3a4e);
-    g.fillRect(7, 13, 6, 2);
+    g.fillRect(11, 20, 9, 3);
 
     // === Arms ===
     // Left arm (down)
     g.fillStyle(0x333344);
-    g.fillRect(2, 15, 3, 8);
+    g.fillRect(3, 23, 5, 12);
     // Left hand
     g.fillStyle(0xffcba4);
-    g.fillRect(2, 23, 3, 2);
+    g.fillRect(3, 35, 5, 3);
     // Right arm (raised, cheering)
     g.fillStyle(0x333344);
-    g.fillRect(15, 14, 3, 3);
-    g.fillRect(16, 11, 3, 4);
-    g.fillRect(17, 8, 3, 4);
+    g.fillRect(23, 21, 5, 5);
+    g.fillRect(24, 17, 5, 6);
+    g.fillRect(26, 12, 5, 6);
     // Right hand (raised)
     g.fillStyle(0xffcba4);
-    g.fillRect(17, 6, 3, 3);
+    g.fillRect(26, 9, 5, 5);
 
     // === Head ===
     g.fillStyle(0xffcba4);
-    g.fillRect(6, 4, 8, 9);
+    g.fillRect(9, 6, 12, 14);
     // Head shadow (right side)
     g.fillStyle(0xeebb90);
-    g.fillRect(12, 5, 2, 7);
+    g.fillRect(18, 8, 3, 11);
     // Head highlight (left side)
     g.fillStyle(0xffddb8);
-    g.fillRect(6, 4, 2, 8);
+    g.fillRect(9, 6, 3, 12);
     // Eyes
     g.fillStyle(0x222222);
-    g.fillRect(7, 7, 2, 2);
-    g.fillRect(11, 7, 2, 2);
+    g.fillRect(11, 11, 3, 3);
+    g.fillRect(17, 11, 3, 3);
     // Mouth
     g.fillStyle(0xdd9980);
-    g.fillRect(8, 10, 4, 1);
+    g.fillRect(12, 15, 6, 2);
     // Nose
     g.fillStyle(0xeebb90);
-    g.fillRect(9, 8, 2, 2);
+    g.fillRect(14, 12, 3, 3);
 
     // === Red MAGA cap ===
     g.fillStyle(0xcc2222);
-    g.fillRect(5, 2, 10, 4);
-    g.fillRect(5, 1, 10, 2);
+    g.fillRect(8, 3, 15, 6);
+    g.fillRect(8, 2, 15, 3);
     // White front panel strip
     g.fillStyle(0xffffff);
-    g.fillRect(7, 2, 5, 2);
-    // Cap brim (overhangs left by 2px)
+    g.fillRect(11, 3, 8, 3);
+    // Cap brim (overhangs left by 3px)
     g.fillStyle(0xcc2222);
-    g.fillRect(3, 5, 11, 2);
+    g.fillRect(5, 8, 17, 3);
     // Brim shadow
     g.fillStyle(0xaa1a1a);
-    g.fillRect(3, 6, 11, 1);
+    g.fillRect(5, 9, 17, 2);
     // Cap highlight
     g.fillStyle(0xdd3333);
-    g.fillRect(6, 1, 4, 1);
+    g.fillRect(9, 2, 6, 2);
 
-    g.generateTexture('bg-maga-person', 20, 40);
+    g.generateTexture('bg-maga-person', 30, 60);
     g.destroy();
   }
 
@@ -1967,93 +2144,93 @@ export class PreloadScene extends Phaser.Scene {
     // === Legs (walking stride) ===
     g.fillStyle(0x1a2a40);
     // Left leg (forward)
-    g.fillRect(5, 28, 4, 8);
+    g.fillRect(8, 42, 6, 12);
     // Right leg (back)
-    g.fillRect(11, 27, 4, 9);
+    g.fillRect(17, 41, 6, 14);
     // Shoes
     g.fillStyle(0x222222);
-    g.fillRect(4, 36, 5, 3);
-    g.fillRect(11, 36, 5, 3);
+    g.fillRect(6, 54, 8, 5);
+    g.fillRect(17, 54, 8, 5);
     // Shoe highlights
     g.fillStyle(0x333333);
-    g.fillRect(4, 36, 5, 1);
-    g.fillRect(11, 36, 5, 1);
+    g.fillRect(6, 54, 8, 2);
+    g.fillRect(17, 54, 8, 2);
 
     // === Suit jacket ===
     g.fillStyle(0x1a2a40);
-    g.fillRect(4, 14, 12, 14);
+    g.fillRect(6, 21, 18, 21);
     // Jacket shadow (right)
     g.fillStyle(0x14223a);
-    g.fillRect(14, 15, 2, 12);
+    g.fillRect(21, 23, 3, 18);
     // Jacket highlight (left)
     g.fillStyle(0x203450);
-    g.fillRect(4, 14, 2, 13);
+    g.fillRect(6, 21, 3, 20);
     // Lapel lines (lighter V at chest)
     g.fillStyle(0x253a55);
-    g.fillRect(7, 14, 1, 6);
-    g.fillRect(8, 15, 1, 5);
-    g.fillRect(12, 14, 1, 6);
-    g.fillRect(11, 15, 1, 5);
+    g.fillRect(11, 21, 2, 9);
+    g.fillRect(12, 23, 2, 8);
+    g.fillRect(18, 21, 2, 9);
+    g.fillRect(17, 23, 2, 8);
     // White shirt strip
     g.fillStyle(0xeeeeee);
-    g.fillRect(9, 15, 2, 8);
+    g.fillRect(14, 23, 3, 12);
     // Blue tie
     g.fillStyle(0x0A66C2);
-    g.fillRect(9, 16, 2, 1);
-    g.fillRect(9, 17, 2, 8);
+    g.fillRect(14, 24, 3, 2);
+    g.fillRect(14, 26, 3, 12);
     // Tie highlight
     g.fillStyle(0x0d7ade);
-    g.fillRect(9, 17, 1, 6);
+    g.fillRect(14, 26, 2, 9);
 
     // === Arms ===
     // Left arm (carrying briefcase)
     g.fillStyle(0x1a2a40);
-    g.fillRect(1, 15, 3, 10);
+    g.fillRect(2, 23, 5, 15);
     // Left hand
     g.fillStyle(0xffcba4);
-    g.fillRect(1, 25, 3, 2);
+    g.fillRect(2, 38, 5, 3);
     // Right arm
     g.fillStyle(0x1a2a40);
-    g.fillRect(16, 15, 3, 10);
+    g.fillRect(24, 23, 5, 15);
     // Right hand
     g.fillStyle(0xffcba4);
-    g.fillRect(16, 25, 3, 2);
+    g.fillRect(24, 38, 5, 3);
 
     // === Briefcase ===
     g.fillStyle(0x4a3520);
-    g.fillRect(0, 27, 6, 5);
+    g.fillRect(0, 41, 9, 8);
     // Briefcase clasp
     g.fillStyle(0x8b7355);
-    g.fillRect(2, 27, 2, 1);
+    g.fillRect(3, 41, 3, 2);
     // Briefcase handle
     g.fillStyle(0x3a2a18);
-    g.fillRect(1, 25, 4, 2);
+    g.fillRect(2, 38, 6, 3);
     // Briefcase highlight
     g.fillStyle(0x5a4530);
-    g.fillRect(0, 27, 1, 5);
+    g.fillRect(0, 41, 2, 8);
 
     // === Head ===
     g.fillStyle(0xffcba4);
-    g.fillRect(6, 3, 8, 10);
+    g.fillRect(9, 5, 12, 15);
     // Head shadow
     g.fillStyle(0xeebb90);
-    g.fillRect(12, 4, 2, 8);
+    g.fillRect(18, 6, 3, 12);
     // Head highlight
     g.fillStyle(0xffddb8);
-    g.fillRect(6, 3, 2, 9);
+    g.fillRect(9, 5, 3, 14);
     // Hair
     g.fillStyle(0x3a2a18);
-    g.fillRect(6, 1, 8, 3);
-    g.fillRect(5, 2, 2, 4);
+    g.fillRect(9, 2, 12, 5);
+    g.fillRect(8, 3, 3, 6);
     // Eyes
     g.fillStyle(0x222222);
-    g.fillRect(7, 7, 2, 2);
-    g.fillRect(11, 7, 2, 2);
+    g.fillRect(11, 11, 3, 3);
+    g.fillRect(17, 11, 3, 3);
     // Mouth
     g.fillStyle(0xdd9980);
-    g.fillRect(8, 10, 4, 1);
+    g.fillRect(12, 15, 6, 2);
 
-    g.generateTexture('bg-suited-person', 20, 40);
+    g.generateTexture('bg-suited-person', 30, 60);
     g.destroy();
   }
 
@@ -2422,111 +2599,111 @@ export class PreloadScene extends Phaser.Scene {
     const g = this.add.graphics();
     // === Chair (behind figure) ===
     g.fillStyle(0x444444);
-    g.fillRect(4, 16, 12, 2);  // chair seat
-    g.fillRect(3, 10, 2, 8);   // chair back left
-    g.fillRect(15, 10, 2, 8);  // chair back right
-    g.fillRect(3, 10, 14, 2);  // chair back top
+    g.fillRect(6, 24, 18, 3);  // chair seat
+    g.fillRect(5, 15, 3, 12);  // chair back left
+    g.fillRect(23, 15, 3, 12); // chair back right
+    g.fillRect(5, 15, 21, 3);  // chair back top
     // Chair legs
     g.fillStyle(0x3a3a3a);
-    g.fillRect(4, 30, 2, 6);
-    g.fillRect(14, 30, 2, 6);
+    g.fillRect(6, 45, 3, 9);
+    g.fillRect(21, 45, 3, 9);
     // Chair wheels
     g.fillStyle(0x333333);
-    g.fillCircle(5, 37, 2);
-    g.fillCircle(15, 37, 2);
+    g.fillCircle(8, 56, 3);
+    g.fillCircle(23, 56, 3);
 
     // === Desk ===
     g.fillStyle(0x6b4423);
-    g.fillRect(0, 28, 28, 3);
+    g.fillRect(0, 42, 42, 5);
     // Desk legs
     g.fillStyle(0x5a3a1a);
-    g.fillRect(1, 31, 2, 10);
-    g.fillRect(25, 31, 2, 10);
+    g.fillRect(2, 47, 3, 15);
+    g.fillRect(38, 47, 3, 15);
     // Desk edge highlight
     g.fillStyle(0x7b5433);
-    g.fillRect(0, 28, 28, 1);
+    g.fillRect(0, 42, 42, 2);
     // Desk shadow
     g.fillStyle(0x5a3a1a);
-    g.fillRect(0, 30, 28, 1);
+    g.fillRect(0, 45, 42, 2);
 
     // === Monitor on desk ===
     // Monitor bezel
     g.fillStyle(0x333333);
-    g.fillRect(14, 16, 13, 12);
+    g.fillRect(21, 24, 20, 18);
     // Screen
     g.fillStyle(0x1a3050);
-    g.fillRect(15, 17, 11, 10);
+    g.fillRect(23, 26, 17, 15);
     // Green text lines on screen
     g.fillStyle(0x44cc44);
-    g.fillRect(16, 18, 8, 1);
-    g.fillRect(16, 20, 6, 1);
-    g.fillRect(16, 22, 9, 1);
-    g.fillRect(16, 24, 5, 1);
+    g.fillRect(24, 27, 12, 2);
+    g.fillRect(24, 30, 9, 2);
+    g.fillRect(24, 33, 14, 2);
+    g.fillRect(24, 36, 8, 2);
     // Monitor stand
     g.fillStyle(0x444444);
-    g.fillRect(19, 28, 3, 1);
-    g.fillRect(18, 27, 5, 1);
+    g.fillRect(29, 42, 5, 2);
+    g.fillRect(27, 41, 8, 2);
 
     // === Coffee mug ===
     g.fillStyle(0x8b5e3c);
-    g.fillRect(2, 23, 4, 5);
+    g.fillRect(3, 35, 6, 8);
     // Mug handle
     g.fillStyle(0x7a5030);
-    g.fillRect(6, 24, 2, 1);
-    g.fillRect(7, 24, 1, 3);
-    g.fillRect(6, 26, 2, 1);
+    g.fillRect(9, 36, 3, 2);
+    g.fillRect(11, 36, 2, 5);
+    g.fillRect(9, 39, 3, 2);
     // Coffee inside
     g.fillStyle(0x3a2010);
-    g.fillRect(2, 23, 4, 2);
+    g.fillRect(3, 35, 6, 3);
     // Steam
     g.fillStyle(0xcccccc);
-    g.fillRect(3, 21, 1, 2);
-    g.fillRect(5, 20, 1, 2);
+    g.fillRect(5, 32, 2, 3);
+    g.fillRect(8, 30, 2, 3);
 
     // === Figure (seated, hunched forward) ===
     // Body
     g.fillStyle(0x4a6080);
-    g.fillRect(5, 18, 10, 10);
+    g.fillRect(8, 27, 15, 15);
     // Body shadow
     g.fillStyle(0x3a5070);
-    g.fillRect(13, 19, 2, 8);
+    g.fillRect(20, 29, 3, 12);
     // Arms reaching to desk/keyboard
     g.fillStyle(0x4a6080);
-    g.fillRect(4, 22, 3, 6);
-    g.fillRect(13, 22, 3, 6);
+    g.fillRect(6, 33, 5, 9);
+    g.fillRect(20, 33, 5, 9);
     // Hands
     g.fillStyle(0xffcba4);
-    g.fillRect(8, 27, 3, 2);
-    g.fillRect(12, 27, 3, 2);
+    g.fillRect(12, 41, 5, 3);
+    g.fillRect(18, 41, 5, 3);
 
     // === Head ===
     g.fillStyle(0xffcba4);
-    g.fillRect(6, 8, 8, 9);
+    g.fillRect(9, 12, 12, 14);
     // Hair
     g.fillStyle(0x4a3020);
-    g.fillRect(6, 6, 8, 3);
-    g.fillRect(5, 7, 2, 4);
+    g.fillRect(9, 9, 12, 5);
+    g.fillRect(8, 11, 3, 6);
     // Head shadow
     g.fillStyle(0xeebb90);
-    g.fillRect(12, 9, 2, 7);
+    g.fillRect(18, 14, 3, 11);
     // Glasses frames
     g.fillStyle(0x333333);
-    g.fillRect(7, 11, 3, 2);   // left lens
-    g.fillRect(11, 11, 3, 2);  // right lens
-    g.fillRect(10, 11, 1, 1);  // bridge
+    g.fillRect(11, 17, 5, 3);  // left lens
+    g.fillRect(17, 17, 5, 3);  // right lens
+    g.fillRect(15, 17, 2, 2);  // bridge
     // Glasses shine
     g.fillStyle(0x6688aa);
-    g.fillRect(7, 11, 1, 1);
-    g.fillRect(11, 11, 1, 1);
+    g.fillRect(11, 17, 2, 2);
+    g.fillRect(17, 17, 2, 2);
     // Eyes behind glasses
     g.fillStyle(0x222222);
-    g.fillRect(8, 12, 1, 1);
-    g.fillRect(12, 12, 1, 1);
+    g.fillRect(12, 18, 2, 2);
+    g.fillRect(18, 18, 2, 2);
     // Mouth
     g.fillStyle(0xdd9980);
-    g.fillRect(9, 15, 3, 1);
+    g.fillRect(14, 23, 5, 2);
 
-    g.generateTexture('bg-scientist', 28, 44);
+    g.generateTexture('bg-scientist', 42, 66);
     g.destroy();
   }
 
@@ -2773,93 +2950,93 @@ export class PreloadScene extends Phaser.Scene {
     const g = this.add.graphics();
     // === Robe (trapezoid widening from shoulders to feet) ===
     g.fillStyle(0x5C4033);
-    g.fillTriangle(10, 12, 2, 36, 18, 36);
-    g.fillRect(4, 30, 12, 6);
+    g.fillTriangle(15, 18, 3, 54, 27, 54);
+    g.fillRect(6, 45, 18, 9);
     // Robe fold lines (darker vertical stripes)
     g.fillStyle(0x4a3528);
-    g.fillRect(7, 16, 1, 20);
-    g.fillRect(10, 14, 1, 22);
-    g.fillRect(13, 16, 1, 20);
+    g.fillRect(11, 24, 2, 30);
+    g.fillRect(15, 21, 2, 33);
+    g.fillRect(20, 24, 2, 30);
     // Robe highlight (left side, top-left lighting)
     g.fillStyle(0x6b5040);
-    g.fillRect(5, 18, 2, 16);
+    g.fillRect(8, 27, 3, 24);
     // Robe shadow (right side)
     g.fillStyle(0x4a3528);
-    g.fillRect(15, 18, 2, 16);
+    g.fillRect(23, 27, 3, 24);
 
     // === Sandals ===
     g.fillStyle(0x8b7355);
-    g.fillRect(4, 36, 4, 3);
-    g.fillRect(12, 36, 4, 3);
+    g.fillRect(6, 54, 6, 5);
+    g.fillRect(18, 54, 6, 5);
     // Sandal straps
     g.fillStyle(0x7a6245);
-    g.fillRect(5, 36, 2, 1);
-    g.fillRect(13, 36, 2, 1);
+    g.fillRect(8, 54, 3, 2);
+    g.fillRect(20, 54, 3, 2);
 
     // === Head ===
     g.fillStyle(0xffcba4);
-    g.fillRect(6, 2, 8, 9);
+    g.fillRect(9, 3, 12, 14);
     // Face shadow
     g.fillStyle(0xeebb90);
-    g.fillRect(12, 3, 2, 7);
+    g.fillRect(18, 5, 3, 11);
     // Face highlight
     g.fillStyle(0xffddb8);
-    g.fillRect(6, 2, 2, 8);
+    g.fillRect(9, 3, 3, 12);
     // Eyes
     g.fillStyle(0x333333);
-    g.fillRect(7, 5, 2, 2);
-    g.fillRect(11, 5, 2, 2);
+    g.fillRect(11, 8, 3, 3);
+    g.fillRect(17, 8, 3, 3);
     // Eyebrows (furrowed, thinking)
     g.fillStyle(0x5a4030);
-    g.fillRect(7, 4, 3, 1);
-    g.fillRect(11, 4, 3, 1);
+    g.fillRect(11, 6, 5, 2);
+    g.fillRect(17, 6, 5, 2);
     // Nose
     g.fillStyle(0xeebb90);
-    g.fillRect(9, 6, 2, 2);
+    g.fillRect(14, 9, 3, 3);
     // Mouth (under beard)
     g.fillStyle(0xdd9980);
-    g.fillRect(8, 9, 3, 1);
+    g.fillRect(12, 14, 5, 2);
 
     // === Beard ===
     g.fillStyle(0x6b5040);
-    g.fillRect(7, 9, 6, 2);
-    g.fillRect(8, 11, 4, 2);
-    g.fillRect(9, 13, 2, 1);
+    g.fillRect(11, 14, 9, 3);
+    g.fillRect(12, 17, 6, 3);
+    g.fillRect(14, 20, 3, 2);
     // Beard highlight
     g.fillStyle(0x7a5f50);
-    g.fillRect(7, 9, 2, 1);
+    g.fillRect(11, 14, 3, 2);
 
     // === Hair (bald top with sides) ===
     g.fillStyle(0x6b5040);
-    g.fillRect(5, 3, 2, 6);
-    g.fillRect(13, 3, 2, 6);
-    g.fillRect(6, 1, 8, 2);
+    g.fillRect(8, 5, 3, 9);
+    g.fillRect(20, 5, 3, 9);
+    g.fillRect(9, 2, 12, 3);
 
     // === Hand raised to chin (thinking) ===
     g.fillStyle(0x5C4033);
     // Arm coming from robe
-    g.fillRect(5, 14, 3, 4);
-    g.fillRect(4, 12, 3, 4);
+    g.fillRect(8, 21, 5, 6);
+    g.fillRect(6, 18, 5, 6);
     // Hand near chin
     g.fillStyle(0xffcba4);
-    g.fillRect(6, 10, 3, 3);
+    g.fillRect(9, 15, 5, 5);
     // Fingers
-    g.fillRect(5, 10, 1, 2);
+    g.fillRect(8, 15, 2, 3);
 
     // === Book under other arm ===
     g.fillStyle(0x8b1a1a);
-    g.fillRect(14, 18, 4, 6);
+    g.fillRect(21, 27, 6, 9);
     // Book spine
     g.fillStyle(0x6b1010);
-    g.fillRect(14, 18, 1, 6);
+    g.fillRect(21, 27, 2, 9);
     // Book pages
     g.fillStyle(0xeeeedd);
-    g.fillRect(15, 19, 2, 4);
+    g.fillRect(23, 29, 3, 6);
     // Book highlight
     g.fillStyle(0x9b2a2a);
-    g.fillRect(15, 18, 3, 1);
+    g.fillRect(23, 27, 5, 2);
 
-    g.generateTexture('bg-philosopher', 20, 40);
+    g.generateTexture('bg-philosopher', 30, 60);
     g.destroy();
   }
 
@@ -2869,109 +3046,109 @@ export class PreloadScene extends Phaser.Scene {
     const g = this.add.graphics();
     // === Legs ===
     g.fillStyle(0x2a2a3a);
-    g.fillRect(5, 28, 4, 8);
-    g.fillRect(11, 28, 4, 8);
+    g.fillRect(8, 42, 6, 12);
+    g.fillRect(17, 42, 6, 12);
     // Shoes
     g.fillStyle(0x222222);
-    g.fillRect(4, 36, 5, 3);
-    g.fillRect(11, 36, 5, 3);
+    g.fillRect(6, 54, 8, 5);
+    g.fillRect(17, 54, 8, 5);
     // Shoe highlights
     g.fillStyle(0x333333);
-    g.fillRect(4, 36, 5, 1);
-    g.fillRect(11, 36, 5, 1);
+    g.fillRect(6, 54, 8, 2);
+    g.fillRect(17, 54, 8, 2);
 
     // === Professional shirt ===
     g.fillStyle(0x4477aa);
-    g.fillRect(4, 14, 12, 14);
+    g.fillRect(6, 21, 18, 21);
     // Shirt shadow (right)
     g.fillStyle(0x366699);
-    g.fillRect(14, 15, 2, 12);
+    g.fillRect(21, 23, 3, 18);
     // Shirt highlight (left)
     g.fillStyle(0x5588bb);
-    g.fillRect(4, 14, 2, 13);
+    g.fillRect(6, 21, 3, 20);
     // Shirt collar
     g.fillStyle(0x5588bb);
-    g.fillRect(7, 13, 6, 2);
+    g.fillRect(11, 20, 9, 3);
     // Button line
     g.fillStyle(0x3366aa);
-    g.fillRect(9, 16, 1, 10);
+    g.fillRect(14, 24, 2, 15);
     // Buttons
     g.fillStyle(0xdddddd);
-    g.fillRect(9, 17, 1, 1);
-    g.fillRect(9, 20, 1, 1);
-    g.fillRect(9, 23, 1, 1);
+    g.fillRect(14, 26, 2, 2);
+    g.fillRect(14, 30, 2, 2);
+    g.fillRect(14, 35, 2, 2);
     // Pen in pocket
     g.fillStyle(0x222222);
-    g.fillRect(6, 15, 1, 4);
+    g.fillRect(9, 23, 2, 6);
     g.fillStyle(0xcccccc);
-    g.fillRect(6, 15, 1, 1);
+    g.fillRect(9, 23, 2, 2);
 
     // === Left arm (holding clipboard) ===
     g.fillStyle(0x4477aa);
-    g.fillRect(1, 15, 3, 10);
+    g.fillRect(2, 23, 5, 15);
     // Left hand
     g.fillStyle(0xffcba4);
-    g.fillRect(1, 25, 3, 2);
+    g.fillRect(2, 38, 5, 3);
 
     // === Clipboard ===
     g.fillStyle(0xddddaa);
-    g.fillRect(0, 20, 5, 8);
+    g.fillRect(0, 30, 8, 12);
     // Clipboard clip at top
     g.fillStyle(0x888888);
-    g.fillRect(1, 19, 3, 2);
+    g.fillRect(2, 29, 5, 3);
     // Chart marks on clipboard
     g.fillStyle(0x666666);
-    g.fillRect(1, 22, 3, 1);
-    g.fillRect(1, 24, 2, 1);
-    g.fillRect(1, 26, 3, 1);
+    g.fillRect(2, 33, 5, 2);
+    g.fillRect(2, 36, 3, 2);
+    g.fillRect(2, 39, 5, 2);
     // Small bar chart on clipboard
     g.fillStyle(0x4477aa);
-    g.fillRect(1, 25, 1, 2);
-    g.fillRect(3, 24, 1, 3);
+    g.fillRect(2, 38, 2, 3);
+    g.fillRect(5, 36, 2, 5);
 
     // === Right arm (extended, finger raised / lecturing) ===
     g.fillStyle(0x4477aa);
-    g.fillRect(16, 15, 3, 5);
-    g.fillRect(17, 14, 3, 3);
+    g.fillRect(24, 23, 5, 8);
+    g.fillRect(26, 21, 5, 5);
     // Hand
     g.fillStyle(0xffcba4);
-    g.fillRect(18, 12, 2, 3);
+    g.fillRect(27, 18, 3, 5);
     // Index finger pointing up
-    g.fillRect(18, 9, 1, 3);
+    g.fillRect(27, 14, 2, 5);
 
     // === Head ===
     g.fillStyle(0xffcba4);
-    g.fillRect(6, 2, 8, 10);
+    g.fillRect(9, 3, 12, 15);
     // Head shadow
     g.fillStyle(0xeebb90);
-    g.fillRect(12, 3, 2, 8);
+    g.fillRect(18, 5, 3, 12);
     // Head highlight
     g.fillStyle(0xffddb8);
-    g.fillRect(6, 2, 2, 9);
+    g.fillRect(9, 3, 3, 14);
     // Hair
     g.fillStyle(0x3a2a18);
-    g.fillRect(6, 0, 8, 3);
-    g.fillRect(5, 1, 2, 4);
-    g.fillRect(13, 1, 2, 4);
+    g.fillRect(9, 0, 12, 5);
+    g.fillRect(8, 2, 3, 6);
+    g.fillRect(20, 2, 3, 6);
 
     // === Glasses ===
     g.fillStyle(0x333333);
-    g.fillRect(7, 5, 3, 2);   // left frame
-    g.fillRect(11, 5, 3, 2);  // right frame
-    g.fillRect(10, 5, 1, 1);  // bridge
+    g.fillRect(11, 8, 5, 3);  // left frame
+    g.fillRect(17, 8, 5, 3);  // right frame
+    g.fillRect(15, 8, 2, 2);  // bridge
     // Lens shine
     g.fillStyle(0x6688aa);
-    g.fillRect(7, 5, 1, 1);
-    g.fillRect(11, 5, 1, 1);
+    g.fillRect(11, 8, 2, 2);
+    g.fillRect(17, 8, 2, 2);
     // Eyes behind glasses
     g.fillStyle(0x222222);
-    g.fillRect(8, 6, 1, 1);
-    g.fillRect(12, 6, 1, 1);
+    g.fillRect(12, 9, 2, 2);
+    g.fillRect(18, 9, 2, 2);
     // Mouth
     g.fillStyle(0xdd9980);
-    g.fillRect(8, 9, 4, 1);
+    g.fillRect(12, 14, 6, 2);
 
-    g.generateTexture('bg-social-scientist', 20, 40);
+    g.generateTexture('bg-social-scientist', 30, 60);
     g.destroy();
   }
 
@@ -3113,6 +3290,80 @@ export class PreloadScene extends Phaser.Scene {
     g.fillRect(12, 14, 2, 1);
 
     g.generateTexture('bg-paywall-lock', 18, 24);
+    g.destroy();
+  }
+
+  private generateBgCrumblingBuilding(): void {
+    const g = this.add.graphics();
+    // Neoclassical building facade — crumbling
+    // Base steps (some broken)
+    g.fillStyle(0x3a3a3a);
+    g.fillRect(2, 70, 44, 4);   // bottom step
+    g.fillRect(5, 66, 38, 4);   // middle step
+    g.fillRect(8, 62, 32, 4);   // top step (broken right side)
+    g.fillStyle(0x2a2a2a);
+    g.fillRect(32, 63, 8, 3);   // broken chunk missing from top step
+
+    // Main building body
+    g.fillStyle(0x4a4a4a);
+    g.fillRect(8, 20, 32, 42);
+
+    // 4 columns (2 intact, 2 broken)
+    g.fillStyle(0x555555);
+    // Column 1 — intact
+    g.fillRect(10, 18, 4, 44);
+    g.fillStyle(0x606060);
+    g.fillRect(10, 18, 1, 44);  // highlight
+    // Column 2 — broken stump
+    g.fillStyle(0x555555);
+    g.fillRect(18, 40, 4, 22);  // short stump
+    g.fillStyle(0x4a4a4a);
+    g.fillRect(17, 38, 6, 3);   // rubble on top
+    // Column 3 — cracked but standing
+    g.fillStyle(0x555555);
+    g.fillRect(26, 18, 4, 44);
+    g.fillStyle(0x606060);
+    g.fillRect(26, 18, 1, 44);  // highlight
+    // Crack lines on column 3
+    g.fillStyle(0x333333);
+    g.fillRect(27, 30, 2, 1);
+    g.fillRect(28, 31, 1, 3);
+    g.fillRect(27, 34, 2, 1);
+    g.fillRect(26, 45, 2, 1);
+    // Column 4 — broken stump (shorter)
+    g.fillStyle(0x555555);
+    g.fillRect(34, 48, 4, 14);
+    g.fillStyle(0x4a4a4a);
+    g.fillRect(33, 46, 6, 3);   // rubble on top
+
+    // Triangular pediment with cracks
+    g.fillStyle(0x4a4a4a);
+    g.fillTriangle(24, 4, 6, 20, 42, 20);
+    // Pediment cracks
+    g.fillStyle(0x333333);
+    g.fillRect(20, 10, 1, 6);
+    g.fillRect(21, 15, 3, 1);
+    g.fillRect(30, 8, 1, 8);
+    g.fillRect(28, 12, 3, 1);
+
+    // Fallen column pieces on ground
+    g.fillStyle(0x444444);
+    g.fillRect(0, 74, 8, 3);    // fallen column segment left
+    g.fillRect(40, 72, 7, 3);   // fallen column segment right
+    g.fillRect(16, 75, 5, 2);   // debris chunk
+
+    // Green vegetation through cracks
+    g.fillStyle(0x2d5a1e);
+    g.fillRect(19, 37, 2, 3);   // vine on broken col 2
+    g.fillRect(35, 45, 1, 3);   // vine on broken col 4
+    g.fillRect(14, 60, 2, 2);   // moss on steps
+    g.fillRect(30, 68, 3, 2);   // moss on steps
+
+    // SSRN green tint overlay
+    g.fillStyle(0x1E4D2B, 0.15);
+    g.fillRect(0, 0, 48, 80);
+
+    g.generateTexture('bg-crumbling-building', 48, 80);
     g.destroy();
   }
 

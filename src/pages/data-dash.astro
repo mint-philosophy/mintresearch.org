@@ -59,6 +59,14 @@ const floatingMinties = [
     <span class="dd-key">ESC</span> <span class="dd-ctrl-label">Pause</span>
   </div>
 
+  <!-- Mobile touch controls -->
+  <div class="dd-touch-controls" aria-label="Touch controls">
+    <button class="dd-touch-btn dd-touch-left" aria-label="Move left">&#9664;</button>
+    <button class="dd-touch-btn dd-touch-right" aria-label="Move right">&#9654;</button>
+    <button class="dd-touch-btn dd-touch-jump" aria-label="Jump">&#9650;</button>
+    <button class="dd-touch-btn dd-touch-fire" aria-label="Fire">&#9679;</button>
+  </div>
+
   <!-- Mobile notice -->
   <div class="dd-mobile-notice">
     <p>Data Dash is best experienced on desktop with a keyboard.</p>
@@ -78,47 +86,112 @@ const floatingMinties = [
     }
   }
 
-  // Random wandering Minties
+  // Touch controls — emit synthetic keyboard events
+  const touchMap: Record<string, string> = {
+    'dd-touch-left': 'ArrowLeft',
+    'dd-touch-right': 'ArrowRight',
+    'dd-touch-jump': 'ArrowUp',
+    'dd-touch-fire': 'z',
+  };
+  document.querySelectorAll('.dd-touch-btn').forEach(btn => {
+    const cls = [...btn.classList].find(c => c.startsWith('dd-touch-') && c !== 'dd-touch-btn');
+    if (!cls) return;
+    const key = touchMap[cls];
+    if (!key) return;
+    const opts = { key, code: key.length === 1 ? `Key${key.toUpperCase()}` : key, bubbles: true };
+    btn.addEventListener('touchstart', e => {
+      e.preventDefault();
+      document.dispatchEvent(new KeyboardEvent('keydown', opts));
+    }, { passive: false });
+    btn.addEventListener('touchend', e => {
+      e.preventDefault();
+      document.dispatchEvent(new KeyboardEvent('keyup', opts));
+    }, { passive: false });
+  });
+
+  // Bouncing Minties — frictionless vacuum physics
   const squids = document.querySelectorAll<HTMLImageElement>('.dd-float-squid');
-  const vw = () => window.innerWidth;
-  const vh = () => window.innerHeight;
+  interface Ball { el: HTMLImageElement; x: number; y: number; vx: number; vy: number; r: number; rot: number; vr: number; }
+  const balls: Ball[] = [];
 
   squids.forEach((squid) => {
+    squid.style.transition = 'none';
     const size = squid.offsetWidth || 80;
-    // Random start position
-    let x = Math.random() * (vw() - size);
-    let y = Math.random() * (vh() - size);
-    squid.style.left = `${x}px`;
-    squid.style.top = `${y}px`;
+    const r = size / 2;
+    const speed = 30 + Math.random() * 50;
+    const angle = Math.random() * Math.PI * 2;
+    const b: Ball = {
+      el: squid, r,
+      x: r + Math.random() * (window.innerWidth - size),
+      y: r + Math.random() * (window.innerHeight - size),
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      rot: Math.random() * 360,
+      vr: (Math.random() - 0.5) * 20,
+    };
+    b.el.style.left = `${b.x - b.r}px`;
+    b.el.style.top = `${b.y - b.r}px`;
+    b.el.style.transform = `rotate(${b.rot}deg)`;
+    balls.push(b);
+  });
 
-    // Random rotation
-    let rot = Math.random() * 10 - 5;
+  let last = performance.now();
+  function tick(now: number) {
+    const dt = Math.min((now - last) / 1000, 0.05);
+    last = now;
+    const W = window.innerWidth;
+    const H = window.innerHeight;
 
-    function wander() {
-      // Pick a new random destination anywhere on screen
-      const tx = Math.random() * (vw() - size);
-      const ty = Math.random() * (vh() - size);
-      const newRot = Math.random() * 12 - 6;
-      const dist = Math.hypot(tx - x, ty - y);
-      // Duration proportional to distance (speed ~40-80px/s)
-      const speed = 40 + Math.random() * 40;
-      const dur = Math.max(3000, (dist / speed) * 1000);
+    // Move
+    for (const b of balls) {
+      b.x += b.vx * dt;
+      b.y += b.vy * dt;
+      b.rot += b.vr * dt;
 
-      squid.style.transition = `left ${dur}ms ease-in-out, top ${dur}ms ease-in-out, transform ${dur}ms ease-in-out`;
-      squid.style.left = `${tx}px`;
-      squid.style.top = `${ty}px`;
-      squid.style.transform = `rotate(${newRot}deg)`;
-
-      x = tx;
-      y = ty;
-      rot = newRot;
-
-      setTimeout(wander, dur + Math.random() * 2000);
+      // Wall bounce
+      if (b.x - b.r < 0) { b.x = b.r; b.vx = Math.abs(b.vx); b.vr += (Math.random() - 0.5) * 10; }
+      if (b.x + b.r > W) { b.x = W - b.r; b.vx = -Math.abs(b.vx); b.vr += (Math.random() - 0.5) * 10; }
+      if (b.y - b.r < 0) { b.y = b.r; b.vy = Math.abs(b.vy); b.vr += (Math.random() - 0.5) * 10; }
+      if (b.y + b.r > H) { b.y = H - b.r; b.vy = -Math.abs(b.vy); b.vr += (Math.random() - 0.5) * 10; }
     }
 
-    // Stagger start
-    setTimeout(wander, Math.random() * 4000);
-  });
+    // Collisions (elastic, equal mass)
+    for (let i = 0; i < balls.length; i++) {
+      for (let j = i + 1; j < balls.length; j++) {
+        const a = balls[i], c = balls[j];
+        const dx = c.x - a.x, dy = c.y - a.y;
+        const dist = Math.hypot(dx, dy);
+        const minD = a.r + c.r;
+        if (dist < minD && dist > 0) {
+          // Separate
+          const nx = dx / dist, ny = dy / dist;
+          const overlap = (minD - dist) / 2;
+          a.x -= nx * overlap; a.y -= ny * overlap;
+          c.x += nx * overlap; c.y += ny * overlap;
+          // Swap velocity components along collision normal
+          const dvx = a.vx - c.vx, dvy = a.vy - c.vy;
+          const dot = dvx * nx + dvy * ny;
+          if (dot > 0) {
+            a.vx -= dot * nx; a.vy -= dot * ny;
+            c.vx += dot * nx; c.vy += dot * ny;
+            // Spin transfer
+            a.vr += (Math.random() - 0.5) * 15;
+            c.vr -= (Math.random() - 0.5) * 15;
+          }
+        }
+      }
+    }
+
+    // Render
+    for (const b of balls) {
+      b.el.style.left = `${b.x - b.r}px`;
+      b.el.style.top = `${b.y - b.r}px`;
+      b.el.style.transform = `rotate(${b.rot}deg)`;
+    }
+
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
 </script>
 
 <style>
@@ -203,8 +276,10 @@ const floatingMinties = [
   }
 
   #game-container {
-    width: 800px;
-    height: 500px;
+    max-width: 800px;
+    width: 100%;
+    aspect-ratio: 8 / 5;
+    touch-action: none;
   }
 
   #game-container canvas {
@@ -242,6 +317,43 @@ const floatingMinties = [
     opacity: 0.5;
   }
 
+  /* ---- Touch controls ---- */
+  .dd-touch-controls {
+    display: none;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .dd-touch-btn {
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--accent-dim);
+    background: var(--bg-2);
+    color: var(--text-2);
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: pointer;
+  }
+
+  .dd-touch-btn:active {
+    background: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  .dd-touch-fire {
+    background: var(--bg-3);
+    border-color: var(--accent);
+  }
+
   /* ---- Mobile notice ---- */
   .dd-mobile-notice {
     display: none;
@@ -257,8 +369,8 @@ const floatingMinties = [
 
   @media (max-width: 860px) {
     .dd-mobile-notice { display: block; }
-    .dd-controls { flex-wrap: wrap; }
-    #game-container { width: 100%; height: auto; aspect-ratio: 8/5; }
+    .dd-controls { display: none; }
+    .dd-touch-controls { display: flex; }
     .dd-term-body { min-height: auto; }
     .dd-float-squid { display: none; }
   }
