@@ -429,6 +429,7 @@ export class PreloadScene extends Phaser.Scene {
     this.generateTrollSprite();
     this.generateInfluencerSprite();
     this.generateCriticSprite();
+    this.generateParrotSprite();
     this.generatePaperFloodSprite();
     this.generateCloudflareWallSprite();
   }
@@ -604,6 +605,64 @@ export class PreloadScene extends Phaser.Scene {
     g.fillStyle(0x1a1a4a);
     g.fillRect(5, 20, 3, 3);
     g.generateTexture('enemy-critic', 32, 32);
+    g.destroy();
+  }
+
+  private generateParrotSprite(): void {
+    const g = this.add.graphics();
+    // Body — bright tropical green
+    g.fillStyle(0x22cc55);
+    g.fillCircle(16, 14, 8);
+    // Belly — lighter
+    g.fillStyle(0x44ee77);
+    g.fillCircle(16, 16, 5);
+    // Head — slightly brighter
+    g.fillStyle(0x33dd66);
+    g.fillCircle(16, 8, 6);
+    // Beak — hooked orange/yellow
+    g.fillStyle(0xf5a623);
+    g.fillTriangle(22, 7, 28, 9, 22, 11);
+    // Beak hook
+    g.fillStyle(0xe09010);
+    g.fillTriangle(26, 9, 28, 9, 26, 12);
+    // Eye — white with black pupil
+    g.fillStyle(0xffffff);
+    g.fillCircle(19, 7, 2.5);
+    g.fillStyle(0x000000);
+    g.fillCircle(19, 7, 1);
+    // Head crest — red/blue feathers
+    g.fillStyle(0xee3333);
+    g.fillTriangle(12, 4, 14, 0, 16, 4);
+    g.fillStyle(0x3388ff);
+    g.fillTriangle(14, 3, 16, -1, 18, 3);
+    // Wing — darker green
+    g.fillStyle(0x119944);
+    g.fillRect(8, 12, 6, 8);
+    g.fillStyle(0x0085FF); // Bluesky blue accent
+    g.fillRect(8, 18, 6, 2);
+    // Tail feathers — fanned out
+    g.fillStyle(0x22cc55);
+    g.fillRect(10, 22, 3, 6);
+    g.fillRect(14, 23, 3, 5);
+    g.fillRect(18, 22, 3, 6);
+    g.fillStyle(0xee3333);
+    g.fillRect(11, 26, 2, 3);
+    g.fillStyle(0x3388ff);
+    g.fillRect(15, 26, 2, 3);
+    g.fillStyle(0xf5a623);
+    g.fillRect(19, 26, 2, 3);
+    // Feet
+    g.fillStyle(0x555555);
+    g.fillRect(13, 22, 2, 3);
+    g.fillRect(17, 22, 2, 3);
+    // Speech bubble (echo chamber!) — small "..." bubble
+    g.fillStyle(0xffffff, 0.6);
+    g.fillCircle(26, 2, 4);
+    g.fillStyle(0x888888, 0.5);
+    g.fillRect(24, 1, 1, 1);
+    g.fillRect(26, 1, 1, 1);
+    g.fillRect(28, 1, 1, 1);
+    g.generateTexture('enemy-parrot', 32, 32);
     g.destroy();
   }
 
