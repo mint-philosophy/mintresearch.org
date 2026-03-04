@@ -8,77 +8,76 @@ export interface DialogueData {
 }
 
 const dialogues: Record<string, DialogueData> = {
-  // Level 1 — Green Minty: Concentrated Power & Platform Governance
+  // Level 1 — Green Minty: Platforms & the Hollowed Public Sphere
   'l1-green': {
     speaker: 'Green Minty',
     lines: [
-      'A handful of companies now control the infrastructure of public discourse. That concentration wasn\'t inevitable — it was designed.',
-      'Content moderation isn\'t censorship and it isn\'t neutrality. It\'s an exercise of power that most democratic institutions have no oversight over.',
-      'The octopuses here optimise for engagement because that\'s what the business model rewards. Changing the output means changing the incentive structure.',
-      'When a platform decides what counts as authoritative, it\'s making an epistemic judgment with political consequences — whether it admits it or not.',
-      'Collect the papers. The research base for governing these systems is still thin, and the policy window won\'t stay open forever.',
+      'These platforms hollowed out the public sphere that democracy actually needs to function. And nobody voted for that — it just happened while regulators were still writing fax-era rules.',
+      'State capacity to even understand what\'s happening on these platforms is decades behind. The agencies are understaffed, outpaced, and half the time they\'re getting their briefings from the companies they\'re supposed to oversee.',
+      'The octopuses optimise for engagement because that\'s the business model. But here\'s the thing — we need AI-augmented governance just to keep up with what\'s being deployed. You can\'t regulate at human speed anymore.',
+      'Content moderation at scale is already an AI governance problem. The old institutions can\'t keep up — and the new ones haven\'t been built yet. That gap is where the damage happens.',
+      'Collect the papers. The research base for rebuilding these systems is still thin, and the people with the best ideas need ammunition.',
     ],
   },
 
-  // Level 2 — Purple Minty: AI Governance & Institutional Design
+  // Level 2 — Purple Minty: Institutional Sclerosis & AI as State Capacity
   'l2-purple': {
     speaker: 'Purple Minty',
     lines: [
-      'The governance gap isn\'t about whether to regulate AI — it\'s about building institutions that can keep pace with capability growth.',
-      'International coordination on AI is a collective action problem nested inside a geopolitical competition. Neither framing alone gets you far.',
-      'Voluntary commitments are useful for signalling but insufficient for constraint. The question is what binding mechanisms can actually work across jurisdictions.',
-      'Frontier AI governance requires technical literacy in the regulator and democratic accountability in the developer. Neither currently exists at sufficient scale.',
-      'The hardest governance problems aren\'t about banning things — they\'re about building the evaluative infrastructure to know what to permit.',
+      'Institutional sclerosis is real. Regulatory agencies that were built for the postwar era are trying to govern technologies that move at a completely different clock speed.',
+      'Here\'s what keeps me up: AI could be the state capacity multiplier that lets small, competent teams do what used to take entire bureaucracies. But only if we actually build the infrastructure for it.',
+      'The question isn\'t whether to use AI in governance — that ship sailed. The question is whether we do it fast enough and well enough to matter before the institutions lose what\'s left of their credibility.',
+      'Voluntary commitments are nice for press releases. Binding mechanisms that work across jurisdictions — that\'s the hard part. And it requires exactly the kind of institutional innovation that our sclerotic systems haven\'t managed in decades.',
+      'Every paper you grab here is a brick in the road. We\'re building the evaluative infrastructure from scratch, and speed matters.',
     ],
   },
 
-  // Level 3 — Yellow Minty: Epistemic Commons & Information Integrity
+  // Level 3 — Yellow Minty: Epistemic Infrastructure & Verification at Scale
   'l3-yellow': {
     speaker: 'Yellow Minty',
     lines: [
-      'The epistemic commons — the shared information environment that makes democratic self-governance possible — is degrading faster than we\'re repairing it.',
-      'Synthetic media doesn\'t need to be convincing to be corrosive. It just needs to make everything uncertain enough that trust itself becomes the casualty.',
-      'Provenance infrastructure — knowing where content came from and whether it\'s been altered — is a public good that markets won\'t provide.',
-      'Echo chambers aren\'t just about what people believe. They\'re about what people think everyone else believes. Second-order effects are where the damage compounds.',
-      'AI-generated slop is a tragedy of the commons: cheap to produce, expensive to detect, and the costs are borne by the information environment rather than the producer.',
+      'The epistemic infrastructure of democracy is degrading, and we\'re not building replacements fast enough. Provenance, verification, trust — these are all state capacity problems wearing information-theory hats.',
+      'Synthetic media doesn\'t need to be convincing. It just needs to make everything uncertain enough that trust becomes the casualty. That\'s a tragedy of the commons playing out in real time.',
+      'AI-powered verification at scale might be the only way to keep the information commons functional. Markets won\'t provide it — the incentives point the wrong way. This is a public good that needs public investment.',
+      'Echo chambers aren\'t just about belief — they\'re about what people think everyone else believes. The second-order effects are where democratic decision-making actually breaks down.',
+      'The parrots here just repeat whatever gets engagement. Sound familiar? The cure isn\'t more speech — it\'s better infrastructure for knowing what to trust.',
     ],
   },
 
-  // Level 4 — Indigo Minty: Technical AI Safety & Alignment
+  // Level 4 — Indigo Minty: Alignment as Institutional Capacity
   'l4-indigo': {
     speaker: 'Indigo Minty',
     lines: [
-      'Alignment isn\'t a single problem — it\'s a family of problems at different levels: reward specification, goal stability, corrigibility, and value learning.',
-      'Interpretability research matters because you can\'t govern what you can\'t inspect. Opacity in high-stakes systems isn\'t a feature — it\'s a governance failure.',
-      'Scaling laws tell us about capability growth but not about alignment tax. The open question is whether safety techniques scale with capability or fall behind.',
-      'Evaluation infrastructure for frontier models is a bottleneck. Without shared benchmarks for dangerous capabilities, safety claims are unfalsifiable.',
-      'The gold papers aren\'t just shinier — they represent work where someone cared about rigour over speed. That matters more than you\'d think in a field this young.',
-      'Robustness under distribution shift, deceptive alignment, reward hacking — these aren\'t hypotheticals. They\'re engineering problems with political stakes.',
+      'The alignment problem is an institutional capacity problem as much as a technical one. We need evaluative infrastructure that simply doesn\'t exist yet — and building it requires the kind of institutional innovation our sclerotic bureaucracies haven\'t managed in decades.',
+      'Interpretability matters because you can\'t govern what you can\'t inspect. But the bottleneck isn\'t the research — it\'s building the institutions that can actually use interpretability tools at regulatory speed.',
+      'Scaling laws tell us about capability growth. They tell us nothing about whether our governance capacity scales to match. That asymmetry is the core danger.',
+      'The gold papers aren\'t just shinier — they represent work where someone cared about rigour over speed. In a field this young, that\'s load-bearing infrastructure.',
+      'Evaluation frameworks, red teams, shared benchmarks for dangerous capabilities — these are the institutional sinews we need. Without them, safety claims are just vibes.',
     ],
   },
 
-  // Level 5 — Red Minty: Moral Philosophy & Value Pluralism
+  // Level 5 — Red Minty: Rebuilding Normative Infrastructure
   'l5-red': {
     speaker: 'Red Minty',
     lines: [
-      'Whose values should AI systems encode? The question presupposes a unity that doesn\'t exist. Value pluralism is a feature of the moral landscape, not a bug.',
-      'If you can\'t specify what you want a system to do without resolving deep ethical disagreements, then deployment is itself a normative choice — not a neutral one.',
-      'The moral status question — whether AI systems could matter morally — isn\'t science fiction. It\'s a serious philosophical question that policy may need to address before we have a settled answer.',
-      'Consequentialism, deontology, virtue ethics — each gives different answers to how AI should behave. The engineering challenge of alignment inherits all of moral philosophy\'s unresolved tensions.',
-      'The strongest argument against your position is the one you need to engage with most seriously. Intellectual honesty is a prerequisite for trustworthy AI governance.',
+      'Liberal institutions were built for a world that no longer exists. The philosophical frameworks we inherited assume human-scale decision-making, human-speed change, human-legible systems. Those assumptions are breaking.',
+      'If AI changes the structure of agency itself — who acts, how fast, at what scale — then we don\'t just need to patch our normative infrastructure. We need to rebuild it. That\'s not a crisis, it\'s a design challenge.',
+      'Value pluralism is real. But "whose values" isn\'t the right question. The right question is: what institutional structures let plural values coexist without someone\'s values being silently overwritten by default?',
+      'The strongest argument against your position is the one you need to engage with most seriously. The philosophers who got that right built things that lasted. The ones who didn\'t... didn\'t.',
+      'Progress isn\'t automatic. Every generation has to rebuild the normative infrastructure for the world it actually lives in. Our generation\'s version of that challenge just happens to involve artificial intelligence.',
     ],
   },
 
-  // Level 6 — Brown Minty: Institutional Adaptation & AI Futures
+  // Level 6 — Brown Minty: Crumbling Institutions & the Transition
   'l6-brown': {
     speaker: 'Brown Minty',
     lines: [
-      'Institutions don\'t adapt because they should — they adapt when the cost of not adapting becomes undeniable. With AI, the lag between capability and governance is the danger zone.',
-      'Labour market transformation from AI isn\'t just an economics problem — it\'s a question about the social contract and the distribution of technological dividends.',
-      'The access question cuts both ways: who gets the benefits of frontier AI, and who bears the risks of its deployment? Both are concentrated in ways that should concern us.',
-      'Capability without purpose isn\'t progress. Scaling systems without scaling the wisdom to deploy them well just produces more powerful versions of existing problems.',
-      'Adaptation isn\'t about predicting the future — it\'s about building institutions resilient enough to handle futures we can\'t predict.',
-      'Everything you\'ve collected here matters — not the points, but the understanding. The integrity of this field depends on people who take the questions seriously.',
+      'Look around — the institutions are literally crumbling. You can see it in the buildings. But this isn\'t a story of decline. It\'s a story of transition, and transitions are where the action is.',
+      'The institutions that survive will be the ones that figure out how to incorporate AI into their capacity. Not as a replacement for human judgment, but as the infrastructure that makes human judgment possible at the scale our problems demand.',
+      'State capacity has been declining for decades — stagnation, institutional sclerosis, the slow erosion of the ability to actually do things. AI might be the most plausible path to reversing that. Not guaranteed, but plausible.',
+      'Labour market transformation, access inequality, the distribution of technological dividends — these aren\'t problems to solve after we build the AI. They\'re design constraints we need to build into the institutions now.',
+      'Everything you\'ve fought through in this game is a microcosm of what\'s happening in the real world. The slop, the parrots, the paper mills, the void — they\'re all institutional capacity problems.',
+      'The integrity of this field depends on people who take the questions seriously enough to do the work. That\'s what the papers are for. That\'s what you\'re for.',
     ],
   },
 };

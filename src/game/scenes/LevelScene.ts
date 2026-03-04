@@ -568,7 +568,9 @@ export class LevelScene extends Phaser.Scene {
   }
 
   private throwSlop(from: Phaser.Physics.Arcade.Sprite): void {
-    const slop = this.slopGroup.create(from.x, from.y - 8, 'slop') as Phaser.Physics.Arcade.Sprite;
+    const enemyType = from.getData('type') as string;
+    const texture = enemyType === 'parrot' ? 'parrot-no' : 'slop-poop';
+    const slop = this.slopGroup.create(from.x, from.y - 8, texture) as Phaser.Physics.Arcade.Sprite;
     const angle = Phaser.Math.Angle.Between(from.x, from.y, this.player.x, this.player.y);
     const speed = 180;
     slop.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed - 50);
@@ -1185,6 +1187,15 @@ export class LevelScene extends Phaser.Scene {
       if (this.player?.active) this.player.setAlpha(1);
     });
 
+    // Bandage visual after being hit
+    this.player.setTexture('minty-bandage');
+    this.player.setScale(PLAYER_SCALE);
+    this.time.delayedCall(5000, () => {
+      if (this.player?.active && !this.invincible) {
+        this.player.setTexture('minty-teal');
+      }
+    });
+
     if (this.playerHealth <= 0) {
       this.playerLives--;
       if (this.playerLives <= 0) {
@@ -1627,17 +1638,22 @@ export class LevelScene extends Phaser.Scene {
   private drawBgSSRN(): void {
     const w = this.config.width;
 
-    // Institutional buildings (inline graphics — simple brick pattern)
-    const g0 = this.add.graphics().setScrollFactor(0.1);
-    for (let bx = 0; bx < w; bx += 80) {
-      const bh = Phaser.Math.Between(120, 320);
-      g0.fillStyle(0x0a200f, 0.6);
-      g0.fillRect(bx, GAME_HEIGHT - bh, 60, bh);
-      g0.lineStyle(1, 0x153d20, 0.3);
-      for (let wy = GAME_HEIGHT - bh; wy < GAME_HEIGHT; wy += 16) {
-        g0.strokeRect(bx, wy, 30, 16);
-        g0.strokeRect(bx + 30, wy + 8, 30, 16);
-      }
+    // Crumbling neoclassical buildings
+    for (let bx = 0; bx < w; bx += Phaser.Math.Between(100, 160)) {
+      const building = this.add.image(bx, GAME_HEIGHT - 80, 'bg-crumbling-building');
+      building.setOrigin(0, 0);
+      building.setScrollFactor(0.1);
+      building.setAlpha(Phaser.Math.FloatBetween(0.25, 0.45));
+      building.setScale(Phaser.Math.FloatBetween(1.5, 2.5));
+    }
+
+    // Fallen pillar debris scattered along ground
+    const g0 = this.add.graphics().setScrollFactor(0.15);
+    g0.fillStyle(0x3a3a3a, 0.3);
+    for (let dx = 0; dx < w; dx += Phaser.Math.Between(60, 120)) {
+      const dw = Phaser.Math.Between(12, 30);
+      const dh = Phaser.Math.Between(4, 8);
+      g0.fillRect(dx, GAME_HEIGHT - Phaser.Math.Between(10, 25), dw, dh);
     }
 
     // Social scientists (pre-baked sprites)

@@ -29,6 +29,9 @@ export function createGame(parentId: string): Phaser.Game {
         debug: false,
       },
     },
+    input: {
+      touch: true,
+    },
     scale: {
       mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH,
