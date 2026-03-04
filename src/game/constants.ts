@@ -7,6 +7,10 @@ export const GAME_HEIGHT = 500;
 export const TILE_SIZE = 32;
 
 // Player
+export const PLAYER_SCALE = 0.35;
+export const PLAYER_BODY_WIDTH = 30;
+export const PLAYER_BODY_HEIGHT = 38;
+export const NPC_SCALE = 0.25;
 export const PLAYER_SPEED = 160;
 export const PLAYER_JUMP = -350;
 export const PLAYER_MAX_HEALTH = 100;
@@ -86,6 +90,26 @@ export const LEVEL_THEMES = {
 export const MINTY_COLORS = [
   'teal', 'green', 'purple', 'yellow', 'indigo', 'red', 'brown', 'cool',
 ] as const;
+
+// Level platform texture keys
+export const LEVEL_PLATFORM_KEYS: Record<number, string> = {
+  1: 'platform-twitter',
+  2: 'platform-linkedin',
+  3: 'platform-bluesky',
+  4: 'platform-arxiv',
+  5: 'platform-philpapers',
+  6: 'platform-ssrn',
+};
+
+// Enemy death text per level
+export const DEATH_TEXTS: Record<number, string[]> = {
+  1: ['RATIO\'D', 'BLOCKED', 'MUTED', 'L + RATIO', 'REPORTED'],
+  2: ['ENDORSED', 'OUT OF NETWORK', 'CONNECTION REMOVED', 'UNFOLLOWED'],
+  3: ['DEFEDERATED', 'SKEET DELETED', 'MODLISTED', 'BLOCKED'],
+  4: ['RETRACTED', 'DESK REJECT', 'PEER REVIEWED', 'REJECTED'],
+  5: ['REFUTED', 'COUNTEREXAMPLE', 'MODUS TOLLENS', 'REDUCTIO'],
+  6: ['403 FORBIDDEN', 'RATE LIMITED', 'CAPTCHA FAILED', 'IP BANNED'],
+};
 
 // Scene keys
 export const SCENES = {

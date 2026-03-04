@@ -8,6 +8,8 @@ export class MenuScene extends Phaser.Scene {
   private stateManager!: GameStateManager;
   private selectedLevel: number = 1;
   private levelTexts: Phaser.GameObjects.Text[] = [];
+  private konamiBuffer: string[] = [];
+  private static readonly KONAMI_SEQUENCE = ['UP','UP','DOWN','DOWN','LEFT','RIGHT','LEFT','RIGHT','Z','X','ENTER'];
 
   constructor() {
     super({ key: SCENES.MENU });
@@ -126,6 +128,19 @@ export class MenuScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-DOWN', () => this.changeSelection(1));
     this.input.keyboard!.on('keydown-W', () => this.changeSelection(-1));
     this.input.keyboard!.on('keydown-S', () => this.changeSelection(1));
+
+    // Konami code listener
+    this.input.keyboard!.on('keydown', (event: KeyboardEvent) => {
+      const key = event.key.toUpperCase().replace('ARROW', '');
+      this.konamiBuffer.push(key);
+      if (this.konamiBuffer.length > MenuScene.KONAMI_SEQUENCE.length) {
+        this.konamiBuffer.shift();
+      }
+      if (this.konamiBuffer.length === MenuScene.KONAMI_SEQUENCE.length &&
+          this.konamiBuffer.every((k, i) => k === MenuScene.KONAMI_SEQUENCE[i])) {
+        this.activateKonami();
+      }
+    });
   }
 
   private changeSelection(dir: number): void {
@@ -142,6 +157,65 @@ export class MenuScene extends Phaser.Scene {
         text.setColor(level === this.selectedLevel ? '#2ec4b6' : '#abb2bf');
       }
     });
+  }
+
+  private activateKonami(): void {
+    // Unlock all levels
+    for (let i = 1; i <= 6; i++) {
+      this.stateManager.unlockLevel(i);
+    }
+
+    // Teal screen flash
+    const flash = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x2ec4b6, 0.6);
+    flash.setDepth(100);
+    this.tweens.add({
+      targets: flash,
+      alpha: 0,
+      duration: 600,
+      onComplete: () => flash.destroy(),
+    });
+
+    // Victory jingle
+    audioEngine.playSFX('victory');
+
+    // "ALL LEVELS UNLOCKED" text
+    const unlockText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'ALL LEVELS UNLOCKED', {
+      fontFamily: '"JetBrains Mono", monospace',
+      fontSize: '18px',
+      color: '#2ec4b6',
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 3,
+    }).setOrigin(0.5).setDepth(101);
+
+    this.tweens.add({
+      targets: unlockText,
+      y: GAME_HEIGHT / 2 - 30,
+      alpha: 0,
+      duration: 2000,
+      ease: 'Power2',
+      onComplete: () => unlockText.destroy(),
+    });
+
+    // Refresh level list highlighting
+    this.updateLevelHighlight();
+    // Rebuild level text colors to show newly unlocked
+    this.levelTexts.forEach((text, i) => {
+      const level = i + 1;
+      text.setColor(level === this.selectedLevel ? '#2ec4b6' : '#abb2bf');
+      text.setText(['1. X (Twitter)', '2. LinkedIn', '3. Bluesky', '4. ArXiv', '5. PhilPapers', '6. SSRN'][i]);
+      text.setInteractive({ useHandCursor: true });
+      text.on('pointerover', () => {
+        this.selectedLevel = level;
+        this.updateLevelHighlight();
+      });
+      text.on('pointerdown', () => {
+        this.startLevel(level);
+      });
+    });
+
+    // Clear buffer
+    this.konamiBuffer = [];
   }
 
   private startLevel(level: number): void {
