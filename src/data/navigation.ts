@@ -23,6 +23,7 @@ export const siteNav: PageNav[] = [
       { href: "#publications", label: "Publications" },
       { href: "#events", label: "Events" },
       { href: "#news", label: "News" },
+      { href: "#contact", label: "Contact" },
     ],
   },
   {
