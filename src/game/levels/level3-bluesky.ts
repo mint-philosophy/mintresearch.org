@@ -1,0 +1,82 @@
+import type { LevelConfig } from '../constants';
+import { GAME_HEIGHT } from '../constants';
+
+export function getLevel3Config(): LevelConfig {
+  return {
+    number: 3,
+    name: 'Bluesky',
+    width: 4000,
+    background: '#0a1a2e',
+    themeColor: 0x0085FF,
+    music: 'level3',
+    playerStart: { x: 80, y: GAME_HEIGHT - 60 },
+    platforms: [
+      // Open sky — floating/shifting platforms, wider gaps
+      { x: 180, y: GAME_HEIGHT - 100, width: 128 },
+      { x: 400, y: GAME_HEIGHT - 180, width: 128 },
+      { x: 620, y: GAME_HEIGHT - 130, width: 192 },
+      { x: 880, y: GAME_HEIGHT - 220, width: 128 },
+      { x: 1100, y: GAME_HEIGHT - 160, width: 128 },
+      { x: 1320, y: GAME_HEIGHT - 260, width: 192 },
+      { x: 1580, y: GAME_HEIGHT - 180, width: 128 },
+      { x: 1800, y: GAME_HEIGHT - 120, width: 192 },
+      { x: 2050, y: GAME_HEIGHT - 240, width: 128 },
+      { x: 2300, y: GAME_HEIGHT - 180, width: 128 },
+      { x: 2520, y: GAME_HEIGHT - 300, width: 192 },
+      { x: 2780, y: GAME_HEIGHT - 200, width: 128 },
+      { x: 3000, y: GAME_HEIGHT - 140, width: 192 },
+      { x: 3250, y: GAME_HEIGHT - 260, width: 128 },
+      { x: 3500, y: GAME_HEIGHT - 180, width: 256 },
+    ],
+    enemies: [
+      { type: 'octopus', x: 450, y: GAME_HEIGHT - 220, tier: 'peach', patrolRange: 60 },
+      { type: 'critic', x: 700, y: GAME_HEIGHT - 50, tier: 'peach', patrolRange: 80 },
+      { type: 'octopus', x: 950, y: GAME_HEIGHT - 50, tier: 'red', patrolRange: 100 },
+      { type: 'critic', x: 1200, y: GAME_HEIGHT - 50, tier: 'peach', patrolRange: 60 },
+      { type: 'octopus', x: 1500, y: GAME_HEIGHT - 300, tier: 'peach', patrolRange: 80 },
+      { type: 'octopus', x: 1900, y: GAME_HEIGHT - 160, tier: 'red', patrolRange: 100 },
+      { type: 'critic', x: 2200, y: GAME_HEIGHT - 50, tier: 'peach', patrolRange: 80 },
+      { type: 'octopus', x: 2600, y: GAME_HEIGHT - 340, tier: 'red', patrolRange: 60 },
+      { type: 'critic', x: 2900, y: GAME_HEIGHT - 50, tier: 'peach', patrolRange: 100 },
+      { type: 'octopus', x: 3300, y: GAME_HEIGHT - 300, tier: 'orange', patrolRange: 80 },
+    ],
+    papers: [
+      { x: 230, y: GAME_HEIGHT - 130 },
+      { x: 450, y: GAME_HEIGHT - 210 },
+      { x: 690, y: GAME_HEIGHT - 160 },
+      { x: 930, y: GAME_HEIGHT - 250 },
+      { x: 1150, y: GAME_HEIGHT - 190 },
+      { x: 1400, y: GAME_HEIGHT - 290 },
+      { x: 1630, y: GAME_HEIGHT - 210 },
+      { x: 1870, y: GAME_HEIGHT - 150 },
+      { x: 2100, y: GAME_HEIGHT - 270 },
+      { x: 2360, y: GAME_HEIGHT - 210 },
+      { x: 2590, y: GAME_HEIGHT - 330 },
+      { x: 2840, y: GAME_HEIGHT - 230 },
+      { x: 3060, y: GAME_HEIGHT - 170 },
+      { x: 3300, y: GAME_HEIGHT - 290 },
+      { x: 3560, y: GAME_HEIGHT - 210, isGold: true },
+    ],
+    powerUps: [
+      { type: 'speedBolt', x: 620, y: GAME_HEIGHT - 170 },
+      { type: 'dataLeak', x: 1320, y: GAME_HEIGHT - 300 },
+      { type: 'shield', x: 2050, y: GAME_HEIGHT - 280 },
+      { type: 'timeFreeze', x: 3000, y: GAME_HEIGHT - 180 },
+    ],
+    npcs: [
+      { color: 'yellow', x: 200, y: GAME_HEIGHT - 60, dialogueKey: 'l3-yellow' },
+    ],
+    checkpoints: [
+      { x: 1100, y: GAME_HEIGHT - 50 },
+      { x: 2300, y: GAME_HEIGHT - 50 },
+      { x: 3250, y: GAME_HEIGHT - 50 },
+    ],
+    boss: {
+      type: 'forkSwarm',
+      x: 3750,
+      y: GAME_HEIGHT - 80,
+      phases: 3,
+      hp: 12,
+    },
+  };
+}

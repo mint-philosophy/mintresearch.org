@@ -1,0 +1,80 @@
+import type { LevelConfig } from '../constants';
+import { GAME_HEIGHT } from '../constants';
+
+export function getLevel4Config(): LevelConfig {
+  return {
+    number: 4,
+    name: 'ArXiv',
+    width: 4000,
+    background: '#1a0a0a',
+    themeColor: 0xB31B1B,
+    music: 'level4',
+    playerStart: { x: 80, y: GAME_HEIGHT - 60 },
+    platforms: [
+      // Library shelves — regular horizontal layers
+      { x: 150, y: GAME_HEIGHT - 90, width: 256 },
+      { x: 500, y: GAME_HEIGHT - 170, width: 192 },
+      { x: 750, y: GAME_HEIGHT - 250, width: 128 },
+      { x: 950, y: GAME_HEIGHT - 130, width: 256 },
+      { x: 1250, y: GAME_HEIGHT - 200, width: 192 },
+      { x: 1500, y: GAME_HEIGHT - 280, width: 128 },
+      { x: 1700, y: GAME_HEIGHT - 150, width: 256 },
+      { x: 2000, y: GAME_HEIGHT - 230, width: 192 },
+      { x: 2250, y: GAME_HEIGHT - 100, width: 256 },
+      { x: 2550, y: GAME_HEIGHT - 200, width: 128 },
+      { x: 2750, y: GAME_HEIGHT - 280, width: 192 },
+      { x: 3000, y: GAME_HEIGHT - 160, width: 256 },
+      { x: 3350, y: GAME_HEIGHT - 240, width: 192 },
+    ],
+    enemies: [
+      { type: 'octopus', x: 350, y: GAME_HEIGHT - 130, tier: 'red', patrolRange: 80 },
+      { type: 'paperFlood', x: 600, y: GAME_HEIGHT - 210, tier: 'peach', patrolRange: 60 },
+      { type: 'octopus', x: 800, y: GAME_HEIGHT - 50, tier: 'peach', patrolRange: 100 },
+      { type: 'paperFlood', x: 1100, y: GAME_HEIGHT - 50, tier: 'peach', patrolRange: 80 },
+      { type: 'octopus', x: 1350, y: GAME_HEIGHT - 240, tier: 'red', patrolRange: 80 },
+      { type: 'paperFlood', x: 1600, y: GAME_HEIGHT - 320, tier: 'peach', patrolRange: 60 },
+      { type: 'octopus', x: 1850, y: GAME_HEIGHT - 50, tier: 'red', patrolRange: 100 },
+      { type: 'octopus', x: 2150, y: GAME_HEIGHT - 270, tier: 'orange', patrolRange: 80 },
+      { type: 'paperFlood', x: 2450, y: GAME_HEIGHT - 50, tier: 'peach', patrolRange: 100 },
+      { type: 'octopus', x: 2700, y: GAME_HEIGHT - 240, tier: 'red', patrolRange: 80 },
+      { type: 'octopus', x: 3100, y: GAME_HEIGHT - 200, tier: 'orange', patrolRange: 60 },
+    ],
+    papers: [
+      { x: 220, y: GAME_HEIGHT - 120 },
+      { x: 550, y: GAME_HEIGHT - 200 },
+      { x: 790, y: GAME_HEIGHT - 280, isGold: true },
+      { x: 1020, y: GAME_HEIGHT - 160 },
+      { x: 1300, y: GAME_HEIGHT - 230 },
+      { x: 1550, y: GAME_HEIGHT - 310, isGold: true },
+      { x: 1770, y: GAME_HEIGHT - 180 },
+      { x: 2060, y: GAME_HEIGHT - 260 },
+      { x: 2320, y: GAME_HEIGHT - 130 },
+      { x: 2600, y: GAME_HEIGHT - 230 },
+      { x: 2810, y: GAME_HEIGHT - 310 },
+      { x: 3080, y: GAME_HEIGHT - 190 },
+      { x: 3400, y: GAME_HEIGHT - 270, isGold: true },
+    ],
+    powerUps: [
+      { type: 'brainBoost', x: 750, y: GAME_HEIGHT - 290 },
+      { type: 'clippy', x: 1500, y: GAME_HEIGHT - 320 },
+      { type: 'shield', x: 2250, y: GAME_HEIGHT - 140 },
+      { type: 'speedBolt', x: 3000, y: GAME_HEIGHT - 200 },
+      { type: 'fogCloud', x: 3350, y: GAME_HEIGHT - 280 },
+    ],
+    npcs: [
+      { color: 'indigo', x: 180, y: GAME_HEIGHT - 60, dialogueKey: 'l4-indigo' },
+    ],
+    checkpoints: [
+      { x: 950, y: GAME_HEIGHT - 50 },
+      { x: 2000, y: GAME_HEIGHT - 50 },
+      { x: 3000, y: GAME_HEIGHT - 50 },
+    ],
+    boss: {
+      type: 'paperMill',
+      x: 3750,
+      y: GAME_HEIGHT - 80,
+      phases: 4,
+      hp: 20,
+    },
+  };
+}
