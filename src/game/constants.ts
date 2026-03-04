@@ -153,7 +153,7 @@ export interface PlatformData {
 }
 
 export interface EnemySpawn {
-  type: 'octopus' | 'troll' | 'influencer' | 'critic' | 'paperFlood' | 'cloudflareWall';
+  type: 'octopus' | 'troll' | 'influencer' | 'critic' | 'paperFlood' | 'cloudflareWall' | 'parrot';
   x: number;
   y: number;
   tier?: EnemyTier;
