@@ -178,7 +178,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       if (tokenEl && totalChars > 0 && docHeight > 0) {
         const ratio = Math.min(scrollTop / docHeight, 1);
         const tokens = Math.round((totalChars * ratio) / 4);
-        tokenEl.innerHTML = '<span class="arrow">\u2193</span> ' + tokens.toLocaleString() + ' tokens';
+        const tStr = tokens >= 1000 ? (tokens / 1000).toFixed(1) + 'k' : String(tokens);
+        tokenEl.innerHTML = '<span class="arrow">\u2193</span> ' + tStr + ' tokens';
       }
 
       let currentSection = 'top';
