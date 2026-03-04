@@ -66,9 +66,11 @@ const barWidth = 3; // block chars per page segment
   ))}
 
   <div class="tp-status">
+    <span class="tp-nav tp-nav--prev tp-nav--hidden" data-tp-prev>&lsaquo;</span>
     <span class="tp-bar">{Array.from({ length: totalPages }, (_, i) => (
       <span class:list={["tp-seg", { "tp-seg--active": i === 0 }]} data-tp-seg={i}>{(i === 0 ? '\u2593' : '\u2591').repeat(barWidth)}</span>
     ))}</span>
+    <span class:list={["tp-nav tp-nav--next", { "tp-nav--hidden": totalPages <= 1 }]} data-tp-next>&rsaquo;</span>
     <span class="tp-counter" data-tp-counter>1&ndash;{Math.min(pageSize, items.length)} of {items.length}</span>
     <span class="tp-hint">&uarr;&darr; navigate &middot; &larr;&rarr; page &middot; enter expand</span>
   </div>
@@ -82,6 +84,8 @@ const barWidth = 3; // block chars per page segment
     const entries = Array.from(tp.querySelectorAll<HTMLElement>('[data-tp-entry]'));
     const segs = Array.from(tp.querySelectorAll<HTMLElement>('[data-tp-seg]'));
     const counter = tp.querySelector<HTMLElement>('[data-tp-counter]');
+    const prevNav = tp.querySelector<HTMLElement>('[data-tp-prev]');
+    const nextNav = tp.querySelector<HTMLElement>('[data-tp-next]');
     const pageSize = parseInt(tp.dataset.tpPageSize || '5', 10);
     const total = rows.length;
     const totalPages = pages.length;
@@ -110,6 +114,8 @@ const barWidth = 3; // block chars per page segment
       const last = Math.min(first + pageSize - 1, total);
       if (counter) counter.textContent = `${first}\u2013${last} of ${total}`;
       updateBar();
+      prevNav?.classList.toggle('tp-nav--hidden', currentPage === 0);
+      nextNav?.classList.toggle('tp-nav--hidden', currentPage >= totalPages - 1);
     }
 
     function setActiveRow(idx: number) {
@@ -219,6 +225,32 @@ const barWidth = 3; // block chars per page segment
       } else if (e.key === 'Escape') {
         collapseAll();
       }
+    });
+
+    // Touch swipe navigation
+    let touchStartX = 0;
+    let touchStartY = 0;
+    tp.addEventListener('touchstart', (e: TouchEvent) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    tp.addEventListener('touchend', (e: TouchEvent) => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx < 0) goToPage(currentPage + 1);
+        else goToPage(currentPage - 1);
+      }
+    }, { passive: true });
+
+    // Chevron click navigation
+    prevNav?.addEventListener('click', () => {
+      goToPage(currentPage - 1);
+      setActiveRow(currentPage * pageSize);
+    });
+    nextNav?.addEventListener('click', () => {
+      goToPage(currentPage + 1);
+      setActiveRow((currentPage) * pageSize);
     });
   });
 </script>
