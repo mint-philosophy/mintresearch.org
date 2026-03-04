@@ -71,4 +71,10 @@ export const siteNav: PageNav[] = [
     icon: "◎",
     sections: [],
   },
+  {
+    path: "/data-dash/",
+    label: "Data Dash",
+    icon: "▶",
+    sections: [],
+  },
 ];

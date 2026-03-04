@@ -6,4 +6,18 @@ export default defineConfig({
   site: 'https://mintresearch.org',
   base: '/',
   output: 'static',
+  vite: {
+    optimizeDeps: {
+      include: ['phaser'],
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            phaser: ['phaser'],
+          },
+        },
+      },
+    },
+  },
 });
