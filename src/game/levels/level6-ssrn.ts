@@ -69,7 +69,7 @@ export function getLevel6Config(): LevelConfig {
     powerUps: [
       { type: 'shield', x: 600, y: GAME_HEIGHT - 280 },
       { type: 'clippy', x: 1150, y: GAME_HEIGHT - 240 },
-      { type: 'brainBoost', x: 1850, y: GAME_HEIGHT - 300 },
+      { type: 'openai', x: 1850, y: GAME_HEIGHT - 300 },
       { type: 'fogCloud', x: 2400, y: GAME_HEIGHT - 260 },
       { type: 'speedBolt', x: 3200, y: GAME_HEIGHT - 280 },
       { type: 'timeFreeze', x: 3950, y: GAME_HEIGHT - 240 },

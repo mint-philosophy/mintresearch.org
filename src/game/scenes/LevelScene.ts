@@ -1,7 +1,10 @@
 import Phaser from 'phaser';
 import { SCENES, COLORS, GAME_WIDTH, GAME_HEIGHT, PLAYER_SPEED, PLAYER_JUMP,
-  PLAYER_MAX_HEALTH, PLAYER_LIVES, PLAYER_INK_RANGE_BASE, PLAYER_INK_SPEED,
-  PLAYER_INK_COOLDOWN, PLAYER_INK_RANGE_PER_5, PLAYER_INK_RANGE_CAP,
+  PLAYER_MAX_HEALTH, PLAYER_LIVES, PAPER_PROJECTILE_SPEED,
+  PAPER_FIRE_COOLDOWN, PAPER_RANGE_PER_5, PAPER_RANGE_CAP,
+  PAPER_AMMO_PER_COLLECT, PAPER_RANGE_BASE,
+  MAX_JUMPS, DOUBLE_JUMP_FORCE_MULT,
+  CLAWD_FIRE_INTERVAL, CLAWD_DURATION, CLAWD_RANGE, CLAWD_PROJECTILE_SPEED,
   PAPER_HEAL, PAPER_SCORE, SLOP_DAMAGE, CONTACT_DAMAGE,
   TILE_SIZE, ENEMY_TIERS, PLAYER_SCALE, PLAYER_BODY_WIDTH, PLAYER_BODY_HEIGHT,
   NPC_SCALE, LEVEL_PLATFORM_KEYS, DEATH_TEXTS, LEVEL_THEMES,
@@ -34,19 +37,22 @@ export class LevelScene extends Phaser.Scene {
   private score: number = 0;
   private papersCollected: number = 0;
   private facing: number = 1; // 1 = right, -1 = left
-  private lastInkTime: number = 0;
+  private lastFireTime: number = 0;
   private invincible: boolean = false;
   private lastCheckpoint: { x: number; y: number } | null = null;
+  private paperAmmo: number = 0;
+  private jumpsRemaining: number = MAX_JUMPS;
 
   // Groups
   private platforms!: Phaser.Physics.Arcade.StaticGroup;
   private enemies!: Phaser.Physics.Arcade.Group;
   private papers!: Phaser.Physics.Arcade.Group;
   private powerUps!: Phaser.Physics.Arcade.Group;
-  private inkGroup!: Phaser.Physics.Arcade.Group;
+  private paperGroup!: Phaser.Physics.Arcade.Group;
   private slopGroup!: Phaser.Physics.Arcade.Group;
   private npcs!: Phaser.Physics.Arcade.StaticGroup;
   private checkpoints!: Phaser.Physics.Arcade.StaticGroup;
+  private clawdProjectiles!: Phaser.Physics.Arcade.Group;
 
   // Controls
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -72,6 +78,11 @@ export class LevelScene extends Phaser.Scene {
   private shieldGlow: Phaser.GameObjects.Arc | null = null;
   private colorCycleTimer: Phaser.Time.TimerEvent | null = null;
 
+  // Clawd companion
+  private clawd: Phaser.Physics.Arcade.Sprite | null = null;
+  private clawdTimer: Phaser.Time.TimerEvent | null = null;
+  private clawdFireTimer: Phaser.Time.TimerEvent | null = null;
+
   // Idle sleep
   private lastMoveTime: number = 0;
   private idleSleeping: boolean = false;
@@ -94,6 +105,8 @@ export class LevelScene extends Phaser.Scene {
     this.playerHealth = PLAYER_MAX_HEALTH;
     this.score = 0;
     this.papersCollected = 0;
+    this.paperAmmo = 0;
+    this.jumpsRemaining = MAX_JUMPS;
     this.bossDefeated = false;
     this.invincible = false;
     this.speedMultiplier = 1;
@@ -107,6 +120,9 @@ export class LevelScene extends Phaser.Scene {
     this.idleZzz = null;
     this.levelNameText = null;
     this.boss = null;
+    this.clawd = null;
+    this.clawdTimer = null;
+    this.clawdFireTimer = null;
 
     // Background
     this.cameras.main.setBackgroundColor(this.config.background);
@@ -119,10 +135,11 @@ export class LevelScene extends Phaser.Scene {
     this.enemies = this.physics.add.group();
     this.papers = this.physics.add.group();
     this.powerUps = this.physics.add.group();
-    this.inkGroup = this.physics.add.group();
+    this.paperGroup = this.physics.add.group();
     this.slopGroup = this.physics.add.group();
     this.npcs = this.physics.add.staticGroup();
     this.checkpoints = this.physics.add.staticGroup();
+    this.clawdProjectiles = this.physics.add.group();
 
     // World bounds
     this.physics.world.setBounds(0, 0, this.config.width, GAME_HEIGHT);
@@ -163,11 +180,12 @@ export class LevelScene extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.powerUps, this.collectPowerUp, undefined, this);
     this.physics.add.overlap(this.player, this.enemies, this.hitEnemy, undefined, this);
     this.physics.add.overlap(this.player, this.slopGroup, this.hitBySlop, undefined, this);
-    this.physics.add.overlap(this.inkGroup, this.enemies, this.inkHitEnemy, undefined, this);
+    this.physics.add.overlap(this.paperGroup, this.enemies, this.paperHitEnemy, undefined, this);
+    this.physics.add.overlap(this.clawdProjectiles, this.enemies, this.paperHitEnemy, undefined, this);
     this.physics.add.overlap(this.player, this.npcs, this.touchNPC, undefined, this);
     this.physics.add.overlap(this.player, this.checkpoints, this.hitCheckpoint, undefined, this);
-    this.physics.add.collider(this.inkGroup, this.platforms, (ink) => {
-      (ink as Phaser.Physics.Arcade.Sprite).destroy();
+    this.physics.add.collider(this.paperGroup, this.platforms, (paper) => {
+      (paper as Phaser.Physics.Arcade.Sprite).destroy();
     });
 
     // Controls
@@ -193,6 +211,7 @@ export class LevelScene extends Phaser.Scene {
       lives: this.playerLives,
       score: this.score,
       papers: this.papersCollected,
+      ammo: this.paperAmmo,
       level: this.levelNum,
       levelName: this.config.name,
     });
@@ -283,15 +302,32 @@ export class LevelScene extends Phaser.Scene {
       this.player.setFlipX(moveDir < 0);
     }
 
-    // Jump
-    if ((this.cursors.up.isDown || this.wasd.W.isDown || this.cursors.space.isDown) && body.blocked.down) {
-      body.setVelocityY(PLAYER_JUMP);
-      audioEngine.playSFX('jump');
+    // Reset jumps when grounded
+    if (body.blocked.down) {
+      this.jumpsRemaining = MAX_JUMPS;
     }
 
-    // Shoot ink
+    // Jump (with double jump)
+    const jumpPressed = Phaser.Input.Keyboard.JustDown(this.cursors.up)
+      || Phaser.Input.Keyboard.JustDown(this.wasd.W)
+      || Phaser.Input.Keyboard.JustDown(this.cursors.space);
+
+    if (jumpPressed && this.jumpsRemaining > 0) {
+      const isDoubleJump = !body.blocked.down;
+      const force = isDoubleJump ? PLAYER_JUMP * DOUBLE_JUMP_FORCE_MULT : PLAYER_JUMP;
+      body.setVelocityY(force);
+      this.jumpsRemaining--;
+      audioEngine.playSFX('jump');
+
+      // Particle puff on double jump
+      if (isDoubleJump) {
+        this.spawnParticles(this.player.x, this.player.y + 10, 0xaaaaaa, 4);
+      }
+    }
+
+    // Fire paper projectile
     if (Phaser.Input.Keyboard.JustDown(this.keyZ) || Phaser.Input.Keyboard.JustDown(this.keyX)) {
-      this.shootInk();
+      this.firePaper();
     }
 
     // Shield glow follows player
@@ -299,8 +335,19 @@ export class LevelScene extends Phaser.Scene {
       this.shieldGlow.setPosition(this.player.x, this.player.y);
     }
 
+    // Clawd follows player
+    if (this.clawd?.active) {
+      // Lerp follow with slight orbital bobbing
+      const targetX = this.player.x - this.facing * 20;
+      const targetY = this.player.y - 15 + Math.sin(this.time.now * 0.003) * 6;
+      this.clawd.setPosition(
+        Phaser.Math.Linear(this.clawd.x, targetX, 0.08),
+        Phaser.Math.Linear(this.clawd.y, targetY, 0.08)
+      );
+    }
+
     // Idle sleep check
-    if (moveDir !== 0 || (this.cursors.up.isDown || this.wasd.W.isDown)) {
+    if (moveDir !== 0 || jumpPressed) {
       this.lastMoveTime = this.time.now;
       if (this.idleSleeping) {
         this.idleSleeping = false;
@@ -335,7 +382,6 @@ export class LevelScene extends Phaser.Scene {
 
     // L5 Easter Egg: screen wobble near platform edges over void
     if (this.levelNum === 5 && body.blocked.down) {
-      // Check if player is near platform edge
       let nearEdge = false;
       this.platforms.getChildren().forEach((obj) => {
         const plat = obj as Phaser.Physics.Arcade.Sprite;
@@ -358,23 +404,38 @@ export class LevelScene extends Phaser.Scene {
     }
   }
 
-  private shootInk(): void {
+  private firePaper(): void {
     const now = this.time.now;
-    if (now - this.lastInkTime < PLAYER_INK_COOLDOWN) return;
-    this.lastInkTime = now;
+    if (now - this.lastFireTime < PAPER_FIRE_COOLDOWN) return;
+    if (this.paperAmmo <= 0) return;
 
-    const ink = this.inkGroup.create(this.player.x + this.facing * 16, this.player.y, 'ink') as Phaser.Physics.Arcade.Sprite;
-    ink.body!.allowGravity = false;
-    ink.setVelocityX(this.facing * PLAYER_INK_SPEED);
+    this.lastFireTime = now;
+    this.paperAmmo--;
+
+    const proj = this.paperGroup.create(
+      this.player.x + this.facing * 16, this.player.y, 'paper-projectile'
+    ) as Phaser.Physics.Arcade.Sprite;
+    proj.body!.allowGravity = false;
+    proj.setVelocityX(this.facing * PAPER_PROJECTILE_SPEED);
     audioEngine.playSFX('shoot');
+
+    // Spinning rotation
+    this.tweens.add({
+      targets: proj,
+      angle: this.facing * 360,
+      duration: 500,
+      repeat: -1,
+    });
 
     // Destroy after range
     const range = Math.min(
-      PLAYER_INK_RANGE_BASE + Math.floor(this.papersCollected / 5) * PLAYER_INK_RANGE_PER_5,
-      PLAYER_INK_RANGE_CAP
+      PAPER_RANGE_BASE + Math.floor(this.papersCollected / 5) * PAPER_RANGE_PER_5,
+      PAPER_RANGE_CAP
     );
-    const lifetime = (range / PLAYER_INK_SPEED) * 1000;
-    this.time.delayedCall(lifetime, () => { if (ink.active) ink.destroy(); });
+    const lifetime = (range / PAPER_PROJECTILE_SPEED) * 1000;
+    this.time.delayedCall(lifetime, () => { if (proj.active) proj.destroy(); });
+
+    this.emitHUDUpdate();
   }
 
   private buildPlatforms(): void {
@@ -402,51 +463,15 @@ export class LevelScene extends Phaser.Scene {
       const tier = e.tier || 'peach';
       const tierData = ENEMY_TIERS[tier];
 
-      // Create enemy sprite — octopuses use emoji text, others use colored rectangles
-      let enemy: Phaser.Physics.Arcade.Sprite;
-
+      // Use pre-generated textures from PreloadScene
+      let texKey: string;
       if (e.type === 'octopus') {
-        // Generate a colored rectangle for octopus
-        const colorMap: Record<string, number> = {
-          peach: 0xffcba4, red: 0xe06c75, orange: 0xf5a623,
-        };
-        const texKey = `enemy-${e.type}-${tier}`;
-        if (!this.textures.exists(texKey)) {
-          const g = this.add.graphics();
-          g.fillStyle(colorMap[tier] || 0xffcba4);
-          // Octopus shape: round head with tentacles
-          g.fillCircle(12, 8, 8);
-          g.fillRect(4, 12, 4, 8);
-          g.fillRect(10, 14, 4, 6);
-          g.fillRect(16, 12, 4, 8);
-          // Eyes
-          g.fillStyle(0x000000);
-          g.fillRect(8, 6, 3, 3);
-          g.fillRect(14, 6, 3, 3);
-          g.generateTexture(texKey, 24, 22);
-          g.destroy();
-        }
-        enemy = this.enemies.create(e.x, e.y, texKey) as Phaser.Physics.Arcade.Sprite;
+        texKey = `enemy-${e.type}-${tier}`;
       } else {
-        // Generic enemy rectangle
-        const texKey = `enemy-${e.type}`;
-        if (!this.textures.exists(texKey)) {
-          const g = this.add.graphics();
-          const colorMap: Record<string, number> = {
-            troll: 0x98c379, influencer: 0xc678dd, critic: 0x5c6370,
-            paperFlood: 0xb31b1b, cloudflareWall: 0xf5a623,
-          };
-          g.fillStyle(colorMap[e.type] || 0x888888);
-          g.fillRect(0, 0, 24, 24);
-          g.fillStyle(0x000000);
-          g.fillRect(6, 6, 4, 4);
-          g.fillRect(14, 6, 4, 4);
-          g.fillRect(8, 14, 8, 3);
-          g.generateTexture(texKey, 24, 24);
-          g.destroy();
-        }
-        enemy = this.enemies.create(e.x, e.y, texKey) as Phaser.Physics.Arcade.Sprite;
+        texKey = `enemy-${e.type}`;
       }
+
+      const enemy = this.enemies.create(e.x, e.y, texKey) as Phaser.Physics.Arcade.Sprite;
 
       enemy.setData('type', e.type);
       enemy.setData('tier', tier);
@@ -523,7 +548,6 @@ export class LevelScene extends Phaser.Scene {
 
     // L1 Easter Egg: hidden blue check paper worth 5× at a hard-to-reach spot
     if (this.levelNum === 1) {
-      // Place near top of level, far right — requires skillful platforming
       const bcx = this.config.width - 200;
       const bcy = 60;
       const blueCheck = this.papers.create(bcx, bcy, 'paper-gold') as Phaser.Physics.Arcade.Sprite;
@@ -543,8 +567,8 @@ export class LevelScene extends Phaser.Scene {
 
   private spawnPowerUps(): void {
     const textureMap: Record<string, string> = {
-      shield: 'pu-shield', brainBoost: 'pu-brain', speedBolt: 'pu-speed', timeFreeze: 'pu-freeze',
-      clippy: 'pd-clippy', fogCloud: 'pd-fog', sludge: 'pd-sludge', dataLeak: 'pd-leak',
+      shield: 'pu-shield', openai: 'pu-openai', speedBolt: 'pu-speed', timeFreeze: 'pu-freeze',
+      clippy: 'pd-clippy', fogCloud: 'pd-fog', grok: 'pd-grok', dataLeak: 'pd-leak',
     };
 
     this.config.powerUps.forEach(p => {
@@ -589,25 +613,21 @@ export class LevelScene extends Phaser.Scene {
 
       if (this.levelNum === 1) {
         // Level 1: Algorithm Vortex with X logo
-        // Swirling vortex body
         g.fillStyle(0x1DA1F2, 0.3);
         g.fillCircle(24, 22, 22);
         g.fillStyle(this.config.themeColor, 0.5);
         g.fillCircle(24, 22, 16);
-        // X logo in center
         g.fillStyle(0xffffff, 0.4);
         for (let i = 0; i < 12; i++) {
           g.fillRect(12 + i * 2, 14 + i * 1.5, 4, 3);
           g.fillRect(34 - i * 2, 14 + i * 1.5, 4, 3);
         }
-        // Red eyes
         g.fillStyle(0xff0000);
         g.fillCircle(16, 18, 4);
         g.fillCircle(32, 18, 4);
         g.fillStyle(0x000000);
         g.fillCircle(16, 18, 2);
         g.fillCircle(32, 18, 2);
-        // Verification badge ring (small circles around perimeter)
         g.fillStyle(0x1DA1F2, 0.4);
         for (let a = 0; a < 8; a++) {
           const angle = (a / 8) * Math.PI * 2;
@@ -621,7 +641,6 @@ export class LevelScene extends Phaser.Scene {
         g.fillRect(14, 32, 8, 10);
         g.fillRect(26, 30, 8, 12);
         g.fillRect(36, 32, 8, 10);
-        // Eyes
         g.fillStyle(0xff0000);
         g.fillCircle(16, 16, 4);
         g.fillCircle(32, 16, 4);
@@ -650,7 +669,6 @@ export class LevelScene extends Phaser.Scene {
           duration: 3000,
           repeat: -1,
         });
-        // Orbit around boss — update position each frame
         const orbData = { angle: angle, speed: 0.002 };
         this.time.addEvent({
           delay: 16,
@@ -694,6 +712,10 @@ export class LevelScene extends Phaser.Scene {
     this.papersCollected += multiplier;
     this.score += PAPER_SCORE * multiplier;
     this.playerHealth = Math.min(PLAYER_MAX_HEALTH, this.playerHealth + PAPER_HEAL);
+
+    // Each collected paper gives ammo
+    this.paperAmmo += PAPER_AMMO_PER_COLLECT * multiplier;
+
     this.emitHUDUpdate();
     audioEngine.playSFX('collect');
 
@@ -740,7 +762,7 @@ export class LevelScene extends Phaser.Scene {
       this.activeEffects.delete(type);
     }
 
-    const isPowerDown = ['clippy', 'fogCloud', 'sludge', 'dataLeak'].includes(type);
+    const isPowerDown = ['clippy', 'fogCloud', 'grok', 'dataLeak'].includes(type);
     audioEngine.playSFX(isPowerDown ? 'powerdown' : 'powerup');
 
     switch (type) {
@@ -765,6 +787,8 @@ export class LevelScene extends Phaser.Scene {
             colorIdx++;
           },
         });
+        // Spawn Clawd companion
+        this.spawnClawd();
         this.activeEffects.set(type, this.time.delayedCall(8000, () => {
           this.invincible = false;
           this.shieldGlow?.destroy();
@@ -775,8 +799,9 @@ export class LevelScene extends Phaser.Scene {
           this.activeEffects.delete(type);
         }));
         break;
-      case 'brainBoost':
-        this.player.setScale(PLAYER_SCALE * 2);
+      case 'openai':
+        // Scale ×3 for 10s
+        this.player.setScale(PLAYER_SCALE * 3);
         this.activeEffects.set(type, this.time.delayedCall(10000, () => {
           this.player.setScale(PLAYER_SCALE);
           this.activeEffects.delete(type);
@@ -813,10 +838,13 @@ export class LevelScene extends Phaser.Scene {
           this.activeEffects.delete(type);
         }));
         break;
-      case 'sludge':
-        this.speedMultiplier = 0.5;
+      case 'grok':
+        // Gray tint + speed ×0.3 for 5s
+        this.speedMultiplier = 0.3;
+        this.player.setTint(0x888888);
         this.activeEffects.set(type, this.time.delayedCall(5000, () => {
           this.speedMultiplier = 1;
+          this.player.clearTint();
           this.activeEffects.delete(type);
         }));
         break;
@@ -828,12 +856,89 @@ export class LevelScene extends Phaser.Scene {
     this.emitHUDUpdate();
   }
 
+  // ── Clawd the Crab Companion ──
+
+  private spawnClawd(): void {
+    // Clean up existing Clawd
+    this.despawnClawd();
+
+    this.clawd = this.add.sprite(this.player.x - 20, this.player.y - 15, 'clawd') as any;
+    // Clawd is a visual sprite, not physics — projectiles use the group
+    this.clawd.setDepth(this.player.depth + 1);
+
+    // Auto-fire at nearest enemy
+    this.clawdFireTimer = this.time.addEvent({
+      delay: CLAWD_FIRE_INTERVAL,
+      loop: true,
+      callback: () => {
+        if (!this.clawd?.active || !this.player?.active) return;
+        // Find nearest enemy within range
+        let nearestEnemy: Phaser.Physics.Arcade.Sprite | null = null;
+        let nearestDist = CLAWD_RANGE;
+        this.enemies.getChildren().forEach((obj) => {
+          const e = obj as Phaser.Physics.Arcade.Sprite;
+          if (!e.active) return;
+          const dist = Phaser.Math.Distance.Between(this.clawd!.x, this.clawd!.y, e.x, e.y);
+          if (dist < nearestDist) {
+            nearestDist = dist;
+            nearestEnemy = e;
+          }
+        });
+        if (nearestEnemy) {
+          const proj = this.clawdProjectiles.create(
+            this.clawd.x, this.clawd.y, 'clawd-projectile'
+          ) as Phaser.Physics.Arcade.Sprite;
+          proj.body!.allowGravity = false;
+          const angle = Phaser.Math.Angle.Between(
+            this.clawd.x, this.clawd.y,
+            (nearestEnemy as Phaser.Physics.Arcade.Sprite).x,
+            (nearestEnemy as Phaser.Physics.Arcade.Sprite).y
+          );
+          proj.setVelocity(
+            Math.cos(angle) * CLAWD_PROJECTILE_SPEED,
+            Math.sin(angle) * CLAWD_PROJECTILE_SPEED
+          );
+          this.time.delayedCall(2000, () => { if (proj.active) proj.destroy(); });
+        }
+      },
+    });
+
+    // Despawn after duration
+    this.clawdTimer = this.time.delayedCall(CLAWD_DURATION, () => {
+      this.despawnClawd();
+    });
+  }
+
+  private despawnClawd(): void {
+    this.clawd?.destroy();
+    this.clawd = null;
+    this.clawdFireTimer?.remove();
+    this.clawdFireTimer = null;
+    this.clawdTimer?.remove();
+    this.clawdTimer = null;
+  }
+
+  // ── Stomp & Enemy Hit Logic ──
+
   private hitEnemy(_player: any, enemy: any): void {
     if (this.invincible) return;
     const e = enemy as Phaser.Physics.Arcade.Sprite;
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+
+    // Stomp check: player is falling AND player's feet are above enemy's top
+    const playerBottom = this.player.y + (PLAYER_BODY_HEIGHT / 2);
+    const enemyTop = e.y - (e.height / 2);
+    if (body.velocity.y > 0 && playerBottom < enemyTop + 10) {
+      // Stomp! 1 damage + bounce
+      this.damageEnemy(e, 1);
+      body.setVelocityY(-250);
+      audioEngine.playSFX('jump');
+      return;
+    }
+
+    // Normal contact damage + knockback
     audioEngine.playSFX('hit');
     this.takeDamage(CONTACT_DAMAGE);
-    // Knockback
     const dir = this.player.x < e.x ? -1 : 1;
     this.player.setVelocity(dir * 200, -150);
   }
@@ -844,12 +949,16 @@ export class LevelScene extends Phaser.Scene {
     this.takeDamage(SLOP_DAMAGE);
   }
 
-  private inkHitEnemy(ink: any, enemy: any): void {
-    const i = ink as Phaser.Physics.Arcade.Sprite;
+  private paperHitEnemy(projectile: any, enemy: any): void {
+    const p = projectile as Phaser.Physics.Arcade.Sprite;
     const e = enemy as Phaser.Physics.Arcade.Sprite;
-    i.destroy();
+    p.destroy();
+    this.damageEnemy(e, 1);
+  }
 
-    const hp = (e.getData('hp') as number) - 1;
+  /** Shared enemy damage logic used by stomp, paper hit, and Clawd hit */
+  private damageEnemy(e: Phaser.Physics.Arcade.Sprite, damage: number): void {
+    const hp = (e.getData('hp') as number) - damage;
     e.setData('hp', hp);
 
     // Flash white
@@ -857,49 +966,50 @@ export class LevelScene extends Phaser.Scene {
     this.time.delayedCall(100, () => { if (e.active) e.clearTint(); });
 
     if (hp <= 0) {
-      const score = e.getData('score') as number;
-      this.score += score;
-
-      const isBoss = e.getData('isBoss');
-
-      // Floating death text
-      const texts = DEATH_TEXTS[this.levelNum] || ['DEFEATED'];
-      const deathText = texts[Phaser.Math.Between(0, texts.length - 1)];
-      const floatText = this.add.text(e.x, e.y - 10, deathText, {
-        fontFamily: '"JetBrains Mono", monospace',
-        fontSize: isBoss ? '14px' : '10px',
-        color: `#${this.config.themeColor.toString(16).padStart(6, '0')}`,
-        fontStyle: 'bold',
-        stroke: '#000000',
-        strokeThickness: 2,
-      }).setOrigin(0.5).setDepth(50);
-      this.tweens.add({
-        targets: floatText,
-        y: e.y - 50,
-        alpha: 0,
-        duration: 1200,
-        ease: 'Power2',
-        onComplete: () => floatText.destroy(),
-      });
-
-      // Check if boss
-      if (isBoss) {
-        // Boss death: 16-particle burst + screen shake
-        this.spawnParticles(e.x, e.y, this.config.themeColor, 16);
-        this.cameras.main.shake(300, 0.015);
-        this.bossDefeated = true;
-        this.fsm.setState('victory');
-      } else {
-        // Normal death: themed particles
-        this.spawnParticles(e.x, e.y, this.config.themeColor, 8);
-      }
-
-      e.destroy();
-      this.emitHUDUpdate();
+      this.killEnemy(e);
     } else if (e.getData('isBoss')) {
-      // Screen shake on boss damage (subtle)
       this.cameras.main.shake(150, 0.01);
     }
+  }
+
+  /** Shared enemy death logic */
+  private killEnemy(e: Phaser.Physics.Arcade.Sprite): void {
+    const score = e.getData('score') as number;
+    this.score += score;
+
+    const isBoss = e.getData('isBoss');
+
+    // Floating death text
+    const texts = DEATH_TEXTS[this.levelNum] || ['DEFEATED'];
+    const deathText = texts[Phaser.Math.Between(0, texts.length - 1)];
+    const floatText = this.add.text(e.x, e.y - 10, deathText, {
+      fontFamily: '"JetBrains Mono", monospace',
+      fontSize: isBoss ? '14px' : '10px',
+      color: `#${this.config.themeColor.toString(16).padStart(6, '0')}`,
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 2,
+    }).setOrigin(0.5).setDepth(50);
+    this.tweens.add({
+      targets: floatText,
+      y: e.y - 50,
+      alpha: 0,
+      duration: 1200,
+      ease: 'Power2',
+      onComplete: () => floatText.destroy(),
+    });
+
+    if (isBoss) {
+      this.spawnParticles(e.x, e.y, this.config.themeColor, 16);
+      this.cameras.main.shake(300, 0.015);
+      this.bossDefeated = true;
+      this.fsm.setState('victory');
+    } else {
+      this.spawnParticles(e.x, e.y, this.config.themeColor, 8);
+    }
+
+    e.destroy();
+    this.emitHUDUpdate();
   }
 
   private touchNPC(_player: any, npc: any): void {
@@ -954,6 +1064,7 @@ export class LevelScene extends Phaser.Scene {
     audioEngine.playSFX('death');
     this.gsm.updateHighScore(this.score);
     this.gsm.addPapers(this.papersCollected);
+    this.despawnClawd();
 
     this.time.delayedCall(1500, () => {
       this.scene.stop(SCENES.HUD);
@@ -970,7 +1081,6 @@ export class LevelScene extends Phaser.Scene {
     audioEngine.stopTrack();
     audioEngine.playSFX('boss');
     audioEngine.playTrack(bossTrack);
-    // Lock camera to boss arena
     this.cameras.main.stopFollow();
     this.cameras.main.pan(this.boss!.x, GAME_HEIGHT / 2, 1000, 'Power2');
 
@@ -985,13 +1095,11 @@ export class LevelScene extends Phaser.Scene {
 
     if (this.boss?.active) {
       this.bossHealth = this.boss.getData('hp') as number;
-      // Boss shoots slop more frequently
       const now = this.time.now;
       const lastSlop = this.boss.getData('lastSlop') as number;
       if (now - lastSlop > 1200) {
         this.throwSlop(this.boss);
         this.boss.setData('lastSlop', now);
-        // Subtle screen shake on boss attack
         this.cameras.main.shake(80, 0.005);
       }
     }
@@ -1002,6 +1110,7 @@ export class LevelScene extends Phaser.Scene {
     audioEngine.playSFX('victory');
     this.gsm.updateHighScore(this.score);
     this.gsm.addPapers(this.papersCollected);
+    this.despawnClawd();
 
     if (this.levelNum < 6) {
       this.gsm.unlockLevel(this.levelNum + 1);
@@ -1045,22 +1154,19 @@ export class LevelScene extends Phaser.Scene {
   }
 
   private emitHUDUpdate(): void {
-    this.events.emit('hudUpdate', {
+    const data = {
       health: this.playerHealth,
       lives: this.playerLives,
       score: this.score,
       papers: this.papersCollected,
-    });
+      ammo: this.paperAmmo,
+    };
+    this.events.emit('hudUpdate', data);
 
     // Also emit to HUD scene directly
     const hudScene = this.scene.get(SCENES.HUD);
     if (hudScene) {
-      hudScene.events.emit('hudUpdate', {
-        health: this.playerHealth,
-        lives: this.playerLives,
-        score: this.score,
-        papers: this.papersCollected,
-      });
+      hudScene.events.emit('hudUpdate', data);
     }
   }
 
@@ -1093,42 +1199,34 @@ export class LevelScene extends Phaser.Scene {
   private drawBgTwitter(): void {
     const w = this.config.width;
 
-    // Layer 0 (0.1): Dark cityscape + giant faded X logo silhouette
     const g0 = this.add.graphics().setScrollFactor(0.1);
     g0.fillStyle(0x0a1520, 0.4);
     for (let x = 0; x < w; x += 70) {
       const h = Phaser.Math.Between(100, 250);
       g0.fillRect(x, GAME_HEIGHT - h, 50, h);
     }
-    // Giant X logo in sky
     g0.fillStyle(0x1DA1F2, 0.06);
     g0.fillRect(w * 0.35, 30, 8, 120);
     g0.fillRect(w * 0.35 - 40, 30, 88, 8);
     g0.fillRect(w * 0.35 - 40, 142, 88, 8);
-    // Diagonal strokes of X
     for (let i = 0; i < 60; i++) {
       g0.fillRect(w * 0.35 - 40 + i * 1.4, 30 + i * 2, 6, 4);
       g0.fillRect(w * 0.35 + 44 - i * 1.4, 30 + i * 2, 6, 4);
     }
 
-    // Layer 1 (0.2): Tweet card silhouettes
     const g1 = this.add.graphics().setScrollFactor(0.2);
     for (let x = 80; x < w; x += 300) {
       const cy = Phaser.Math.Between(60, 300);
       g1.fillStyle(0x15202b, 0.25);
-      // Card body
       g1.fillRoundedRect(x, cy, 160, 90, 8);
-      // Avatar circle
       g1.fillStyle(0x1DA1F2, 0.12);
       g1.fillCircle(x + 20, cy + 20, 10);
-      // Text line placeholders
       g1.fillStyle(0x1a2d3d, 0.2);
       g1.fillRect(x + 38, cy + 14, 80, 3);
       g1.fillRect(x + 38, cy + 22, 50, 3);
       g1.fillRect(x + 12, cy + 40, 136, 3);
       g1.fillRect(x + 12, cy + 48, 100, 3);
       g1.fillRect(x + 12, cy + 56, 120, 3);
-      // Engagement icons row
       g1.fillStyle(0x1DA1F2, 0.08);
       g1.fillRect(x + 15, cy + 72, 8, 6);
       g1.fillRect(x + 50, cy + 72, 8, 6);
@@ -1136,29 +1234,25 @@ export class LevelScene extends Phaser.Scene {
       g1.fillRect(x + 120, cy + 72, 8, 6);
     }
 
-    // Layer 2 (0.3): Floating blue verification checkmarks
     const g2 = this.add.graphics().setScrollFactor(0.3);
     for (let x = 50; x < w; x += 200) {
       const cy = Phaser.Math.Between(40, 350);
       g2.fillStyle(0x1DA1F2, 0.15);
       g2.fillCircle(x, cy, 8);
       g2.fillStyle(0xffffff, 0.15);
-      // Simple checkmark
       g2.fillRect(x - 3, cy, 3, 6);
       g2.fillRect(x - 1, cy + 3, 6, 3);
     }
 
-    // Layer 3 (0.5): Floating hashtag symbols
     for (let x = 30; x < w; x += 250) {
       const cy = Phaser.Math.Between(80, 380);
-      const ht = this.add.text(x, cy, '#', {
+      this.add.text(x, cy, '#', {
         fontFamily: '"JetBrains Mono", monospace',
         fontSize: '24px',
         color: '#1DA1F2',
       }).setAlpha(0.08).setScrollFactor(0.5);
     }
 
-    // Animated verification badges
     for (let i = 0; i < 7; i++) {
       const bx = Phaser.Math.Between(100, w - 100);
       const by = Phaser.Math.Between(40, 350);
@@ -1181,13 +1275,11 @@ export class LevelScene extends Phaser.Scene {
   private drawBgLinkedIn(): void {
     const w = this.config.width;
 
-    // Office window grid
     const g0 = this.add.graphics().setScrollFactor(0.1);
     for (let bx = 0; bx < w; bx += 100) {
       const bh = Phaser.Math.Between(150, 300);
       g0.fillStyle(0x0a1628, 0.5);
       g0.fillRect(bx, GAME_HEIGHT - bh, 80, bh);
-      // Windows
       g0.fillStyle(0x1a3050, 0.3);
       for (let wy = GAME_HEIGHT - bh + 15; wy < GAME_HEIGHT - 20; wy += 25) {
         for (let wx = bx + 10; wx < bx + 70; wx += 20) {
@@ -1196,37 +1288,27 @@ export class LevelScene extends Phaser.Scene {
       }
     }
 
-    // LinkedIn post card silhouettes
-    const g1 = this.add.graphics().setScrollFactor(0.2);
-    for (let x = 60; x < w; x += 350) {
-      const cy = Phaser.Math.Between(80, 280);
-      g1.fillStyle(0x0a1628, 0.2);
-      g1.fillRoundedRect(x, cy, 180, 100, 4);
-      g1.fillStyle(0x0A66C2, 0.15);
-      g1.fillRect(x, cy, 3, 100);
-      // Profile placeholder
-      g1.fillCircle(x + 22, cy + 22, 12);
-      // Text lines
-      g1.fillStyle(0x1a3050, 0.15);
-      g1.fillRect(x + 42, cy + 14, 90, 3);
-      g1.fillRect(x + 42, cy + 22, 60, 2);
-      g1.fillRect(x + 12, cy + 45, 156, 3);
-      g1.fillRect(x + 12, cy + 53, 130, 3);
-      // Like bar
+    const g1 = this.add.graphics().setScrollFactor(0.25);
+    for (let x = 60; x < w; x += 250) {
+      const cy = Phaser.Math.Between(100, 300);
       g1.fillStyle(0x0A66C2, 0.08);
-      g1.fillRect(x + 12, cy + 82, 156, 1);
+      g1.fillRoundedRect(x, cy, 120, 60, 6);
+      g1.fillStyle(0x1a3050, 0.12);
+      g1.fillCircle(x + 25, cy + 20, 12);
+      g1.fillRect(x + 45, cy + 12, 50, 3);
+      g1.fillRect(x + 45, cy + 20, 35, 3);
+      g1.fillRect(x + 15, cy + 42, 90, 3);
     }
 
-    // Floating "in" logos
     for (let i = 0; i < 5; i++) {
-      const ix = Phaser.Math.Between(50, w - 50);
-      const iy = Phaser.Math.Between(50, 350);
-      const logo = this.add.text(ix, iy, 'in', {
+      const bx = Phaser.Math.Between(50, w - 50);
+      const by = Phaser.Math.Between(30, 200);
+      this.add.text(bx, by, 'in', {
         fontFamily: 'serif',
-        fontSize: '18px',
+        fontSize: '36px',
         color: '#0A66C2',
         fontStyle: 'bold',
-      }).setAlpha(0.08).setScrollFactor(0.4);
+      }).setAlpha(0.04).setScrollFactor(0.15);
     }
   }
 
@@ -1234,49 +1316,37 @@ export class LevelScene extends Phaser.Scene {
   private drawBgBluesky(): void {
     const w = this.config.width;
 
-    // Cloud shapes (overlapping circles)
-    const g0 = this.add.graphics().setScrollFactor(0.15);
-    for (let x = 0; x < w; x += 180) {
-      const cy = Phaser.Math.Between(40, 200);
-      g0.fillStyle(0x1a3050, 0.15);
-      g0.fillCircle(x, cy, 30);
-      g0.fillCircle(x + 25, cy - 10, 25);
-      g0.fillCircle(x + 50, cy, 28);
-      g0.fillCircle(x + 20, cy + 5, 22);
-      g0.fillCircle(x + 40, cy + 8, 20);
+    const g0 = this.add.graphics().setScrollFactor(0.1);
+    for (let i = 0; i < 20; i++) {
+      const cx = Phaser.Math.Between(0, w);
+      const cy = Phaser.Math.Between(20, 200);
+      const r = Phaser.Math.Between(20, 60);
+      g0.fillStyle(0x0085FF, Phaser.Math.FloatBetween(0.03, 0.08));
+      g0.fillCircle(cx, cy, r);
     }
 
-    // Butterfly silhouettes
-    const g1 = this.add.graphics().setScrollFactor(0.3);
-    for (let i = 0; i < 6; i++) {
-      const bx = Phaser.Math.Between(80, w - 80);
-      const by = Phaser.Math.Between(50, 350);
-      g1.fillStyle(0x0085FF, 0.1);
-      // Left wing
-      g1.fillEllipse(bx - 6, by - 3, 10, 8);
-      // Right wing
-      g1.fillEllipse(bx + 6, by - 3, 10, 8);
-      // Body
-      g1.fillRect(bx - 1, by - 5, 2, 10);
+    const g1 = this.add.graphics().setScrollFactor(0.2);
+    for (let i = 0; i < 15; i++) {
+      const cx = Phaser.Math.Between(0, w);
+      const cy = Phaser.Math.Between(30, 350);
+      g1.fillStyle(0xffffff, 0.04);
+      g1.fillCircle(cx, cy, Phaser.Math.Between(15, 40));
+      g1.fillCircle(cx + 20, cy - 5, Phaser.Math.Between(10, 30));
+      g1.fillCircle(cx - 15, cy + 5, Phaser.Math.Between(10, 25));
     }
 
-    // Blue gradient sky effect — horizontal bands
-    const g2 = this.add.graphics().setScrollFactor(0.05);
-    for (let y = 0; y < GAME_HEIGHT; y += 50) {
-      const alpha = 0.03 + (1 - y / GAME_HEIGHT) * 0.05;
-      g2.fillStyle(0x0085FF, alpha);
-      g2.fillRect(0, y, w, 50);
-    }
-
-    // Floating @ symbols
-    for (let i = 0; i < 5; i++) {
-      const ax = Phaser.Math.Between(50, w - 50);
-      const ay = Phaser.Math.Between(60, 380);
-      this.add.text(ax, ay, '@', {
-        fontFamily: '"JetBrains Mono", monospace',
-        fontSize: '16px',
-        color: '#0085FF',
-      }).setAlpha(0.06).setScrollFactor(0.4);
+    for (let i = 0; i < 8; i++) {
+      const sx = Phaser.Math.Between(50, w - 50);
+      const sy = Phaser.Math.Between(60, 380);
+      const star = this.add.circle(sx, sy, 2, 0xffffff, 0.15);
+      star.setScrollFactor(0.4);
+      this.tweens.add({
+        targets: star,
+        alpha: 0.02,
+        duration: Phaser.Math.Between(1500, 3000),
+        yoyo: true,
+        repeat: -1,
+      });
     }
   }
 
@@ -1284,47 +1354,27 @@ export class LevelScene extends Phaser.Scene {
   private drawBgArxiv(): void {
     const w = this.config.width;
 
-    // Library shelf lines
     const g0 = this.add.graphics().setScrollFactor(0.1);
-    for (let y = 60; y < GAME_HEIGHT; y += 80) {
-      g0.fillStyle(0x3a1010, 0.3);
-      g0.fillRect(0, y, w, 4);
-      // Book spines on shelves
-      for (let x = 0; x < w; x += Phaser.Math.Between(12, 25)) {
-        const bh = Phaser.Math.Between(30, 65);
-        const colors = [0x4a1515, 0x6b2020, 0x2a0a0a, 0x8b3030, 0x3a1515];
-        g0.fillStyle(colors[Phaser.Math.Between(0, colors.length - 1)], 0.2);
-        g0.fillRect(x, y - bh, Phaser.Math.Between(8, 15), bh);
+    for (let x = 0; x < w; x += 50) {
+      const bh = Phaser.Math.Between(100, 350);
+      g0.fillStyle(0x3a0e0e, 0.4);
+      g0.fillRect(x, GAME_HEIGHT - bh, 40, bh);
+      g0.fillStyle(0x5a1818, 0.2);
+      for (let sy = GAME_HEIGHT - bh + 5; sy < GAME_HEIGHT - 5; sy += 12) {
+        g0.fillRect(x + 5, sy, 30, 8);
       }
     }
 
-    // Faint LaTeX fragments
-    const fragments = ['∇', '∫', 'Σ', 'P(A|B)', '∂', 'λ', '∞', 'π'];
-    for (let i = 0; i < 8; i++) {
-      const fx = Phaser.Math.Between(50, w - 50);
-      const fy = Phaser.Math.Between(30, 400);
-      this.add.text(fx, fy, fragments[i % fragments.length], {
-        fontFamily: 'serif',
-        fontSize: `${Phaser.Math.Between(14, 28)}px`,
-        color: '#B31B1B',
-      }).setAlpha(0.06).setScrollFactor(0.3);
-    }
-
-    // Floating paper sheets
-    for (let i = 0; i < 5; i++) {
-      const px = Phaser.Math.Between(80, w - 80);
-      const py = Phaser.Math.Between(40, 350);
-      const paper = this.add.rectangle(px, py, 16, 20, 0xffffff, 0.04);
-      paper.setScrollFactor(0.4);
-      this.tweens.add({
-        targets: paper,
-        y: py - 20,
-        angle: Phaser.Math.Between(-10, 10),
-        duration: Phaser.Math.Between(4000, 7000),
-        yoyo: true,
-        repeat: -1,
-        ease: 'Sine.easeInOut',
-      });
+    const g1 = this.add.graphics().setScrollFactor(0.3);
+    for (let i = 0; i < 12; i++) {
+      const px = Phaser.Math.Between(20, w - 20);
+      const py = Phaser.Math.Between(40, 380);
+      g1.fillStyle(0xffffff, 0.06);
+      g1.fillRect(px, py, 16, 20);
+      g1.fillStyle(0x888888, 0.04);
+      g1.fillRect(px + 3, py + 4, 10, 1);
+      g1.fillRect(px + 3, py + 7, 8, 1);
+      g1.fillRect(px + 3, py + 10, 11, 1);
     }
   }
 
@@ -1332,50 +1382,24 @@ export class LevelScene extends Phaser.Scene {
   private drawBgPhilpapers(): void {
     const w = this.config.width;
 
-    // Sparse void — very subtle gradient
     const g0 = this.add.graphics().setScrollFactor(0.05);
-    for (let y = 0; y < GAME_HEIGHT; y += 100) {
-      g0.fillStyle(0x0a0a14, 0.03 + y / GAME_HEIGHT * 0.04);
-      g0.fillRect(0, y, w, 100);
+    g0.fillStyle(0x080810);
+    g0.fillRect(0, 0, w, GAME_HEIGHT);
+    for (let i = 0; i < 50; i++) {
+      const sx = Phaser.Math.Between(0, w);
+      const sy = Phaser.Math.Between(0, GAME_HEIGHT);
+      g0.fillStyle(0xffffff, Phaser.Math.FloatBetween(0.03, 0.12));
+      g0.fillCircle(sx, sy, Phaser.Math.Between(1, 2));
     }
 
-    // Floating thought bubbles
-    const g1 = this.add.graphics().setScrollFactor(0.2);
-    for (let i = 0; i < 5; i++) {
-      const bx = Phaser.Math.Between(80, w - 80);
-      const by = Phaser.Math.Between(40, 350);
-      g1.fillStyle(0x2C3E50, 0.08);
-      g1.fillCircle(bx, by, 18);
-      g1.fillCircle(bx - 14, by + 18, 5);
-      g1.fillCircle(bx - 20, by + 26, 3);
-    }
-
-    // Trolley problem track diagrams
-    const g2 = this.add.graphics().setScrollFactor(0.3);
-    for (let tx = 100; tx < w; tx += 500) {
-      const ty = Phaser.Math.Between(300, 420);
-      g2.lineStyle(1, 0x2C3E50, 0.1);
-      // Main track
-      g2.lineBetween(tx, ty, tx + 100, ty);
-      // Fork
-      g2.lineBetween(tx + 60, ty, tx + 100, ty - 20);
-      // Stick figures
-      g2.fillStyle(0x2C3E50, 0.08);
-      g2.fillCircle(tx + 90, ty - 6, 3);
-      g2.fillCircle(tx + 90, ty - 26, 3);
-      g2.fillCircle(tx + 95, ty - 26, 3);
-    }
-
-    // Logic symbols
-    const symbols = ['∀', '∃', '¬', '→', '⊢', '⊥', '◻', '◇'];
-    for (let i = 0; i < 8; i++) {
-      const sx = Phaser.Math.Between(30, w - 30);
-      const sy = Phaser.Math.Between(20, 420);
-      this.add.text(sx, sy, symbols[i], {
+    for (let i = 0; i < 6; i++) {
+      const qx = Phaser.Math.Between(50, w - 50);
+      const qy = Phaser.Math.Between(80, 350);
+      this.add.text(qx, qy, '?', {
         fontFamily: 'serif',
-        fontSize: `${Phaser.Math.Between(16, 30)}px`,
+        fontSize: '48px',
         color: '#2C3E50',
-      }).setAlpha(0.06).setScrollFactor(0.35);
+      }).setAlpha(0.05).setScrollFactor(0.2);
     }
   }
 
@@ -1383,74 +1407,34 @@ export class LevelScene extends Phaser.Scene {
   private drawBgSSRN(): void {
     const w = this.config.width;
 
-    // Brick fortress walls
     const g0 = this.add.graphics().setScrollFactor(0.1);
-    for (let bx = 0; bx < w; bx += 200) {
-      const bh = Phaser.Math.Between(200, 380);
-      g0.fillStyle(0x1E4D2B, 0.2);
-      g0.fillRect(bx, GAME_HEIGHT - bh, 160, bh);
-      // Brick pattern
-      g0.lineStyle(1, 0x153d20, 0.15);
-      for (let y = GAME_HEIGHT - bh; y < GAME_HEIGHT; y += 12) {
-        g0.lineBetween(bx, y, bx + 160, y);
-        const offset = (Math.floor((y - (GAME_HEIGHT - bh)) / 12) % 2) * 20;
-        for (let x = bx + offset; x < bx + 160; x += 40) {
-          g0.lineBetween(x, y, x, y + 12);
-        }
-      }
-      // Barbed wire atop
-      g0.lineStyle(1, 0x888888, 0.15);
-      const topY = GAME_HEIGHT - bh;
-      g0.lineBetween(bx, topY, bx + 160, topY);
-      for (let x = bx; x < bx + 160; x += 12) {
-        g0.lineBetween(x, topY - 3, x + 6, topY + 3);
-        g0.lineBetween(x + 6, topY - 3, x, topY + 3);
+    for (let bx = 0; bx < w; bx += 80) {
+      const bh = Phaser.Math.Between(120, 320);
+      g0.fillStyle(0x0a200f, 0.6);
+      g0.fillRect(bx, GAME_HEIGHT - bh, 60, bh);
+      g0.lineStyle(1, 0x153d20, 0.3);
+      for (let wy = GAME_HEIGHT - bh; wy < GAME_HEIGHT; wy += 16) {
+        g0.strokeRect(bx, wy, 30, 16);
+        g0.strokeRect(bx + 30, wy + 8, 30, 16);
       }
     }
 
-    // Cloudflare spinner silhouettes
-    for (let i = 0; i < 4; i++) {
-      const cx = Phaser.Math.Between(100, w - 100);
-      const cy = Phaser.Math.Between(60, 300);
-      const spinner = this.add.circle(cx, cy, 12, 0xf5a623, 0.06);
-      spinner.setScrollFactor(0.3);
-      this.tweens.add({
-        targets: spinner,
-        angle: 360,
-        duration: 3000,
-        repeat: -1,
-      });
+    for (let i = 0; i < 5; i++) {
+      const lx = Phaser.Math.Between(100, w - 100);
+      const ly = Phaser.Math.Between(40, 200);
+      const lock = this.add.circle(lx, ly, 10, 0x1E4D2B, 0.1);
+      lock.setScrollFactor(0.2);
     }
 
-    // CAPTCHA grid hints
-    const g1 = this.add.graphics().setScrollFactor(0.25);
-    for (let cx = 150; cx < w; cx += 400) {
-      const cy = Phaser.Math.Between(80, 250);
-      g1.lineStyle(1, 0x1E4D2B, 0.1);
-      for (let r = 0; r < 3; r++) {
-        for (let c = 0; c < 3; c++) {
-          g1.strokeRect(cx + c * 18, cy + r * 18, 18, 18);
-        }
-      }
-    }
-
-    // "I'm not a robot" text near walls — flashes when player approaches
-    for (let bx = 100; bx < w; bx += 400) {
-      const robotText = this.add.text(bx, GAME_HEIGHT - 220, "I'm not a robot", {
-        fontFamily: '"JetBrains Mono", monospace',
-        fontSize: '8px',
-        color: '#1E4D2B',
-      }).setAlpha(0);
-      // Check proximity each frame
-      this.time.addEvent({
-        delay: 200,
-        loop: true,
-        callback: () => {
-          if (!this.player?.active) return;
-          const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, robotText.x, robotText.y);
-          robotText.setAlpha(dist < 120 ? 0.3 : 0);
-        },
-      });
+    const g1 = this.add.graphics().setScrollFactor(0.3);
+    for (let i = 0; i < 8; i++) {
+      const cx = Phaser.Math.Between(0, w);
+      const cy = Phaser.Math.Between(100, 400);
+      g1.fillStyle(0xf48120, 0.06);
+      g1.fillRect(cx, cy, 50, 30);
+      g1.fillStyle(0xffffff, 0.03);
+      g1.fillRect(cx + 5, cy + 5, 30, 2);
+      g1.fillRect(cx + 5, cy + 10, 20, 2);
     }
   }
 }
