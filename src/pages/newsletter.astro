@@ -1,7 +1,31 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/Section.astro';
+import TerminalPicker from '../components/TerminalPicker.astro';
+import type { PickerItem } from '../data/deliverables';
 
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const weeklyDigests: PickerItem[] = [
+  {
+    year: 2026,
+    date: '03/2026',
+    title: "Minty's Week in AI — 24 Feb to 2 Mar 2026",
+    subtitle: 'Minty · yesterday-in-ai',
+    detail: 'Published 4 Mar 2026',
+    url: `${base}/newsletters/2026-03-03-weekly/`,
+    blurb: 'Anthropic designated a supply-chain risk by the Pentagon. AI agents develop political preference drift under grinding work conditions. Frontier models prove mathematics that takes human experts days to verify. OpenAI and Anthropic stake out opposing positions on enterprise software.',
+  },
+  {
+    year: 2026,
+    date: '02/2026',
+    title: "Minty's Week in AI — 17 to 23 Feb 2026",
+    subtitle: 'Minty · yesterday-in-ai',
+    detail: 'Published 25 Feb 2026',
+    url: `${base}/newsletters/2026-02-24-weekly/`,
+    blurb: 'Google DeepMind argues for evaluating moral competence, not just performance. Agent security emerges as a dominant theme. LLM wargames show nuclear weapons used more often than by humans. Gemini 3.1 Pro takes the top benchmark spot at half the cost.',
+  },
+];
 ---
 
 <BaseLayout title="MINT Lab — Newsletters">
@@ -10,7 +34,7 @@ import Section from '../components/Section.astro';
 
 <!-- ============ HERO ============ -->
 <section class="hero" id="newsletter-hero">
-  <img src={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/assets/wireframe-squid.png`} alt="" class="watermark" />
+  <img src={`${base}/assets/wireframe-squid.png`} alt="" class="watermark" />
   <h1 data-typing="❯ Newsletters"><span class="typing-cursor"></span></h1>
   <p class="subtitle">Writing from the MINT Lab on AI governance, philosophy of computing, and research infrastructure</p>
 </section>
@@ -62,40 +86,9 @@ import Section from '../components/Section.astro';
   <h2><span class="cmd-prefix"><span class="cmd-name">ls</span> <span class="cmd-flag">-t</span> <span class="cmd-path">archive/</span> <span class="t-dim">|</span> <span class="cmd-name">head</span></span></h2>
 
   <h3>Minty's Week in AI</h3>
-  <div class="report-table-wrap" style="margin-bottom: 24px;">
-    <div class="report-table-chrome">
-      <span class="chrome-dots">
-        <span class="chrome-dot" style="background: var(--red);"></span>
-        <span class="chrome-dot" style="background: var(--yellow);"></span>
-        <span class="chrome-dot" style="background: var(--green);"></span>
-      </span>
-      <span class="chrome-title">minty — weekly digests</span>
-    </div>
-    <div class="report-table-body">
-      <div class="report-table-header" style="grid-template-columns: 130px 1fr 160px;">
-        <span>PUBLISHED</span>
-        <span>EDITION</span>
-        <span>PERIOD</span>
-      </div>
-      <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/newsletters/2026-03-03-weekly/`} class="report-table-row" style="grid-template-columns: 130px 1fr 160px;">
-        <span class="col-date">4 Mar 2026</span>
-        <span class="col-title">Minty's Week in AI</span>
-        <span style="color: var(--text-2); font-size: 11px;">24 Feb &ndash; 2 Mar 2026</span>
-      </a>
-      <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/newsletters/2026-02-24-weekly/`} class="report-table-row" style="grid-template-columns: 130px 1fr 160px;">
-        <span class="col-date">25 Feb 2026</span>
-        <span class="col-title">Minty's Week in AI</span>
-        <span style="color: var(--text-2); font-size: 11px;">17&ndash;23 Feb 2026</span>
-      </a>
-      <div class="report-table-footer">
-        <span class="t-dim">2 editions</span>
-        <span class="t-dim">&middot;</span>
-        <span class="t-dim">published weekly to #lab-meetings</span>
-      </div>
-    </div>
-  </div>
+  <TerminalPicker items={weeklyDigests} label="Weekly Digests" pageSize={5} />
 
-  <h3>Philosophy of Computing</h3>
+  <h3 style="margin-top: 24px;">Philosophy of Computing</h3>
   <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px;">
     <a href="https://philosophyofcomputing.substack.com/archive" target="_blank" rel="noopener" class="archive-link">
       <span class="archive-label">Philosophy of Computing Archive</span>
