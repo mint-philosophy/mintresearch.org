@@ -190,7 +190,8 @@ export class LevelScene extends Phaser.Scene {
     this.physics.add.collider(this.enemies, this.platforms);
 
     // Overlaps
-    this.physics.add.overlap(this.player, this.papers, this.collectPaper, undefined, this);
+    this.physics.add.overlap(this.player, this.papers, this.collectPaper, this.canCollectPaper, this);
+    this.physics.add.overlap(this.slopGroup, this.papers, this.slopHitPaper, undefined, this);
     this.physics.add.overlap(this.player, this.powerUps, this.collectPowerUp, undefined, this);
     this.physics.add.overlap(this.player, this.enemies, this.hitEnemy, undefined, this);
     this.physics.add.overlap(this.player, this.slopGroup, this.hitBySlop, undefined, this);
@@ -538,9 +539,22 @@ export class LevelScene extends Phaser.Scene {
       else if (enemy.x < originX - patrolRange) dir = 1;
       enemy.setData('patrolDir', dir);
 
-      // Mac II: chase player when within 300px
       const enemyType = enemy.getData('type') as string;
-      if (enemyType === 'macII' && this.player?.active) {
+
+      // Signature enemies: paper-targeting behaviors
+      if (enemyType === 'troll' || enemyType === 'influencer') {
+        this.updateWalkToPaper(enemy, enemyType);
+        // Walk-to-paper overrides patrol velocity when a paper is in range
+        // but we still need to set patrol velocity as fallback (handled inside updateWalkToPaper return)
+        if (!enemy.getData('targetPaper')) {
+          enemy.setVelocityX(speed * dir);
+        }
+      } else if (enemyType === 'parrot' || enemyType === 'paperFlood') {
+        enemy.setVelocityX(speed * dir);
+        // Ranged paper attack (alternating with player)
+        this.updateRangedPaperAttack(enemy, enemyType);
+      } else if (enemyType === 'macII' && this.player?.active) {
+        // Mac II: chase player when within 300px
         const distToPlayer = Phaser.Math.Distance.Between(enemy.x, enemy.y, this.player.x, this.player.y);
         if (distToPlayer < 300) {
           const chaseDir = this.player.x > enemy.x ? 1 : -1;
@@ -552,26 +566,42 @@ export class LevelScene extends Phaser.Scene {
         enemy.setVelocityX(speed * dir);
       }
 
-      // Throw slop
-      const now = this.time.now;
-      const lastSlop = enemy.getData('lastSlop') as number;
-      const slopInterval = enemy.getData('slopInterval') as number;
+      // Throw slop at player (for enemies not handled by ranged paper attack)
+      if (enemyType !== 'parrot' && enemyType !== 'paperFlood') {
+        const now = this.time.now;
+        const lastSlop = enemy.getData('lastSlop') as number;
+        const slopInterval = enemy.getData('slopInterval') as number;
 
-      if (now - lastSlop > slopInterval && this.player?.active) {
-        const dist = Phaser.Math.Distance.Between(enemy.x, enemy.y, this.player.x, this.player.y);
-        if (dist < 400) {
-          this.throwSlop(enemy);
-          enemy.setData('lastSlop', now);
+        if (now - lastSlop > slopInterval && this.player?.active) {
+          const dist = Phaser.Math.Distance.Between(enemy.x, enemy.y, this.player.x, this.player.y);
+          if (dist < 400) {
+            this.throwSlop(enemy);
+            enemy.setData('lastSlop', now);
+          }
         }
       }
     });
+
+    // Update cloudflare shield visuals
+    this.updateCloudflareShields();
   }
 
   private throwSlop(from: Phaser.Physics.Arcade.Sprite): void {
     const enemyType = from.getData('type') as string;
     const texture = enemyType === 'parrot' ? 'parrot-no' : 'slop-poop';
     const slop = this.slopGroup.create(from.x, from.y - 8, texture) as Phaser.Physics.Arcade.Sprite;
-    const angle = Phaser.Math.Angle.Between(from.x, from.y, this.player.x, this.player.y);
+    slop.setData('sourceType', enemyType);
+
+    // Check if enemy has a specific target (paper targeting)
+    const slopTarget = from.getData('slopTarget') as { x: number; y: number } | null;
+    let angle: number;
+    if (slopTarget) {
+      angle = Phaser.Math.Angle.Between(from.x, from.y, slopTarget.x, slopTarget.y);
+      from.setData('slopTarget', null);
+    } else {
+      angle = Phaser.Math.Angle.Between(from.x, from.y, this.player.x, this.player.y);
+    }
+
     const speed = 180;
     slop.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed - 50);
     slop.body!.allowGravity = true;
@@ -587,12 +617,209 @@ export class LevelScene extends Phaser.Scene {
     this.time.delayedCall(3000, () => { if (bomb.active) bomb.destroy(); });
   }
 
+  // ── Enemy paper-targeting systems ──
+
+  private slopHitPaper(slop: any, paper: any): void {
+    const s = slop as Phaser.Physics.Arcade.Sprite;
+    const p = paper as Phaser.Physics.Arcade.Sprite;
+    const sourceType = s.getData('sourceType') as string;
+
+    if (sourceType === 'parrot') {
+      s.destroy();
+      this.destroyPaperByEnemy(p, 0x0085FF); // Bluesky blue particles
+    } else if (sourceType === 'paperFlood') {
+      s.destroy();
+      if (!p.getData('contaminated')) {
+        p.setData('contaminated', true);
+        p.setTint(0x666666);
+        p.setAlpha(0.7);
+      }
+    }
+    // Other enemy slop that hits papers: just destroy the slop, leave paper alone
+    else {
+      s.destroy();
+    }
+  }
+
+  private destroyPaperByEnemy(paper: Phaser.Physics.Arcade.Sprite, particleColor: number = 0xff0000): void {
+    const origX = paper.getData('origX') as number;
+    const origY = paper.getData('origY') as number;
+    const isGold = paper.getData('isGold') as boolean;
+
+    this.spawnParticles(paper.x, paper.y, particleColor, 6);
+    paper.destroy();
+
+    // Respawn after 15 seconds
+    this.time.delayedCall(15000, () => this.respawnPaper(origX, origY, isGold));
+  }
+
+  private respawnPaper(x: number, y: number, isGold: boolean): void {
+    const key = isGold ? 'paper-gold' : 'paper';
+    const paper = this.papers.create(x, y, key) as Phaser.Physics.Arcade.Sprite;
+    paper.body!.allowGravity = false;
+    paper.setData('isGold', isGold);
+    paper.setData('origX', x);
+    paper.setData('origY', y);
+
+    // Float animation
+    this.tweens.add({
+      targets: paper,
+      y: y - 6,
+      duration: 1500,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+
+    // Spawn-in flash
+    paper.setAlpha(0);
+    this.tweens.add({
+      targets: paper,
+      alpha: 1,
+      duration: 500,
+      ease: 'Power2',
+    });
+  }
+
+  private updateWalkToPaper(enemy: Phaser.Physics.Arcade.Sprite, type: string): void {
+    // Find nearest active, unshielded paper within 250px
+    let nearest: Phaser.Physics.Arcade.Sprite | null = null;
+    let nearestDist = 250;
+
+    this.papers.getChildren().forEach((obj) => {
+      const paper = obj as Phaser.Physics.Arcade.Sprite;
+      if (!paper.active) return;
+      if (this.isPaperShielded(paper)) return;
+      const dist = Phaser.Math.Distance.Between(enemy.x, enemy.y, paper.x, paper.y);
+      if (dist < nearestDist) {
+        nearest = paper;
+        nearestDist = dist;
+      }
+    });
+
+    if (!nearest) {
+      // No paper in range: clear any countdown, resume patrol
+      enemy.setData('targetPaper', null);
+      enemy.setData('paperCountdown', 0);
+      return;
+    }
+
+    const paper = nearest as Phaser.Physics.Arcade.Sprite;
+
+    // Walk toward paper
+    const walkDir = paper.x > enemy.x ? 1 : -1;
+    const speed = enemy.getData('speed') as number;
+    enemy.setVelocityX(speed * walkDir * 0.8);
+
+    // Check contact (within 16px)
+    if (nearestDist < 16) {
+      const currentTarget = enemy.getData('targetPaper');
+      if (currentTarget !== paper) {
+        // Start countdown
+        enemy.setData('targetPaper', paper);
+        enemy.setData('paperCountdown', this.time.now);
+        const countdownKey = type === 'troll' ? 'beingRatioed' : 'beingReposted';
+        paper.setData(countdownKey, true);
+      }
+
+      // Check countdown elapsed
+      const startTime = enemy.getData('paperCountdown') as number;
+      const duration = type === 'troll' ? 3000 : 4000;
+      const elapsed = this.time.now - startTime;
+
+      // Visual pulse: tint paper
+      const tintColor = type === 'troll' ? 0xff4444 : 0x0A66C2;
+      const pulse = Math.sin(elapsed * 0.008) > 0;
+      if (pulse) {
+        paper.setTint(tintColor);
+      } else {
+        paper.clearTint();
+      }
+
+      if (elapsed >= duration) {
+        // Paper destroyed
+        const particleColor = type === 'troll' ? 0xff4444 : 0x0A66C2;
+        this.destroyPaperByEnemy(paper, particleColor);
+        enemy.setData('targetPaper', null);
+        enemy.setData('paperCountdown', 0);
+      }
+    }
+  }
+
+  private updateRangedPaperAttack(enemy: Phaser.Physics.Arcade.Sprite, _type: string): void {
+    // Alternate between targeting papers and player
+    const now = this.time.now;
+    const lastSlop = enemy.getData('lastSlop') as number;
+    const slopInterval = enemy.getData('slopInterval') as number;
+    if (now - lastSlop < slopInterval) return;
+
+    // Toggle targeting
+    const targetPaperNext = enemy.getData('targetPaperNext') as boolean;
+
+    if (targetPaperNext) {
+      // Find nearest paper within 400px
+      let nearest: Phaser.Physics.Arcade.Sprite | null = null;
+      let nearestDist = 400;
+
+      this.papers.getChildren().forEach((obj) => {
+        const paper = obj as Phaser.Physics.Arcade.Sprite;
+        if (!paper.active) return;
+        const dist = Phaser.Math.Distance.Between(enemy.x, enemy.y, paper.x, paper.y);
+        if (dist < nearestDist) {
+          nearest = paper;
+          nearestDist = dist;
+        }
+      });
+
+      if (nearest) {
+        const paper = nearest as Phaser.Physics.Arcade.Sprite;
+        enemy.setData('slopTarget', { x: paper.x, y: paper.y });
+        this.throwSlop(enemy);
+        enemy.setData('lastSlop', now);
+        enemy.setData('targetPaperNext', false);
+        return;
+      }
+    }
+
+    // Fall through: fire at player
+    if (this.player?.active) {
+      const dist = Phaser.Math.Distance.Between(enemy.x, enemy.y, this.player.x, this.player.y);
+      if (dist < 400) {
+        this.throwSlop(enemy);
+        enemy.setData('lastSlop', now);
+      }
+    }
+    enemy.setData('targetPaperNext', true);
+  }
+
+  private updateCloudflareShields(): void {
+    // Update paper tints based on cloudflare wall proximity
+    this.papers.getChildren().forEach((obj) => {
+      const paper = obj as Phaser.Physics.Arcade.Sprite;
+      if (!paper.active) return;
+      if (paper.getData('contaminated')) return; // Don't override contamination visual
+      if (paper.getData('beingRatioed') || paper.getData('beingReposted')) return; // Don't override countdown visual
+
+      if (this.isPaperShielded(paper)) {
+        paper.setTint(0xff8c00); // Orange tint for paywalled
+      } else {
+        paper.clearTint();
+        // Restore gold tint if applicable
+        if (paper.getData('isGold')) {
+          // Gold papers don't have a tint — their texture is already gold
+        }
+      }
+    });
+  }
+
   private spawnPapers(): void {
     this.config.papers.forEach(p => {
       const key = p.isGold ? 'paper-gold' : 'paper';
       const paper = this.papers.create(p.x, p.y, key) as Phaser.Physics.Arcade.Sprite;
       paper.body!.allowGravity = false;
       paper.setData('isGold', !!p.isGold);
+      paper.setData('origX', p.x);
+      paper.setData('origY', p.y);
       // Float animation
       this.tweens.add({
         targets: paper,
@@ -719,10 +946,62 @@ export class LevelScene extends Phaser.Scene {
     this.bossHealth = bc.hp;
   }
 
+  private canCollectPaper(_player: any, paper: any): boolean {
+    const p = paper as Phaser.Physics.Arcade.Sprite;
+    if (this.isPaperShielded(p)) {
+      // Show "PAYWALLED" flash on first rejection
+      if (!p.getData('paywallFlashed')) {
+        p.setData('paywallFlashed', true);
+        const flash = this.add.text(p.x, p.y - 20, 'PAYWALLED', {
+          fontFamily: '"JetBrains Mono", monospace',
+          fontSize: '8px',
+          color: '#ff8c00',
+          fontStyle: 'bold',
+          stroke: '#000000',
+          strokeThickness: 2,
+        }).setOrigin(0.5).setDepth(50);
+        this.tweens.add({
+          targets: flash,
+          y: p.y - 50,
+          alpha: 0,
+          duration: 1500,
+          onComplete: () => {
+            flash.destroy();
+            if (p.active) p.setData('paywallFlashed', false);
+          },
+        });
+      }
+      return false;
+    }
+    return true;
+  }
+
+  private isPaperShielded(paper: Phaser.Physics.Arcade.Sprite): boolean {
+    let shielded = false;
+    this.enemies.getChildren().forEach((obj) => {
+      const enemy = obj as Phaser.Physics.Arcade.Sprite;
+      if (!enemy.active) return;
+      if (enemy.getData('type') !== 'cloudflareWall') return;
+      const dist = Phaser.Math.Distance.Between(enemy.x, enemy.y, paper.x, paper.y);
+      if (dist < 150) shielded = true;
+    });
+    return shielded;
+  }
+
   private collectPaper(_player: any, paper: any): void {
     const p = paper as Phaser.Physics.Arcade.Sprite;
     const isBlueCheck = p.getData('isBlueCheck');
+    const isContaminated = p.getData('contaminated');
     p.destroy();
+
+    if (isContaminated) {
+      // Contaminated: ammo only, no score, no heal
+      this.paperAmmo += PAPER_AMMO_PER_COLLECT;
+      this.emitHUDUpdate();
+      audioEngine.playSFX('collect');
+      this.spawnParticles(p.x, p.y, 0x666666, 5);
+      return;
+    }
 
     // Blue check paper worth 5×
     const multiplier = isBlueCheck ? 5 : 1;
