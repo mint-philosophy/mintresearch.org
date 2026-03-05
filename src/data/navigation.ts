@@ -65,6 +65,15 @@ export const siteNav: PageNav[] = [
     ],
   },
   {
+    path: "/agent-reports/",
+    label: "Agent Reports",
+    icon: "◇",
+    sections: [
+      { href: "#reports", label: "Reports" },
+      { href: "#about", label: "About" },
+    ],
+  },
+  {
     path: "/corpus-map/",
     label: "Corpus Map",
     icon: "◎",

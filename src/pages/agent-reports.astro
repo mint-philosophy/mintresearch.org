@@ -1,0 +1,102 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/Section.astro';
+import { reports } from '../data/reports';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="MINT Lab — Agent Reports">
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="reports-hero">
+  <img src={`${base}/assets/wireframe-squid.png`} alt="" class="watermark" />
+  <h1 data-typing="❯ Agent Reports"><span class="typing-cursor"></span></h1>
+  <p class="subtitle">Deep research reviews produced by Minty, the MINT Lab's AI research agent, drawing on our corpus of 1,500+ papers in AI ethics, governance, and safety.</p>
+</section>
+
+
+<!-- ============ REPORT TABLE ============ -->
+<Section id="reports" num="01">
+  <h2><span class="cmd-prefix"><span class="cmd-name">ls</span> <span class="cmd-flag">-lt</span> <span class="cmd-path">reports/</span></span></h2>
+
+  <div class="report-table-wrap">
+    <div class="report-table-chrome">
+      <span class="chrome-dots">
+        <span class="chrome-dot" style="background: var(--red);"></span>
+        <span class="chrome-dot" style="background: var(--yellow);"></span>
+        <span class="chrome-dot" style="background: var(--green);"></span>
+      </span>
+      <span class="chrome-title">minty — corpus-agent — reports</span>
+    </div>
+    <div class="report-table-body">
+      <div class="report-table-header">
+        <span class="col-date">DATE</span>
+        <span class="col-title">REPORT</span>
+        <span class="col-topic">TOPIC</span>
+        <span class="col-papers">PAPERS</span>
+        <span class="col-words">WORDS</span>
+      </div>
+      {reports.map((r) => (
+        <a href={`${base}/reports/${r.slug}/`} class="report-table-row">
+          <span class="col-date">{r.dateLabel}</span>
+          <span class="col-title">{r.title}</span>
+          <span class="col-topic"><span class="report-tag">{r.topic}</span></span>
+          <span class="col-papers">{r.papers}</span>
+          <span class="col-words">{r.wordCount}</span>
+        </a>
+      ))}
+      <div class="report-table-footer">
+        <span class="t-dim">{reports.length} reports</span>
+        <span class="t-dim">·</span>
+        <span class="t-dim">{reports.reduce((sum, r) => sum + r.papers, 0)} papers cited</span>
+        <span class="t-dim">·</span>
+        <span class="t-dim">corpus-agent v1</span>
+      </div>
+    </div>
+  </div>
+</Section>
+
+
+<!-- ============ ABOUT ============ -->
+<Section id="about" num="02">
+  <h2><span class="cmd-prefix"><span class="cmd-name">cat</span> <span class="cmd-path">README.md</span></span></h2>
+  <p class="lead">
+    These reports are produced by Minty's <strong>corpus agent</strong> &mdash; an agentic research pipeline that searches the MINT Lab's full-text paper corpus, dispatches parallel reader agents to analyse relevant papers, and synthesises their findings into a single literature review.
+  </p>
+  <p>Each report draws on the lab's corpus of 1,500+ academic papers in AI ethics, governance, safety, and political philosophy. Papers are cited with links to the lab's Google Drive archive. Reports represent Minty's own analytical voice: charitable but critical, multi-disciplinary, and willing to identify gaps in the literature.</p>
+
+  <div class="report-pipeline-steps">
+    <div class="pipeline-step">
+      <span class="step-num">[1]</span>
+      <span class="step-label">Query decomposition</span>
+      <span class="t-dim">&mdash; break the question into sub-questions</span>
+    </div>
+    <div class="pipeline-step">
+      <span class="step-num">[2]</span>
+      <span class="step-label">Corpus search</span>
+      <span class="t-dim">&mdash; semantic search across summaries, full text, and 41 analytical dimensions</span>
+    </div>
+    <div class="pipeline-step">
+      <span class="step-num">[3]</span>
+      <span class="step-label">Reader dispatch</span>
+      <span class="t-dim">&mdash; parallel agents deep-read assigned papers</span>
+    </div>
+    <div class="pipeline-step">
+      <span class="step-num">[4]</span>
+      <span class="step-label">Synthesis</span>
+      <span class="t-dim">&mdash; weave findings into continuous analytical prose</span>
+    </div>
+    <div class="pipeline-step">
+      <span class="step-num">[5]</span>
+      <span class="step-label">QA review</span>
+      <span class="t-dim">&mdash; verify citations, check coverage, assess quality</span>
+    </div>
+  </div>
+</Section>
+
+</main>
+
+</BaseLayout>
