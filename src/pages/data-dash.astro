@@ -59,27 +59,10 @@ const floatingMinties = [
     <span class="dd-key">ESC</span> <span class="dd-ctrl-label">Pause</span>
   </div>
 
-  <!-- Mobile touch controls — overlay on game in landscape -->
-  <div class="dd-touch-controls" aria-label="Touch controls">
-    <div class="dd-touch-dpad">
-      <button class="dd-touch-btn dd-touch-left" aria-label="Move left">&#9664;</button>
-      <button class="dd-touch-btn dd-touch-right" aria-label="Move right">&#9654;</button>
-    </div>
-    <div class="dd-touch-actions">
-      <button class="dd-touch-btn dd-touch-jump" aria-label="Jump">&#9650;</button>
-      <button class="dd-touch-btn dd-touch-fire" aria-label="Fire">&#9679;</button>
-    </div>
-  </div>
-
-  <!-- Mobile notice -->
-  <div class="dd-mobile-notice">
-    <p>Data Dash is best experienced on desktop with a keyboard.</p>
-  </div>
-
-  <!-- Rotate prompt (portrait on small screens) -->
-  <div class="dd-rotate-prompt" aria-label="Rotate device">
-    <div class="dd-rotate-icon">&#x21BB;</div>
-    <p>Rotate your phone to landscape to play</p>
+  <!-- Mobile blocker — replaces game on phones -->
+  <div class="dd-mobile-blocker">
+    <img src={`${base}/assets/minty-sleepy.png`} alt="Sleepy Minty" class="dd-mobile-minty" />
+    <p class="dd-mobile-sorry">Sorry, please try again on a desktop :)</p>
   </div>
 </section>
 </main>
@@ -88,7 +71,8 @@ const floatingMinties = [
   import { createGame } from '../game/index';
 
   const container = document.getElementById('game-container');
-  if (container) {
+  const mobileCheck = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (window.innerWidth <= 860 && 'ontouchstart' in window);
+  if (container && !mobileCheck) {
     if (document.readyState === 'complete') {
       createGame('game-container');
     } else {
@@ -96,28 +80,12 @@ const floatingMinties = [
     }
   }
 
-  // Touch controls — emit synthetic keyboard events
-  const touchMap: Record<string, string> = {
-    'dd-touch-left': 'ArrowLeft',
-    'dd-touch-right': 'ArrowRight',
-    'dd-touch-jump': 'ArrowUp',
-    'dd-touch-fire': 'z',
-  };
-  document.querySelectorAll('.dd-touch-btn').forEach(btn => {
-    const cls = [...btn.classList].find(c => c.startsWith('dd-touch-') && c !== 'dd-touch-btn');
-    if (!cls) return;
-    const key = touchMap[cls];
-    if (!key) return;
-    const opts = { key, code: key.length === 1 ? `Key${key.toUpperCase()}` : key, bubbles: true };
-    btn.addEventListener('touchstart', e => {
-      e.preventDefault();
-      document.dispatchEvent(new KeyboardEvent('keydown', opts));
-    }, { passive: false });
-    btn.addEventListener('touchend', e => {
-      e.preventDefault();
-      document.dispatchEvent(new KeyboardEvent('keyup', opts));
-    }, { passive: false });
-  });
+  // Skip game initialization on mobile
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (window.innerWidth <= 860 && 'ontouchstart' in window);
+  if (isMobile) {
+    const gameContainer = document.getElementById('game-container');
+    if (gameContainer) gameContainer.style.display = 'none';
+  }
 
   // Bouncing Minties — frictionless vacuum physics
   const squids = document.querySelectorAll<HTMLImageElement>('.dd-float-squid');
@@ -331,164 +299,38 @@ const floatingMinties = [
     opacity: 0.5;
   }
 
-  /* ---- Touch controls ---- */
-  .dd-touch-controls {
+  /* ---- Mobile blocker ---- */
+  .dd-mobile-blocker {
     display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 24px;
     position: relative;
     z-index: 10;
   }
 
-  .dd-touch-dpad,
-  .dd-touch-actions {
-    display: flex;
-    gap: 8px;
+  .dd-mobile-minty {
+    width: 120px;
+    height: auto;
+    margin-bottom: 20px;
+    opacity: 0.9;
+    filter: drop-shadow(0 0 16px rgba(46, 196, 182, 0.3));
   }
 
-  .dd-touch-btn {
-    width: 56px;
-    height: 56px;
-    border: 1px solid var(--accent-dim);
-    border-radius: 12px;
-    background: rgba(17, 17, 17, 0.75);
+  .dd-mobile-sorry {
     color: var(--text-2);
-    font-size: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    touch-action: none;
-    user-select: none;
-    -webkit-user-select: none;
-    cursor: pointer;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-  }
-
-  .dd-touch-btn:active {
-    background: rgba(46, 196, 182, 0.3);
-    color: var(--accent);
-    border-color: var(--accent);
-  }
-
-  .dd-touch-fire {
-    border-color: var(--accent);
-  }
-
-  /* ---- Mobile notice ---- */
-  .dd-mobile-notice {
-    display: none;
-    text-align: center;
-    margin-top: 24px;
-    padding: 12px;
-    border: 1px dashed var(--accent-dim);
-    color: var(--text-2);
-    font-size: 11px;
-    position: relative;
-    z-index: 1;
-  }
-
-  /* ---- Rotate prompt ---- */
-  .dd-rotate-prompt {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-    background: var(--bg-0, #0a0a0a);
-    color: var(--text-2, #abb2bf);
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
     font-size: 14px;
-    text-align: center;
-    padding: 24px;
+    line-height: 1.6;
   }
 
-  .dd-rotate-icon {
-    font-size: 48px;
-    color: var(--accent, #2ec4b6);
-    animation: dd-rotate-nudge 2s ease-in-out infinite;
-  }
-
-  @keyframes dd-rotate-nudge {
-    0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(90deg); }
-    75% { transform: rotate(90deg); }
-  }
-
-  /* ---- Mobile: narrow screens ---- */
+  /* ---- Mobile: show blocker, hide game ---- */
   @media (max-width: 860px) {
-    .dd-mobile-notice { display: block; }
-    .dd-controls { display: none; }
-    .dd-float-squid { display: none; }
-  }
-
-  /* ---- Mobile portrait: show rotate prompt ---- */
-  @media (max-width: 600px) and (orientation: portrait) {
-    .dd-rotate-prompt { display: flex; }
+    .dd-mobile-blocker { display: flex; }
     .dd-terminal { display: none; }
-    .dd-touch-controls { display: none !important; }
-    .dd-mobile-notice { display: none; }
-  }
-
-  /* ---- Mobile landscape: fullscreen game + overlay controls ---- */
-  @media (max-height: 500px) and (orientation: landscape) {
-    .data-dash-page {
-      padding: 0;
-      max-width: none;
-    }
-
-    .dd-hero { display: none; }
-    .dd-mobile-notice { display: none; }
     .dd-controls { display: none; }
     .dd-float-squid { display: none; }
-
-    .dd-terminal {
-      border: none;
-      max-width: none;
-    }
-
-    .dd-term-titlebar { display: none; }
-
-    .dd-term-body {
-      min-height: 100vh;
-      min-height: 100dvh;
-    }
-
-    #game-container {
-      max-width: none;
-      width: 100%;
-      height: 100vh;
-      height: 100dvh;
-      aspect-ratio: auto;
-    }
-
-    .dd-touch-controls {
-      display: flex;
-      position: fixed;
-      bottom: 12px;
-      left: 12px;
-      right: 12px;
-      justify-content: space-between;
-      align-items: flex-end;
-      z-index: 100;
-      pointer-events: none;
-    }
-
-    .dd-touch-dpad,
-    .dd-touch-actions {
-      pointer-events: auto;
-    }
-
-    .dd-touch-btn {
-      width: 52px;
-      height: 52px;
-      font-size: 20px;
-      opacity: 0.7;
-    }
-
-    .dd-touch-btn:active {
-      opacity: 1;
-    }
   }
 </style>
 
