@@ -5,7 +5,7 @@ export function getLevel3Config(): LevelConfig {
   return {
     number: 3,
     name: 'Bluesky',
-    width: 4000,
+    width: 6000,
     background: '#0a1a2e',
     themeColor: 0x0085FF,
     music: 'level3',
@@ -27,6 +27,15 @@ export function getLevel3Config(): LevelConfig {
       { x: 3000, y: GAME_HEIGHT - 140, width: 192 },
       { x: 3250, y: GAME_HEIGHT - 260, width: 128 },
       { x: 3500, y: GAME_HEIGHT - 180, width: 256 },
+      // Extension zone
+      { x: 3800, y: GAME_HEIGHT - 120, width: 128 },
+      { x: 4050, y: GAME_HEIGHT - 240, width: 128 },
+      { x: 4300, y: GAME_HEIGHT - 160, width: 192 },
+      { x: 4550, y: GAME_HEIGHT - 300, width: 128 },
+      { x: 4800, y: GAME_HEIGHT - 200, width: 128 },
+      { x: 5050, y: GAME_HEIGHT - 140, width: 192 },
+      { x: 5300, y: GAME_HEIGHT - 260, width: 128 },
+      { x: 5550, y: GAME_HEIGHT - 180, width: 256 },
     ],
     enemies: [
       { type: 'parrot', x: 450, y: GAME_HEIGHT - 220, tier: 'peach', patrolRange: 60 },
@@ -39,6 +48,12 @@ export function getLevel3Config(): LevelConfig {
       { type: 'parrot', x: 2600, y: GAME_HEIGHT - 340, tier: 'red', patrolRange: 60 },
       { type: 'parrot', x: 2900, y: GAME_HEIGHT - 50, tier: 'peach', patrolRange: 100 },
       { type: 'parrot', x: 3300, y: GAME_HEIGHT - 300, tier: 'orange', patrolRange: 80 },
+      // Extension zone
+      { type: 'parrot', x: 3900, y: GAME_HEIGHT - 160, tier: 'peach', patrolRange: 80 },
+      { type: 'parrot', x: 4200, y: GAME_HEIGHT - 50, tier: 'red', patrolRange: 100 },
+      { type: 'parrot', x: 4600, y: GAME_HEIGHT - 340, tier: 'orange', patrolRange: 60 },
+      { type: 'parrot', x: 5000, y: GAME_HEIGHT - 50, tier: 'red', patrolRange: 80 },
+      { type: 'parrot', x: 5400, y: GAME_HEIGHT - 300, tier: 'peach', patrolRange: 100 },
     ],
     papers: [
       { x: 230, y: GAME_HEIGHT - 130 },
@@ -56,6 +71,15 @@ export function getLevel3Config(): LevelConfig {
       { x: 3060, y: GAME_HEIGHT - 170 },
       { x: 3300, y: GAME_HEIGHT - 290 },
       { x: 3560, y: GAME_HEIGHT - 210, isGold: true },
+      // Extension zone
+      { x: 3850, y: GAME_HEIGHT - 150 },
+      { x: 4100, y: GAME_HEIGHT - 270 },
+      { x: 4360, y: GAME_HEIGHT - 190 },
+      { x: 4600, y: GAME_HEIGHT - 330 },
+      { x: 4850, y: GAME_HEIGHT - 230 },
+      { x: 5100, y: GAME_HEIGHT - 170 },
+      { x: 5360, y: GAME_HEIGHT - 290 },
+      { x: 5600, y: GAME_HEIGHT - 210 },
     ],
     powerUps: [
       { type: 'speedBolt', x: 620, y: GAME_HEIGHT - 170 },
@@ -71,10 +95,11 @@ export function getLevel3Config(): LevelConfig {
       { x: 1100, y: GAME_HEIGHT - 50 },
       { x: 2300, y: GAME_HEIGHT - 50 },
       { x: 3250, y: GAME_HEIGHT - 50 },
+      { x: 4800, y: GAME_HEIGHT - 50 },
     ],
     boss: {
       type: 'forkSwarm',
-      x: 3750,
+      x: 5800,
       y: GAME_HEIGHT - 80,
       phases: 3,
       hp: 12,

@@ -5,7 +5,7 @@ export function getLevel2Config(): LevelConfig {
   return {
     number: 2,
     name: 'LinkedIn',
-    width: 3600,
+    width: 5400,
     background: '#0a1628',
     themeColor: 0x0A66C2,
     music: 'level2',
@@ -26,6 +26,14 @@ export function getLevel2Config(): LevelConfig {
       { x: 2550, y: GAME_HEIGHT - 240, width: 128 },
       { x: 2750, y: GAME_HEIGHT - 120, width: 256 },
       { x: 3050, y: GAME_HEIGHT - 200, width: 192 },
+      // Extension zone
+      { x: 3300, y: GAME_HEIGHT - 140, width: 256 },
+      { x: 3550, y: GAME_HEIGHT - 240, width: 128 },
+      { x: 3800, y: GAME_HEIGHT - 180, width: 192 },
+      { x: 4050, y: GAME_HEIGHT - 280, width: 128 },
+      { x: 4300, y: GAME_HEIGHT - 160, width: 256 },
+      { x: 4600, y: GAME_HEIGHT - 220, width: 128 },
+      { x: 4900, y: GAME_HEIGHT - 120, width: 192 },
     ],
     enemies: [
       { type: 'octopus', x: 400, y: GAME_HEIGHT - 120, tier: 'peach', patrolRange: 80 },
@@ -37,6 +45,12 @@ export function getLevel2Config(): LevelConfig {
       { type: 'octopus', x: 2200, y: GAME_HEIGHT - 200, tier: 'red', patrolRange: 80 },
       { type: 'octopus', x: 2600, y: GAME_HEIGHT - 280, tier: 'red', patrolRange: 60 },
       { type: 'influencer', x: 2900, y: GAME_HEIGHT - 50, tier: 'peach', patrolRange: 100 },
+      // Extension zone
+      { type: 'influencer', x: 3400, y: GAME_HEIGHT - 50, tier: 'red', patrolRange: 80 },
+      { type: 'octopus', x: 3700, y: GAME_HEIGHT - 220, tier: 'red', patrolRange: 60 },
+      { type: 'influencer', x: 4100, y: GAME_HEIGHT - 50, tier: 'peach', patrolRange: 100 },
+      { type: 'octopus', x: 4400, y: GAME_HEIGHT - 200, tier: 'red', patrolRange: 80 },
+      { type: 'influencer', x: 4700, y: GAME_HEIGHT - 50, tier: 'red', patrolRange: 80 },
     ],
     papers: [
       { x: 280, y: GAME_HEIGHT - 110 },
@@ -53,6 +67,14 @@ export function getLevel2Config(): LevelConfig {
       { x: 2620, y: GAME_HEIGHT - 270 },
       { x: 2830, y: GAME_HEIGHT - 150 },
       { x: 3100, y: GAME_HEIGHT - 230, isGold: true },
+      // Extension zone
+      { x: 3370, y: GAME_HEIGHT - 170 },
+      { x: 3620, y: GAME_HEIGHT - 270 },
+      { x: 3870, y: GAME_HEIGHT - 210 },
+      { x: 4120, y: GAME_HEIGHT - 310 },
+      { x: 4370, y: GAME_HEIGHT - 190 },
+      { x: 4660, y: GAME_HEIGHT - 250 },
+      { x: 4950, y: GAME_HEIGHT - 150 },
     ],
     powerUps: [
       { type: 'openai', x: 850, y: GAME_HEIGHT - 240 },
@@ -67,10 +89,11 @@ export function getLevel2Config(): LevelConfig {
     checkpoints: [
       { x: 1050, y: GAME_HEIGHT - 50 },
       { x: 2100, y: GAME_HEIGHT - 50 },
+      { x: 4000, y: GAME_HEIGHT - 50 },
     ],
     boss: {
       type: 'engagementKing',
-      x: 3350,
+      x: 5200,
       y: GAME_HEIGHT - 80,
       phases: 3,
       hp: 15,

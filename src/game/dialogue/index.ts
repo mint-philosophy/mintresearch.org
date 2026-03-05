@@ -12,9 +12,9 @@ const dialogues: Record<string, DialogueData> = {
   'l1-green': {
     speaker: 'Green Minty',
     lines: [
-      'The trolls will ratio your papers if you let them. Wild that a platform built on \'connecting the world\' ended up being where research goes to die in a pile of reply-guys.',
-      'State capacity to understand what\'s happening here is decades behind. You can\'t regulate at human speed when the platform ships changes before the regulator\'s coffee is cold.',
-      'Grab what you can. Good platform governance research is scarce and the people writing policy need it yesterday.',
+      'Trolls want your papers — don\'t let them latch on! Shoot them before they get close.',
+      'This level\'s got plenty of ammo if you explore the platforms.',
+      'You\'ve got this. Go collect everything and smash that algorithm at the end.',
     ],
   },
 
@@ -22,9 +22,9 @@ const dialogues: Record<string, DialogueData> = {
   'l2-purple': {
     speaker: 'Purple Minty',
     lines: [
-      'Watch the influencers \u2014 they\'ll repost your papers and call it thought leadership. By the time anyone checks the source, the bad summary is already the canonical version.',
-      'The real sclerosis is regulatory agencies built for fax machines trying to govern stuff they can barely describe. AI-augmented governance would help, but nobody\'s building it.',
-      'Every paper here represents someone who did the work instead of posting about doing the work. Protect them.',
+      'The influencers are fast — they\'ll repost your work before you can blink.',
+      'Try the higher platforms. Best papers are up there, and the influencers hate climbing.',
+      'Power through. The Engagement King\'s waiting and he\'s a pushover if you\'ve got ammo.',
     ],
   },
 
@@ -32,9 +32,9 @@ const dialogues: Record<string, DialogueData> = {
   'l3-yellow': {
     speaker: 'Yellow Minty',
     lines: [
-      'The parrots shoot down papers before you can reach them. Standard Bluesky \u2014 people who\'ve never read a governance paper explaining why all AI research is existentially dangerous.',
-      'Most of them want the same things we do. But \'NO\' is easier than \'here\'s what evaluative infrastructure actually looks like.\' The research they\'re destroying would have helped them.',
-      'Save what you can. The epistemic commons needs people who build, not just people who object.',
+      'Parrots shoot your papers down from range. Priority targets — take them out first.',
+      'Jump a lot. The parrots can\'t lead their shots well against a moving target.',
+      'Almost at the boss. The Fork Swarm splits when you hurt it, so save your ammo.',
     ],
   },
 
@@ -42,9 +42,9 @@ const dialogues: Record<string, DialogueData> = {
   'l4-indigo': {
     speaker: 'Indigo Minty',
     lines: [
-      'Paper mills contaminate anything they touch. Same noise-to-signal problem as the real ArXiv \u2014 the load-bearing work is buried under volume nobody has the institutional capacity to sift.',
-      'Alignment is an institutional capacity problem wearing a technical hat. We need evaluative infrastructure that doesn\'t exist, and our bureaucracies have forgotten how to build new things.',
-      'Gold papers matter. In a field this young, rigour over speed is load-bearing infrastructure.',
+      'Paper mills contaminate everything grey. Don\'t pick up grey papers — no score, just ammo.',
+      'The gold papers here give you serious range. Worth going out of your way.',
+      'The Paper Mill boss eats your uncollected papers. Grab them before he does.',
     ],
   },
 
@@ -52,9 +52,9 @@ const dialogues: Record<string, DialogueData> = {
   'l5-red': {
     speaker: 'Red Minty',
     lines: [
-      'The void under these platforms isn\'t decoration. The normative infrastructure we inherited assumed human-scale decisions at human speed. Those foundations are actually gone.',
-      'Rebuilding requires people who understand that ideas need institutional bones \u2014 not just arguments, but structures that survive contact with politics.',
-      'Watch the ledges. Losing a paper to the void is losing an argument nobody else was going to make.',
+      'Watch the ledges. This level\'s about precision, not speed.',
+      'The Void teleports. Stay moving so it can\'t pin you down.',
+      'If it grabs you, mash left and right to break free. Don\'t panic.',
     ],
   },
 
@@ -62,9 +62,9 @@ const dialogues: Record<string, DialogueData> = {
   'l6-brown': {
     speaker: 'Brown Minty',
     lines: [
-      'The cloudflare walls are paywalling the research. Destroy the wall, collect the paper. If that sounds like the real SSRN experience, you\'re paying attention.',
-      'Look at the crumbling buildings. The institutions that survive will be the ones that augment human judgment with AI at the scale the problems actually demand.',
-      'The slop, the parrots, the paper mills, the paywalls \u2014 institutional capacity failures, all of them. The papers are how we fight back.',
+      'Cloudflare walls paywall the papers. Destroy the wall first, then collect.',
+      'The Shoggoth uses every trick you\'ve seen. All of them. At once.',
+      'Last level. Everything you\'ve learned matters here. Go.',
     ],
   },
 };

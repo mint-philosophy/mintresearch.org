@@ -5,7 +5,7 @@ export function getLevel1Config(): LevelConfig {
   return {
     number: 1,
     name: 'X (Twitter)',
-    width: 3200,
+    width: 4800,
     background: '#0d1117',
     themeColor: 0x1DA1F2,
     music: 'level1',
@@ -23,6 +23,13 @@ export function getLevel1Config(): LevelConfig {
       { x: 2350, y: GAME_HEIGHT - 200, width: 128 },
       { x: 2550, y: GAME_HEIGHT - 120, width: 192 },
       { x: 2800, y: GAME_HEIGHT - 180, width: 256 },
+      // Extension zone
+      { x: 3100, y: GAME_HEIGHT - 140, width: 192 },
+      { x: 3350, y: GAME_HEIGHT - 240, width: 128 },
+      { x: 3600, y: GAME_HEIGHT - 160, width: 256 },
+      { x: 3850, y: GAME_HEIGHT - 280, width: 128 },
+      { x: 4100, y: GAME_HEIGHT - 120, width: 192 },
+      { x: 4350, y: GAME_HEIGHT - 200, width: 256 },
     ],
     enemies: [
       { type: 'octopus', x: 500, y: GAME_HEIGHT - 200, tier: 'peach', patrolRange: 80 },
@@ -33,6 +40,11 @@ export function getLevel1Config(): LevelConfig {
       { type: 'octopus', x: 1900, y: GAME_HEIGHT - 260, tier: 'peach', patrolRange: 60 },
       { type: 'troll', x: 2200, y: GAME_HEIGHT - 50, tier: 'peach', patrolRange: 100 },
       { type: 'octopus', x: 2600, y: GAME_HEIGHT - 160, tier: 'red', patrolRange: 80 },
+      // Extension zone
+      { type: 'troll', x: 3200, y: GAME_HEIGHT - 50, tier: 'peach', patrolRange: 80 },
+      { type: 'octopus', x: 3500, y: GAME_HEIGHT - 200, tier: 'red', patrolRange: 60 },
+      { type: 'troll', x: 3900, y: GAME_HEIGHT - 50, tier: 'red', patrolRange: 100 },
+      { type: 'octopus', x: 4200, y: GAME_HEIGHT - 160, tier: 'peach', patrolRange: 80 },
     ],
     papers: [
       { x: 250, y: GAME_HEIGHT - 130 },
@@ -47,6 +59,13 @@ export function getLevel1Config(): LevelConfig {
       { x: 2400, y: GAME_HEIGHT - 230 },
       { x: 2600, y: GAME_HEIGHT - 150 },
       { x: 2850, y: GAME_HEIGHT - 210, isGold: true },
+      // Extension zone
+      { x: 3150, y: GAME_HEIGHT - 170 },
+      { x: 3400, y: GAME_HEIGHT - 270 },
+      { x: 3650, y: GAME_HEIGHT - 190 },
+      { x: 3900, y: GAME_HEIGHT - 310 },
+      { x: 4150, y: GAME_HEIGHT - 150 },
+      { x: 4400, y: GAME_HEIGHT - 230 },
     ],
     powerUps: [
       { type: 'shield', x: 900, y: GAME_HEIGHT - 240 },
@@ -60,10 +79,11 @@ export function getLevel1Config(): LevelConfig {
     checkpoints: [
       { x: 1100, y: GAME_HEIGHT - 50 },
       { x: 2200, y: GAME_HEIGHT - 50 },
+      { x: 3400, y: GAME_HEIGHT - 50 },
     ],
     boss: {
       type: 'algorithmVortex',
-      x: 3000,
+      x: 4600,
       y: GAME_HEIGHT - 80,
       phases: 3,
       hp: 10,
