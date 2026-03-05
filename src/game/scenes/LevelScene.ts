@@ -569,6 +569,7 @@ export class LevelScene extends Phaser.Scene {
       const enemy = obj as Phaser.Physics.Arcade.Sprite;
       if (!enemy.active) return;
       if (enemy.getData('frozen')) return;
+      if (enemy.getData('isBoss')) return;
 
       const speed = enemy.getData('speed') as number;
       const originX = enemy.getData('originX') as number;
@@ -993,6 +994,7 @@ export class LevelScene extends Phaser.Scene {
     // Boss spawns near ground based on size
     const bossY = GAME_HEIGHT - 8 - (bossSize / 2);
     this.boss = this.enemies.create(bc.x, bossY, texKey) as Phaser.Physics.Arcade.Sprite;
+    this.boss.setCollideWorldBounds(true);
 
     // Orbital particles for L1 boss
     if (this.levelNum === 1) {
