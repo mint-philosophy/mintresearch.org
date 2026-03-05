@@ -187,7 +187,16 @@ export class LevelScene extends Phaser.Scene {
 
     // Collisions
     this.physics.add.collider(this.player, this.platforms);
-    this.physics.add.collider(this.enemies, this.platforms);
+    this.physics.add.collider(this.enemies, this.platforms, undefined, (enemyObj, platObj) => {
+      const e = enemyObj as Phaser.Physics.Arcade.Sprite;
+      const eType = e.getData('type') as string;
+      // Only trolls/influencers get one-way platforms (jump through from below)
+      if (eType !== 'troll' && eType !== 'influencer') return true;
+      // One-way: only collide when enemy's previous bottom was at or above platform top
+      const eBody = e.body as Phaser.Physics.Arcade.Body;
+      const pBody = (platObj as Phaser.Physics.Arcade.Sprite).body as Phaser.Physics.Arcade.StaticBody;
+      return (eBody.prev.y + eBody.height) <= pBody.position.y + 4;
+    }, this);
 
     // Overlaps
     this.physics.add.overlap(this.player, this.papers, this.collectPaper, this.canCollectPaper, this);
@@ -706,18 +715,56 @@ export class LevelScene extends Phaser.Scene {
 
     const paper = nearest as Phaser.Physics.Arcade.Sprite;
     const body = enemy.body as Phaser.Physics.Arcade.Body;
-
-    // Walk toward paper
-    const walkDir = paper.x > enemy.x ? 1 : -1;
     const speed = enemy.getData('speed') as number;
-    enemy.setVelocityX(speed * walkDir * 0.8);
+    const paperAbove = paper.y < enemy.y - 20;
 
-    // Jump to reach papers on platforms
-    if (body.blocked.down) {
-      const paperAbove = paper.y < enemy.y - 20;
-      const blockedHorizontally = (walkDir > 0 && body.blocked.right) || (walkDir < 0 && body.blocked.left);
-      if (paperAbove || blockedHorizontally) {
-        enemy.setVelocityY(-300);
+    if (paperAbove && body.blocked.down) {
+      // Paper is on a higher platform — find a reachable stepping-stone platform
+      // Max jump height with v=-350, g=600: ~102px. Use 100px as safe limit.
+      let bestPlat: { x: number; y: number } | null = null;
+      let bestScore = Infinity;
+
+      this.platforms.getChildren().forEach((obj) => {
+        const plat = obj as Phaser.Physics.Arcade.Sprite;
+        const platTop = plat.y - 8; // standing surface
+        const heightAbove = enemy.y - platTop;
+        // Must be above us (>15px) and within jump reach (<100px)
+        if (heightAbove < 15 || heightAbove > 100) return;
+        // Must be horizontally reachable during a jump arc (~120px)
+        if (Math.abs(plat.x - enemy.x) > 120) return;
+        // Score: prefer the platform that brings us closest to the paper
+        const distToPaper = Phaser.Math.Distance.Between(plat.x, platTop, paper.x, paper.y);
+        if (distToPaper < bestScore) {
+          bestScore = distToPaper;
+          bestPlat = { x: plat.x, y: platTop };
+        }
+      });
+
+      if (bestPlat) {
+        // Walk toward the target platform
+        const platDir = bestPlat.x > enemy.x ? 1 : -1;
+        enemy.setVelocityX(speed * platDir);
+        // Jump when roughly underneath (within 30px)
+        if (Math.abs(enemy.x - bestPlat.x) < 30) {
+          enemy.setVelocityY(-350);
+        }
+      } else {
+        // No stepping-stone found — walk toward paper and jump to try
+        const walkDir = paper.x > enemy.x ? 1 : -1;
+        enemy.setVelocityX(speed * walkDir);
+        enemy.setVelocityY(-350);
+      }
+    } else {
+      // Paper is at same height or we're mid-air — walk directly toward it
+      const walkDir = paper.x > enemy.x ? 1 : -1;
+      enemy.setVelocityX(speed * walkDir * 0.8);
+
+      // Jump if blocked horizontally while walking
+      if (body.blocked.down) {
+        const blockedH = (walkDir > 0 && body.blocked.right) || (walkDir < 0 && body.blocked.left);
+        if (blockedH) {
+          enemy.setVelocityY(-350);
+        }
       }
     }
 
