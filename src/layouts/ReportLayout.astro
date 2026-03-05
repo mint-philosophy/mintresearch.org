@@ -1,0 +1,48 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  frontmatter: {
+    title: string;
+    date: string;
+    dateLabel: string;
+    topic: string;
+    papers: number;
+    wordCount: string;
+  };
+}
+
+const { frontmatter } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title={`MINT Lab — ${frontmatter.title}`}>
+
+<main>
+
+<section class="hero" id="report-hero">
+  <img src={`${base}/assets/wireframe-squid.png`} alt="" class="watermark" />
+  <p style="margin-bottom: 8px;">
+    <a href={`${base}/agent-reports/`} style="font-size: 12px; color: var(--text-3);">&larr; All reports</a>
+  </p>
+  <h1 style="font-size: 20px; margin-bottom: 12px;">{frontmatter.title}</h1>
+  <div class="report-meta-bar">
+    <span class="report-meta-item"><span class="t-dim">date</span> <span class="t-green">{frontmatter.dateLabel}</span></span>
+    <span class="report-meta-item"><span class="t-dim">topic</span> <span class="t-cyan">{frontmatter.topic}</span></span>
+    <span class="report-meta-item"><span class="t-dim">papers</span> <span class="t-yellow">{frontmatter.papers}</span></span>
+    <span class="report-meta-item"><span class="t-dim">words</span> <span class="t-purple">{frontmatter.wordCount}</span></span>
+    <span class="report-meta-item"><span class="t-dim">author</span> <span class="t-accent">Minty</span></span>
+  </div>
+</section>
+
+<section class="report-content">
+  <slot />
+</section>
+
+<section style="padding: 32px 0; text-align: center;">
+  <a href={`${base}/agent-reports/`} style="font-size: 13px; color: var(--text-3);">&larr; Back to all reports</a>
+</section>
+
+</main>
+
+</BaseLayout>
