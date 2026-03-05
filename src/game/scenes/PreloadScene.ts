@@ -312,156 +312,156 @@ export class PreloadScene extends Phaser.Scene {
 
   private generateAnthropicLogo(): void {
     const g = this.add.graphics();
-    const cx = 12, cy = 12;
+    const cx = 18, cy = 18;
     // Subtle glow circle behind
     g.fillStyle(0xC15F3C, 0.15);
-    g.fillCircle(cx, cy, 11);
+    g.fillCircle(cx, cy, 17);
     g.fillStyle(0xC15F3C, 0.25);
-    g.fillCircle(cx, cy, 8);
+    g.fillCircle(cx, cy, 12);
     // Angular "A" shape — two diagonal strokes meeting at a point, no crossbar, open bottom
     g.fillStyle(0xC15F3C);
     // Left stroke (going from top-center down-left)
-    g.fillRect(11, 3, 2, 2);
-    g.fillRect(10, 5, 2, 2);
-    g.fillRect(9, 7, 2, 2);
-    g.fillRect(8, 9, 2, 2);
-    g.fillRect(7, 11, 2, 2);
-    g.fillRect(6, 13, 2, 2);
-    g.fillRect(5, 15, 2, 3);
+    g.fillRect(17, 5, 3, 3);
+    g.fillRect(15, 8, 3, 3);
+    g.fillRect(14, 11, 3, 3);
+    g.fillRect(12, 14, 3, 3);
+    g.fillRect(11, 17, 3, 3);
+    g.fillRect(9, 20, 3, 3);
+    g.fillRect(8, 23, 3, 5);
     // Right stroke (going from top-center down-right)
-    g.fillRect(13, 5, 2, 2);
-    g.fillRect(14, 7, 2, 2);
-    g.fillRect(15, 9, 2, 2);
-    g.fillRect(16, 11, 2, 2);
-    g.fillRect(17, 13, 2, 2);
-    g.fillRect(18, 15, 2, 3);
+    g.fillRect(20, 8, 3, 3);
+    g.fillRect(21, 11, 3, 3);
+    g.fillRect(23, 14, 3, 3);
+    g.fillRect(24, 17, 3, 3);
+    g.fillRect(26, 20, 3, 3);
+    g.fillRect(27, 23, 3, 5);
     // Peak highlight
     g.fillStyle(0xd47a5a);
-    g.fillRect(11, 3, 2, 1);
-    g.generateTexture('pu-shield', 24, 24);
+    g.fillRect(17, 5, 3, 2);
+    g.generateTexture('pu-shield', 36, 36);
     g.destroy();
   }
 
   private generateOpenAILogo(): void {
     const g = this.add.graphics();
-    const cx = 12, cy = 12;
+    const cx = 18, cy = 18;
     // Dark background circle
     g.fillStyle(0x111111, 0.3);
-    g.fillCircle(cx, cy, 11);
+    g.fillCircle(cx, cy, 17);
     // Hexagonal rosette — 6 arcs in pinwheel pattern
-    g.lineStyle(2, 0x333333);
+    g.lineStyle(3, 0x333333);
     for (let i = 0; i < 6; i++) {
       const angle = (i / 6) * Math.PI * 2;
       const nextAngle = ((i + 1) / 6) * Math.PI * 2;
-      const ax = cx + Math.cos(angle) * 7;
-      const ay = cy + Math.sin(angle) * 7;
-      const bx = cx + Math.cos(nextAngle) * 7;
-      const by = cy + Math.sin(nextAngle) * 7;
+      const ax = cx + Math.cos(angle) * 11;
+      const ay = cy + Math.sin(angle) * 11;
+      const bx = cx + Math.cos(nextAngle) * 11;
+      const by = cy + Math.sin(nextAngle) * 11;
       // Arc approximated as thick line between petal positions
-      const midx = cx + Math.cos((angle + nextAngle) / 2) * 4;
-      const midy = cy + Math.sin((angle + nextAngle) / 2) * 4;
-      g.lineStyle(2, 0x444444);
+      const midx = cx + Math.cos((angle + nextAngle) / 2) * 6;
+      const midy = cy + Math.sin((angle + nextAngle) / 2) * 6;
+      g.lineStyle(3, 0x444444);
       g.lineBetween(ax, ay, midx, midy);
       g.lineBetween(midx, midy, bx, by);
     }
     // Connecting spokes
     for (let i = 0; i < 6; i++) {
       const angle = (i / 6) * Math.PI * 2;
-      const sx = cx + Math.cos(angle) * 3;
-      const sy = cy + Math.sin(angle) * 3;
-      const ex = cx + Math.cos(angle) * 7;
-      const ey = cy + Math.sin(angle) * 7;
-      g.lineStyle(2, 0x333333);
+      const sx = cx + Math.cos(angle) * 5;
+      const sy = cy + Math.sin(angle) * 5;
+      const ex = cx + Math.cos(angle) * 11;
+      const ey = cy + Math.sin(angle) * 11;
+      g.lineStyle(3, 0x333333);
       g.lineBetween(sx, sy, ex, ey);
     }
     // Center open (dark)
     g.fillStyle(0x111111);
-    g.fillCircle(cx, cy, 3);
-    g.generateTexture('pu-openai', 24, 24);
+    g.fillCircle(cx, cy, 5);
+    g.generateTexture('pu-openai', 36, 36);
     g.destroy();
   }
 
   private generateGeminiLogo(): void {
     const g = this.add.graphics();
-    const cx = 12, cy = 12;
+    const cx = 18, cy = 18;
     // 4-color sparkle: diamond/teardrop arms from center
     // Top arm — blue
     g.fillStyle(0x4285F4);
-    g.fillTriangle(cx, cy - 10, cx - 3, cy, cx + 3, cy);
+    g.fillTriangle(cx, cy - 15, cx - 5, cy, cx + 5, cy);
     // Right arm — red
     g.fillStyle(0xDB4437);
-    g.fillTriangle(cx + 10, cy, cx, cy - 3, cx, cy + 3);
+    g.fillTriangle(cx + 15, cy, cx, cy - 5, cx, cy + 5);
     // Bottom arm — yellow
     g.fillStyle(0xF4B400);
-    g.fillTriangle(cx, cy + 10, cx - 3, cy, cx + 3, cy);
+    g.fillTriangle(cx, cy + 15, cx - 5, cy, cx + 5, cy);
     // Left arm — green
     g.fillStyle(0x0F9D58);
-    g.fillTriangle(cx - 10, cy, cx, cy - 3, cx, cy + 3);
+    g.fillTriangle(cx - 15, cy, cx, cy - 5, cx, cy + 5);
     // White center dot
     g.fillStyle(0xffffff);
-    g.fillCircle(cx, cy, 2);
-    g.generateTexture('pu-speed', 24, 24);
+    g.fillCircle(cx, cy, 3);
+    g.generateTexture('pu-speed', 36, 36);
     g.destroy();
   }
 
   private generateSSILogo(): void {
     const g = this.add.graphics();
-    const cx = 12, cy = 12;
+    const cx = 18, cy = 18;
     // Pale blue outer glow ring
     g.fillStyle(0x88bbee, 0.3);
-    g.fillCircle(cx, cy, 11);
+    g.fillCircle(cx, cy, 17);
     g.fillStyle(0x88bbee, 0.15);
-    g.fillCircle(cx, cy, 12);
+    g.fillCircle(cx, cy, 18);
     // White circle body
     g.fillStyle(0xffffff);
-    g.fillCircle(cx, cy, 9);
-    // "SSI" in dark 3px pixel font
+    g.fillCircle(cx, cy, 14);
+    // "SSI" in dark pixel font
     g.fillStyle(0x222233);
-    // S (x=4): 3px wide, 5px tall
-    g.fillRect(4, 7, 3, 1);   // top bar
-    g.fillRect(4, 8, 1, 1);   // left side
-    g.fillRect(4, 9, 3, 1);   // middle bar
-    g.fillRect(6, 10, 1, 1);  // right side
-    g.fillRect(4, 11, 3, 1);  // bottom bar
-    // S (x=8)
-    g.fillRect(8, 7, 3, 1);
-    g.fillRect(8, 8, 1, 1);
-    g.fillRect(8, 9, 3, 1);
-    g.fillRect(10, 10, 1, 1);
-    g.fillRect(8, 11, 3, 1);
-    // I (x=12)
-    g.fillRect(12, 7, 3, 1);  // top serif
-    g.fillRect(13, 8, 1, 3);  // vertical
-    g.fillRect(12, 11, 3, 1); // bottom serif
-    g.generateTexture('pu-ssi', 24, 24);
+    // S (x=6): scaled from x=4
+    g.fillRect(6, 11, 5, 2);   // top bar
+    g.fillRect(6, 12, 2, 2);   // left side
+    g.fillRect(6, 14, 5, 2);   // middle bar
+    g.fillRect(9, 15, 2, 2);   // right side
+    g.fillRect(6, 17, 5, 2);   // bottom bar
+    // S (x=12): scaled from x=8
+    g.fillRect(12, 11, 5, 2);
+    g.fillRect(12, 12, 2, 2);
+    g.fillRect(12, 14, 5, 2);
+    g.fillRect(15, 15, 2, 2);
+    g.fillRect(12, 17, 5, 2);
+    // I (x=18): scaled from x=12
+    g.fillRect(18, 11, 5, 2);  // top serif
+    g.fillRect(20, 12, 2, 5);  // vertical
+    g.fillRect(18, 17, 5, 2);  // bottom serif
+    g.generateTexture('pu-ssi', 36, 36);
     g.destroy();
   }
 
   private generateGrokLogo(): void {
     const g = this.add.graphics();
-    const cx = 12, cy = 12;
+    const cx = 18, cy = 18;
     // Black circle
     g.fillStyle(0x111111);
-    g.fillCircle(cx, cy, 10);
+    g.fillCircle(cx, cy, 15);
     // White angular "X" with one stroke extending as "I" — minimalist xAI logo
     g.fillStyle(0xffffff);
     // Left-to-right diagonal (\)
-    g.fillRect(5, 5, 2, 2);
-    g.fillRect(7, 7, 2, 2);
-    g.fillRect(9, 9, 2, 2);
-    g.fillRect(11, 11, 2, 2);
-    g.fillRect(13, 13, 2, 2);
-    g.fillRect(15, 15, 2, 2);
+    g.fillRect(8, 8, 3, 3);
+    g.fillRect(11, 11, 3, 3);
+    g.fillRect(14, 14, 3, 3);
+    g.fillRect(17, 17, 3, 3);
+    g.fillRect(20, 20, 3, 3);
+    g.fillRect(23, 23, 3, 3);
     // Right-to-left diagonal (/)
-    g.fillRect(15, 5, 2, 2);
-    g.fillRect(13, 7, 2, 2);
-    g.fillRect(11, 9, 2, 2);
-    g.fillRect(9, 11, 2, 2);
-    g.fillRect(7, 13, 2, 2);
-    g.fillRect(5, 15, 2, 2);
+    g.fillRect(23, 8, 3, 3);
+    g.fillRect(20, 11, 3, 3);
+    g.fillRect(17, 14, 3, 3);
+    g.fillRect(14, 17, 3, 3);
+    g.fillRect(11, 20, 3, 3);
+    g.fillRect(8, 23, 3, 3);
     // "I" extending down from right side of X
-    g.fillRect(17, 17, 2, 3);
-    g.generateTexture('pd-grok', 24, 24);
+    g.fillRect(26, 26, 3, 5);
+    g.generateTexture('pd-grok', 36, 36);
     g.destroy();
   }
 
@@ -469,14 +469,14 @@ export class PreloadScene extends Phaser.Scene {
     const g = this.add.graphics();
     // Blue background
     g.fillStyle(0x4488cc, 0.3);
-    g.fillRect(0, 0, 24, 24);
+    g.fillRect(0, 0, 36, 36);
     // Paperclip shape
-    g.lineStyle(2, 0x4488cc);
+    g.lineStyle(3, 0x4488cc);
     // Outer loop
-    g.strokeRoundedRect(7, 2, 10, 19, 5);
+    g.strokeRoundedRect(11, 3, 15, 29, 8);
     // Inner loop
-    g.strokeRoundedRect(10, 7, 5, 10, 2);
-    g.generateTexture('pd-clippy', 24, 24);
+    g.strokeRoundedRect(15, 11, 8, 15, 3);
+    g.generateTexture('pd-clippy', 36, 36);
     g.destroy();
   }
 
@@ -484,15 +484,15 @@ export class PreloadScene extends Phaser.Scene {
     const g = this.add.graphics();
     // Gray background
     g.fillStyle(0x888888, 0.2);
-    g.fillRect(0, 0, 24, 24);
+    g.fillRect(0, 0, 36, 36);
     // Cloud shape: overlapping circles
     g.fillStyle(0x888888, 0.8);
-    g.fillCircle(8, 12, 6);
-    g.fillCircle(16, 12, 6);
-    g.fillCircle(12, 8, 6);
+    g.fillCircle(12, 18, 9);
+    g.fillCircle(24, 18, 9);
+    g.fillCircle(18, 12, 9);
     // Base
-    g.fillRect(4, 12, 17, 6);
-    g.generateTexture('pd-fog', 24, 24);
+    g.fillRect(6, 18, 26, 9);
+    g.generateTexture('pd-fog', 36, 36);
     g.destroy();
   }
 
@@ -500,117 +500,117 @@ export class PreloadScene extends Phaser.Scene {
     const g = this.add.graphics();
     // Red background
     g.fillStyle(0xe06c75, 0.3);
-    g.fillRect(0, 0, 24, 24);
+    g.fillRect(0, 0, 36, 36);
     // Red border
-    g.lineStyle(2, 0xe06c75);
-    g.strokeRect(1, 1, 22, 22);
+    g.lineStyle(3, 0xe06c75);
+    g.strokeRect(2, 2, 33, 33);
     // "!" exclamation
     g.fillStyle(0xe06c75);
-    g.fillRect(10, 5, 5, 10);
-    g.fillRect(10, 17, 5, 4);
-    g.generateTexture('pd-leak', 24, 24);
+    g.fillRect(15, 8, 8, 15);
+    g.fillRect(15, 26, 8, 6);
+    g.generateTexture('pd-leak', 36, 36);
     g.destroy();
   }
 
   private generateCopilotLogo(): void {
     const g = this.add.graphics();
-    const cx = 12, cy = 12;
+    const cx = 18, cy = 18;
     // Two overlapping rounded shapes — blue + green forming figure-8
     // Blue shape (upper-left)
     g.fillStyle(0x3B82F6);
-    g.fillCircle(cx - 3, cy - 2, 6);
+    g.fillCircle(cx - 5, cy - 3, 9);
     // Green shape (lower-right)
     g.fillStyle(0x10B981);
-    g.fillCircle(cx + 3, cy + 2, 6);
+    g.fillCircle(cx + 5, cy + 3, 9);
     // Mixed color at overlap center
     g.fillStyle(0x259ED9, 0.8);
-    g.fillCircle(cx, cy, 4);
-    g.generateTexture('pd-copilot', 24, 24);
+    g.fillCircle(cx, cy, 6);
+    g.generateTexture('pd-copilot', 36, 36);
     g.destroy();
   }
 
   private generateMetaPDLogo(): void {
     const g = this.add.graphics();
-    const cy = 12;
+    const cy = 18;
     // Blue infinity loop / figure-8 — two connected loops, thick at crossover
     g.fillStyle(0x0668E1);
     // Left loop
-    g.fillCircle(7, cy, 5);
+    g.fillCircle(11, cy, 8);
     // Right loop
-    g.fillCircle(17, cy, 5);
+    g.fillCircle(26, cy, 8);
     // Cut out inner loops to form ring shapes
     g.fillStyle(0x000000, 0);
     // Thick crossover at center
     g.fillStyle(0x0668E1);
-    g.fillRect(10, cy - 3, 4, 6);
+    g.fillRect(15, cy - 5, 6, 9);
     // Inner cutouts for loop holes
     g.fillStyle(0x000000);
-    g.fillCircle(7, cy, 2);
-    g.fillCircle(17, cy, 2);
+    g.fillCircle(11, cy, 3);
+    g.fillCircle(26, cy, 3);
     // Redraw outer ring portions
-    g.lineStyle(3, 0x0668E1);
-    g.strokeCircle(7, cy, 5);
-    g.strokeCircle(17, cy, 5);
+    g.lineStyle(5, 0x0668E1);
+    g.strokeCircle(11, cy, 8);
+    g.strokeCircle(26, cy, 8);
     // Fill crossover solid
     g.fillStyle(0x0668E1);
-    g.fillRect(10, cy - 2, 4, 4);
-    g.generateTexture('pd-meta', 24, 24);
+    g.fillRect(15, cy - 3, 6, 6);
+    g.generateTexture('pd-meta', 36, 36);
     g.destroy();
   }
 
   private generateQwenLogo(): void {
     const g = this.add.graphics();
-    const cx = 12, cy = 12;
+    const cx = 18, cy = 18;
     // Indigo circle
     g.fillStyle(0x6366F1);
-    g.fillCircle(cx, cy, 10);
+    g.fillCircle(cx, cy, 15);
     // Cutout for "Q" letter body
     g.fillStyle(0x000000);
-    g.fillCircle(cx, cy, 6);
+    g.fillCircle(cx, cy, 9);
     // Restore ring
     g.fillStyle(0x6366F1);
     // Q ring
-    g.lineStyle(3, 0xffffff);
-    g.strokeCircle(cx, cy, 5);
+    g.lineStyle(5, 0xffffff);
+    g.strokeCircle(cx, cy, 8);
     // Diagonal tick extending bottom-right
-    g.lineStyle(3, 0xffffff);
-    g.lineBetween(cx + 2, cy + 3, cx + 7, cy + 8);
-    g.generateTexture('pd-qwen', 24, 24);
+    g.lineStyle(5, 0xffffff);
+    g.lineBetween(cx + 3, cy + 5, cx + 11, cy + 12);
+    g.generateTexture('pd-qwen', 36, 36);
     g.destroy();
   }
 
   private generateOpenClawLogo(): void {
     const g = this.add.graphics();
-    const cx = 12, cy = 12;
+    const cx = 18, cy = 18;
     // Red/orange crab claw — two curved open pincers
     g.fillStyle(0xEF4444);
     // Left pincer (curved arc)
-    g.fillRect(2, 6, 3, 2);
-    g.fillRect(1, 8, 3, 2);
-    g.fillRect(1, 10, 3, 2);
-    g.fillRect(2, 12, 3, 2);
-    g.fillRect(4, 14, 3, 2);
-    g.fillRect(6, 15, 3, 2);
+    g.fillRect(3, 9, 5, 3);
+    g.fillRect(2, 12, 5, 3);
+    g.fillRect(2, 15, 5, 3);
+    g.fillRect(3, 18, 5, 3);
+    g.fillRect(6, 21, 5, 3);
+    g.fillRect(9, 23, 5, 3);
     // Right pincer (curved arc)
-    g.fillRect(19, 6, 3, 2);
-    g.fillRect(20, 8, 3, 2);
-    g.fillRect(20, 10, 3, 2);
-    g.fillRect(19, 12, 3, 2);
-    g.fillRect(17, 14, 3, 2);
-    g.fillRect(15, 15, 3, 2);
+    g.fillRect(29, 9, 5, 3);
+    g.fillRect(30, 12, 5, 3);
+    g.fillRect(30, 15, 5, 3);
+    g.fillRect(29, 18, 5, 3);
+    g.fillRect(26, 21, 5, 3);
+    g.fillRect(23, 23, 5, 3);
     // Base connecting the pincers
-    g.fillRect(8, 17, 8, 3);
-    g.fillRect(6, 16, 4, 2);
-    g.fillRect(14, 16, 4, 2);
+    g.fillRect(12, 26, 12, 5);
+    g.fillRect(9, 24, 6, 3);
+    g.fillRect(21, 24, 6, 3);
     // Pincer tips (lighter, open)
     g.fillStyle(0xf87171);
-    g.fillRect(1, 5, 3, 2);
-    g.fillRect(20, 5, 3, 2);
+    g.fillRect(2, 8, 5, 3);
+    g.fillRect(30, 8, 5, 3);
     // Inner pincer edges
     g.fillStyle(0xdc2626);
-    g.fillRect(4, 8, 2, 6);
-    g.fillRect(18, 8, 2, 6);
-    g.generateTexture('pd-openclaw', 24, 24);
+    g.fillRect(6, 12, 3, 9);
+    g.fillRect(27, 12, 3, 9);
+    g.generateTexture('pd-openclaw', 36, 36);
     g.destroy();
   }
 
@@ -619,31 +619,31 @@ export class PreloadScene extends Phaser.Scene {
     // Blue whale silhouette
     g.fillStyle(0x2563EB);
     // Body — main oval shape
-    g.fillCircle(12, 13, 8);
-    g.fillRect(4, 10, 16, 8);
+    g.fillCircle(18, 20, 12);
+    g.fillRect(6, 15, 24, 12);
     // Head (front, rounder)
-    g.fillCircle(6, 12, 6);
+    g.fillCircle(9, 18, 9);
     // Tail flukes
-    g.fillTriangle(20, 12, 24, 8, 23, 14);
-    g.fillTriangle(20, 14, 24, 18, 23, 12);
+    g.fillTriangle(30, 18, 36, 12, 35, 21);
+    g.fillTriangle(30, 21, 36, 27, 35, 18);
     // Flipper (small triangle on bottom)
     g.fillStyle(0x1d4ed8);
-    g.fillTriangle(10, 16, 14, 16, 12, 20);
+    g.fillTriangle(15, 24, 21, 24, 18, 30);
     // Lighter belly
     g.fillStyle(0x60a5fa);
-    g.fillRect(4, 15, 14, 3);
-    g.fillCircle(6, 15, 4);
+    g.fillRect(6, 23, 21, 5);
+    g.fillCircle(9, 23, 6);
     // Eye
     g.fillStyle(0xffffff);
-    g.fillCircle(5, 11, 2);
+    g.fillCircle(8, 17, 3);
     g.fillStyle(0x111111);
-    g.fillCircle(5, 11, 1);
+    g.fillCircle(8, 17, 2);
     // Water spout — 3 rising blue dots
     g.fillStyle(0x93c5fd);
-    g.fillCircle(8, 5, 1.5);
-    g.fillCircle(10, 3, 1.5);
-    g.fillCircle(7, 1, 1.5);
-    g.generateTexture('pu-deepseek', 24, 24);
+    g.fillCircle(12, 8, 2);
+    g.fillCircle(15, 5, 2);
+    g.fillCircle(11, 2, 2);
+    g.generateTexture('pu-deepseek', 36, 36);
     g.destroy();
   }
 
@@ -1159,346 +1159,370 @@ export class PreloadScene extends Phaser.Scene {
     this.generateBossPaperMill();
     this.generateBossTheVoid();
     this.generateBossShoggoth();
+    // Boss projectile — 10×10 glowing white/red circle
+    const gp = this.add.graphics();
+    gp.fillStyle(0xff4444, 0.35);
+    gp.fillCircle(5, 5, 5);
+    gp.fillStyle(0xffffff, 0.9);
+    gp.fillCircle(5, 5, 3);
+    gp.fillStyle(0xffffff);
+    gp.fillCircle(5, 5, 1);
+    gp.generateTexture('boss-projectile', 10, 10);
+    gp.destroy();
   }
 
   private generateBossAlgorithmVortex(): void {
     const g = this.add.graphics();
-    const cx = 36, cy = 36;
+    const cx = 48, cy = 48;
     // Dome head — Twitter blue
     g.fillStyle(0x1DA1F2);
-    g.fillCircle(cx, cy - 9, 21);
+    g.fillCircle(cx, cy - 12, 28);
     // Head highlight
     g.fillStyle(0x4db8f7, 0.4);
-    g.fillCircle(cx - 6, cy - 15, 9);
+    g.fillCircle(cx - 8, cy - 20, 12);
     // 8 tentacles curving out
     g.fillStyle(0x1DA1F2);
     const tentOffsets = [
-      { x: -24, y: 12 }, { x: -18, y: 21 }, { x: -9, y: 27 }, { x: 0, y: 30 },
-      { x: 9, y: 27 }, { x: 18, y: 21 }, { x: 24, y: 12 }, { x: -3, y: 24 },
+      { x: -32, y: 16 }, { x: -24, y: 28 }, { x: -12, y: 36 }, { x: 0, y: 40 },
+      { x: 12, y: 36 }, { x: 24, y: 28 }, { x: 32, y: 16 }, { x: -4, y: 32 },
     ];
     tentOffsets.forEach((t, i) => {
       const bx = cx + t.x;
       const by = cy + t.y;
-      g.fillRect(bx - 2, by - 3, 5, 9);
-      g.fillRect(bx + (i % 2 === 0 ? 2 : -2), by + 5, 5, 8);
-      g.fillRect(bx + (i % 2 === 0 ? 3 : -3), by + 11, 5, 6);
+      g.fillRect(bx - 3, by - 4, 7, 12);
+      g.fillRect(bx + (i % 2 === 0 ? 3 : -3), by + 7, 7, 11);
+      g.fillRect(bx + (i % 2 === 0 ? 4 : -4), by + 15, 7, 8);
       // Extra segment for more detail
-      g.fillRect(bx + (i % 2 === 0 ? 4 : -4), by + 16, 4, 5);
+      g.fillRect(bx + (i % 2 === 0 ? 5 : -5), by + 21, 5, 7);
       // Sucker dots
       g.fillStyle(0x0d8ddb);
-      g.fillRect(bx, by + 2, 2, 2);
-      g.fillRect(bx, by + 8, 2, 2);
-      g.fillRect(bx, by + 14, 2, 2);
+      g.fillRect(bx, by + 3, 3, 3);
+      g.fillRect(bx, by + 11, 3, 3);
+      g.fillRect(bx, by + 19, 3, 3);
       g.fillStyle(0x1DA1F2);
     });
     // Large white eyes with red pupils
     g.fillStyle(0xffffff);
-    g.fillCircle(cx - 9, cy - 9, 8);
-    g.fillCircle(cx + 9, cy - 9, 8);
+    g.fillCircle(cx - 12, cy - 12, 11);
+    g.fillCircle(cx + 12, cy - 12, 11);
     g.fillStyle(0xff3333);
-    g.fillCircle(cx - 8, cy - 9, 3);
-    g.fillCircle(cx + 11, cy - 9, 3);
+    g.fillCircle(cx - 11, cy - 12, 4);
+    g.fillCircle(cx + 15, cy - 12, 4);
     // Small X logo on forehead
     g.fillStyle(0xffffff);
-    g.fillRect(cx - 3, cy - 24, 2, 5);
-    g.fillRect(cx + 2, cy - 24, 2, 5);
-    g.fillRect(cx - 2, cy - 23, 5, 2);
-    g.generateTexture('boss-algorithmVortex', 72, 72);
+    g.fillRect(cx - 4, cy - 32, 3, 7);
+    g.fillRect(cx + 3, cy - 32, 3, 7);
+    g.fillRect(cx - 3, cy - 31, 7, 3);
+    g.generateTexture('boss-algorithmVortex', 96, 96);
     g.destroy();
   }
 
   private generateBossEngagementKing(): void {
     const g = this.add.graphics();
-    const cx = 42, cy = 42;
+    const cx = 64, cy = 64;
     // LinkedIn-blue body
     g.fillStyle(0x0A66C2);
-    g.fillCircle(cx, cy - 6, 24);
+    g.fillCircle(cx, cy - 9, 37);
     // Body highlight
     g.fillStyle(0x0d7ade, 0.3);
-    g.fillCircle(cx - 8, cy - 12, 12);
+    g.fillCircle(cx - 12, cy - 18, 18);
     // Suit jacket on body
     g.fillStyle(0x1a2a40);
-    g.fillRect(cx - 21, cy + 6, 42, 24);
-    g.fillRect(cx - 18, cy, 36, 9);
+    g.fillRect(cx - 32, cy + 9, 64, 37);
+    g.fillRect(cx - 27, cy, 55, 14);
     // Suit lapels
     g.fillStyle(0x203450);
-    g.fillRect(cx - 6, cy + 3, 3, 12);
-    g.fillRect(cx + 3, cy + 3, 3, 12);
+    g.fillRect(cx - 9, cy + 5, 5, 18);
+    g.fillRect(cx + 5, cy + 5, 5, 18);
     // White shirt strip
     g.fillStyle(0xeeeeee);
-    g.fillRect(cx - 2, cy + 5, 3, 15);
+    g.fillRect(cx - 3, cy + 8, 5, 23);
     // Gold crown on head
     g.fillStyle(0xffd700);
-    g.fillRect(cx - 12, cy - 33, 24, 6);
-    g.fillTriangle(cx - 12, cy - 33, cx - 9, cy - 42, cx - 6, cy - 33);
-    g.fillTriangle(cx - 3, cy - 33, cx, cy - 39, cx + 3, cy - 33);
-    g.fillTriangle(cx + 6, cy - 33, cx + 9, cy - 42, cx + 12, cy - 33);
+    g.fillRect(cx - 18, cy - 50, 37, 9);
+    g.fillTriangle(cx - 18, cy - 50, cx - 14, cy - 64, cx - 9, cy - 50);
+    g.fillTriangle(cx - 5, cy - 50, cx, cy - 59, cx + 5, cy - 50);
+    g.fillTriangle(cx + 9, cy - 50, cx + 14, cy - 64, cx + 18, cy - 50);
     // Crown jewels
     g.fillStyle(0xff3333);
-    g.fillRect(cx - 9, cy - 38, 3, 3);
+    g.fillRect(cx - 14, cy - 58, 5, 5);
     g.fillStyle(0x3388ff);
-    g.fillRect(cx - 2, cy - 36, 3, 3);
+    g.fillRect(cx - 3, cy - 55, 5, 5);
     g.fillStyle(0xff3333);
-    g.fillRect(cx + 8, cy - 38, 3, 3);
+    g.fillRect(cx + 12, cy - 58, 5, 5);
     // 4 eyes (mutation starting)
     g.fillStyle(0xffffff);
-    g.fillCircle(cx - 11, cy - 9, 5);
-    g.fillCircle(cx - 3, cy - 6, 5);
-    g.fillCircle(cx + 5, cy - 9, 5);
-    g.fillCircle(cx + 12, cy - 6, 5);
+    g.fillCircle(cx - 17, cy - 14, 8);
+    g.fillCircle(cx - 5, cy - 9, 8);
+    g.fillCircle(cx + 8, cy - 14, 8);
+    g.fillCircle(cx + 18, cy - 9, 8);
     g.fillStyle(0x000000);
-    g.fillCircle(cx - 11, cy - 9, 2);
-    g.fillCircle(cx - 3, cy - 6, 2);
-    g.fillCircle(cx + 5, cy - 9, 2);
-    g.fillCircle(cx + 12, cy - 6, 2);
+    g.fillCircle(cx - 17, cy - 14, 3);
+    g.fillCircle(cx - 5, cy - 9, 3);
+    g.fillCircle(cx + 8, cy - 14, 3);
+    g.fillCircle(cx + 18, cy - 9, 3);
     // Tentacles holding tiny icons
     g.fillStyle(0x0A66C2);
     for (let i = 0; i < 4; i++) {
-      const tx = cx - 27 + i * 18;
-      const ty = cy + 27 + (i % 2) * 6;
-      g.fillRect(tx, ty, 5, 12);
-      g.fillRect(tx + (i % 2 === 0 ? 2 : -2), ty + 9, 5, 9);
+      const tx = cx - 41 + i * 27;
+      const ty = cy + 41 + (i % 2) * 9;
+      g.fillRect(tx, ty, 8, 18);
+      g.fillRect(tx + (i % 2 === 0 ? 3 : -3), ty + 14, 8, 14);
     }
     // Tiny phone icon in one tentacle
     g.fillStyle(0x333333);
-    g.fillRect(cx - 26, cy + 39, 5, 6);
-    g.generateTexture('boss-engagementKing', 84, 84);
+    g.fillRect(cx - 40, cy + 59, 8, 9);
+    g.generateTexture('boss-engagementKing', 128, 128);
     g.destroy();
   }
 
   private generateBossForkSwarm(): void {
     const g = this.add.graphics();
-    const cx = 42, cy = 42;
+    const cx = 80, cy = 80;
     // 3 octopus-shapes fused into one body — partially merged heads
     g.fillStyle(0x0085FF);
     // Head 1 (left)
-    g.fillCircle(cx - 15, cy - 12, 15);
+    g.fillCircle(cx - 29, cy - 23, 29);
     // Head 2 (center, overlapping)
-    g.fillCircle(cx, cy - 9, 17);
+    g.fillCircle(cx, cy - 17, 32);
     // Head 3 (right)
-    g.fillCircle(cx + 15, cy - 12, 15);
+    g.fillCircle(cx + 29, cy - 23, 29);
     // Merged body mass
-    g.fillRect(cx - 24, cy - 3, 48, 21);
+    g.fillRect(cx - 46, cy - 6, 92, 40);
     // Shared tentacles
     g.fillStyle(0x0085FF);
     for (let i = 0; i < 8; i++) {
-      const tx = cx - 21 + i * 6;
-      const ty = cy + 18;
-      g.fillRect(tx, ty, 5, 8);
-      g.fillRect(tx + (i % 2 === 0 ? 2 : -2), ty + 6, 5, 8);
-      g.fillRect(tx + (i % 2 === 0 ? 3 : -3), ty + 12, 5, 6);
+      const tx = cx - 40 + i * 11;
+      const ty = cy + 34;
+      g.fillRect(tx, ty, 10, 15);
+      g.fillRect(tx + (i % 2 === 0 ? 4 : -4), ty + 11, 10, 15);
+      g.fillRect(tx + (i % 2 === 0 ? 6 : -6), ty + 23, 10, 11);
     }
     // Multiple eyes scattered across merged heads
     g.fillStyle(0xffffff);
     const eyePositions = [
-      { x: cx - 18, y: cy - 15 }, { x: cx - 9, y: cy - 18 },
-      { x: cx - 3, y: cy - 12 }, { x: cx + 5, y: cy - 15 },
-      { x: cx + 12, y: cy - 18 }, { x: cx + 20, y: cy - 14 },
-      { x: cx, y: cy - 6 }, { x: cx + 9, y: cy - 5 },
+      { x: cx - 34, y: cy - 29 }, { x: cx - 17, y: cy - 34 },
+      { x: cx - 6, y: cy - 23 }, { x: cx + 10, y: cy - 29 },
+      { x: cx + 23, y: cy - 34 }, { x: cx + 38, y: cy - 27 },
+      { x: cx, y: cy - 11 }, { x: cx + 17, y: cy - 10 },
     ];
     eyePositions.forEach(e => {
       g.fillStyle(0xffffff);
-      g.fillCircle(e.x, e.y, 4);
+      g.fillCircle(e.x, e.y, 8);
       g.fillStyle(0x000000);
-      g.fillCircle(e.x + 1, e.y, 2);
+      g.fillCircle(e.x + 2, e.y, 4);
     });
     // Merge seam lines (darker blue where heads join)
     g.fillStyle(0x0066cc, 0.5);
-    g.fillRect(cx - 8, cy - 18, 3, 15);
-    g.fillRect(cx + 6, cy - 18, 3, 15);
-    g.generateTexture('boss-forkSwarm', 84, 84);
+    g.fillRect(cx - 15, cy - 34, 6, 29);
+    g.fillRect(cx + 11, cy - 34, 6, 29);
+    g.generateTexture('boss-forkSwarm', 160, 160);
     g.destroy();
   }
 
   private generateBossPaperMill(): void {
     const g = this.add.graphics();
-    const cx = 48, cy = 48;
+    const cx = 96, cy = 96;
     // Metal grinder body
     g.fillStyle(0x444444);
-    g.fillRect(cx - 30, cy - 24, 60, 48);
+    g.fillRect(cx - 60, cy - 48, 120, 96);
     // Body bevel top
     g.fillStyle(0x555555);
-    g.fillRect(cx - 30, cy - 24, 60, 5);
+    g.fillRect(cx - 60, cy - 48, 120, 10);
     // Body bevel bottom
     g.fillStyle(0x333333);
-    g.fillRect(cx - 30, cy + 20, 60, 5);
+    g.fillRect(cx - 60, cy + 40, 120, 10);
     // Gears visible on sides
     g.fillStyle(0x666666);
-    g.fillCircle(cx - 21, cy, 9);
-    g.fillCircle(cx + 21, cy, 9);
+    g.fillCircle(cx - 42, cy, 18);
+    g.fillCircle(cx + 42, cy, 18);
     g.fillStyle(0x555555);
-    g.fillCircle(cx - 21, cy, 5);
-    g.fillCircle(cx + 21, cy, 5);
+    g.fillCircle(cx - 42, cy, 10);
+    g.fillCircle(cx + 42, cy, 10);
     // Gear teeth
     for (let i = 0; i < 6; i++) {
       const angle = (i / 6) * Math.PI * 2;
       g.fillStyle(0x666666);
-      g.fillRect(cx - 21 + Math.cos(angle) * 8, cy + Math.sin(angle) * 8, 3, 3);
-      g.fillRect(cx + 21 + Math.cos(angle) * 8, cy + Math.sin(angle) * 8, 3, 3);
+      g.fillRect(cx - 42 + Math.cos(angle) * 16, cy + Math.sin(angle) * 16, 6, 6);
+      g.fillRect(cx + 42 + Math.cos(angle) * 16, cy + Math.sin(angle) * 16, 6, 6);
     }
     // Red LED eyes
     g.fillStyle(0xB31B1B);
-    g.fillCircle(cx - 9, cy - 12, 6);
-    g.fillCircle(cx + 9, cy - 12, 6);
+    g.fillCircle(cx - 18, cy - 24, 12);
+    g.fillCircle(cx + 18, cy - 24, 12);
     // Eye glow
     g.fillStyle(0xff3333, 0.4);
-    g.fillCircle(cx - 9, cy - 12, 9);
-    g.fillCircle(cx + 9, cy - 12, 9);
+    g.fillCircle(cx - 18, cy - 24, 18);
+    g.fillCircle(cx + 18, cy - 24, 18);
     // Eye pupils
     g.fillStyle(0xff0000);
-    g.fillCircle(cx - 9, cy - 12, 3);
-    g.fillCircle(cx + 9, cy - 12, 3);
+    g.fillCircle(cx - 18, cy - 24, 6);
+    g.fillCircle(cx + 18, cy - 24, 6);
     // Papers in maw (being consumed)
     g.fillStyle(0xffffff);
-    g.fillRect(cx - 12, cy - 3, 8, 11);
-    g.fillRect(cx - 3, cy - 6, 8, 12);
-    g.fillRect(cx + 6, cy - 2, 8, 9);
+    g.fillRect(cx - 24, cy - 6, 16, 22);
+    g.fillRect(cx - 6, cy - 12, 16, 24);
+    g.fillRect(cx + 12, cy - 4, 16, 18);
     // Text lines on papers
     g.fillStyle(0xcccccc);
-    g.fillRect(cx - 11, cy, 5, 2);
-    g.fillRect(cx - 2, cy - 3, 5, 2);
-    g.fillRect(cx + 8, cy + 2, 5, 2);
+    g.fillRect(cx - 22, cy, 10, 4);
+    g.fillRect(cx - 4, cy - 6, 10, 4);
+    g.fillRect(cx + 16, cy + 4, 10, 4);
     // Living tentacles from slots
     g.fillStyle(0x555555);
-    const slots = [-24, -12, 0, 12, 24];
+    const slots = [-48, -24, 0, 24, 48];
     slots.forEach((sx, i) => {
       // Slot
       g.fillStyle(0x222222);
-      g.fillRect(cx + sx - 3, cy + 24, 6, 3);
+      g.fillRect(cx + sx - 6, cy + 48, 12, 6);
       // Tentacle emerging
       g.fillStyle(0x666666);
-      g.fillRect(cx + sx - 2, cy + 26, 3, 9);
-      g.fillRect(cx + sx + (i % 2 === 0 ? 0 : -2), cy + 33, 3, 8);
-      g.fillRect(cx + sx + (i % 2 === 0 ? 2 : -3), cy + 39, 3, 6);
+      g.fillRect(cx + sx - 4, cy + 52, 6, 18);
+      g.fillRect(cx + sx + (i % 2 === 0 ? 0 : -4), cy + 66, 6, 16);
+      g.fillRect(cx + sx + (i % 2 === 0 ? 4 : -6), cy + 78, 6, 12);
     });
-    g.generateTexture('boss-paperMill', 96, 96);
+    g.generateTexture('boss-paperMill', 192, 192);
     g.destroy();
   }
 
   private generateBossTheVoid(): void {
     const g = this.add.graphics();
-    const cx = 54, cy = 54;
+    const cx = 120, cy = 120;
     // Dark amorphous mass — purple-dark coloring
     g.fillStyle(0x2C3E50);
-    g.fillCircle(cx, cy, 42);
-    g.fillCircle(cx - 12, cy + 8, 30);
-    g.fillCircle(cx + 15, cy - 8, 33);
-    g.fillCircle(cx - 8, cy - 15, 27);
+    g.fillCircle(cx, cy, 93);
+    g.fillCircle(cx - 27, cy + 18, 67);
+    g.fillCircle(cx + 33, cy - 18, 73);
+    g.fillCircle(cx - 18, cy - 33, 60);
     // Darker inner areas
     g.fillStyle(0x1a2a3a, 0.6);
-    g.fillCircle(cx + 8, cy + 12, 23);
-    g.fillCircle(cx - 15, cy - 8, 18);
+    g.fillCircle(cx + 18, cy + 27, 51);
+    g.fillCircle(cx - 33, cy - 18, 40);
     // Wispy shadow tendrils
     g.fillStyle(0x1a2535);
     for (let i = 0; i < 10; i++) {
       const angle = (i / 10) * Math.PI * 2;
-      const r = 36 + (i % 3) * 6;
+      const r = 80 + (i % 3) * 13;
       const tx = cx + Math.cos(angle) * r;
       const ty = cy + Math.sin(angle) * r;
-      g.fillRect(tx - 2, ty - 2, 5, 12);
-      g.fillRect(tx + (i % 2 === 0 ? 2 : -3), ty + 9, 3, 9);
+      g.fillRect(tx - 4, ty - 4, 11, 27);
+      g.fillRect(tx + (i % 2 === 0 ? 4 : -7), ty + 20, 7, 20);
     }
     // Dozens of eyes (various sizes, white and red)
     const voidEyes = [
-      { x: -18, y: -21, r: 5, red: false }, { x: 6, y: -27, r: 3, red: true },
-      { x: 21, y: -15, r: 5, red: false }, { x: -27, y: -6, r: 3, red: false },
-      { x: -9, y: -9, r: 6, red: false }, { x: 12, y: -3, r: 5, red: true },
-      { x: 27, y: 6, r: 3, red: false }, { x: -21, y: 12, r: 5, red: true },
-      { x: -3, y: 9, r: 3, red: false }, { x: 15, y: 15, r: 5, red: false },
-      { x: -12, y: 21, r: 3, red: true }, { x: 9, y: 24, r: 3, red: false },
-      { x: -24, y: -15, r: 2, red: false }, { x: 30, y: -6, r: 2, red: true },
-      { x: 0, y: -18, r: 4, red: false }, { x: -6, y: 27, r: 2, red: false },
+      { x: -40, y: -47, r: 11, red: false }, { x: 13, y: -60, r: 7, red: true },
+      { x: 47, y: -33, r: 11, red: false }, { x: -60, y: -13, r: 7, red: false },
+      { x: -20, y: -20, r: 13, red: false }, { x: 27, y: -7, r: 11, red: true },
+      { x: 60, y: 13, r: 7, red: false }, { x: -47, y: 27, r: 11, red: true },
+      { x: -7, y: 20, r: 7, red: false }, { x: 33, y: 33, r: 11, red: false },
+      { x: -27, y: 47, r: 7, red: true }, { x: 20, y: 53, r: 7, red: false },
+      { x: -53, y: -33, r: 4, red: false }, { x: 67, y: -13, r: 4, red: true },
+      { x: 0, y: -40, r: 9, red: false }, { x: -13, y: 60, r: 4, red: false },
     ];
     voidEyes.forEach(e => {
       g.fillStyle(e.red ? 0xff3333 : 0xffffff);
       g.fillCircle(cx + e.x, cy + e.y, e.r);
       g.fillStyle(0x000000);
-      g.fillCircle(cx + e.x + 1, cy + e.y, e.r * 0.5);
+      g.fillCircle(cx + e.x + 2, cy + e.y, e.r * 0.5);
     });
     // Visible mouths (dark slashes with teeth)
     g.fillStyle(0x111111);
-    g.fillRect(cx - 12, cy + 3, 12, 5);
+    g.fillRect(cx - 27, cy + 7, 27, 11);
     g.fillStyle(0xffffff);
-    g.fillRect(cx - 11, cy + 3, 2, 3);
-    g.fillRect(cx - 8, cy + 3, 2, 3);
-    g.fillRect(cx - 5, cy + 3, 2, 3);
+    g.fillRect(cx - 24, cy + 7, 4, 7);
+    g.fillRect(cx - 18, cy + 7, 4, 7);
+    g.fillRect(cx - 11, cy + 7, 4, 7);
     // Second mouth
     g.fillStyle(0x111111);
-    g.fillRect(cx + 9, cy - 6, 9, 3);
+    g.fillRect(cx + 20, cy - 13, 20, 7);
     g.fillStyle(0xffffff);
-    g.fillRect(cx + 11, cy - 6, 2, 2);
-    g.fillRect(cx + 14, cy - 6, 2, 2);
-    g.generateTexture('boss-theVoid', 108, 108);
+    g.fillRect(cx + 24, cy - 13, 4, 4);
+    g.fillRect(cx + 31, cy - 13, 4, 4);
+    // Smiley face overlay (semi-transparent, drawn on top of void body)
+    g.fillStyle(0xffff00, 0.6);
+    g.fillCircle(cx, cy, 30);
+    // Smiley eyes
+    g.fillStyle(0x000000, 0.8);
+    g.fillCircle(cx - 12, cy - 12, 5);
+    g.fillCircle(cx + 12, cy - 12, 5);
+    // Smile — approximated with filled rectangles forming an arc
+    g.fillStyle(0x000000, 0.8);
+    g.fillRect(cx - 12, cy + 8, 5, 4);
+    g.fillRect(cx - 7, cy + 12, 5, 4);
+    g.fillRect(cx - 2, cy + 14, 5, 4);
+    g.fillRect(cx + 3, cy + 12, 5, 4);
+    g.fillRect(cx + 8, cy + 8, 5, 4);
+    g.generateTexture('boss-theVoid', 240, 240);
     g.destroy();
   }
 
   private generateBossShoggoth(): void {
     const g = this.add.graphics();
-    const cx = 60, cy = 60;
+    const cx = 120, cy = 120;
     // Massive blob — iridescent colors, no symmetry
     // Black base mass
     g.fillStyle(0x111111);
-    g.fillCircle(cx, cy, 51);
-    g.fillCircle(cx - 15, cy + 12, 42);
-    g.fillCircle(cx + 18, cy - 6, 39);
+    g.fillCircle(cx, cy, 102);
+    g.fillCircle(cx - 30, cy + 24, 84);
+    g.fillCircle(cx + 36, cy - 12, 78);
     // Green patches
     g.fillStyle(0x1E4D2B, 0.7);
-    g.fillCircle(cx - 21, cy - 12, 24);
-    g.fillCircle(cx + 12, cy + 18, 21);
+    g.fillCircle(cx - 42, cy - 24, 48);
+    g.fillCircle(cx + 24, cy + 36, 42);
     // Purple patches
     g.fillStyle(0x6366F1, 0.5);
-    g.fillCircle(cx + 24, cy - 15, 21);
-    g.fillCircle(cx - 9, cy + 21, 18);
-    g.fillCircle(cx - 27, cy + 6, 15);
+    g.fillCircle(cx + 48, cy - 30, 42);
+    g.fillCircle(cx - 18, cy + 42, 36);
+    g.fillCircle(cx - 54, cy + 12, 30);
     // Darker blobs
     g.fillStyle(0x0a0a0a, 0.4);
-    g.fillCircle(cx + 6, cy - 18, 15);
-    g.fillCircle(cx - 18, cy + 9, 12);
+    g.fillCircle(cx + 12, cy - 36, 30);
+    g.fillCircle(cx - 36, cy + 18, 24);
     // Pseudopods everywhere (irregular extensions)
     g.fillStyle(0x1E4D2B);
-    g.fillRect(cx - 45, cy - 30, 6, 21);
-    g.fillRect(cx - 48, cy - 15, 6, 15);
-    g.fillRect(cx + 42, cy - 24, 6, 18);
-    g.fillRect(cx + 45, cy - 12, 6, 15);
+    g.fillRect(cx - 90, cy - 60, 12, 42);
+    g.fillRect(cx - 96, cy - 30, 12, 30);
+    g.fillRect(cx + 84, cy - 48, 12, 36);
+    g.fillRect(cx + 90, cy - 24, 12, 30);
     g.fillStyle(0x6366F1, 0.6);
-    g.fillRect(cx - 36, cy + 30, 6, 15);
-    g.fillRect(cx + 30, cy + 33, 6, 12);
-    g.fillRect(cx - 12, cy + 42, 6, 12);
-    g.fillRect(cx + 15, cy + 39, 6, 15);
+    g.fillRect(cx - 72, cy + 60, 12, 30);
+    g.fillRect(cx + 60, cy + 66, 12, 24);
+    g.fillRect(cx - 24, cy + 84, 12, 24);
+    g.fillRect(cx + 30, cy + 78, 12, 30);
     g.fillStyle(0x111111);
-    g.fillRect(cx - 27, cy - 36, 5, 15);
-    g.fillRect(cx + 33, cy + 21, 5, 18);
+    g.fillRect(cx - 54, cy - 72, 10, 30);
+    g.fillRect(cx + 66, cy + 42, 10, 36);
     // 15-20 random eyes scattered
     const shoggothEyes = [
-      { x: -24, y: -21 }, { x: -12, y: -27 }, { x: 3, y: -24 }, { x: 18, y: -18 },
-      { x: 30, y: -9 }, { x: -30, y: -3 }, { x: -15, y: -6 }, { x: 6, y: -9 },
-      { x: 21, y: 0 }, { x: -21, y: 9 }, { x: -6, y: 6 }, { x: 12, y: 12 },
-      { x: 27, y: 15 }, { x: -27, y: 21 }, { x: -9, y: 21 }, { x: 9, y: 24 },
-      { x: -18, y: 30 }, { x: 6, y: 33 }, { x: 24, y: 27 },
+      { x: -48, y: -42 }, { x: -24, y: -54 }, { x: 6, y: -48 }, { x: 36, y: -36 },
+      { x: 60, y: -18 }, { x: -60, y: -6 }, { x: -30, y: -12 }, { x: 12, y: -18 },
+      { x: 42, y: 0 }, { x: -42, y: 18 }, { x: -12, y: 12 }, { x: 24, y: 24 },
+      { x: 54, y: 30 }, { x: -54, y: 42 }, { x: -18, y: 42 }, { x: 18, y: 48 },
+      { x: -36, y: 60 }, { x: 12, y: 66 }, { x: 48, y: 54 },
     ];
     shoggothEyes.forEach((e, i) => {
-      const r = 2 + (i % 3) * 1.5;
+      const r = 4 + (i % 3) * 3;
       g.fillStyle(0xffffff);
       g.fillCircle(cx + e.x, cy + e.y, r);
       g.fillStyle(i % 4 === 0 ? 0xff3333 : 0x000000);
-      g.fillCircle(cx + e.x + 1, cy + e.y, r * 0.5);
+      g.fillCircle(cx + e.x + 2, cy + e.y, r * 0.5);
     });
     // Multiple toothed mouths
     const mouths = [
-      { x: -15, y: -3, w: 15 }, { x: 9, y: 9, w: 12 },
-      { x: -24, y: 15, w: 11 }, { x: 15, y: -12, w: 14 },
+      { x: -30, y: -6, w: 30 }, { x: 18, y: 18, w: 24 },
+      { x: -48, y: 30, w: 22 }, { x: 30, y: -24, w: 28 },
     ];
     mouths.forEach(m => {
       g.fillStyle(0x220000);
-      g.fillRect(cx + m.x, cy + m.y, m.w, 5);
+      g.fillRect(cx + m.x, cy + m.y, m.w, 10);
       // Teeth (white zigzag)
       g.fillStyle(0xeeeeee);
-      for (let t = 0; t < m.w; t += 3) {
-        g.fillRect(cx + m.x + t, cy + m.y, 2, 3);
-        g.fillRect(cx + m.x + t, cy + m.y + 3, 2, 2);
+      for (let t = 0; t < m.w; t += 6) {
+        g.fillRect(cx + m.x + t, cy + m.y, 4, 6);
+        g.fillRect(cx + m.x + t, cy + m.y + 6, 4, 4);
       }
     });
-    g.generateTexture('boss-shoggoth', 120, 120);
+    g.generateTexture('boss-shoggoth', 240, 240);
     g.destroy();
   }
 

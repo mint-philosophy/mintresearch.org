@@ -177,6 +177,10 @@ const floatingMinties = [
             // Spin transfer
             a.vr += (Math.random() - 0.5) * 15;
             c.vr -= (Math.random() - 0.5) * 15;
+            // Accelerate on collision — compounds ~2.7× after 100 collisions
+            const boost = 1.01;
+            a.vx *= boost; a.vy *= boost;
+            c.vx *= boost; c.vy *= boost;
           }
         }
       }

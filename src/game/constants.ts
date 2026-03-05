@@ -23,6 +23,7 @@ export const PAPER_FIRE_COOLDOWN = 300;
 export const PAPER_RANGE_BASE = 100;
 export const PAPER_RANGE_PER_5 = 20;
 export const PAPER_RANGE_CAP = 300;
+export const GOLD_PAPER_RANGE_BONUS = 50;
 
 // Double jump
 export const MAX_JUMPS = 2;
@@ -41,6 +42,11 @@ export const PAPER_SCORE = 100;
 // Damage
 export const SLOP_DAMAGE = 15;
 export const CONTACT_DAMAGE = 10;
+export const BOSS_JUMP_DAMAGE = 20;
+export const BOSS_SHOCKWAVE_RANGE = 80;
+export const BOSS_ENVELOP_DAMAGE = 40;
+export const BOSS_FAKE_PAPER_DAMAGE = 15;
+export const BOSS_VACUUM_RANGE = 200;
 
 // Enemies
 export const ENEMY_TIERS = {
@@ -196,7 +202,18 @@ export interface BossConfig {
   y: number;
   phases: number;
   hp: number;
+  size?: number; // sprite size in pixels
 }
+
+// Boss sizes (progressive)
+export const BOSS_SIZES: Record<string, number> = {
+  algorithmVortex: 96,
+  engagementKing: 128,
+  forkSwarm: 160,
+  paperMill: 192,
+  theVoid: 240,
+  shoggoth: 240,
+};
 
 export interface LevelConfig {
   number: LevelNumber;

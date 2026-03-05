@@ -11,6 +11,8 @@ export class HUDScene extends Phaser.Scene {
   private ammoText!: Phaser.GameObjects.Text;
   private muteBtn!: Phaser.GameObjects.Text;
   private muted: boolean = false;
+  private bossBar: Phaser.GameObjects.Graphics | null = null;
+  private bossNameText: Phaser.GameObjects.Text | null = null;
 
   constructor() {
     super({ key: SCENES.HUD });
@@ -67,6 +69,50 @@ export class HUDScene extends Phaser.Scene {
       this.livesText.setText(`♥ ${d.lives}`);
       this.drawHealthBar(d.health);
     });
+
+    // Boss health bar
+    this.events.on('bossHealthUpdate', (d: { hp: number; maxHp: number; name: string }) => {
+      if (!this.bossBar) {
+        this.bossBar = this.add.graphics();
+        const bossNames: Record<string, string> = {
+          algorithmVortex: 'ALGORITHM VORTEX',
+          engagementKing: 'ENGAGEMENT KING',
+          forkSwarm: 'FORK SWARM',
+          paperMill: 'PAPER MILL',
+          theVoid: 'THE VOID',
+          shoggoth: 'SHOGGOTH',
+        };
+        this.bossNameText = this.add.text(GAME_WIDTH / 2, 76, bossNames[d.name] || d.name.toUpperCase(), {
+          fontFamily: '"JetBrains Mono", monospace',
+          fontSize: '8px',
+          color: '#e06c75',
+          fontStyle: 'bold',
+        }).setOrigin(0.5, 0);
+      }
+      this.drawBossBar(d.hp, d.maxHp);
+    });
+  }
+
+  private drawBossBar(hp: number, maxHp: number): void {
+    if (!this.bossBar) return;
+    this.bossBar.clear();
+    const pct = Math.max(0, hp / maxHp);
+    const barWidth = 200;
+    const barHeight = 8;
+    const x = GAME_WIDTH / 2 - barWidth / 2;
+    const y = 88;
+
+    // Background
+    this.bossBar.fillStyle(0x333333);
+    this.bossBar.fillRect(x, y, barWidth, barHeight);
+
+    // Fill (red)
+    this.bossBar.fillStyle(0xe06c75);
+    this.bossBar.fillRect(x, y, barWidth * pct, barHeight);
+
+    // Border
+    this.bossBar.lineStyle(1, 0x888888);
+    this.bossBar.strokeRect(x, y, barWidth, barHeight);
   }
 
   private drawHealthBar(health: number): void {

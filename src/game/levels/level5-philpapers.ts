@@ -5,7 +5,7 @@ export function getLevel5Config(): LevelConfig {
   return {
     number: 5,
     name: 'PhilPapers',
-    width: 4400,
+    width: 6600,
     background: '#0a0a14',
     themeColor: 0x2C3E50,
     music: 'level5',
@@ -27,6 +27,15 @@ export function getLevel5Config(): LevelConfig {
       { x: 3400, y: GAME_HEIGHT - 300, width: 128 },
       { x: 3700, y: GAME_HEIGHT - 200, width: 64 },
       { x: 3950, y: GAME_HEIGHT - 280, width: 128 },
+      // Extension zone (sparse, many narrow 64px)
+      { x: 4200, y: GAME_HEIGHT - 160, width: 64 },
+      { x: 4450, y: GAME_HEIGHT - 300, width: 128 },
+      { x: 4700, y: GAME_HEIGHT - 200, width: 64 },
+      { x: 4950, y: GAME_HEIGHT - 320, width: 64 },
+      { x: 5200, y: GAME_HEIGHT - 240, width: 128 },
+      { x: 5500, y: GAME_HEIGHT - 160, width: 64 },
+      { x: 5750, y: GAME_HEIGHT - 300, width: 64 },
+      { x: 6050, y: GAME_HEIGHT - 200, width: 128 },
     ],
     enemies: [
       // Sparse enemies — emphasis on platforming
@@ -35,6 +44,10 @@ export function getLevel5Config(): LevelConfig {
       { type: 'octopus', x: 2200, y: GAME_HEIGHT - 50, tier: 'orange', patrolRange: 100 },
       { type: 'octopus', x: 3000, y: GAME_HEIGHT - 50, tier: 'red', patrolRange: 80 },
       { type: 'octopus', x: 3600, y: GAME_HEIGHT - 50, tier: 'orange', patrolRange: 100 },
+      // Extension zone
+      { type: 'octopus', x: 4500, y: GAME_HEIGHT - 340, tier: 'red', patrolRange: 80 },
+      { type: 'octopus', x: 5300, y: GAME_HEIGHT - 50, tier: 'orange', patrolRange: 100 },
+      { type: 'octopus', x: 5900, y: GAME_HEIGHT - 340, tier: 'red', patrolRange: 60 },
     ],
     papers: [
       { x: 240, y: GAME_HEIGHT - 150 },
@@ -52,6 +65,15 @@ export function getLevel5Config(): LevelConfig {
       { x: 3450, y: GAME_HEIGHT - 330 },
       { x: 3750, y: GAME_HEIGHT - 230 },
       { x: 4000, y: GAME_HEIGHT - 310, isGold: true },
+      // Extension zone
+      { x: 4250, y: GAME_HEIGHT - 190 },
+      { x: 4510, y: GAME_HEIGHT - 330 },
+      { x: 4750, y: GAME_HEIGHT - 230 },
+      { x: 5010, y: GAME_HEIGHT - 350 },
+      { x: 5260, y: GAME_HEIGHT - 270 },
+      { x: 5550, y: GAME_HEIGHT - 190 },
+      { x: 5800, y: GAME_HEIGHT - 330 },
+      { x: 6100, y: GAME_HEIGHT - 230 },
     ],
     powerUps: [
       { type: 'shield', x: 950, y: GAME_HEIGHT - 220 },
@@ -66,10 +88,11 @@ export function getLevel5Config(): LevelConfig {
       { x: 1250, y: GAME_HEIGHT - 50 },
       { x: 2600, y: GAME_HEIGHT - 50 },
       { x: 3700, y: GAME_HEIGHT - 50 },
+      { x: 5400, y: GAME_HEIGHT - 50 },
     ],
     boss: {
       type: 'theVoid',
-      x: 4200,
+      x: 6400,
       y: GAME_HEIGHT - 80,
       phases: 3,
       hp: 18,

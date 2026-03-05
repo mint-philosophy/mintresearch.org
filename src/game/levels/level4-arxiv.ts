@@ -5,7 +5,7 @@ export function getLevel4Config(): LevelConfig {
   return {
     number: 4,
     name: 'ArXiv',
-    width: 4000,
+    width: 6000,
     background: '#1a0a0a',
     themeColor: 0xB31B1B,
     music: 'level4',
@@ -25,6 +25,14 @@ export function getLevel4Config(): LevelConfig {
       { x: 2750, y: GAME_HEIGHT - 280, width: 192 },
       { x: 3000, y: GAME_HEIGHT - 160, width: 256 },
       { x: 3350, y: GAME_HEIGHT - 240, width: 192 },
+      // Extension zone
+      { x: 3600, y: GAME_HEIGHT - 130, width: 256 },
+      { x: 3900, y: GAME_HEIGHT - 220, width: 192 },
+      { x: 4150, y: GAME_HEIGHT - 300, width: 128 },
+      { x: 4400, y: GAME_HEIGHT - 160, width: 256 },
+      { x: 4700, y: GAME_HEIGHT - 250, width: 192 },
+      { x: 5000, y: GAME_HEIGHT - 120, width: 256 },
+      { x: 5350, y: GAME_HEIGHT - 200, width: 192 },
     ],
     enemies: [
       { type: 'octopus', x: 350, y: GAME_HEIGHT - 130, tier: 'red', patrolRange: 80 },
@@ -38,6 +46,13 @@ export function getLevel4Config(): LevelConfig {
       { type: 'paperFlood', x: 2450, y: GAME_HEIGHT - 50, tier: 'peach', patrolRange: 100 },
       { type: 'macII', x: 2700, y: GAME_HEIGHT - 240, tier: 'red', patrolRange: 80 },
       { type: 'octopus', x: 3100, y: GAME_HEIGHT - 200, tier: 'orange', patrolRange: 60 },
+      // Extension zone
+      { type: 'paperFlood', x: 3700, y: GAME_HEIGHT - 50, tier: 'peach', patrolRange: 100 },
+      { type: 'macII', x: 4000, y: GAME_HEIGHT - 260, tier: 'red', patrolRange: 80 },
+      { type: 'paperFlood', x: 4300, y: GAME_HEIGHT - 50, tier: 'red', patrolRange: 80 },
+      { type: 'octopus', x: 4550, y: GAME_HEIGHT - 200, tier: 'orange', patrolRange: 60 },
+      { type: 'paperFlood', x: 4800, y: GAME_HEIGHT - 290, tier: 'peach', patrolRange: 100 },
+      { type: 'macII', x: 5150, y: GAME_HEIGHT - 50, tier: 'red', patrolRange: 80 },
     ],
     papers: [
       { x: 220, y: GAME_HEIGHT - 120 },
@@ -53,6 +68,14 @@ export function getLevel4Config(): LevelConfig {
       { x: 2810, y: GAME_HEIGHT - 310 },
       { x: 3080, y: GAME_HEIGHT - 190 },
       { x: 3400, y: GAME_HEIGHT - 270, isGold: true },
+      // Extension zone
+      { x: 3660, y: GAME_HEIGHT - 160 },
+      { x: 3960, y: GAME_HEIGHT - 250 },
+      { x: 4200, y: GAME_HEIGHT - 330, isGold: true },
+      { x: 4460, y: GAME_HEIGHT - 190 },
+      { x: 4760, y: GAME_HEIGHT - 280 },
+      { x: 5060, y: GAME_HEIGHT - 150, isGold: true },
+      { x: 5400, y: GAME_HEIGHT - 230 },
     ],
     powerUps: [
       { type: 'openai', x: 750, y: GAME_HEIGHT - 290 },
@@ -70,10 +93,11 @@ export function getLevel4Config(): LevelConfig {
       { x: 950, y: GAME_HEIGHT - 50 },
       { x: 2000, y: GAME_HEIGHT - 50 },
       { x: 3000, y: GAME_HEIGHT - 50 },
+      { x: 4500, y: GAME_HEIGHT - 50 },
     ],
     boss: {
       type: 'paperMill',
-      x: 3750,
+      x: 5800,
       y: GAME_HEIGHT - 80,
       phases: 4,
       hp: 20,
