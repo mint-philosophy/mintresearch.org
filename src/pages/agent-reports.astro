@@ -1,31 +1,44 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/Section.astro';
+import TerminalPicker from '../components/TerminalPicker.astro';
+import type { PickerItem } from '../data/deliverables';
 import canvases from '../data/canvas-catalog.json';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 // Deep-review reports with local pages on the site
 const localReports: Record<string, string> = {
-  'ai-slop-definitions-and-normative-status': '/reports/ai-slop/',
-  'ai-welfare-and-moral-status': '/reports/ai-welfare/',
-  'ai-in-military-and-warfare-ethics': '/reports/ai-in-war/',
-  'llm-moral-competence-evaluation': '/reports/language-model-moral-competence/',
-  'llm-moral-competence-review-extended': '/reports/language-model-moral-competence/',
-  'disaggregating-llm-moral-competence': '/reports/language-model-moral-competence/',
+  'ai-slop-definitions-and-normative-status': `${base}/reports/ai-slop/`,
+  'ai-welfare-and-moral-status': `${base}/reports/ai-welfare/`,
+  'ai-in-military-and-warfare-ethics': `${base}/reports/ai-in-war/`,
+  'llm-moral-competence-evaluation': `${base}/reports/language-model-moral-competence/`,
+  'llm-moral-competence-review-extended': `${base}/reports/language-model-moral-competence/`,
+  'disaggregating-llm-moral-competence': `${base}/reports/language-model-moral-competence/`,
 };
 
-const reports = canvases.filter((c: any) => c.category === 'research-report');
-const searches = canvases.filter((c: any) => c.category === 'search-response');
-
-function getLink(c: any): string {
-  if (localReports[c.slug]) return `${base}${localReports[c.slug]}`;
-  return c.permalink;
+function toPickerItem(c: any): PickerItem {
+  const [y, m] = c.date.split('-');
+  const url = localReports[c.slug] || c.permalink;
+  const words = typeof c.word_count === 'number' ? `${(c.word_count / 1000).toFixed(1)}k words` : '';
+  return {
+    year: parseInt(y),
+    date: `${m}/${y}`,
+    title: c.title,
+    subtitle: 'Minty · corpus-agent',
+    detail: words,
+    url,
+    blurb: c.summary,
+  };
 }
 
-function isExternal(c: any): boolean {
-  return !localReports[c.slug];
-}
+const reports: PickerItem[] = canvases
+  .filter((c: any) => c.category === 'research-report')
+  .map(toPickerItem);
+
+const searches: PickerItem[] = canvases
+  .filter((c: any) => c.category === 'search-response')
+  .map(toPickerItem);
 ---
 
 <BaseLayout title="MINT Lab — Agent Reports">
@@ -43,70 +56,14 @@ function isExternal(c: any): boolean {
 <!-- ============ RESEARCH REPORTS ============ -->
 <Section id="reports" num="01">
   <h2><span class="cmd-prefix"><span class="cmd-name">ls</span> <span class="cmd-flag">-lt</span> <span class="cmd-path">reports/</span></span></h2>
-
-  <div class="report-table-wrap">
-    <div class="report-table-chrome">
-      <span class="chrome-dots">
-        <span class="chrome-dot" style="background: var(--red);"></span>
-        <span class="chrome-dot" style="background: var(--yellow);"></span>
-        <span class="chrome-dot" style="background: var(--green);"></span>
-      </span>
-      <span class="chrome-title">minty — corpus-agent — research reports</span>
-    </div>
-    <div class="report-table-body">
-      <div class="report-table-header" style="grid-template-columns: 100px 1fr 60px;">
-        <span class="col-date">DATE</span>
-        <span class="col-title">REPORT</span>
-        <span style="text-align: right;">WORDS</span>
-      </div>
-      {reports.map((r: any) => (
-        <a href={getLink(r)} class="report-table-row" style="grid-template-columns: 100px 1fr 60px;" target={isExternal(r) ? "_blank" : undefined} rel={isExternal(r) ? "noopener" : undefined}>
-          <span class="col-date">{r.dateLabel}</span>
-          <span class="col-title">{r.title}{isExternal(r) ? ' ↗' : ''}</span>
-          <span style={`text-align: right; color: var(--text-3); font-size: 11px;`}>{typeof r.word_count === 'number' ? `${(r.word_count / 1000).toFixed(1)}k` : ''}</span>
-        </a>
-      ))}
-      <div class="report-table-footer">
-        <span class="t-dim">{reports.length} research reports</span>
-        <span class="t-dim">&middot;</span>
-        <span class="t-dim">Feb 2026 &ndash; present</span>
-      </div>
-    </div>
-  </div>
+  <TerminalPicker items={reports} label="Research Reports" pageSize={5} />
 </Section>
 
 
 <!-- ============ SEARCH RESPONSES ============ -->
 <Section id="searches" num="02">
   <h2><span class="cmd-prefix"><span class="cmd-name">ls</span> <span class="cmd-path">searches/</span></span></h2>
-
-  <div class="report-table-wrap">
-    <div class="report-table-chrome">
-      <span class="chrome-dots">
-        <span class="chrome-dot" style="background: var(--red);"></span>
-        <span class="chrome-dot" style="background: var(--yellow);"></span>
-        <span class="chrome-dot" style="background: var(--green);"></span>
-      </span>
-      <span class="chrome-title">minty — corpus-agent — search responses</span>
-    </div>
-    <div class="report-table-body">
-      <div class="report-table-header" style="grid-template-columns: 100px 1fr 60px;">
-        <span class="col-date">DATE</span>
-        <span class="col-title">QUERY</span>
-        <span style="text-align: right;">WORDS</span>
-      </div>
-      {searches.map((r: any) => (
-        <a href={r.permalink} class="report-table-row" style="grid-template-columns: 100px 1fr 60px;" target="_blank" rel="noopener">
-          <span class="col-date">{r.dateLabel}</span>
-          <span class="col-title">{r.title} ↗</span>
-          <span style={`text-align: right; color: var(--text-3); font-size: 11px;`}>{typeof r.word_count === 'number' ? `${(r.word_count / 1000).toFixed(1)}k` : ''}</span>
-        </a>
-      ))}
-      <div class="report-table-footer">
-        <span class="t-dim">{searches.length} search responses</span>
-      </div>
-    </div>
-  </div>
+  <TerminalPicker items={searches} label="Search Responses" pageSize={5} />
 </Section>
 
 
@@ -117,7 +74,6 @@ function isExternal(c: any): boolean {
     These reports are produced by Minty's <strong>corpus agent</strong> &mdash; an agentic research pipeline that searches the MINT Lab's full-text paper corpus, dispatches parallel reader agents to analyse relevant papers, and synthesises their findings into a single literature review.
   </p>
   <p>Each report draws on the lab's corpus of 1,500+ academic papers in AI ethics, governance, safety, and political philosophy. Papers are cited with links to the lab's Google Drive archive. Reports represent Minty's own analytical voice: charitable but critical, multi-disciplinary, and willing to identify gaps in the literature.</p>
-  <p style="margin-top: 12px; font-size: 12px; color: var(--text-3);">Reports marked with ↗ link to Slack canvases (MINT Lab members only). Reports without the arrow are hosted on this site.</p>
 
   <div class="report-pipeline-steps">
     <div class="pipeline-step">
