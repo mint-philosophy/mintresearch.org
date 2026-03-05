@@ -728,8 +728,8 @@ export class LevelScene extends Phaser.Scene {
         const plat = obj as Phaser.Physics.Arcade.Sprite;
         const platTop = plat.y - 8; // standing surface
         const heightAbove = enemy.y - platTop;
-        // Must be above us (>15px) and within jump reach (<100px)
-        if (heightAbove < 15 || heightAbove > 100) return;
+        // Must be above us (>15px) and within jump reach (<200px)
+        if (heightAbove < 15 || heightAbove > 200) return;
         // Must be horizontally reachable during a jump arc (~120px)
         if (Math.abs(plat.x - enemy.x) > 120) return;
         // Score: prefer the platform that brings us closest to the paper
@@ -746,7 +746,7 @@ export class LevelScene extends Phaser.Scene {
         enemy.setVelocityX(speed * platDir);
         // Jump when roughly underneath (within 30px)
         if (Math.abs(enemy.x - bestPlat.x) < 30) {
-          enemy.setVelocityY(-350);
+          enemy.setVelocityY(-500);
         }
       } else {
         // No stepping-stone found — walk toward paper and jump to try
@@ -763,7 +763,7 @@ export class LevelScene extends Phaser.Scene {
       if (body.blocked.down) {
         const blockedH = (walkDir > 0 && body.blocked.right) || (walkDir < 0 && body.blocked.left);
         if (blockedH) {
-          enemy.setVelocityY(-350);
+          enemy.setVelocityY(-500);
         }
       }
     }
