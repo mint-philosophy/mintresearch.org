@@ -227,28 +227,30 @@ export class PreloadScene extends Phaser.Scene {
 
   private generateParrotNoSprite(): void {
     const g = this.add.graphics();
-    // White speech bubble shape
+    // Larger white speech bubble with red outline
+    g.lineStyle(1, 0xff0000, 0.6);
     g.fillStyle(0xffffff);
-    g.fillCircle(7, 4, 4);  // main bubble
-    g.fillRect(3, 1, 8, 7);
+    g.fillCircle(11, 5, 7);  // main bubble
+    g.fillRect(4, 1, 14, 10);
+    g.strokeCircle(11, 5, 7);
     // Bubble tail (bottom-left triangle)
-    g.fillTriangle(3, 7, 1, 10, 6, 7);
-    // "NO!" text in red (pixel letters)
+    g.fillTriangle(4, 10, 1, 14, 8, 10);
+    // "NO!" text in bold red (pixel letters, 2px wide strokes)
     g.fillStyle(0xff0000);
     // N
-    g.fillRect(3, 2, 1, 5);
-    g.fillRect(4, 3, 1, 1);
-    g.fillRect(5, 4, 1, 1);
-    g.fillRect(6, 2, 1, 5);
+    g.fillRect(4, 3, 2, 7);
+    g.fillRect(6, 4, 1, 2);
+    g.fillRect(7, 6, 1, 2);
+    g.fillRect(8, 3, 2, 7);
     // O
-    g.fillRect(8, 2, 1, 5);
-    g.fillRect(9, 2, 1, 1);
-    g.fillRect(9, 6, 1, 1);
-    g.fillRect(10, 2, 1, 5);
+    g.fillRect(11, 3, 2, 7);
+    g.fillRect(13, 3, 1, 2);
+    g.fillRect(13, 8, 1, 2);
+    g.fillRect(14, 3, 2, 7);
     // !
-    g.fillRect(12, 2, 1, 3);
-    g.fillRect(12, 6, 1, 1);
-    g.generateTexture('parrot-no', 14, 10);
+    g.fillRect(17, 3, 2, 4);
+    g.fillRect(17, 8, 2, 2);
+    g.generateTexture('parrot-no', 22, 14);
     g.destroy();
   }
 
