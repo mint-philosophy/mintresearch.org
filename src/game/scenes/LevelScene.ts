@@ -705,11 +705,21 @@ export class LevelScene extends Phaser.Scene {
     }
 
     const paper = nearest as Phaser.Physics.Arcade.Sprite;
+    const body = enemy.body as Phaser.Physics.Arcade.Body;
 
     // Walk toward paper
     const walkDir = paper.x > enemy.x ? 1 : -1;
     const speed = enemy.getData('speed') as number;
     enemy.setVelocityX(speed * walkDir * 0.8);
+
+    // Jump to reach papers on platforms
+    if (body.blocked.down) {
+      const paperAbove = paper.y < enemy.y - 20;
+      const blockedHorizontally = (walkDir > 0 && body.blocked.right) || (walkDir < 0 && body.blocked.left);
+      if (paperAbove || blockedHorizontally) {
+        enemy.setVelocityY(-300);
+      }
+    }
 
     // Check contact (within 16px)
     if (nearestDist < 16) {
