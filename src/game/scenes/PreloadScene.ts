@@ -1699,79 +1699,170 @@ export class PreloadScene extends Phaser.Scene {
 
   private generateCreditsAshMinty(): void {
     const g = this.add.graphics();
-    // Left: Ash — human with sandy-blonde hair, smiling, ~60px tall
-    // Ash body
-    g.fillStyle(0x4477aa);
-    g.fillRect(15, 30, 18, 21);
-    // Ash legs
-    g.fillStyle(0x2a2a3a);
-    g.fillRect(17, 51, 6, 15);
-    g.fillRect(26, 51, 6, 15);
-    // Ash shoes
-    g.fillStyle(0x222222);
-    g.fillRect(15, 66, 8, 3);
-    g.fillRect(26, 66, 8, 3);
-    // Ash arms
-    g.fillStyle(0x4477aa);
-    g.fillRect(9, 32, 6, 15);
-    g.fillRect(33, 32, 6, 15);
-    // Ash hands
-    g.fillStyle(0xffcba4);
-    g.fillRect(9, 47, 6, 3);
-    g.fillRect(33, 47, 6, 3);
-    // Ash head
-    g.fillStyle(0xffcba4);
-    g.fillRect(15, 9, 18, 20);
-    // Sandy-blonde hair with side parting
-    g.fillStyle(0xd4a84a);
-    g.fillRect(15, 5, 18, 8);
-    g.fillRect(14, 8, 5, 9);
-    // Side parting (darker line)
+    // Canvas: 180×130. Left: Ash (8yo girl, dress, long sandy-to-gold hair). Right: canonical teal Minty.
+
+    // ── Ash ── centered at x=45
+    const ax = 45;
+
+    // Hair behind body (long, reaches mid-back)
+    // Wet sand / dark sandy layer
     g.fillStyle(0xb8923e);
-    g.fillRect(21, 5, 2, 6);
+    g.fillRect(ax - 14, 10, 28, 12);
+    g.fillRect(ax - 16, 14, 6, 55);
+    g.fillRect(ax + 10, 14, 6, 55);
+    // Dry sand / gold highlights
+    g.fillStyle(0xd4b86a);
+    g.fillRect(ax - 12, 8, 24, 10);
+    g.fillRect(ax - 14, 14, 4, 50);
+    g.fillRect(ax + 12, 14, 4, 50);
+    // Hair tips lighter gold
+    g.fillStyle(0xe0c878);
+    g.fillRect(ax - 16, 62, 6, 8);
+    g.fillRect(ax + 10, 62, 6, 8);
+
+    // Head
+    g.fillStyle(0xffcba4);
+    g.fillRect(ax - 10, 14, 20, 22);
+    // Forehead/top of head
+    g.fillRect(ax - 8, 12, 16, 4);
+
+    // Hair top layer over forehead
+    g.fillStyle(0xc4a044);
+    g.fillRect(ax - 12, 8, 24, 8);
+    // Side parting
+    g.fillStyle(0xb8923e);
+    g.fillRect(ax - 2, 8, 2, 8);
+    // Bangs fringe
+    g.fillStyle(0xd4b86a);
+    g.fillRect(ax - 10, 12, 8, 4);
+    g.fillRect(ax + 2, 12, 8, 4);
+
     // Eyes
     g.fillStyle(0x222222);
-    g.fillRect(18, 15, 3, 3);
-    g.fillRect(27, 15, 3, 3);
-    // Smile
-    g.fillStyle(0xdd9980);
-    g.fillRect(20, 21, 9, 2);
-    g.fillRect(18, 20, 2, 2);
-    g.fillRect(29, 20, 2, 2);
+    g.fillRect(ax - 6, 22, 3, 3);
+    g.fillRect(ax + 4, 22, 3, 3);
+    // Eye whites
+    g.fillStyle(0xffffff);
+    g.fillRect(ax - 5, 22, 1, 1);
+    g.fillRect(ax + 5, 22, 1, 1);
+
     // Nose
     g.fillStyle(0xeebb90);
-    g.fillRect(23, 17, 3, 3);
+    g.fillRect(ax, 25, 2, 3);
 
-    // Right: Minty squid with sunglasses, ~45px tall
-    const mx = 75, my = 27;
-    // Minty body (teal)
-    g.fillStyle(0x2ec4b6);
-    g.fillCircle(mx, my, 12);
-    g.fillRect(mx - 9, my + 6, 18, 9);
-    // Tentacles
-    g.fillRect(mx - 8, my + 15, 5, 9);
-    g.fillRect(mx - 2, my + 15, 5, 9);
-    g.fillRect(mx + 5, my + 15, 5, 9);
-    g.fillRect(mx - 11, my + 12, 5, 8);
-    g.fillRect(mx + 8, my + 12, 5, 8);
-    // Sunglasses
-    g.fillStyle(0x111111);
-    g.fillRect(mx - 9, my - 3, 8, 5);
-    g.fillRect(mx + 2, my - 3, 8, 5);
-    g.fillRect(mx - 2, my - 2, 3, 2);
-    // Arms
-    g.fillStyle(0x888888);
-    g.fillRect(mx - 11, my - 3, 2, 5);
-    g.fillRect(mx + 9, my - 3, 2, 5);
-    // Lens reflection
+    // Smile
+    g.fillStyle(0xe88b7a);
+    g.fillRect(ax - 4, 30, 8, 2);
+    g.fillRect(ax - 5, 29, 2, 2);
+    g.fillRect(ax + 4, 29, 2, 2);
+
+    // Cheek blush
+    g.fillStyle(0xffaa99);
+    g.fillRect(ax - 9, 26, 3, 2);
+    g.fillRect(ax + 7, 26, 3, 2);
+
+    // Dress (a-line, below the waist, flares out) — teal to match the game
+    g.fillStyle(0x5b9ea6);
+    g.fillRect(ax - 10, 36, 20, 8);
+    // Dress flares
+    g.fillRect(ax - 12, 44, 24, 10);
+    g.fillRect(ax - 14, 54, 28, 10);
+    g.fillRect(ax - 16, 62, 32, 8);
+    // Dress collar / neckline
+    g.fillStyle(0x4a8d95);
+    g.fillRect(ax - 6, 36, 12, 3);
+    // Dress detail — little bow/ribbon
+    g.fillStyle(0xe5c07b);
+    g.fillRect(ax - 2, 39, 4, 2);
+    g.fillRect(ax - 4, 40, 2, 1);
+    g.fillRect(ax + 2, 40, 2, 1);
+    // Dress hem detail
+    g.fillStyle(0x4a8d95);
+    g.fillRect(ax - 16, 68, 32, 2);
+
+    // Arms (skin)
+    g.fillStyle(0xffcba4);
+    g.fillRect(ax - 14, 38, 4, 16);
+    g.fillRect(ax + 10, 38, 4, 16);
+    // Hands
+    g.fillRect(ax - 14, 54, 4, 3);
+    g.fillRect(ax + 10, 54, 4, 3);
+
+    // Short sleeves (dress color)
+    g.fillStyle(0x5b9ea6);
+    g.fillRect(ax - 14, 36, 4, 4);
+    g.fillRect(ax + 10, 36, 4, 4);
+
+    // Legs
+    g.fillStyle(0xffcba4);
+    g.fillRect(ax - 6, 70, 5, 14);
+    g.fillRect(ax + 2, 70, 5, 14);
+
+    // Shoes — little mary janes
     g.fillStyle(0x333333);
-    g.fillRect(mx - 8, my - 2, 2, 2);
-    g.fillRect(mx + 3, my - 2, 2, 2);
-    // Mouth
-    g.fillStyle(0x229988);
-    g.fillRect(mx - 3, my + 5, 6, 2);
+    g.fillRect(ax - 8, 84, 7, 4);
+    g.fillRect(ax + 1, 84, 7, 4);
+    // Shoe straps
+    g.fillStyle(0x222222);
+    g.fillRect(ax - 6, 84, 5, 1);
+    g.fillRect(ax + 2, 84, 5, 1);
 
-    g.generateTexture('credits-ash-minty', 120, 90);
+    // ── Canonical Teal Minty ── matching minty-teal.png
+    const mx = 130, my = 38;
+
+    // Dome head (large rounded top)
+    g.fillStyle(0x2ec4b6);
+    g.fillCircle(mx, my - 2, 18);
+    // Lighter dome highlight
+    g.fillStyle(0x48d8ca);
+    g.fillCircle(mx - 3, my - 8, 8);
+    g.fillStyle(0x5be0d2);
+    g.fillCircle(mx - 4, my - 10, 4);
+
+    // Body below dome
+    g.fillStyle(0x2ec4b6);
+    g.fillRect(mx - 14, my + 8, 28, 14);
+
+    // Eyes — large dark with red detail (matching the PNG)
+    g.fillStyle(0x111111);
+    g.fillCircle(mx - 7, my - 1, 5);
+    g.fillCircle(mx + 7, my - 1, 5);
+    // Red iris squares
+    g.fillStyle(0xcc3333);
+    g.fillRect(mx - 8, my - 2, 3, 3);
+    g.fillRect(mx + 6, my - 2, 3, 3);
+    // Eye reflections
+    g.fillStyle(0xffffff);
+    g.fillRect(mx - 9, my - 3, 2, 2);
+    g.fillRect(mx + 5, my - 3, 2, 2);
+
+    // Mouth (small line)
+    g.fillStyle(0x229988);
+    g.fillRect(mx - 4, my + 6, 8, 2);
+
+    // Tentacles (5 main ones, matching canonical design)
+    g.fillStyle(0x2ec4b6);
+    // Center three
+    g.fillRect(mx - 10, my + 22, 6, 14);
+    g.fillRect(mx - 3, my + 22, 6, 16);
+    g.fillRect(mx + 4, my + 22, 6, 14);
+    // Outer two (slightly wider stance)
+    g.fillRect(mx - 16, my + 18, 6, 12);
+    g.fillRect(mx + 10, my + 18, 6, 12);
+    // Tentacle tips darker
+    g.fillStyle(0x26a89c);
+    g.fillRect(mx - 10, my + 34, 6, 2);
+    g.fillRect(mx - 3, my + 36, 6, 2);
+    g.fillRect(mx + 4, my + 34, 6, 2);
+    g.fillRect(mx - 16, my + 28, 6, 2);
+    g.fillRect(mx + 10, my + 28, 6, 2);
+
+    // Tentacle curls at bottom (small bend details)
+    g.fillStyle(0x2ec4b6);
+    g.fillRect(mx - 12, my + 28, 2, 4);
+    g.fillRect(mx + 14, my + 28, 2, 4);
+
+    g.generateTexture('credits-ash-minty', 180, 100);
     g.destroy();
   }
 
