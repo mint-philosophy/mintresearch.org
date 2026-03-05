@@ -20,13 +20,13 @@ const localReports: Record<string, string> = {
 function toPickerItem(c: any): PickerItem {
   const [y, m] = c.date.split('-');
   const url = localReports[c.slug] || c.permalink;
-  const words = typeof c.word_count === 'number' ? `${(c.word_count / 1000).toFixed(1)}k words` : '';
+  const words = typeof c.word_count === 'number' ? ` · ${(c.word_count / 1000).toFixed(1)}k words` : '';
   return {
     year: parseInt(y),
     date: `${m}/${y}`,
     title: c.title,
-    subtitle: 'Minty · corpus-agent',
-    detail: words,
+    subtitle: `Minty · corpus-agent${words}`,
+    detail: '',
     url,
     blurb: c.summary,
   };
