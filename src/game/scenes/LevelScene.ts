@@ -524,9 +524,10 @@ export class LevelScene extends Phaser.Scene {
       enemy.setData('score', tierData.score);
       enemy.setData('patrolRange', e.patrolRange || 100);
       enemy.setData('originX', e.x);
-      enemy.setData('patrolDir', 1);
-      enemy.setData('lastSlop', 0);
+      enemy.setData('patrolDir', Phaser.Math.Between(0, 1) === 0 ? -1 : 1);
+      enemy.setData('lastSlop', -Phaser.Math.Between(0, tierData.slopInterval));
       enemy.setData('slopInterval', tierData.slopInterval);
+      enemy.setData('targetPaperNext', Phaser.Math.Between(0, 1) === 0);
 
       enemy.setCollideWorldBounds(true);
     });
