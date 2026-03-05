@@ -69,7 +69,8 @@ export const siteNav: PageNav[] = [
     label: "Agent Reports",
     icon: "◇",
     sections: [
-      { href: "#reports", label: "Reports" },
+      { href: "#reports", label: "Research Reports" },
+      { href: "#searches", label: "Search Responses" },
       { href: "#about", label: "About" },
     ],
   },
