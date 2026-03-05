@@ -56,13 +56,12 @@ export const siteNav: PageNav[] = [
   },
   {
     path: "/newsletter/",
-    label: "Newsletter",
+    label: "Newsletters",
     icon: "◈",
     sections: [
-      { href: "#weekly", label: "Weekly Digest" },
+      { href: "#yesterday-in-ai", label: "Yesterday in AI" },
       { href: "#philosophy-of-computing", label: "Philosophy of Computing" },
       { href: "#back-issues", label: "Back Issues" },
-      { href: "#subscribe", label: "Subscribe" },
     ],
   },
   {
