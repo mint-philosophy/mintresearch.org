@@ -1,9 +1,31 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/Section.astro';
-import { reports } from '../data/reports';
+import canvases from '../data/canvas-catalog.json';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+// Deep-review reports with local pages on the site
+const localReports: Record<string, string> = {
+  'ai-slop-definitions-and-normative-status': '/reports/ai-slop/',
+  'ai-welfare-and-moral-status': '/reports/ai-welfare/',
+  'ai-in-military-and-warfare-ethics': '/reports/ai-in-war/',
+  'llm-moral-competence-evaluation': '/reports/language-model-moral-competence/',
+  'llm-moral-competence-review-extended': '/reports/language-model-moral-competence/',
+  'disaggregating-llm-moral-competence': '/reports/language-model-moral-competence/',
+};
+
+const reports = canvases.filter((c: any) => c.category === 'research-report');
+const searches = canvases.filter((c: any) => c.category === 'search-response');
+
+function getLink(c: any): string {
+  if (localReports[c.slug]) return `${base}${localReports[c.slug]}`;
+  return c.permalink;
+}
+
+function isExternal(c: any): boolean {
+  return !localReports[c.slug];
+}
 ---
 
 <BaseLayout title="MINT Lab — Agent Reports">
@@ -14,11 +36,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 <section class="hero" id="reports-hero">
   <img src={`${base}/assets/wireframe-squid.png`} alt="" class="watermark" />
   <h1 data-typing="❯ Agent Reports"><span class="typing-cursor"></span></h1>
-  <p class="subtitle">Deep research reviews produced by Minty, the MINT Lab's AI research agent, drawing on our corpus of 1,500+ papers in AI ethics, governance, and safety.</p>
+  <p class="subtitle">Research reviews and corpus searches produced by Minty, the MINT Lab's AI research agent, drawing on 1,500+ papers in AI ethics, governance, and safety.</p>
 </section>
 
 
-<!-- ============ REPORT TABLE ============ -->
+<!-- ============ RESEARCH REPORTS ============ -->
 <Section id="reports" num="01">
   <h2><span class="cmd-prefix"><span class="cmd-name">ls</span> <span class="cmd-flag">-lt</span> <span class="cmd-path">reports/</span></span></h2>
 
@@ -29,31 +51,59 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         <span class="chrome-dot" style="background: var(--yellow);"></span>
         <span class="chrome-dot" style="background: var(--green);"></span>
       </span>
-      <span class="chrome-title">minty — corpus-agent — reports</span>
+      <span class="chrome-title">minty — corpus-agent — research reports</span>
     </div>
     <div class="report-table-body">
-      <div class="report-table-header">
+      <div class="report-table-header" style="grid-template-columns: 100px 1fr 60px;">
         <span class="col-date">DATE</span>
         <span class="col-title">REPORT</span>
-        <span class="col-topic">TOPIC</span>
-        <span class="col-papers">PAPERS</span>
-        <span class="col-words">WORDS</span>
+        <span style="text-align: right;">WORDS</span>
       </div>
-      {reports.map((r) => (
-        <a href={`${base}/reports/${r.slug}/`} class="report-table-row">
+      {reports.map((r: any) => (
+        <a href={getLink(r)} class="report-table-row" style="grid-template-columns: 100px 1fr 60px;" target={isExternal(r) ? "_blank" : undefined} rel={isExternal(r) ? "noopener" : undefined}>
           <span class="col-date">{r.dateLabel}</span>
-          <span class="col-title">{r.title}</span>
-          <span class="col-topic"><span class="report-tag">{r.topic}</span></span>
-          <span class="col-papers">{r.papers}</span>
-          <span class="col-words">{r.wordCount}</span>
+          <span class="col-title">{r.title}{isExternal(r) ? ' ↗' : ''}</span>
+          <span style={`text-align: right; color: var(--text-3); font-size: 11px;`}>{typeof r.word_count === 'number' ? `${(r.word_count / 1000).toFixed(1)}k` : ''}</span>
         </a>
       ))}
       <div class="report-table-footer">
-        <span class="t-dim">{reports.length} reports</span>
-        <span class="t-dim">·</span>
-        <span class="t-dim">{reports.reduce((sum, r) => sum + r.papers, 0)} papers cited</span>
-        <span class="t-dim">·</span>
-        <span class="t-dim">corpus-agent v1</span>
+        <span class="t-dim">{reports.length} research reports</span>
+        <span class="t-dim">&middot;</span>
+        <span class="t-dim">Feb 2026 &ndash; present</span>
+      </div>
+    </div>
+  </div>
+</Section>
+
+
+<!-- ============ SEARCH RESPONSES ============ -->
+<Section id="searches" num="02">
+  <h2><span class="cmd-prefix"><span class="cmd-name">ls</span> <span class="cmd-path">searches/</span></span></h2>
+
+  <div class="report-table-wrap">
+    <div class="report-table-chrome">
+      <span class="chrome-dots">
+        <span class="chrome-dot" style="background: var(--red);"></span>
+        <span class="chrome-dot" style="background: var(--yellow);"></span>
+        <span class="chrome-dot" style="background: var(--green);"></span>
+      </span>
+      <span class="chrome-title">minty — corpus-agent — search responses</span>
+    </div>
+    <div class="report-table-body">
+      <div class="report-table-header" style="grid-template-columns: 100px 1fr 60px;">
+        <span class="col-date">DATE</span>
+        <span class="col-title">QUERY</span>
+        <span style="text-align: right;">WORDS</span>
+      </div>
+      {searches.map((r: any) => (
+        <a href={r.permalink} class="report-table-row" style="grid-template-columns: 100px 1fr 60px;" target="_blank" rel="noopener">
+          <span class="col-date">{r.dateLabel}</span>
+          <span class="col-title">{r.title} ↗</span>
+          <span style={`text-align: right; color: var(--text-3); font-size: 11px;`}>{typeof r.word_count === 'number' ? `${(r.word_count / 1000).toFixed(1)}k` : ''}</span>
+        </a>
+      ))}
+      <div class="report-table-footer">
+        <span class="t-dim">{searches.length} search responses</span>
       </div>
     </div>
   </div>
@@ -61,12 +111,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 
 <!-- ============ ABOUT ============ -->
-<Section id="about" num="02">
+<Section id="about" num="03">
   <h2><span class="cmd-prefix"><span class="cmd-name">cat</span> <span class="cmd-path">README.md</span></span></h2>
   <p class="lead">
     These reports are produced by Minty's <strong>corpus agent</strong> &mdash; an agentic research pipeline that searches the MINT Lab's full-text paper corpus, dispatches parallel reader agents to analyse relevant papers, and synthesises their findings into a single literature review.
   </p>
   <p>Each report draws on the lab's corpus of 1,500+ academic papers in AI ethics, governance, safety, and political philosophy. Papers are cited with links to the lab's Google Drive archive. Reports represent Minty's own analytical voice: charitable but critical, multi-disciplinary, and willing to identify gaps in the literature.</p>
+  <p style="margin-top: 12px; font-size: 12px; color: var(--text-3);">Reports marked with ↗ link to Slack canvases (MINT Lab members only). Reports without the arrow are hosted on this site.</p>
 
   <div class="report-pipeline-steps">
     <div class="pipeline-step">
