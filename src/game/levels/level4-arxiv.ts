@@ -84,7 +84,7 @@ export function getLevel4Config(): LevelConfig {
       { type: 'speedBolt', x: 3000, y: GAME_HEIGHT - 200 },
       { type: 'fogCloud', x: 3350, y: GAME_HEIGHT - 280 },
       { type: 'deepseek', x: 500, y: GAME_HEIGHT - 210 },
-      { type: 'qwen', x: 3350, y: GAME_HEIGHT - 280 },
+      { type: 'qwen', x: 4800, y: GAME_HEIGHT - 200 },
     ],
     npcs: [
       { color: 'indigo', x: 180, y: GAME_HEIGHT - 60, dialogueKey: 'l4-indigo' },
