@@ -6,6 +6,9 @@ export default defineConfig({
   site: 'https://mintresearch.org',
   base: '/',
   output: 'static',
+  redirects: {
+    '/list': 'https://philosophyofcomputing.substack.com',
+  },
   vite: {
     optimizeDeps: {
       include: ['phaser'],
