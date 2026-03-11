@@ -26,6 +26,10 @@ const weeklyDigests: PickerItem[] = [
     blurb: 'Google DeepMind argues for evaluating moral competence, not just performance. Agent security emerges as a dominant theme. LLM wargames show nuclear weapons used more often than by humans. Gemini 3.1 Pro takes the top benchmark spot at half the cost.',
   },
 ];
+
+const LISTMONK_URL = 'https://api.mintresearch.org';
+const LIST_YIAI = '882f8b1e-9d59-4a65-aa37-6adadf097025';
+const LIST_BRIEFING = '0ef97e74-38d7-4aea-a74f-905eca6b8121';
 ---
 
 <BaseLayout title="MINT Lab — Newsletters">
@@ -51,19 +55,41 @@ const weeklyDigests: PickerItem[] = [
       <span class="tag tag-daemon">Daily</span>
       <span style="font-size: 12px; color: var(--text-3);">Weekday mornings</span>
     </div>
-    <p style="font-size: 13px;">Assembled from the lab's automated content pipeline, which monitors hundreds of sources daily and surfaces the most relevant developments. Synthesized by Claude Opus into contextual journalism &mdash; not punditry.</p>
-    <form id="subscribe-form" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+    <p style="font-size: 13px;">Assembled from the lab's automated content pipeline, which monitors hundreds of sources daily and surfaces the most relevant developments. Synthesized by Claude Opus into contextual journalism.</p>
+    <form class="subscribe-form" data-lists={LIST_YIAI} style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
       <input type="email" name="email" required placeholder="you@university.edu" style="padding:10px 16px;border-radius:0;border:1px solid var(--border);background:var(--bg-0);color:var(--text-1);font-size:14px;font-family:var(--font);width:280px;outline:none;transition:border-color 0.2s" onfocus="this.style.borderColor='var(--mint)'" onblur="this.style.borderColor='var(--border)'">
       <div style="position:absolute;left:-9999px" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
       <button type="submit" style="padding:10px 24px;border-radius:0;border:none;background:var(--mint);color:#06080c;font-size:14px;font-family:var(--font);font-weight:600;cursor:pointer;transition:opacity 0.2s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Subscribe</button>
     </form>
-    <p id="subscribe-msg" style="margin-top:10px;font-size:14px;min-height:20px"></p>
+    <p class="subscribe-msg" style="margin-top:10px;font-size:14px;min-height:20px"></p>
+  </div>
+</Section>
+
+
+<!-- ============ MORNING BRIEFING ============ -->
+<Section id="morning-briefing" num="02">
+  <h2><span class="cmd-prefix"><span class="cmd-name">say</span> <span class="cmd-flag">--voice</span> <span class="cmd-path">morning-briefing.txt</span></span></h2>
+  <p class="lead">
+    A daily AI news podcast you assemble yourself: we send the script, you pick the voice.
+  </p>
+  <div class="newsletter-card">
+    <div class="newsletter-meta">
+      <span class="tag tag-daemon">Daily</span>
+      <span style="font-size: 12px; color: var(--text-3);">Weekday mornings &middot; ~30 min</span>
+    </div>
+    <p style="font-size: 13px;">Each morning we email a ~4,500-word newsreader script covering the same stories as Yesterday in AI, but as a continuous narrative with analysis and context. Open the attached text file in any text-to-speech app on your phone and listen on your commute.</p>
+    <form class="subscribe-form" data-lists={LIST_BRIEFING} style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+      <input type="email" name="email" required placeholder="you@university.edu" style="padding:10px 16px;border-radius:0;border:1px solid var(--border);background:var(--bg-0);color:var(--text-1);font-size:14px;font-family:var(--font);width:280px;outline:none;transition:border-color 0.2s" onfocus="this.style.borderColor='var(--mint)'" onblur="this.style.borderColor='var(--border)'">
+      <div style="position:absolute;left:-9999px" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
+      <button type="submit" style="padding:10px 24px;border-radius:0;border:none;background:var(--mint);color:#06080c;font-size:14px;font-family:var(--font);font-weight:600;cursor:pointer;transition:opacity 0.2s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Subscribe</button>
+    </form>
+    <p class="subscribe-msg" style="margin-top:10px;font-size:14px;min-height:20px"></p>
   </div>
 </Section>
 
 
 <!-- ============ PHILOSOPHY OF COMPUTING ============ -->
-<Section id="philosophy-of-computing" num="02">
+<Section id="philosophy-of-computing" num="03">
   <h2><span class="cmd-prefix"><span class="cmd-name">cat</span> <span class="cmd-path">philosophy-of-computing.md</span></span></h2>
   <p class="lead">
     Weekly AI updates, monthly news and opportunities for philosophers working on AI and computing.
@@ -82,7 +108,7 @@ const weeklyDigests: PickerItem[] = [
 
 
 <!-- ============ BACK ISSUES ============ -->
-<Section id="back-issues" num="03">
+<Section id="back-issues" num="04">
   <h2><span class="cmd-prefix"><span class="cmd-name">ls</span> <span class="cmd-flag">-t</span> <span class="cmd-path">archive/</span> <span class="t-dim">|</span> <span class="cmd-name">head</span></span></h2>
 
   <h3>Minty's Week in AI</h3>
@@ -99,37 +125,52 @@ const weeklyDigests: PickerItem[] = [
 
 </main>
 
-<script is:inline>
-document.getElementById('subscribe-form').addEventListener('submit', function(e) {
-  e.preventDefault();
-  var msg = document.getElementById('subscribe-msg');
-  var btn = this.querySelector('button');
-  var email = this.querySelector('input[name="email"]').value;
-  var website = this.querySelector('input[name="website"]').value;
-  btn.disabled = true;
-  btn.textContent = 'Subscribing...';
-  msg.textContent = '';
-  msg.style.color = 'var(--text-2)';
-  fetch('https://api.mintresearch.org/api/subscribe', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({email: email, website: website})
-  })
-  .then(function(r) { return r.json().then(function(d) { return {ok: r.ok, data: d}; }); })
-  .then(function(res) {
-    if (res.ok) {
-      msg.style.color = 'var(--green)';
-      msg.textContent = res.data.message === 'already subscribed' ? 'You\'re already subscribed!' : 'Subscribed! You\'ll get the next issue.';
-      btn.textContent = 'Subscribed';
-    } else {
-      throw new Error(res.data.error || 'Something went wrong');
-    }
-  })
-  .catch(function(err) {
-    msg.style.color = 'var(--red)';
-    msg.textContent = err.message || 'Failed to subscribe. Try again.';
-    btn.disabled = false;
-    btn.textContent = 'Subscribe';
+<script is:inline define:vars={{ LISTMONK_URL }}>
+document.querySelectorAll('.subscribe-form').forEach(function(form) {
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var msg = form.nextElementSibling;
+    var btn = form.querySelector('button');
+    var email = form.querySelector('input[name="email"]').value;
+    var honeypot = form.querySelector('input[name="website"]').value;
+    var lists = form.getAttribute('data-lists');
+
+    if (honeypot) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Subscribing...';
+    msg.textContent = '';
+    msg.style.color = 'var(--text-2)';
+
+    var body = new URLSearchParams();
+    body.append('email', email);
+    body.append('l', lists);
+
+    fetch(LISTMONK_URL + '/subscription/form', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body.toString()
+    })
+    .then(function(r) { return r.text(); })
+    .then(function(html) {
+      if (html.indexOf('Subscribed successfully') !== -1) {
+        msg.style.color = 'var(--green)';
+        msg.textContent = 'Subscribed! You\'ll get the next issue.';
+        btn.textContent = 'Subscribed';
+      } else if (html.indexOf('already') !== -1) {
+        msg.style.color = 'var(--green)';
+        msg.textContent = 'You\'re already subscribed!';
+        btn.textContent = 'Subscribed';
+      } else {
+        throw new Error('Unexpected response');
+      }
+    })
+    .catch(function(err) {
+      msg.style.color = 'var(--red)';
+      msg.textContent = 'Failed to subscribe. Try again.';
+      btn.disabled = false;
+      btn.textContent = 'Subscribe';
+    });
   });
 });
 </script>
