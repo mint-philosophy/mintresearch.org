@@ -1,8 +1,10 @@
 import Phaser from 'phaser';
-import { SCENES, COLORS, GAME_WIDTH, GAME_HEIGHT, MINTY_COLORS } from '../constants';
+import { SCENES, COLORS, GAME_WIDTH, GAME_HEIGHT, LEVEL_THEMES } from '../constants';
+import type { LevelNumber } from '../constants';
 import { GameStateManager } from '../state/GameStateManager';
 import { audioEngine } from '../systems/AudioEngine';
 import { menuTrack } from '../audio/tracks/menu';
+import { getTotalLevels } from '../levels/LevelRegistry';
 
 export class MenuScene extends Phaser.Scene {
   private stateManager!: GameStateManager;
@@ -18,6 +20,7 @@ export class MenuScene extends Phaser.Scene {
   create(): void {
     this.stateManager = new GameStateManager();
     this.cameras.main.setBackgroundColor(COLORS.bg0);
+    const totalLevels = getTotalLevels();
 
     // Title
     const title = this.add.text(GAME_WIDTH / 2, 60, 'DATA DASH', {
@@ -50,15 +53,8 @@ export class MenuScene extends Phaser.Scene {
     }
 
     // Level select
-    const maxUnlocked = this.stateManager.maxLevelUnlocked;
-    const levelNames = [
-      '1. X (Twitter)',
-      '2. LinkedIn',
-      '3. Bluesky',
-      '4. ArXiv',
-      '5. PhilPapers',
-      '6. SSRN',
-    ];
+    const maxUnlocked = Math.min(this.stateManager.maxLevelUnlocked, totalLevels);
+    const levelNames = this.getLevelNames();
 
     this.add.text(GAME_WIDTH / 2, 230, '── SELECT LEVEL ──', {
       fontFamily: '"JetBrains Mono", monospace',
@@ -144,13 +140,13 @@ export class MenuScene extends Phaser.Scene {
   }
 
   private changeSelection(dir: number): void {
-    const maxUnlocked = this.stateManager.maxLevelUnlocked;
+    const maxUnlocked = Math.min(this.stateManager.maxLevelUnlocked, getTotalLevels());
     this.selectedLevel = Phaser.Math.Clamp(this.selectedLevel + dir, 1, maxUnlocked);
     this.updateLevelHighlight();
   }
 
   private updateLevelHighlight(): void {
-    const maxUnlocked = this.stateManager.maxLevelUnlocked;
+    const maxUnlocked = Math.min(this.stateManager.maxLevelUnlocked, getTotalLevels());
     this.levelTexts.forEach((text, i) => {
       const level = i + 1;
       if (level <= maxUnlocked) {
@@ -161,7 +157,8 @@ export class MenuScene extends Phaser.Scene {
 
   private activateKonami(): void {
     // Unlock all levels
-    for (let i = 1; i <= 6; i++) {
+    const totalLevels = getTotalLevels();
+    for (let i = 1; i <= totalLevels; i++) {
       this.stateManager.unlockLevel(i);
     }
 
@@ -203,7 +200,7 @@ export class MenuScene extends Phaser.Scene {
     this.levelTexts.forEach((text, i) => {
       const level = i + 1;
       text.setColor(level === this.selectedLevel ? '#2ec4b6' : '#abb2bf');
-      text.setText(['1. X (Twitter)', '2. LinkedIn', '3. Bluesky', '4. ArXiv', '5. PhilPapers', '6. SSRN'][i]);
+      text.setText(this.getLevelNames()[i]);
       text.setInteractive({ useHandCursor: true });
       text.on('pointerover', () => {
         this.selectedLevel = level;
@@ -221,5 +218,13 @@ export class MenuScene extends Phaser.Scene {
   private startLevel(level: number): void {
     audioEngine.stopTrack();
     this.scene.start(SCENES.LEVEL, { level });
+  }
+
+  private getLevelNames(): string[] {
+    const totalLevels = getTotalLevels();
+    return Array.from({ length: totalLevels }, (_, index) => {
+      const level = (index + 1) as LevelNumber;
+      return `${level}. ${LEVEL_THEMES[level].name}`;
+    });
   }
 }

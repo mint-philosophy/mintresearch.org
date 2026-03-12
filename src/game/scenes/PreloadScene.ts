@@ -52,6 +52,8 @@ export class PreloadScene extends Phaser.Scene {
     this.generateLobsterSprite();
     this.generateRedBookSprite();
     this.generateGreenHatSprite();
+    this.generateMintyPuddleSprite();
+    this.generateGoldenGateHelperSprite();
     this.generateMacBombSprite();
     this.generateLipstickMintySprite();
     this.generateCreditsAshMinty();
@@ -155,6 +157,68 @@ export class PreloadScene extends Phaser.Scene {
     g6.fillRect(0, 0, 64, 2);
     g6.generateTexture('platform-ssrn', 64, 16);
     g6.destroy();
+
+    // Level 7 — YouTube
+    const g7 = this.add.graphics();
+    g7.fillStyle(0x280808);
+    g7.fillRect(0, 0, 64, 16);
+    g7.fillStyle(0xff0000);
+    g7.fillRoundedRect(4, 3, 56, 10, 4);
+    g7.fillStyle(0xffffff, 0.9);
+    g7.fillTriangle(26, 5, 26, 11, 36, 8);
+    g7.fillStyle(0x400d0d, 0.5);
+    g7.fillRect(0, 13, 64, 3);
+    g7.generateTexture('platform-youtube', 64, 16);
+    g7.destroy();
+
+    // Level 8 — NeurIPS
+    const g8 = this.add.graphics();
+    g8.fillStyle(0x181124);
+    g8.fillRect(0, 0, 64, 16);
+    g8.fillStyle(0x7c5cff);
+    g8.fillRect(0, 0, 64, 3);
+    g8.fillStyle(0x3f2d62);
+    g8.fillRect(0, 12, 64, 4);
+    g8.fillStyle(0xd4ccff, 0.45);
+    g8.fillRect(7, 5, 18, 2);
+    g8.fillRect(31, 5, 26, 2);
+    g8.fillRect(13, 9, 36, 1);
+    g8.generateTexture('platform-neurips', 64, 16);
+    g8.destroy();
+
+    // Level 9 — San Francisco
+    const g9 = this.add.graphics();
+    g9.fillStyle(0x1b0f06);
+    g9.fillRect(0, 0, 64, 16);
+    g9.fillStyle(0xff9416);
+    g9.fillRect(0, 0, 64, 3);
+    g9.fillStyle(0x3e2b1a);
+    g9.fillRect(0, 12, 64, 4);
+    g9.fillStyle(0xffd0a6, 0.35);
+    g9.fillRect(8, 5, 16, 2);
+    g9.fillRect(30, 5, 24, 2);
+    g9.fillRect(16, 9, 28, 1);
+    g9.generateTexture('platform-sf', 64, 16);
+    g9.destroy();
+
+    // Level 10 — Mega Datacenter
+    const g10 = this.add.graphics();
+    g10.fillStyle(0x090d14);
+    g10.fillRect(0, 0, 64, 16);
+    g10.fillStyle(0x76b900);
+    g10.fillRect(0, 0, 64, 3);
+    g10.fillStyle(0x1b2435);
+    g10.fillRect(0, 12, 64, 4);
+    g10.fillStyle(0x334155);
+    for (let x = 4; x < 64; x += 12) {
+      g10.fillRect(x, 5, 8, 5);
+      g10.fillStyle(0x38bdf8, 0.6);
+      g10.fillRect(x + 1, 6, 1, 3);
+      g10.fillRect(x + 6, 6, 1, 3);
+      g10.fillStyle(0x334155);
+    }
+    g10.generateTexture('platform-datacenter', 64, 16);
+    g10.destroy();
   }
 
   private generatePaper(): void {
@@ -308,6 +372,12 @@ export class PreloadScene extends Phaser.Scene {
     this.generateOpenClawLogo();
     // DeepSeek: Blue whale
     this.generateDeepSeekLogo();
+    // Nvidia: green logo with sparkles
+    this.generateNvidiaLogo();
+    // Apple: visible Apple logo power-down
+    this.generateAppleLogo();
+    // Golden Gate helper
+    this.generateGoldenGateLogo();
   }
 
   private generateAnthropicLogo(): void {
@@ -647,6 +717,68 @@ export class PreloadScene extends Phaser.Scene {
     g.destroy();
   }
 
+  private generateNvidiaLogo(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0x76b900, 0.18);
+    g.fillCircle(18, 18, 17);
+    g.fillStyle(0x76b900);
+    g.fillRoundedRect(6, 8, 24, 20, 4);
+    g.fillStyle(0xffffff);
+    g.fillEllipse(18, 18, 18, 12);
+    g.lineStyle(2, 0x76b900);
+    g.strokeEllipse(18, 18, 18, 12);
+    g.strokeEllipse(18, 18, 10, 6);
+    g.fillStyle(0x76b900);
+    g.fillCircle(18, 18, 2.5);
+    g.fillStyle(0xffffff, 0.8);
+    g.fillRect(9, 4, 2, 4);
+    g.fillRect(8, 5, 4, 2);
+    g.fillRect(27, 7, 2, 4);
+    g.fillRect(26, 8, 4, 2);
+    g.fillRect(24, 28, 2, 4);
+    g.fillRect(23, 29, 4, 2);
+    g.generateTexture('pu-nvidia', 36, 36);
+    g.destroy();
+  }
+
+  private generateAppleLogo(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0xffffff, 0.16);
+    g.fillCircle(18, 18, 17);
+    g.fillStyle(0xffffff);
+    g.fillCircle(14, 18, 7);
+    g.fillCircle(22, 18, 8);
+    g.fillRect(10, 14, 16, 13);
+    g.fillCircle(18, 12, 6);
+    g.fillStyle(0x111111);
+    g.fillCircle(26, 14, 3.5);
+    g.fillStyle(0xffffff);
+    g.fillEllipse(23, 6, 8, 4);
+    g.lineStyle(1, 0xd1d5db, 0.6);
+    g.strokeEllipse(23, 6, 8, 4);
+    g.generateTexture('pd-apple', 36, 36);
+    g.destroy();
+  }
+
+  private generateGoldenGateLogo(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0xff9416, 0.18);
+    g.fillCircle(18, 18, 17);
+    g.fillStyle(0xff9416);
+    g.fillRect(6, 12, 4, 16);
+    g.fillRect(26, 12, 4, 16);
+    g.fillRect(6, 12, 24, 3);
+    g.fillRect(8, 24, 20, 3);
+    g.fillRect(12, 18, 12, 2);
+    g.fillStyle(0xffd0a6);
+    g.fillRect(7, 15, 2, 9);
+    g.fillRect(27, 15, 2, 9);
+    g.fillRect(11, 15, 1, 9);
+    g.fillRect(24, 15, 1, 9);
+    g.generateTexture('pu-goldenGate', 36, 36);
+    g.destroy();
+  }
+
   private generateCheckpoint(): void {
     const g = this.add.graphics();
     g.fillStyle(0x888888);
@@ -676,6 +808,17 @@ export class PreloadScene extends Phaser.Scene {
     this.generatePaperFloodSprite();
     this.generateCloudflareWallSprite();
     this.generateMacIISprite();
+    this.generateMeanCommentSprite();
+    this.generateVentureCapitalistSprite();
+    this.generateBCIOctopusSprite();
+    this.generateMoneyProjectileSprite();
+    this.generateZuckerbergSprite();
+    this.generatePeaceProjectileSprite();
+    this.generateGlueProjectileSprite();
+    this.generateWaterWaveSprite();
+    this.generateNuclearReactorSprite();
+    this.generateGasBottleSprite();
+    this.generateDatacenterProjectileSprite();
   }
 
   private generateOctopusSprites(): void {
@@ -1150,6 +1293,241 @@ export class PreloadScene extends Phaser.Scene {
     g.destroy();
   }
 
+  private generateMeanCommentSprite(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0xffffff);
+    g.fillRoundedRect(4, 4, 40, 28, 8);
+    g.fillTriangle(12, 30, 18, 30, 8, 40);
+    g.lineStyle(2, 0xff4444);
+    g.strokeRoundedRect(4, 4, 40, 28, 8);
+    g.strokeLineShape(new Phaser.Geom.Line(12, 30, 8, 40));
+    g.strokeLineShape(new Phaser.Geom.Line(18, 30, 8, 40));
+    g.fillStyle(0xff4444);
+    g.fillRect(11, 11, 24, 3);
+    g.fillRect(11, 18, 20, 3);
+    g.fillRect(11, 25, 14, 3);
+    g.fillRect(33, 18, 4, 3);
+    g.generateTexture('enemy-meanComment', 48, 48);
+    g.destroy();
+  }
+
+  private generateVentureCapitalistSprite(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0x1f2430);
+    g.fillRect(15, 18, 18, 16);
+    g.fillStyle(0x3a4254);
+    g.fillRect(13, 18, 4, 16);
+    g.fillRect(31, 18, 4, 16);
+    g.fillStyle(0x58b26b);
+    g.fillRect(11, 19, 5, 15);
+    g.fillRect(32, 19, 5, 15);
+    g.fillStyle(0xf2cfb2);
+    g.fillCircle(24, 11, 9);
+    g.fillStyle(0x5b432f);
+    g.fillRect(15, 3, 18, 6);
+    g.fillRect(13, 6, 5, 7);
+    g.fillRect(30, 6, 5, 7);
+    g.fillStyle(0x111111);
+    g.fillRect(18, 10, 4, 2);
+    g.fillRect(26, 10, 4, 2);
+    g.fillStyle(0x8b5e3c);
+    g.fillRect(22, 14, 4, 2);
+    g.fillStyle(0x58b26b);
+    g.fillRect(7, 22, 6, 12);
+    g.fillRect(35, 22, 6, 12);
+    g.fillStyle(0xf2cfb2);
+    g.fillRect(7, 34, 6, 3);
+    g.fillRect(35, 34, 6, 3);
+    g.fillStyle(0x2a3040);
+    g.fillRect(17, 34, 5, 10);
+    g.fillRect(26, 34, 5, 10);
+    g.fillStyle(0x111111);
+    g.fillRect(16, 43, 7, 3);
+    g.fillRect(25, 43, 7, 3);
+    g.fillStyle(0xd8b445);
+    g.fillCircle(40, 17, 4);
+    g.fillCircle(40, 17, 1.5);
+    g.generateTexture('enemy-ventureCapitalist', 48, 48);
+    g.destroy();
+  }
+
+  private generateBCIOctopusSprite(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0x1fb5ff);
+    g.fillCircle(24, 15, 15);
+    g.fillStyle(0x7ee2ff, 0.45);
+    g.fillCircle(18, 10, 6);
+    g.fillStyle(0x0b2e47);
+    g.fillRect(13, 2, 22, 6);
+    g.fillStyle(0xff7aa2);
+    g.fillEllipse(24, 6, 16, 8);
+    g.fillStyle(0xd84f84, 0.6);
+    g.fillRect(17, 5, 14, 1);
+    g.fillRect(19, 7, 10, 1);
+    g.fillStyle(0xffffff);
+    g.fillCircle(18, 16, 4);
+    g.fillCircle(30, 16, 4);
+    g.fillStyle(0x000000);
+    g.fillCircle(19, 16, 1.5);
+    g.fillCircle(31, 16, 1.5);
+    g.fillStyle(0x0d6ea1);
+    g.fillRect(20, 22, 8, 2);
+    g.fillStyle(0x1fb5ff);
+    g.fillRect(5, 26, 3, 4); g.fillRect(4, 30, 3, 4); g.fillRect(5, 34, 3, 4);
+    g.fillRect(11, 26, 3, 4); g.fillRect(12, 30, 3, 4); g.fillRect(11, 34, 3, 4);
+    g.fillRect(18, 26, 3, 4); g.fillRect(19, 30, 3, 4); g.fillRect(18, 34, 3, 4);
+    g.fillRect(28, 26, 3, 4); g.fillRect(29, 30, 3, 4); g.fillRect(28, 34, 3, 4);
+    g.fillRect(35, 26, 3, 4); g.fillRect(36, 30, 3, 4); g.fillRect(35, 34, 3, 4);
+    g.fillRect(41, 26, 3, 4); g.fillRect(40, 30, 3, 4); g.fillRect(41, 34, 3, 4);
+    g.fillStyle(0x0b7cba);
+    g.fillCircle(6, 37, 1); g.fillCircle(12, 37, 1); g.fillCircle(19, 37, 1);
+    g.fillCircle(29, 37, 1); g.fillCircle(36, 37, 1); g.fillCircle(42, 37, 1);
+    g.generateTexture('enemy-bciOctopus', 48, 48);
+    g.destroy();
+  }
+
+  private generateMoneyProjectileSprite(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0x5cb85c);
+    g.fillRoundedRect(0, 0, 18, 12, 2);
+    g.lineStyle(1, 0x2f7c2f);
+    g.strokeRoundedRect(0, 0, 18, 12, 2);
+    g.fillStyle(0xd8f0a0);
+    g.fillCircle(9, 6, 3.5);
+    g.fillStyle(0x2f7c2f);
+    g.fillRect(8, 3, 2, 6);
+    g.fillRect(6, 5, 6, 2);
+    g.generateTexture('money-projectile', 18, 12);
+    g.destroy();
+  }
+
+  private generateZuckerbergSprite(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0xf0c8aa);
+    g.fillCircle(22, 18, 14);
+    g.fillStyle(0x7a4f32);
+    g.fillRect(10, 6, 24, 6);
+    g.fillRect(8, 10, 6, 8);
+    g.fillRect(30, 10, 6, 8);
+    g.fillStyle(0xffffff);
+    g.fillCircle(17, 18, 4);
+    g.fillCircle(27, 18, 4);
+    g.fillStyle(0x000000);
+    g.fillCircle(18, 18, 1.5);
+    g.fillCircle(28, 18, 1.5);
+    g.fillStyle(0x8b5e48);
+    g.fillRect(19, 24, 6, 2);
+    g.fillStyle(0xd0d7de);
+    g.lineStyle(1, 0xd0d7de);
+    g.strokeCircle(38, 20, 6);
+    g.lineBetween(32, 20, 22, 24);
+    g.lineBetween(38, 14, 42, 8);
+    g.lineBetween(34, 15, 42, 12);
+    g.lineBetween(34, 25, 42, 28);
+    g.lineBetween(42, 8, 46, 12);
+    g.lineBetween(42, 12, 47, 18);
+    g.lineBetween(42, 28, 46, 24);
+    g.generateTexture('enemy-zuckerberg', 48, 48);
+    g.destroy();
+  }
+
+  private generatePeaceProjectileSprite(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0xffffff, 0.9);
+    g.fillCircle(9, 9, 8);
+    g.lineStyle(2, 0x34d399);
+    g.strokeCircle(9, 9, 7);
+    g.lineBetween(9, 3, 9, 15);
+    g.lineBetween(9, 9, 4, 14);
+    g.lineBetween(9, 9, 14, 14);
+    g.generateTexture('peace-projectile', 18, 18);
+    g.destroy();
+  }
+
+  private generateGlueProjectileSprite(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0xffc063, 0.95);
+    g.fillCircle(9, 8, 6);
+    g.fillCircle(6, 10, 4);
+    g.fillCircle(12, 10, 4);
+    g.fillStyle(0xffd99b, 0.7);
+    g.fillCircle(7, 6, 2);
+    g.fillRect(8, 12, 2, 4);
+    g.generateTexture('glue-projectile', 18, 18);
+    g.destroy();
+  }
+
+  private generateWaterWaveSprite(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0x38bdf8, 0.9);
+    g.fillCircle(10, 24, 10);
+    g.fillCircle(22, 18, 12);
+    g.fillCircle(36, 22, 10);
+    g.fillCircle(18, 28, 11);
+    g.fillCircle(30, 28, 9);
+    g.fillStyle(0xe0f2fe, 0.75);
+    g.fillRect(10, 14, 20, 3);
+    g.fillRect(18, 10, 10, 2);
+    g.fillStyle(0x0f172a, 0.22);
+    g.fillRect(11, 31, 24, 3);
+    g.generateTexture('enemy-waterWave', 48, 48);
+    g.destroy();
+  }
+
+  private generateNuclearReactorSprite(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0xa8b1c0);
+    g.fillRoundedRect(10, 8, 28, 28, 6);
+    g.fillStyle(0x7f8a9b);
+    g.fillRect(10, 26, 28, 10);
+    g.fillStyle(0xdbe4f0);
+    g.fillRect(14, 12, 20, 5);
+    g.fillStyle(0x111827);
+    g.fillCircle(24, 22, 7);
+    g.lineStyle(2, 0xfacc15);
+    g.strokeCircle(24, 22, 7);
+    g.lineBetween(24, 15, 24, 29);
+    g.lineBetween(18, 19, 30, 25);
+    g.lineBetween(18, 25, 30, 19);
+    g.fillStyle(0x94a3b8);
+    g.fillRect(14, 36, 6, 6);
+    g.fillRect(28, 36, 6, 6);
+    g.generateTexture('enemy-nuclearReactor', 48, 48);
+    g.destroy();
+  }
+
+  private generateGasBottleSprite(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0x16a34a);
+    g.fillRoundedRect(14, 8, 20, 28, 8);
+    g.fillStyle(0x15803d);
+    g.fillRect(18, 4, 12, 6);
+    g.fillStyle(0xe2e8f0);
+    g.fillRect(20, 2, 8, 3);
+    g.fillStyle(0xbbf7d0, 0.35);
+    g.fillRect(18, 12, 4, 16);
+    g.fillStyle(0x14532d);
+    g.fillRect(18, 18, 12, 2);
+    g.fillRect(18, 24, 12, 2);
+    g.fillStyle(0xffffff, 0.75);
+    g.fillCircle(32, 10, 3);
+    g.generateTexture('enemy-gasBottle', 48, 48);
+    g.destroy();
+  }
+
+  private generateDatacenterProjectileSprite(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0x38bdf8, 0.25);
+    g.fillCircle(10, 10, 9);
+    g.fillStyle(0x76b900);
+    g.fillCircle(10, 10, 6);
+    g.fillStyle(0xffffff);
+    g.fillRect(6, 9, 8, 2);
+    g.fillRect(9, 6, 2, 8);
+    g.generateTexture('datacenter-projectile', 20, 20);
+    g.destroy();
+  }
+
   // ── Boss Sprites ──
 
   private generateBossSprites(): void {
@@ -1159,6 +1537,10 @@ export class PreloadScene extends Phaser.Scene {
     this.generateBossPaperMill();
     this.generateBossTheVoid();
     this.generateBossShoggoth();
+    this.generateBossAngryNeckbeard();
+    this.generateBossSchmidhuber();
+    this.generateBossPauseSign();
+    this.generateBossBernie();
     // Boss projectile — 10×10 glowing white/red circle
     const gp = this.add.graphics();
     gp.fillStyle(0xff4444, 0.35);
@@ -1169,6 +1551,44 @@ export class PreloadScene extends Phaser.Scene {
     gp.fillCircle(5, 5, 1);
     gp.generateTexture('boss-projectile', 10, 10);
     gp.destroy();
+
+    const gc = this.add.graphics();
+    gc.fillStyle(0xffffff);
+    gc.fillRoundedRect(0, 0, 18, 12, 4);
+    gc.fillTriangle(4, 10, 8, 10, 2, 16);
+    gc.lineStyle(1, 0xff4444);
+    gc.strokeRoundedRect(0, 0, 18, 12, 4);
+    gc.fillStyle(0xff4444);
+    gc.fillRect(4, 4, 9, 1);
+    gc.fillRect(4, 7, 7, 1);
+    gc.generateTexture('comment-projectile', 18, 16);
+    gc.destroy();
+
+    const gt = this.add.graphics();
+    gt.fillStyle(0x15202b);
+    gt.fillRoundedRect(0, 0, 28, 18, 4);
+    gt.fillStyle(0x1DA1F2);
+    gt.fillCircle(5, 5, 3);
+    gt.fillStyle(0xd9d9d9);
+    gt.fillRect(10, 3, 10, 1);
+    gt.fillRect(10, 6, 7, 1);
+    gt.fillStyle(0x8b949e);
+    gt.fillRect(4, 10, 18, 1);
+    gt.fillRect(4, 13, 15, 1);
+    gt.fillStyle(0xe06c75);
+    gt.fillCircle(20, 4, 2);
+    gt.generateTexture('tweet-projectile', 28, 18);
+    gt.destroy();
+
+    const gs = this.add.graphics();
+    gs.lineStyle(3, 0xd1d5db);
+    gs.strokeRect(2, 5, 8, 6);
+    gs.strokeRect(12, 5, 8, 6);
+    gs.lineBetween(10, 8, 12, 8);
+    gs.lineBetween(2, 11, 0, 15);
+    gs.lineBetween(20, 11, 22, 15);
+    gs.generateTexture('spectacles-projectile', 22, 16);
+    gs.destroy();
   }
 
   private generateBossAlgorithmVortex(): void {
@@ -1526,6 +1946,163 @@ export class PreloadScene extends Phaser.Scene {
     g.destroy();
   }
 
+  private generateBossAngryNeckbeard(): void {
+    const g = this.add.graphics();
+    const cx = 80, cy = 80;
+
+    g.fillStyle(0xf1d2b6);
+    g.fillCircle(cx, cy - 18, 42);
+    g.fillStyle(0xe2b28a);
+    g.fillRect(cx - 22, cy + 8, 44, 42);
+    g.fillStyle(0x6b3f2a);
+    g.fillRect(cx - 36, cy - 52, 72, 16);
+    g.fillRect(cx - 42, cy - 40, 14, 28);
+    g.fillRect(cx + 28, cy - 40, 14, 28);
+    g.fillStyle(0x4a2c1d);
+    g.fillRect(cx - 18, cy - 10, 14, 4);
+    g.fillRect(cx + 4, cy - 10, 14, 4);
+    g.fillStyle(0xffffff);
+    g.fillCircle(cx - 12, cy - 2, 8);
+    g.fillCircle(cx + 12, cy - 2, 8);
+    g.fillStyle(0xff4444);
+    g.fillCircle(cx - 10, cy - 2, 3);
+    g.fillCircle(cx + 14, cy - 2, 3);
+    g.fillStyle(0x8b0000);
+    g.fillRect(cx - 18, cy + 14, 36, 6);
+    g.fillStyle(0xffffff);
+    g.fillRect(cx - 16, cy + 14, 8, 3);
+    g.fillRect(cx - 4, cy + 14, 8, 3);
+    g.fillRect(cx + 8, cy + 14, 8, 3);
+    g.fillStyle(0x7a2f1f, 0.5);
+    g.fillRect(cx - 28, cy + 50, 56, 22);
+    g.fillStyle(0xff0000, 0.35);
+    g.fillCircle(cx - 44, cy + 4, 10);
+    g.fillCircle(cx + 44, cy - 6, 10);
+    g.fillCircle(cx + 30, cy + 30, 9);
+    g.generateTexture('boss-angryNeckbeard', 160, 160);
+    g.destroy();
+  }
+
+  private generateBossSchmidhuber(): void {
+    const g = this.add.graphics();
+    const cx = 88;
+    const cy = 92;
+
+    g.fillStyle(0x3f245f);
+    g.fillRect(cx - 56, cy + 6, 112, 58);
+    g.fillStyle(0x5f3a86);
+    g.fillRect(cx - 54, cy + 8, 12, 52);
+    g.fillRect(cx + 42, cy + 8, 12, 52);
+
+    g.fillStyle(0xf0c6a8);
+    g.fillCircle(cx, cy - 32, 34);
+    g.fillStyle(0xffffff);
+    g.fillRect(cx - 18, cy - 4, 16, 6);
+    g.fillRect(cx + 2, cy - 4, 16, 6);
+    g.lineStyle(2, 0x333333);
+    g.strokeRect(cx - 18, cy - 4, 16, 6);
+    g.strokeRect(cx + 2, cy - 4, 16, 6);
+    g.strokeLineShape(new Phaser.Geom.Line(cx - 2, cy - 1, cx + 2, cy - 1));
+    g.fillStyle(0x000000);
+    g.fillCircle(cx - 10, cy - 1, 2);
+    g.fillCircle(cx + 10, cy - 1, 2);
+    g.fillStyle(0x916846);
+    g.fillRect(cx - 8, cy + 8, 16, 3);
+    g.fillStyle(0x7a573d);
+    g.fillRect(cx - 12, cy + 14, 24, 7);
+    g.fillStyle(0xdddddd);
+    g.fillRect(cx - 20, cy - 58, 40, 14);
+    g.fillStyle(0xeeeeee);
+    g.fillRect(cx - 8, cy - 70, 16, 16);
+
+    g.fillStyle(0xf0c6a8);
+    g.fillCircle(cx - 56, cy + 10, 22);
+    g.fillCircle(cx + 56, cy + 10, 22);
+    g.fillStyle(0xe2b28a);
+    g.fillRect(cx - 76, cy + 14, 40, 16);
+    g.fillRect(cx + 36, cy + 14, 40, 16);
+    g.fillStyle(0xf0c6a8);
+    g.fillRect(cx - 70, cy + 28, 12, 26);
+    g.fillRect(cx + 58, cy + 28, 12, 26);
+    g.fillStyle(0x3f245f);
+    g.fillRect(cx - 22, cy + 64, 16, 30);
+    g.fillRect(cx + 6, cy + 64, 16, 30);
+    g.fillStyle(0x111111);
+    g.fillRect(cx - 24, cy + 92, 18, 6);
+    g.fillRect(cx + 6, cy + 92, 18, 6);
+
+    g.fillStyle(0x7c5cff, 0.3);
+    g.fillCircle(cx - 78, cy - 28, 10);
+    g.fillCircle(cx + 74, cy - 14, 8);
+    g.fillCircle(cx + 62, cy + 42, 7);
+    g.generateTexture('boss-schmidhuber', 176, 176);
+    g.destroy();
+  }
+
+  private generateBossPauseSign(): void {
+    const g = this.add.graphics();
+    const orange = 0xff9416;
+    g.fillStyle(0x6b4b2a);
+    g.fillRect(104, 92, 14, 90);
+    g.fillStyle(0x4b341d);
+    g.fillRect(98, 178, 26, 10);
+    g.fillStyle(orange);
+    g.fillRoundedRect(22, 18, 176, 92, 12);
+    g.lineStyle(4, 0x2b1c12);
+    g.strokeRoundedRect(22, 18, 176, 92, 12);
+    g.fillStyle(0x2b1c12);
+    g.fillRect(40, 36, 18, 40);
+    g.fillRect(66, 36, 18, 40);
+    g.fillStyle(0x2b1c12);
+    g.fillRect(96, 34, 76, 10);
+    g.fillRect(96, 52, 62, 10);
+    g.fillRect(96, 70, 76, 10);
+    g.fillRect(96, 88, 62, 10);
+    g.fillStyle(0xffd0a6, 0.4);
+    g.fillRect(28, 24, 164, 8);
+    g.generateTexture('boss-pauseSign', 220, 220);
+    g.destroy();
+  }
+
+  private generateBossBernie(): void {
+    const g = this.add.graphics();
+    const cx = 110;
+    const cy = 108;
+
+    g.fillStyle(0xf3d0b6);
+    g.fillCircle(cx, cy - 18, 56);
+    g.fillStyle(0xe5b18c);
+    g.fillRect(cx - 24, cy + 20, 48, 36);
+    g.fillStyle(0xdddddd);
+    g.fillRect(cx - 62, cy - 70, 124, 24);
+    g.fillRect(cx - 70, cy - 52, 22, 42);
+    g.fillRect(cx + 48, cy - 52, 22, 42);
+    g.fillStyle(0xcfd4dd);
+    g.fillRect(cx - 34, cy - 86, 68, 24);
+    g.fillStyle(0xffffff);
+    g.fillRect(cx - 28, cy - 10, 24, 10);
+    g.fillRect(cx + 4, cy - 10, 24, 10);
+    g.lineStyle(2, 0x4b5563);
+    g.strokeRect(cx - 28, cy - 10, 24, 10);
+    g.strokeRect(cx + 4, cy - 10, 24, 10);
+    g.strokeLineShape(new Phaser.Geom.Line(cx - 4, cy - 5, cx + 4, cy - 5));
+    g.fillStyle(0x111111);
+    g.fillCircle(cx - 16, cy - 5, 3);
+    g.fillCircle(cx + 16, cy - 5, 3);
+    g.fillStyle(0x8b5e48);
+    g.fillRect(cx - 14, cy + 10, 28, 4);
+    g.fillStyle(0xffffff);
+    g.fillRect(cx - 18, cy + 16, 36, 20);
+    g.fillStyle(0xd1d5db);
+    g.fillRect(cx - 18, cy + 24, 36, 6);
+    g.fillStyle(0x93c5fd, 0.28);
+    g.fillCircle(cx - 70, cy - 20, 14);
+    g.fillCircle(cx + 72, cy - 8, 12);
+    g.fillCircle(cx + 44, cy + 48, 10);
+    g.generateTexture('boss-bernie', 220, 220);
+    g.destroy();
+  }
+
   // ── Clawd the Crab ──
 
   private generateClawd(): void {
@@ -1649,6 +2226,43 @@ export class PreloadScene extends Phaser.Scene {
     g.fillRect(5, 4, 4, 1);
     g.fillRect(6, 5, 2, 1);
     g.generateTexture('green-hat', 16, 10);
+    g.destroy();
+  }
+
+  private generateMintyPuddleSprite(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0x2ec4b6, 0.95);
+    g.fillEllipse(22, 12, 40, 14);
+    g.fillEllipse(14, 12, 16, 10);
+    g.fillEllipse(30, 12, 18, 10);
+    g.fillStyle(0x5de8da, 0.55);
+    g.fillEllipse(18, 10, 14, 5);
+    g.fillEllipse(29, 13, 8, 3);
+    g.generateTexture('minty-puddle', 44, 24);
+    g.destroy();
+  }
+
+  private generateGoldenGateHelperSprite(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0xff9416);
+    g.fillRect(6, 10, 84, 10);
+    g.fillRect(14, 0, 8, 30);
+    g.fillRect(74, 0, 8, 30);
+    g.fillRect(24, 14, 48, 4);
+    g.fillStyle(0xffd0a6);
+    g.fillRect(16, 4, 2, 20);
+    g.fillRect(78, 4, 2, 20);
+    g.fillRect(38, 14, 2, 8);
+    g.fillRect(56, 14, 2, 8);
+    g.fillStyle(0xffffff);
+    g.fillCircle(42, 17, 4);
+    g.fillCircle(54, 17, 4);
+    g.fillStyle(0x111111);
+    g.fillCircle(43, 17, 1.5);
+    g.fillCircle(55, 17, 1.5);
+    g.fillStyle(0x7a3f12);
+    g.fillRect(44, 22, 8, 2);
+    g.generateTexture('golden-gate-helper', 96, 32);
     g.destroy();
   }
 
@@ -1920,6 +2534,13 @@ export class PreloadScene extends Phaser.Scene {
     this.generateBgBarChart();
     this.generateBgPaywallLock();
     this.generateBgCrumblingBuilding();
+    // Level 8: NeurIPS
+    this.generateBgJournalist();
+    this.generateBgJournalistCamera();
+    this.generateBgFlashbulb();
+    // Level 9: San Francisco
+    this.generateBgProtester();
+    this.generateBgGoldenGate();
     // GPU rack (used across levels)
     this.generateBgGpuRack();
   }
@@ -3555,6 +4176,140 @@ export class PreloadScene extends Phaser.Scene {
     g.fillRect(20, 78, 3, 2);
     g.fillRect(30, 78, 3, 2);
     g.generateTexture('bg-gpu-rack', 40, 80);
+    g.destroy();
+  }
+
+  private generateBgJournalist(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0x1d2330);
+    g.fillRect(8, 20, 16, 22);
+    g.fillStyle(0x313a4a);
+    g.fillRect(8, 20, 4, 22);
+    g.fillStyle(0xf0c8aa);
+    g.fillRect(10, 6, 12, 14);
+    g.fillStyle(0x5c4737);
+    g.fillRect(9, 3, 14, 5);
+    g.fillRect(8, 5, 3, 8);
+    g.fillRect(21, 5, 3, 8);
+    g.fillStyle(0x111111);
+    g.fillRect(12, 11, 2, 2);
+    g.fillRect(18, 11, 2, 2);
+    g.fillStyle(0x7b5e48);
+    g.fillRect(14, 15, 4, 1);
+    g.fillStyle(0x1d2330);
+    g.fillRect(2, 22, 6, 14);
+    g.fillRect(24, 22, 6, 14);
+    g.fillStyle(0xf0c8aa);
+    g.fillRect(2, 36, 6, 3);
+    g.fillRect(24, 36, 6, 3);
+    g.fillStyle(0x2f3545);
+    g.fillRect(10, 42, 5, 14);
+    g.fillRect(17, 42, 5, 14);
+    g.fillStyle(0x111111);
+    g.fillRect(9, 55, 7, 3);
+    g.fillRect(16, 55, 7, 3);
+    g.generateTexture('bg-journalist', 32, 60);
+    g.destroy();
+  }
+
+  private generateBgJournalistCamera(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0x202735);
+    g.fillRect(8, 20, 16, 22);
+    g.fillStyle(0x444d5d);
+    g.fillRect(8, 20, 4, 22);
+    g.fillStyle(0xf0c8aa);
+    g.fillRect(10, 6, 12, 14);
+    g.fillStyle(0x775a42);
+    g.fillRect(9, 3, 14, 5);
+    g.fillRect(8, 5, 3, 8);
+    g.fillRect(21, 5, 3, 8);
+    g.fillStyle(0x111111);
+    g.fillRect(12, 11, 2, 2);
+    g.fillRect(18, 11, 2, 2);
+    g.fillStyle(0x2a2f38);
+    g.fillRect(23, 22, 10, 8);
+    g.fillStyle(0x555c66);
+    g.fillRect(32, 24, 3, 4);
+    g.fillStyle(0x9ec4ff);
+    g.fillCircle(28, 26, 3);
+    g.fillStyle(0x1a1f28);
+    g.fillCircle(28, 26, 1.5);
+    g.fillStyle(0xf0c8aa);
+    g.fillRect(24, 30, 5, 3);
+    g.fillStyle(0x202735);
+    g.fillRect(3, 22, 6, 14);
+    g.fillRect(24, 30, 6, 8);
+    g.fillStyle(0xf0c8aa);
+    g.fillRect(3, 36, 6, 3);
+    g.fillRect(25, 38, 5, 3);
+    g.fillStyle(0x2f3545);
+    g.fillRect(10, 42, 5, 14);
+    g.fillRect(17, 42, 5, 14);
+    g.fillStyle(0x111111);
+    g.fillRect(9, 55, 7, 3);
+    g.fillRect(16, 55, 7, 3);
+    g.generateTexture('bg-journalist-camera', 36, 60);
+    g.destroy();
+  }
+
+  private generateBgFlashbulb(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0xffffff, 0.9);
+    g.fillCircle(12, 12, 6);
+    g.fillStyle(0xf8f3c0, 0.6);
+    g.fillCircle(12, 12, 10);
+    g.fillStyle(0xffffff, 0.25);
+    g.fillCircle(12, 12, 12);
+    g.generateTexture('bg-flashbulb', 24, 24);
+    g.destroy();
+  }
+
+  private generateBgProtester(): void {
+    const g = this.add.graphics();
+    g.fillStyle(0x2a313f);
+    g.fillRect(10, 24, 14, 18);
+    g.fillStyle(0x3b4557);
+    g.fillRect(10, 24, 4, 18);
+    g.fillStyle(0xf0c8aa);
+    g.fillRect(12, 10, 10, 14);
+    g.fillStyle(0x6b4f38);
+    g.fillRect(11, 7, 12, 5);
+    g.fillStyle(0x2a313f);
+    g.fillRect(4, 26, 6, 12);
+    g.fillRect(24, 26, 6, 12);
+    g.fillStyle(0xf0c8aa);
+    g.fillRect(4, 38, 6, 3);
+    g.fillRect(24, 38, 6, 3);
+    g.fillStyle(0x8b7355);
+    g.fillRect(24, 4, 2, 22);
+    g.fillStyle(0xe5e7eb);
+    g.fillRect(19, 0, 16, 10);
+    g.fillStyle(0x1f2937);
+    g.fillRect(21, 2, 12, 2);
+    g.fillRect(21, 5, 9, 2);
+    g.generateTexture('bg-protester', 36, 44);
+    g.destroy();
+  }
+
+  private generateBgGoldenGate(): void {
+    const g = this.add.graphics();
+    const orange = 0xff9416;
+    g.fillStyle(orange);
+    g.fillRect(8, 38, 136, 6);
+    g.fillRect(24, 8, 10, 50);
+    g.fillRect(118, 8, 10, 50);
+    g.fillStyle(0xffd0a6, 0.45);
+    for (let i = 0; i < 6; i++) {
+      g.fillRect(26 + i * 4, 14, 2, 34);
+      g.fillRect(120 + i * 4, 14, 2, 34);
+    }
+    g.lineStyle(2, orange, 0.95);
+    g.lineBetween(29, 10, 76, 38);
+    g.lineBetween(123, 10, 76, 38);
+    g.lineBetween(29, 10, 16, 38);
+    g.lineBetween(123, 10, 136, 38);
+    g.generateTexture('bg-golden-gate', 152, 52);
     g.destroy();
   }
 }

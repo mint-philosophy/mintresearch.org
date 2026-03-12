@@ -81,6 +81,10 @@ export class HUDScene extends Phaser.Scene {
           paperMill: 'PAPER MILL',
           theVoid: 'THE VOID',
           shoggoth: 'SHOGGOTH',
+          angryNeckbeard: 'ANGRY NECKBEARD',
+          schmidhuber: 'SCHMIDHUBER',
+          pauseSign: 'PAUSE SIGN',
+          bernie: 'BERNIE',
         };
         this.bossNameText = this.add.text(GAME_WIDTH / 2, 76, bossNames[d.name] || d.name.toUpperCase(), {
           fontFamily: '"JetBrains Mono", monospace',

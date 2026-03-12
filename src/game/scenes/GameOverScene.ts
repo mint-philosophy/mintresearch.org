@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
-import { SCENES, COLORS, GAME_WIDTH, GAME_HEIGHT } from '../constants';
+import { SCENES, COLORS, GAME_WIDTH, GAME_HEIGHT, LEVEL_THEMES } from '../constants';
+import { getTotalLevels } from '../levels/LevelRegistry';
 
 export class GameOverScene extends Phaser.Scene {
   constructor() {
@@ -8,6 +9,7 @@ export class GameOverScene extends Phaser.Scene {
 
   create(data: { score: number; papers: number; level: number; won: boolean }): void {
     this.cameras.main.setBackgroundColor(COLORS.bg0);
+    const totalLevels = getTotalLevels();
 
     const title = data.won ? 'LEVEL COMPLETE!' : 'GAME OVER';
     const titleColor = data.won ? '#2ec4b6' : '#e06c75';
@@ -30,7 +32,7 @@ export class GameOverScene extends Phaser.Scene {
     this.add.text(GAME_WIDTH / 2, 205, `Papers Collected: ${data.papers}`, style).setOrigin(0.5);
     this.add.text(GAME_WIDTH / 2, 230, `Level: ${data.level}`, style).setOrigin(0.5);
 
-    if (data.won && data.level < 6) {
+    if (data.won && data.level < totalLevels) {
       const next = this.add.text(GAME_WIDTH / 2, 300, '[ ENTER — Next Level ]', {
         ...style, color: '#2ec4b6',
       }).setOrigin(0.5).setInteractive({ useHandCursor: true });
@@ -42,12 +44,13 @@ export class GameOverScene extends Phaser.Scene {
       this.input.keyboard!.on('keydown-ENTER', () => {
         this.scene.start(SCENES.LEVEL, { level: data.level + 1 });
       });
-    } else if (data.won && data.level === 6) {
-      this.add.text(GAME_WIDTH / 2, 80, 'YOU DEFEATED THE SHOGGOTH!', {
+    } else if (data.won && data.level === totalLevels) {
+      const levelName = LEVEL_THEMES[data.level]?.name.toUpperCase() || 'THE FINAL STAGE';
+      this.add.text(GAME_WIDTH / 2, 80, `YOU PASSED ${levelName}!`, {
         ...style, fontSize: '14px', color: '#e5c07b',
       }).setOrigin(0.5);
 
-      this.add.text(GAME_WIDTH / 2, 110, 'Research integrity preserved.', {
+      this.add.text(GAME_WIDTH / 2, 110, 'The Bernie head has finally landed and the racks can cool off.', {
         ...style, fontSize: '11px', color: '#5c6370',
       }).setOrigin(0.5);
 

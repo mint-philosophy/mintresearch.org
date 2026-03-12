@@ -9,6 +9,10 @@ import { getLevel3Config } from './level3-bluesky';
 import { getLevel4Config } from './level4-arxiv';
 import { getLevel5Config } from './level5-philpapers';
 import { getLevel6Config } from './level6-ssrn';
+import { getLevel7Config } from './level7-youtube';
+import { getLevel8Config } from './level8-neurips';
+import { getLevel9Config } from './level9-san-francisco';
+import { getLevel10Config } from './level10-datacenter';
 
 const levelFactories: Record<LevelNumber, () => LevelConfig> = {
   1: getLevel1Config,
@@ -17,6 +21,10 @@ const levelFactories: Record<LevelNumber, () => LevelConfig> = {
   4: getLevel4Config,
   5: getLevel5Config,
   6: getLevel6Config,
+  7: getLevel7Config,
+  8: getLevel8Config,
+  9: getLevel9Config,
+ 10: getLevel10Config,
 };
 
 export function getLevelConfig(level: LevelNumber): LevelConfig {
@@ -26,5 +34,5 @@ export function getLevelConfig(level: LevelNumber): LevelConfig {
 }
 
 export function getTotalLevels(): number {
-  return 6;
+  return 10;
 }

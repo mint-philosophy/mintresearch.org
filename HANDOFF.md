@@ -14,6 +14,7 @@ The lab guide (an interactive reference for the lab's agentic systems, daemons, 
 
 - **Astro project scaffolding**: Fully configured with `astro.config.mjs`, TypeScript strict mode, build/dev/preview scripts. Astro 5.17.1.
 - **Design system**: Fully extracted into `DESIGN_SYSTEM.md` (canonical spec) and implemented in `src/styles/global.css`. All CSS custom properties, component styles, and responsive breakpoints are in place.
+- **Data Dash** (`src/pages/data-dash.astro` + `src/game/`): Playable Phaser platformer integrated into the site. Progression now runs through 10 levels, including YouTube, NeurIPS, San Francisco, and Mega Datacenter. Recent gameplay additions include reinforcement enemy drops, level-specific bosses/enemies for levels 7-10, a global Nvidia full-heal pickup, and an Apple reset/meltdown power-down.
 - **Eight reusable Astro components**: `Sidebar`, `Section`, `Card`, `StatCard`, `RefTable`, `BleedLine`, `TerminalPicker` -- covering all the major UI patterns.
 - **`BaseLayout.astro`**: Shared layout with Google Fonts loading, mobile menu, noise overlay, and all client-side JS (scroll tracking, card accordions, typing animation, etc.).
 - **Landing page** (`src/pages/index.astro`): Fully built with hero, about, people (team/affiliates/alumni), publications, events, and news sections. Uses the design system and TerminalPicker component.

@@ -62,6 +62,8 @@ export const POWERUP_DURATION = {
   speedBolt: 18000,
   ssi: 10000,
   deepseek: 20000,
+  goldenGate: 15000,
+  nvidia: 0,
 } as const;
 
 // Power-downs
@@ -73,6 +75,7 @@ export const POWERDOWN_DURATION = {
   meta: 10000,
   qwen: 0,
   openclaw: 12000,
+  apple: 3000,
 } as const;
 
 export const POWERDOWN_PAPER_LOSS = 3;
@@ -108,6 +111,10 @@ export const LEVEL_THEMES = {
   4: { name: 'ArXiv',          color: 0xB31B1B, bg: '#1a0a0a' },
   5: { name: 'PhilPapers',     color: 0x2C3E50, bg: '#0a0a14' },
   6: { name: 'SSRN',           color: 0x1E4D2B, bg: '#0a140a' },
+  7: { name: 'YouTube',        color: 0xFF0000, bg: '#180808' },
+  8: { name: 'NeurIPS',        color: 0x87CEFA, bg: '#060b19' },
+  9: { name: 'San Francisco',  color: 0xFF9416, bg: '#050714' },
+ 10: { name: 'Mega Datacenter', color: 0x8bc34a, bg: '#04050a' },
 } as const;
 
 // Minty sprite colors for power-up cycling
@@ -123,6 +130,10 @@ export const LEVEL_PLATFORM_KEYS: Record<number, string> = {
   4: 'platform-arxiv',
   5: 'platform-philpapers',
   6: 'platform-ssrn',
+  7: 'platform-youtube',
+  8: 'platform-neurips',
+  9: 'platform-sf',
+ 10: 'platform-datacenter',
 };
 
 // Enemy death text per level
@@ -133,6 +144,10 @@ export const DEATH_TEXTS: Record<number, string[]> = {
   4: ['RETRACTED', 'DESK REJECT', 'PEER REVIEWED', 'REJECTED'],
   5: ['REFUTED', 'COUNTEREXAMPLE', 'MODUS TOLLENS', 'REDUCTIO'],
   6: ['403 FORBIDDEN', 'RATE LIMITED', 'CAPTCHA FAILED', 'IP BANNED'],
+  7: ['DEMONETIZED', 'COMMENT REMOVED', 'AGE RESTRICTED', 'SKIPPED AD'],
+  8: ['PAPER TRAIL BURNED', 'PEER REVIEWED', 'LINKED OUT', 'FUNDING REVOKED'],
+  9: ['NO DATACENTER', 'GOLDEN GATE BOUNCE', 'BRIDGE BURNED', 'PAUSE AI FALL'],
+ 10: ['GPU OVERLOAD', 'BERNIE STARE', 'RACK MELTDOWN', 'ULTRA SHOCK'],
 };
 
 // Scene keys
@@ -153,7 +168,7 @@ export type MintyColor = typeof MINTY_COLORS[number];
 export type EnemyTier = keyof typeof ENEMY_TIERS;
 export type PowerUpType = keyof typeof POWERUP_DURATION;
 export type PowerDownType = keyof typeof POWERDOWN_DURATION | 'dataLeak';
-export type LevelNumber = 1 | 2 | 3 | 4 | 5 | 6;
+export type LevelNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
 export interface PlatformData {
   x: number;
@@ -165,7 +180,7 @@ export interface PlatformData {
 }
 
 export interface EnemySpawn {
-  type: 'octopus' | 'troll' | 'influencer' | 'critic' | 'paperFlood' | 'cloudflareWall' | 'parrot' | 'macII';
+  type: 'octopus' | 'troll' | 'influencer' | 'critic' | 'paperFlood' | 'cloudflareWall' | 'parrot' | 'macII' | 'meanComment' | 'ventureCapitalist' | 'bciOctopus' | 'zuckerberg' | 'waterWave' | 'nuclearReactor' | 'gasBottle';
   x: number;
   y: number;
   tier?: EnemyTier;
@@ -213,6 +228,10 @@ export const BOSS_SIZES: Record<string, number> = {
   paperMill: 192,
   theVoid: 240,
   shoggoth: 240,
+  angryNeckbeard: 160,
+  schmidhuber: 200,
+  pauseSign: 220,
+  bernie: 220,
 };
 
 export interface LevelConfig {

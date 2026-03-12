@@ -67,6 +67,43 @@ const dialogues: Record<string, DialogueData> = {
       'Last level. Everything you\'ve learned matters here. Go.',
     ],
   },
+
+  // Level 7 — Cool Minty (YouTube)
+  'l7-cool': {
+    speaker: 'Cool Minty',
+    lines: [
+      'Most of the octopuses here are flimsy. Clear them fast before the comment swarm stacks up.',
+      'Those mean comments yank you toward their trap papers. Keep moving and stomp them when they drift low.',
+      'The neckbeard reflects papers. Don\'t waste ammo on him, get above him and land on that head.',
+    ],
+  },
+
+  'l8-red': {
+    speaker: 'Red Minty',
+    lines: [
+      'The NeurIPS crowd is full of red octopuses that barely tire — keep your range high.',
+      'Venture capitalists throw money that scrambles your controls, so hug the platforms and stay steady.',
+      'The blue BCI octopuses go down if you stomp the exposed brain. Save your ammo for the boss barrage.',
+    ],
+  },
+
+  'l9-red': {
+    speaker: 'Red Minty',
+    lines: [
+      'San Francisco’s octopuses fire peace-sign slop laterally, so stay low and dodge their wide arcs.',
+      'Mark Zuck heads sweep the ground with their nets—if he catches Minty he steals three papers.',
+      'Ride the Golden Gate helper for 15 seconds, but land safely or the fall hurts worse than the glue boss.',
+    ],
+  },
+
+  'l10-green': {
+    speaker: 'Green Minty',
+    lines: [
+      'This datacenter hums with GPUs and furious waves—stay at full health, they shock with colour-changing bursts.',
+      'Bernie’s head hovers overhead and fires spectacles; outrun him while you swap into the Nvidia heals.',
+      'Grab an Apple puddle power-up only if you need a clean slate—he melts Minty, then snaps him back to the start after 3 seconds.',
+    ],
+  },
 };
 
 export function getDialogue(key: string): DialogueData {

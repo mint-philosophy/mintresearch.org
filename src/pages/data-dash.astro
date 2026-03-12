@@ -91,6 +91,17 @@ const floatingMinties = [
   const squids = document.querySelectorAll<HTMLImageElement>('.dd-float-squid');
   interface Ball { el: HTMLImageElement; x: number; y: number; vx: number; vy: number; r: number; rot: number; vr: number; }
   const balls: Ball[] = [];
+  const maxBallSpeed = 160;
+  const resetBallSpeed = 45;
+
+  function normalizeBallSpeed(ball: Ball) {
+    const speed = Math.hypot(ball.vx, ball.vy);
+    if (speed <= maxBallSpeed || speed === 0) return;
+    const angle = Math.atan2(ball.vy, ball.vx);
+    const newSpeed = resetBallSpeed + Math.random() * 20;
+    ball.vx = Math.cos(angle) * newSpeed;
+    ball.vy = Math.sin(angle) * newSpeed;
+  }
 
   squids.forEach((squid) => {
     squid.style.transition = 'none';
@@ -131,6 +142,7 @@ const floatingMinties = [
       if (b.x + b.r > W) { b.x = W - b.r; b.vx = -Math.abs(b.vx); b.vr += (Math.random() - 0.5) * 10; }
       if (b.y - b.r < 0) { b.y = b.r; b.vy = Math.abs(b.vy); b.vr += (Math.random() - 0.5) * 10; }
       if (b.y + b.r > H) { b.y = H - b.r; b.vy = -Math.abs(b.vy); b.vr += (Math.random() - 0.5) * 10; }
+      normalizeBallSpeed(b);
     }
 
     // Collisions (elastic, equal mass)
@@ -159,6 +171,8 @@ const floatingMinties = [
             const boost = 1.01;
             a.vx *= boost; a.vy *= boost;
             c.vx *= boost; c.vy *= boost;
+            normalizeBallSpeed(a);
+            normalizeBallSpeed(c);
           }
         }
       }
