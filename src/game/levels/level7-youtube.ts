@@ -124,7 +124,7 @@ export function getLevel7Config(): LevelConfig {
       x: 7420,
       y: GAME_HEIGHT - 80,
       phases: 3,
-      hp: 10,
+      hp: 8,
     },
   };
 }

@@ -2232,26 +2232,29 @@ export class LevelScene extends Phaser.Scene {
   // ── Stomp & Enemy Hit Logic ──
 
   private hitEnemy(_player: any, enemy: any): void {
-    if (this.invincible || this.time.now < this.stompGraceUntil) return;
     const e = enemy as Phaser.Physics.Arcade.Sprite;
     const body = this.player.body as Phaser.Physics.Arcade.Body;
+    const enemyBody = e.body as Phaser.Physics.Arcade.Body;
     const enemyType = e.getData('type') as string;
 
-    // Stomp check: player is falling AND player's feet are above enemy's top
-    const playerBottom = this.player.y + (PLAYER_BODY_HEIGHT / 2);
-    const enemyTop = e.y - (e.height / 2);
-    if (body.velocity.y > 0 && playerBottom < enemyTop + 10) {
+    // Stomp check uses physics bodies so texture swaps and scaled enemies stay consistent.
+    const playerBottom = body.position.y + body.height;
+    const enemyTop = enemyBody.position.y;
+    const stompWindow = Math.max(12, enemyBody.height * 0.35);
+    if (this.time.now >= this.stompGraceUntil && body.velocity.y > 0 && playerBottom <= enemyTop + stompWindow) {
       // Stomp! 1 damage + bounce
       this.stompGraceUntil = this.time.now + 180;
       const stompDamage = enemyType === 'bciOctopus'
         ? Math.max(1, e.getData('hp') as number)
         : 1;
       this.damageEnemy(e, stompDamage, 'stomp');
-      this.player.y = enemyTop - (PLAYER_BODY_HEIGHT / 2) + 4;
+      this.player.y = enemyTop - (body.height / 2) + 4;
       body.setVelocityY(-280);
       audioEngine.playSFX('jump');
       return;
     }
+
+    if (this.invincible || this.time.now < this.stompGraceUntil) return;
 
     if (enemyType === 'zuckerberg') {
       const readyAt = (e.getData('stealReadyAt') as number) || 0;
@@ -2937,7 +2940,7 @@ export class LevelScene extends Phaser.Scene {
     if (!this.boss?.active || !this.player?.active) return;
 
     const phase = this.boss.getData('currentPhase') as number;
-    const speed = [38, 52, 68][phase] || 68;
+    const speed = [26, 36, 48][phase] || 48;
     const originX = this.boss.getData('originX') as number;
     const patrolRange = 140;
     let dir = this.boss.getData('patrolDir') as number;
@@ -2947,10 +2950,10 @@ export class LevelScene extends Phaser.Scene {
     this.boss.setData('patrolDir', dir);
     this.boss.setVelocityX(speed * dir);
 
-    const fireInterval = [1400, 1000, 750][phase] || 750;
+    const fireInterval = [1850, 1450, 1100][phase] || 1100;
     if (now - this.bossLastAttack > fireInterval) {
       this.bossLastAttack = now;
-      const spread = phase >= 2 ? 2 : 1;
+      const spread = phase >= 2 ? 1 : 0;
       for (let i = -spread; i <= spread; i++) {
         this.throwBossProjectile(
           'comment-projectile',
@@ -2958,24 +2961,24 @@ export class LevelScene extends Phaser.Scene {
           this.boss.y - 20,
           this.player.x + i * 45,
           this.player.y - 10,
-          210 + phase * 20
+          175 + phase * 15
         );
       }
     }
 
-    const burstInterval = [4200, 3200, 2400][phase] || 2400;
+    const burstInterval = [5200, 4100, 3200][phase] || 3200;
     if (now - this.bossLastSpecial > burstInterval) {
       this.bossLastSpecial = now;
-      for (let i = 0; i < 3 + phase; i++) {
-        this.time.delayedCall(i * 120, () => {
+      for (let i = 0; i < 2 + phase; i++) {
+        this.time.delayedCall(i * 160, () => {
           if (!this.boss?.active || !this.player?.active) return;
           this.throwBossProjectile(
             'comment-projectile',
             this.boss.x,
             this.boss.y - 20,
-            this.player.x + Phaser.Math.Between(-120, 120),
-            this.player.y + Phaser.Math.Between(-80, 40),
-            240 + phase * 15
+            this.player.x + Phaser.Math.Between(-90, 90),
+            this.player.y + Phaser.Math.Between(-60, 24),
+            190 + phase * 12
           );
         });
       }
