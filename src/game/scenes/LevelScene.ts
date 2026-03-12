@@ -255,17 +255,8 @@ export class LevelScene extends Phaser.Scene {
     // Player
     const ps = this.config.playerStart;
     this.player = this.physics.add.sprite(ps.x, ps.y, 'minty-teal');
-    this.player.setScale(PLAYER_SCALE);
     this.player.setCollideWorldBounds(true);
-    // Size physics body to match visual at scale
-    this.player.body!.setSize(
-      PLAYER_BODY_WIDTH / PLAYER_SCALE,
-      PLAYER_BODY_HEIGHT / PLAYER_SCALE
-    );
-    this.player.body!.setOffset(
-      (this.player.width - PLAYER_BODY_WIDTH / PLAYER_SCALE) / 2,
-      this.player.height - PLAYER_BODY_HEIGHT / PLAYER_SCALE
-    );
+    this.resizePlayerVisual();
 
     // Camera
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
@@ -400,6 +391,47 @@ export class LevelScene extends Phaser.Scene {
 
   update(_time: number, delta: number): void {
     this.fsm.update(delta);
+  }
+
+  private getBaseMintyDisplaySize(): { width: number; height: number } {
+    const source = this.textures.get('minty-teal').getSourceImage() as { width: number; height: number };
+    return {
+      width: source.width * PLAYER_SCALE,
+      height: source.height * PLAYER_SCALE,
+    };
+  }
+
+  private refreshPlayerBodyBounds(): void {
+    if (!this.player?.body) return;
+
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+    body.setSize(
+      PLAYER_BODY_WIDTH / PLAYER_SCALE,
+      PLAYER_BODY_HEIGHT / PLAYER_SCALE
+    );
+    body.setOffset(
+      (this.player.width - PLAYER_BODY_WIDTH / PLAYER_SCALE) / 2,
+      this.player.height - PLAYER_BODY_HEIGHT / PLAYER_SCALE
+    );
+  }
+
+  private resizePlayerVisual(scaleMultiplier: number = 1, preserveFeet: boolean = true): void {
+    if (!this.player?.active) return;
+
+    const previousBottom = this.player.y + (this.player.displayHeight / 2);
+    const baseSize = this.getBaseMintyDisplaySize();
+    this.player.setDisplaySize(baseSize.width * scaleMultiplier, baseSize.height * scaleMultiplier);
+    if (preserveFeet) {
+      this.player.y = previousBottom - (this.player.displayHeight / 2);
+    }
+    this.refreshPlayerBodyBounds();
+  }
+
+  private setPlayerVisual(textureKey: string, scaleMultiplier: number = 1, preserveFeet: boolean = true): void {
+    if (!this.player?.active) return;
+
+    this.player.setTexture(textureKey);
+    this.resizePlayerVisual(scaleMultiplier, preserveFeet);
   }
 
   private resetControlBindings(): void {
@@ -603,8 +635,7 @@ export class LevelScene extends Phaser.Scene {
     body.setVelocity(0, 0);
     body.setAllowGravity(false);
     this.player.clearTint();
-    this.player.setTexture('minty-teal');
-    this.player.setScale(PLAYER_SCALE);
+    this.setPlayerVisual('minty-teal');
 
     this.tweens.add({
       targets: this.player,
@@ -626,8 +657,7 @@ export class LevelScene extends Phaser.Scene {
       if (!this.player?.active) return;
       const start = this.config.playerStart;
       this.appleMelting = false;
-      this.player.setTexture('minty-teal');
-      this.player.setScale(PLAYER_SCALE);
+      this.setPlayerVisual('minty-teal', 1, false);
       this.player.setPosition(start.x, start.y);
       this.player.setVelocity(0, 0);
       body.setAllowGravity(true);
@@ -1910,7 +1940,7 @@ export class LevelScene extends Phaser.Scene {
           callback: () => {
             const col = MINTY_COLORS[colorIdx % MINTY_COLORS.length];
             if (this.textures.exists(`minty-${col}`)) {
-              this.player.setTexture(`minty-${col}`);
+              this.setPlayerVisual(`minty-${col}`);
             }
             colorIdx++;
           },
@@ -1923,15 +1953,15 @@ export class LevelScene extends Phaser.Scene {
           this.shieldGlow = null;
           this.colorCycleTimer?.remove();
           this.colorCycleTimer = null;
-          this.player.setTexture('minty-teal');
+          this.setPlayerVisual('minty-teal');
           this.activeEffects.delete(type);
         }));
         break;
       case 'openai':
         // Scale ×3
-        this.player.setScale(PLAYER_SCALE * 3);
+        this.resizePlayerVisual(3);
         this.activeEffects.set(type, this.time.delayedCall(POWERUP_DURATION.openai, () => {
-          this.player.setScale(PLAYER_SCALE);
+          this.resizePlayerVisual();
           this.activeEffects.delete(type);
         }));
         break;
@@ -2070,10 +2100,9 @@ export class LevelScene extends Phaser.Scene {
           this.player.setPosition(respawn.x, respawn.y);
           this.player.setVelocity(0, 0);
           // Swap to bandage texture for 5s
-          this.player.setTexture('minty-bandage');
-          this.player.setScale(PLAYER_SCALE);
+          this.setPlayerVisual('minty-bandage', 1, false);
           this.time.delayedCall(5000, () => {
-            if (this.player?.active) { this.player.setTexture('minty-teal'); this.player.setScale(PLAYER_SCALE); }
+            if (this.player?.active) this.setPlayerVisual('minty-teal');
           });
           // Brief invincibility
           this.invincible = true;
@@ -2440,12 +2469,10 @@ export class LevelScene extends Phaser.Scene {
     });
 
     // Bandage visual after being hit
-    this.player.setTexture('minty-bandage');
-    this.player.setScale(PLAYER_SCALE);
+    this.setPlayerVisual('minty-bandage');
     this.time.delayedCall(5000, () => {
       if (this.player?.active && !this.invincible) {
-        this.player.setTexture('minty-teal');
-        this.player.setScale(PLAYER_SCALE);
+        this.setPlayerVisual('minty-teal');
       }
     });
 

@@ -7,9 +7,13 @@ import { menuTrack } from '../audio/tracks/menu';
 import { getTotalLevels } from '../levels/LevelRegistry';
 
 export class MenuScene extends Phaser.Scene {
+  private static readonly LEVEL_LIST_TOP = 258;
+  private static readonly LEVEL_ROW_HEIGHT = 24;
+  private static readonly LEVEL_VISIBLE_ROWS = 6;
   private stateManager!: GameStateManager;
   private selectedLevel: number = 1;
   private levelTexts: Phaser.GameObjects.Text[] = [];
+  private levelListContainer!: Phaser.GameObjects.Container;
   private konamiBuffer: string[] = [];
   private static readonly KONAMI_SEQUENCE = ['UP','UP','DOWN','DOWN','LEFT','RIGHT','LEFT','RIGHT','Z','X','ENTER'];
 
@@ -62,12 +66,18 @@ export class MenuScene extends Phaser.Scene {
       color: '#5c6370',
     }).setOrigin(0.5);
 
+    this.levelListContainer = this.add.container(GAME_WIDTH / 2, MenuScene.LEVEL_LIST_TOP);
+
+    const listMask = this.make.graphics({ x: 0, y: 0, add: false });
+    listMask.fillRect(GAME_WIDTH / 2 - 180, MenuScene.LEVEL_LIST_TOP - 12, 360, MenuScene.LEVEL_ROW_HEIGHT * MenuScene.LEVEL_VISIBLE_ROWS + 24);
+    this.levelListContainer.setMask(listMask.createGeometryMask());
+
     levelNames.forEach((name, i) => {
       const level = i + 1;
       const unlocked = level <= maxUnlocked;
-      const y = 260 + i * 24;
+      const y = i * MenuScene.LEVEL_ROW_HEIGHT;
 
-      const text = this.add.text(GAME_WIDTH / 2, y, unlocked ? name : `${level}. ????`, {
+      const text = this.add.text(0, y, unlocked ? name : `${level}. ????`, {
         fontFamily: '"JetBrains Mono", monospace',
         fontSize: '12px',
         color: unlocked ? (level === this.selectedLevel ? '#2ec4b6' : '#abb2bf') : '#333333',
@@ -84,12 +94,19 @@ export class MenuScene extends Phaser.Scene {
         });
       }
 
+      this.levelListContainer.add(text);
       this.levelTexts.push(text);
     });
 
+    this.add.text(GAME_WIDTH / 2, 410, '[ W/S, arrows, or mouse wheel ]', {
+      fontFamily: '"JetBrains Mono", monospace',
+      fontSize: '10px',
+      color: '#5c6370',
+    }).setOrigin(0.5);
+
     // High score
     if (this.stateManager.highScore > 0) {
-      this.add.text(GAME_WIDTH / 2, 420, `HIGH SCORE: ${this.stateManager.highScore}`, {
+      this.add.text(GAME_WIDTH / 2, 434, `HIGH SCORE: ${this.stateManager.highScore}`, {
         fontFamily: '"JetBrains Mono", monospace',
         fontSize: '10px',
         color: '#e5c07b',
@@ -97,7 +114,7 @@ export class MenuScene extends Phaser.Scene {
     }
 
     // Start prompt
-    const prompt = this.add.text(GAME_WIDTH / 2, 460, '[ Press ENTER to start ]', {
+    const prompt = this.add.text(GAME_WIDTH / 2, 466, '[ Press ENTER to start ]', {
       fontFamily: '"JetBrains Mono", monospace',
       fontSize: '11px',
       color: '#2ec4b6',
@@ -124,6 +141,10 @@ export class MenuScene extends Phaser.Scene {
     this.input.keyboard!.on('keydown-DOWN', () => this.changeSelection(1));
     this.input.keyboard!.on('keydown-W', () => this.changeSelection(-1));
     this.input.keyboard!.on('keydown-S', () => this.changeSelection(1));
+    this.input.on('wheel', (_pointer: Phaser.Input.Pointer, _gameObjects: Phaser.GameObjects.GameObject[], _deltaX: number, deltaY: number) => {
+      if (Math.abs(deltaY) < 4) return;
+      this.changeSelection(deltaY > 0 ? 1 : -1);
+    });
 
     // Konami code listener
     this.input.keyboard!.on('keydown', (event: KeyboardEvent) => {
@@ -137,6 +158,8 @@ export class MenuScene extends Phaser.Scene {
         this.activateKonami();
       }
     });
+
+    this.syncLevelListScroll();
   }
 
   private changeSelection(dir: number): void {
@@ -153,6 +176,18 @@ export class MenuScene extends Phaser.Scene {
         text.setColor(level === this.selectedLevel ? '#2ec4b6' : '#abb2bf');
       }
     });
+    this.syncLevelListScroll();
+  }
+
+  private syncLevelListScroll(): void {
+    const maxUnlocked = Math.min(this.stateManager.maxLevelUnlocked, getTotalLevels());
+    const maxStart = Math.max(0, maxUnlocked - MenuScene.LEVEL_VISIBLE_ROWS);
+    const desiredStart = Phaser.Math.Clamp(
+      this.selectedLevel - 1 - Math.floor(MenuScene.LEVEL_VISIBLE_ROWS / 2),
+      0,
+      maxStart
+    );
+    this.levelListContainer.y = MenuScene.LEVEL_LIST_TOP - desiredStart * MenuScene.LEVEL_ROW_HEIGHT;
   }
 
   private activateKonami(): void {
@@ -201,6 +236,8 @@ export class MenuScene extends Phaser.Scene {
       const level = i + 1;
       text.setColor(level === this.selectedLevel ? '#2ec4b6' : '#abb2bf');
       text.setText(this.getLevelNames()[i]);
+      text.removeInteractive();
+      text.removeAllListeners();
       text.setInteractive({ useHandCursor: true });
       text.on('pointerover', () => {
         this.selectedLevel = level;
