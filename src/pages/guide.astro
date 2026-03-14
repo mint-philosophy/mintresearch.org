@@ -7,6 +7,8 @@ const fmt = (n: number) => n.toLocaleString();
 const approx = (n: number) => '~' + (Math.round(n / 100) * 100).toLocaleString();
 const c = stats.corpus;
 const sub = stats.subscribers;
+const LISTMONK_URL = 'https://api.mintresearch.org';
+const LIST_YIAI = '882f8b1e-9d59-4a65-aa37-6adadf097025';
 ---
 
 <BaseLayout title="Agentic Research Infrastructure for AI Alignment, Governance and Adaptation">
@@ -1405,18 +1407,18 @@ const sub = stats.subscribers;
       </div>
     </div>
 
-    <div class="card" data-search="subscribe-endpoint subscribe email newsletter http api endpoint">
+    <div class="card" data-search="listmonk newsletter subscriptions caddy proxy email">
       <div class="card-head" data-toggle-card="1">
         <div class="card-icon" style="background:rgba(136,146,166,0.08);color:#8892a6">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="5" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M3 5l7 5 7-5" stroke="currentColor" stroke-width="1.5"/></svg>
         </div>
-        <div><div class="card-title">subscribe-endpoint</div><div class="card-sub"><span class="tag tag-persistent">Persistent</span> <span class="health-ok status-pulse">&#9679;</span></div></div>
+        <div><div class="card-title">listmonk</div><div class="card-sub"><span class="tag tag-persistent">Persistent</span> <span class="health-ok status-pulse">&#9679;</span></div></div>
       </div>
       <div class="card-body">
-        <p>HTTP server on <code>127.0.0.1:8099</code> for newsletter subscriptions. Validates, deduplicates, and appends to subscriber list. Public via Cloudflare Tunnel at <code>/api/subscribe</code>.</p>
-        <div class="detail-row"><span class="detail-label">Model</span><span class="detail-val">None (HTTP endpoint)</span></div>
-        <div class="detail-row"><span class="detail-label">Spam prevention</span><span class="detail-val">Honeypot field, rate limiting (5/min per IP), CORS restricted to <code>mint-philosophy.github.io</code></span></div>
-        <div class="detail-row"><span class="detail-label">Key files</span><span class="detail-val"><code>daemons/subscribe-endpoint/subscribe_endpoint.py</code></span></div>
+        <p>Newsletter subscriber management on <code>127.0.0.1:9000</code>, exposed publicly through Cloudflare Tunnel and a local Caddy proxy on <code>127.0.0.1:8099</code>. Website forms post to <code>/subscription/form</code> and write directly into the list database.</p>
+        <div class="detail-row"><span class="detail-label">Model</span><span class="detail-val">None (web app + PostgreSQL)</span></div>
+        <div class="detail-row"><span class="detail-label">Spam prevention</span><span class="detail-val">Double opt-in, listmonk nonce field, CORS restricted to <code>mintresearch.org</code></span></div>
+        <div class="detail-row"><span class="detail-label">Key files</span><span class="detail-val"><code>daemons/listmonk/</code>, <code>src/pages/newsletter.astro</code></span></div>
       </div>
     </div>
 
@@ -1896,7 +1898,7 @@ const sub = stats.subscribers;
     <p style="margin:0 0 12px 0"><span style="color:var(--text-1);font-weight:600">Minty's Week in AI</span> ships each Wednesday in <span style="font-family:var(--font);font-size:12px;color:var(--text-3)">#lab-meetings</span> &mdash; thematic sections covering the week's developments for lab meeting prep.</p>
     <p style="margin:0;color:var(--text-3);font-size:12.5px">Both assembled from the lab's Slack content pipeline and synthesized by Claude Opus.</p>
   </div>
-  <form id="subscribe-form" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px">
+  <form id="subscribe-form" data-lists={LIST_YIAI} style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px">
     <input type="email" name="email" required placeholder="you@university.edu" style="padding:10px 16px;border-radius:0;border:1px solid var(--border);background:var(--bg-0);color:var(--text-1);font-size:14px;font-family:var(--font);width:280px;outline:none;transition:border-color 0.2s" onfocus="this.style.borderColor='var(--mint)'" onblur="this.style.borderColor='var(--border)'">
     <div style="position:absolute;left:-9999px" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
     <button type="submit" style="padding:10px 24px;border-radius:0;border:none;background:var(--mint);color:#06080c;font-size:14px;font-family:var(--font);font-weight:600;cursor:pointer;transition:opacity 0.2s" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">Subscribe</button>
@@ -1919,7 +1921,7 @@ const sub = stats.subscribers;
 <script define:vars={{ _statsForSearch: { paperCount: c.paperCount, chunkCount: c.chunkCount, clusterCount: c.clusterCount, lancedbSizeGB: c.lancedbSizeGB, semanticQuestionCount: c.semanticQuestionCount, subscriberCount: sub.count, institutionCount: sub.institutionCount } }}>
   window.__mintStats = _statsForSearch;
 </script>
-<script is:inline>
+<script is:inline define:vars={{ LISTMONK_URL, LIST_YIAI }}>
 // ===== Shared tooltip positioning helper =====
 function clampTip(tip, anchorRect, containerSel) {
   var pad = 10;
@@ -2313,28 +2315,37 @@ document.getElementById('subscribe-form').addEventListener('submit', function(e)
   const btn = this.querySelector('button');
   const email = this.querySelector('input[name="email"]').value;
   const website = this.querySelector('input[name="website"]').value;
+  const lists = this.getAttribute('data-lists');
+  const body = new URLSearchParams();
+  body.append('email', email);
+  body.append('l', lists || LIST_YIAI);
+  if (website) return;
   btn.disabled = true;
   btn.textContent = 'Subscribing...';
   msg.textContent = '';
   msg.style.color = 'var(--text-2)';
-  fetch('https://api.mintresearch.org/api/subscribe', {
+  fetch(LISTMONK_URL + '/subscription/form', {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({email: email, website: website})
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: body.toString()
   })
-  .then(function(r) { return r.json().then(function(d) { return {ok: r.ok, data: d}; }); })
-  .then(function(res) {
-    if (res.ok) {
+  .then(function(r) { return r.text(); })
+  .then(function(html) {
+    if (html.indexOf('Subscribed successfully') !== -1) {
       msg.style.color = 'var(--green)';
-      msg.textContent = res.data.message === 'already subscribed' ? 'You\'re already subscribed!' : 'Subscribed! You\'ll get the next issue.';
+      msg.textContent = 'Subscribed! You\'ll get the next issue.';
+      btn.textContent = 'Subscribed';
+    } else if (html.indexOf('already') !== -1) {
+      msg.style.color = 'var(--green)';
+      msg.textContent = 'You\'re already subscribed!';
       btn.textContent = 'Subscribed';
     } else {
-      throw new Error(res.data.error || 'Something went wrong');
+      throw new Error('Unexpected response');
     }
   })
   .catch(function(err) {
     msg.style.color = 'var(--red)';
-    msg.textContent = err.message || 'Failed to subscribe. Try again.';
+    msg.textContent = 'Failed to subscribe. Try again.';
     btn.disabled = false;
     btn.textContent = 'Subscribe';
   });
