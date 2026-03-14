@@ -2331,14 +2331,24 @@ document.getElementById('subscribe-form').addEventListener('submit', function(e)
   })
   .then(function(r) { return r.text(); })
   .then(function(html) {
-    if (html.indexOf('Subscribed successfully') !== -1) {
+    const lowerHtml = html.toLowerCase();
+
+    if (lowerHtml.indexOf('subscribed successfully') !== -1) {
       msg.style.color = 'var(--green)';
       msg.textContent = 'Subscribed! You\'ll get the next issue.';
       btn.textContent = 'Subscribed';
-    } else if (html.indexOf('already') !== -1) {
+    } else if (lowerHtml.indexOf('already') !== -1) {
       msg.style.color = 'var(--green)';
       msg.textContent = 'You\'re already subscribed!';
       btn.textContent = 'Subscribed';
+    } else if (
+      lowerHtml.indexOf('confirm your subscription') !== -1 ||
+      lowerHtml.indexOf('e-mail has been sent to you to confirm') !== -1 ||
+      lowerHtml.indexOf('email has been sent to you to confirm') !== -1
+    ) {
+      msg.style.color = 'var(--green)';
+      msg.textContent = 'Check your email to confirm the subscription.';
+      btn.textContent = 'Check email';
     } else {
       throw new Error('Unexpected response');
     }

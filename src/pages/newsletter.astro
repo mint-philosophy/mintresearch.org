@@ -86,7 +86,7 @@ const LIST_BRIEFING = '0ef97e74-38d7-4aea-a74f-905eca6b8121';
       <span class="tag tag-daemon">Daily</span>
       <span style="font-size: 12px; color: var(--text-3);">Weekday mornings &middot; ~30 min</span>
     </div>
-    <p style="font-size: 13px;">Each morning we email a ~4,500-word newsreader script covering the same stories as Yesterday in AI, but as a continuous narrative with analysis and context. Open the attached text file in any text-to-speech app on your phone and listen on your commute.</p>
+    <p style="font-size: 13px;">Each morning we email a text-to-speech-ready script covering the day's AI stories as a continuous narrative with analysis and context. Open the attached <code>.txt</code> file in any text-to-speech app on your phone and listen on your commute.</p>
     <form class="subscribe-form" data-lists={LIST_BRIEFING} style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
       <input type="email" name="email" required placeholder="you@university.edu" style="padding:10px 16px;border-radius:0;border:1px solid var(--border);background:var(--bg-0);color:var(--text-1);font-size:14px;font-family:var(--font);width:280px;outline:none;transition:border-color 0.2s" onfocus="this.style.borderColor='var(--mint)'" onblur="this.style.borderColor='var(--border)'">
       <div style="position:absolute;left:-9999px" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
@@ -162,14 +162,24 @@ document.querySelectorAll('.subscribe-form').forEach(function(form) {
     })
     .then(function(r) { return r.text(); })
     .then(function(html) {
-      if (html.indexOf('Subscribed successfully') !== -1) {
+      var lowerHtml = html.toLowerCase();
+
+      if (lowerHtml.indexOf('subscribed successfully') !== -1) {
         msg.style.color = 'var(--green)';
         msg.textContent = 'Subscribed! You\'ll get the next issue.';
         btn.textContent = 'Subscribed';
-      } else if (html.indexOf('already') !== -1) {
+      } else if (lowerHtml.indexOf('already') !== -1) {
         msg.style.color = 'var(--green)';
         msg.textContent = 'You\'re already subscribed!';
         btn.textContent = 'Subscribed';
+      } else if (
+        lowerHtml.indexOf('confirm your subscription') !== -1 ||
+        lowerHtml.indexOf('e-mail has been sent to you to confirm') !== -1 ||
+        lowerHtml.indexOf('email has been sent to you to confirm') !== -1
+      ) {
+        msg.style.color = 'var(--green)';
+        msg.textContent = 'Check your email to confirm the subscription.';
+        btn.textContent = 'Check email';
       } else {
         throw new Error('Unexpected response');
       }
