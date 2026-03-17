@@ -18,7 +18,8 @@ function getSection(id: string) {
 const employment = getSection('employment');
 const education = getSection('education');
 const fellowships = getSection('fellowships');
-const publications = getSection('publications');
+const booksSection = getSection('books');
+const papersSection = getSection('papers');
 const otherWriting = getSection('other_writing');
 const grants = getSection('grants');
 const events = getSection('events');
@@ -105,40 +106,18 @@ function parseCitationNoBlurb(entry: any): PickerItem {
   return item;
 }
 
-// ── Build paper and book arrays from publications section ───────────
-const pubSection = sections.find((s: any) => s.id === 'publications') as any;
-
+// ── Build TerminalPicker arrays from cv.json sections ───────────────
 const papers: PickerItem[] = [];
 const booksItems: PickerItem[] = [];
 
-if (pubSection) {
-  for (const group of pubSection.groups) {
-    if (['articles', 'preprints', 'reports', 'chapters'].includes(group.id)) {
-      papers.push(...group.entries.map((e: any) => parseCitation(e)));
-    } else {
-      // monographs, monographs_in_prep, edited_volumes — no abstracts
-      booksItems.push(...group.entries.map((e: any) => parseCitationNoBlurb(e)));
-    }
+if (booksSection) {
+  for (const group of (booksSection as any).groups) {
+    booksItems.push(...group.entries.map((e: any) => parseCitationNoBlurb(e)));
   }
 }
-
-// ── Augment service entries ─────────────────────────────────────────
-const serviceSection = sections.find((s: any) => s.id === 'service') as any;
-if (serviceSection) {
-  const extra = [
-    { years: '2026', text: 'Position Paper Track Chair, NeurIPS 2026' },
-    { years: '2025-', text: 'Editor, Oxford Studies in Philosophy of AI and Computing' },
-  ];
-  // Prepend to existing entries (most recent first)
-  serviceSection.entries = [...extra, ...serviceSection.entries];
-}
-
-// ── Merge all grants into one flat array ────────────────────────────
-const grantsSection = sections.find((s: any) => s.id === 'grants') as any;
-const allGrants: any[] = [];
-if (grantsSection) {
-  for (const group of grantsSection.groups) {
-    allGrants.push(...group.entries);
+if (papersSection) {
+  for (const group of (papersSection as any).groups) {
+    papers.push(...group.entries.map((e: any) => parseCitation(e)));
   }
 }
 
@@ -148,6 +127,11 @@ function mintyIcon(filename: string): string {
 }
 function mintyIconRoot(path: string): string {
   return `<img src="${base}${path}" alt="" style="width:28px;height:28px;image-rendering:pixelated;" />`;
+}
+
+// Linkify URLs in text
+function linkify(text: string): string {
+  return text.replace(/(https?:\/\/\S+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">link</a>');
 }
 ---
 
@@ -264,10 +248,7 @@ function mintyIconRoot(path: string): string {
         {otherWriting.entries.map((entry: any) => (
           <div class="cv-entry">
             <span class="cv-year">{entry.years || entry.year || ''}</span>
-            <span class="cv-text">
-              {entry.text || entry.citation || ''}
-              {entry.details && <span class="cv-details">{entry.details}</span>}
-            </span>
+            <span class="cv-text" set:html={linkify(entry.text || entry.citation || '') + (entry.details ? `<span class="cv-details">${entry.details}</span>` : '')} />
           </div>
         ))}
       </div>
@@ -278,13 +259,13 @@ function mintyIconRoot(path: string): string {
 
 
 <!-- ============ 07 GRANTS ============ -->
-{allGrants.length > 0 && (
+{grants && (
 <Section id="grants" num="07">
   <h2><span class="cmd-prefix"><span class="cmd-name">cat</span> <span class="cmd-path">cv/grants.md</span></span></h2>
   <div class="cv-cards">
-    <Card title="Grants" sub={`${allGrants.length} grants`} iconBg="transparent" iconText={mintyIcon('yellow-minty-scanliens.png')}>
+    <Card title="Grants" sub={`${grants.entries.length} grants`} iconBg="transparent" iconText={mintyIcon('yellow-minty-scanliens.png')}>
       <div class="cv-entries">
-        {allGrants.map((entry: any) => (
+        {grants.entries.map((entry: any) => (
           <div class="cv-entry">
             <span class="cv-year">{entry.years || entry.year || ''}</span>
             <span class="cv-text">
