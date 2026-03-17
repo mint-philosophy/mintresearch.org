@@ -1,0 +1,427 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/Section.astro';
+import Card from '../components/Card.astro';
+import TerminalPicker from '../components/TerminalPicker.astro';
+import type { PickerItem } from '../data/deliverables';
+import cvData from '../data/cv.json';
+
+const sections = cvData.sections;
+const meta = cvData.meta;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+// Helper to find a section by id
+function getSection(id: string) {
+  return sections.find((s: any) => s.id === id);
+}
+
+const employment = getSection('employment');
+const education = getSection('education');
+const fellowships = getSection('fellowships');
+const publications = getSection('publications');
+const otherWriting = getSection('other_writing');
+const grants = getSection('grants');
+const events = getSection('events');
+const presentations = getSection('presentations');
+const impact = getSection('impact');
+const supervision = getSection('supervision');
+const teaching = getSection('teaching');
+const service = getSection('service');
+
+// ── Citation parser for TerminalPicker ──────────────────────────────
+function parseCitation(entry: any): PickerItem {
+  const citation: string = entry.citation || entry.text || '';
+  const year: number = entry.year || 0;
+
+  // Extract URL
+  let url: string | undefined;
+  const urlMatch = citation.match(/https?:\/\/\S+/);
+  if (urlMatch) url = urlMatch[0].replace(/[).,]+$/, '');
+  const citationNoUrl = citation.replace(/,?\s*https?:\/\/\S+/g, '').trim();
+
+  // Try to extract title from single quotes
+  const sqMatch = citationNoUrl.match(/^['\u2018\u2019](.+?)['\u2018\u2019],?\s*/);
+  // Try double quotes
+  const dqMatch = !sqMatch ? citationNoUrl.match(/^"(.+?)",?\s*/) : null;
+  const titleMatch = sqMatch || dqMatch;
+
+  let title: string;
+  let rest: string;
+
+  if (titleMatch) {
+    title = titleMatch[1];
+    rest = citationNoUrl.slice(titleMatch[0].length).trim();
+  } else {
+    // No quotes -- monograph or other format: "Title. Publisher."
+    const dotIdx = citationNoUrl.indexOf('.');
+    title = dotIdx > 0 ? citationNoUrl.slice(0, dotIdx) : citationNoUrl;
+    rest = dotIdx > 0 ? citationNoUrl.slice(dotIdx + 1).trim() : '';
+  }
+
+  // Extract coauthors from "with ..."
+  let subtitle = 'Seth Lazar';
+  const withMatch = rest.match(/^with\s+(.+)/);
+  if (withMatch) {
+    const afterWith = withMatch[1];
+    const venueKeywords = ['University', 'Press', 'Studies', 'Philosophy', 'Ethics', 'Journal', 'Review', 'Inquiry', 'Science', 'AAAI', 'ICML', 'FAccT', 'ACM', 'NeurIPS', 'Synthese', 'Nou', 'Minds', 'IASEAI', 'Transactions', 'Affairs', 'Policy', 'Oxford', 'Cambridge', 'Utilitas', 'Daedalus', 'Thought', 'Annual', 'Social', 'Pacific', 'Law', 'Australasian', 'Aeon', 'Canadian', 'Res Publica', 'KFAI', 'Knight', 'Tech Policy', 'All Actuaries', 'Collaborative', 'Stanford', 'International', 'Routledge', 'Wiley', 'MIT', 'Polity'];
+
+    const parts = afterWith.split(',').map((s: string) => s.trim());
+    let coauthorParts: string[] = [];
+    let venueParts: string[] = [];
+    let foundVenue = false;
+
+    for (const part of parts) {
+      if (!foundVenue && !venueKeywords.some(kw => part.includes(kw))) {
+        coauthorParts.push(part);
+      } else {
+        foundVenue = true;
+        venueParts.push(part);
+      }
+    }
+
+    if (coauthorParts.length > 0) {
+      subtitle = coauthorParts.join(', ').replace(/\s+and\s+/g, ', ');
+      if (!subtitle.toLowerCase().includes('lazar')) subtitle = 'Lazar, ' + subtitle;
+    }
+    rest = venueParts.join(', ');
+  } else if (rest.match(/^with\s/i)) {
+    subtitle = 'Lazar et al.';
+  }
+
+  // Clean up venue/detail
+  let detail = rest.replace(/^\s*,\s*/, '').replace(/\.\s*$/, '').replace(/\s*\(accepted[^)]*\)/, '').trim();
+  if (!detail) detail = '';
+
+  // Only show abstract if we have a real one — don't fall back to citation text
+  const blurb = entry.abstract || undefined;
+
+  return { year, title, subtitle, detail, url, blurb };
+}
+
+// Variant without blurb (for books — just View Source link)
+function parseCitationNoBlurb(entry: any): PickerItem {
+  const item = parseCitation(entry);
+  delete (item as any).blurb;
+  return item;
+}
+
+// ── Build paper and book arrays from publications section ───────────
+const pubSection = sections.find((s: any) => s.id === 'publications') as any;
+
+const papers: PickerItem[] = [];
+const booksItems: PickerItem[] = [];
+
+if (pubSection) {
+  for (const group of pubSection.groups) {
+    if (['articles', 'preprints', 'reports', 'chapters'].includes(group.id)) {
+      papers.push(...group.entries.map((e: any) => parseCitation(e)));
+    } else {
+      // monographs, monographs_in_prep, edited_volumes — no abstracts
+      booksItems.push(...group.entries.map((e: any) => parseCitationNoBlurb(e)));
+    }
+  }
+}
+
+// ── Augment service entries ─────────────────────────────────────────
+const serviceSection = sections.find((s: any) => s.id === 'service') as any;
+if (serviceSection) {
+  const extra = [
+    { years: '2026', text: 'Position Paper Track Chair, NeurIPS 2026' },
+    { years: '2025-', text: 'Editor, Oxford Studies in Philosophy of AI and Computing' },
+  ];
+  // Prepend to existing entries (most recent first)
+  serviceSection.entries = [...extra, ...serviceSection.entries];
+}
+
+// ── Merge all grants into one flat array ────────────────────────────
+const grantsSection = sections.find((s: any) => s.id === 'grants') as any;
+const allGrants: any[] = [];
+if (grantsSection) {
+  for (const group of grantsSection.groups) {
+    allGrants.push(...group.entries);
+  }
+}
+
+// Helper for minty icon HTML
+function mintyIcon(filename: string): string {
+  return `<img src="${base}/assets/cv/${filename}" alt="" style="width:28px;height:28px;image-rendering:pixelated;" />`;
+}
+function mintyIconRoot(path: string): string {
+  return `<img src="${base}${path}" alt="" style="width:28px;height:28px;image-rendering:pixelated;" />`;
+}
+---
+
+<BaseLayout title="Seth Lazar — CV" description="Curriculum vitae of Seth Lazar, Professor at Johns Hopkins University.">
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <h1 data-typing="&#10095; Seth Lazar — Curriculum Vitae"><span class="typing-cursor"></span></h1>
+  <p class="hero-sub" data-typing-sub="Professor · School of Government and Policy · Johns Hopkins University · Australian National University"></p>
+</section>
+
+
+<!-- ============ CV HEADER ============ -->
+<Section id="cv-header" noBrackets>
+  <div style="text-align:center;">
+    <a href="cv.pdf" download style="font-size:12px;">&darr; Download PDF</a>
+  </div>
+</Section>
+
+
+<!-- ============ 01 EMPLOYMENT ============ -->
+{employment && (
+<Section id="employment" num="01">
+  <h2><span class="cmd-prefix"><span class="cmd-name">cat</span> <span class="cmd-path">cv/employment.md</span></span></h2>
+  <div class="cv-cards">
+    <Card title="Employment" sub={`${employment.entries.length} positions`} iconBg="transparent" iconText={mintyIcon('blue-minty-scanlines.png')}>
+      <div class="cv-entries">
+        {employment.entries.map((entry: any) => (
+          <div class="cv-entry">
+            <span class="cv-year">{entry.years || entry.year || ''}</span>
+            <span class="cv-text">
+              {entry.text || entry.citation || ''}
+              {entry.details && <span class="cv-details">{entry.details}</span>}
+            </span>
+          </div>
+        ))}
+      </div>
+    </Card>
+  </div>
+</Section>
+)}
+
+
+<!-- ============ 02 EDUCATION ============ -->
+{education && (
+<Section id="education" num="02">
+  <h2><span class="cmd-prefix"><span class="cmd-name">cat</span> <span class="cmd-path">cv/education.md</span></span></h2>
+  <div class="cv-cards">
+    <Card title="Education" sub={`${education.entries.length} qualifications`} iconBg="transparent" iconText={mintyIcon('img_2807.png')}>
+      <div class="cv-entries">
+        {education.entries.map((entry: any) => (
+          <div class="cv-entry">
+            <span class="cv-year">{entry.years || entry.year || ''}</span>
+            <span class="cv-text">
+              {entry.text || entry.citation || ''}
+              {entry.details && <span class="cv-details">{entry.details}</span>}
+            </span>
+          </div>
+        ))}
+      </div>
+    </Card>
+  </div>
+</Section>
+)}
+
+
+<!-- ============ 03 FELLOWSHIPS ============ -->
+{fellowships && (
+<Section id="fellowships" num="03">
+  <h2><span class="cmd-prefix"><span class="cmd-name">cat</span> <span class="cmd-path">cv/fellowships.md</span></span></h2>
+  <div class="cv-cards">
+    <Card title={fellowships.heading} sub={`${fellowships.entries.length} honours`} iconBg="transparent" iconText={mintyIcon('cowboy-minty-small-square-copy.png')}>
+      <div class="cv-entries">
+        {fellowships.entries.map((entry: any) => (
+          <div class="cv-entry">
+            <span class="cv-year">{entry.years || entry.year || ''}</span>
+            <span class="cv-text">
+              {entry.text || entry.citation || ''}
+              {entry.details && <span class="cv-details">{entry.details}</span>}
+            </span>
+          </div>
+        ))}
+      </div>
+    </Card>
+  </div>
+</Section>
+)}
+
+
+<!-- ============ 04 BOOKS & SYMPOSIA ============ -->
+<Section id="books" num="04">
+  <h2><span class="cmd-prefix"><span class="cmd-name">cat</span> <span class="cmd-path">cv/books.md</span></span></h2>
+  <h3>Monographs, Edited Volumes, and Symposia <span class="t-dim">({booksItems.length})</span></h3>
+  <TerminalPicker items={booksItems as PickerItem[]} label="books" pageSize={8} scroll />
+</Section>
+
+
+<!-- ============ 05 PAPERS ============ -->
+<Section id="papers" num="05">
+  <h2><span class="cmd-prefix"><span class="cmd-name">cat</span> <span class="cmd-path">cv/papers.md</span></span></h2>
+  <h3>Published Articles, Pre-Prints, and Reports <span class="t-dim">({papers.length})</span></h3>
+  <TerminalPicker items={papers as PickerItem[]} label="papers" pageSize={8} scroll />
+</Section>
+
+
+<!-- ============ 06 OTHER WRITING ============ -->
+{otherWriting && (
+<Section id="other-writing" num="06">
+  <h2><span class="cmd-prefix"><span class="cmd-name">cat</span> <span class="cmd-path">cv/other-writing.md</span></span></h2>
+  <div class="cv-cards">
+    <Card title={otherWriting.heading} sub={`${otherWriting.entries.length} items`} iconBg="transparent" iconText={mintyIcon('minty-violet-scanlines.png')}>
+      <div class="cv-entries">
+        {otherWriting.entries.map((entry: any) => (
+          <div class="cv-entry">
+            <span class="cv-year">{entry.years || entry.year || ''}</span>
+            <span class="cv-text">
+              {entry.text || entry.citation || ''}
+              {entry.details && <span class="cv-details">{entry.details}</span>}
+            </span>
+          </div>
+        ))}
+      </div>
+    </Card>
+  </div>
+</Section>
+)}
+
+
+<!-- ============ 07 GRANTS ============ -->
+{allGrants.length > 0 && (
+<Section id="grants" num="07">
+  <h2><span class="cmd-prefix"><span class="cmd-name">cat</span> <span class="cmd-path">cv/grants.md</span></span></h2>
+  <div class="cv-cards">
+    <Card title="Grants" sub={`${allGrants.length} grants`} iconBg="transparent" iconText={mintyIcon('yellow-minty-scanliens.png')}>
+      <div class="cv-entries">
+        {allGrants.map((entry: any) => (
+          <div class="cv-entry">
+            <span class="cv-year">{entry.years || entry.year || ''}</span>
+            <span class="cv-text">
+              {entry.text || entry.citation || ''}
+              {entry.details && <span class="cv-details">{entry.details}</span>}
+            </span>
+          </div>
+        ))}
+      </div>
+    </Card>
+  </div>
+</Section>
+)}
+
+
+<!-- ============ 08 EVENTS ============ -->
+{events && (
+<Section id="events" num="08">
+  <h2><span class="cmd-prefix"><span class="cmd-name">cat</span> <span class="cmd-path">cv/events.md</span></span></h2>
+  <div class="cv-cards">
+    {events.groups.map((group: any) => (
+      <Card title={group.heading} sub={`${group.entries.length} ${group.entries.length === 1 ? 'event' : 'events'}`} iconBg="transparent" iconText={mintyIcon('hippy-minty.png')}>
+        <div class="cv-entries">
+          {group.entries.map((entry: any) => (
+            <div class="cv-entry">
+              <span class="cv-year">{entry.years || entry.year || ''}</span>
+              <span class="cv-text">
+                {entry.text || entry.citation || ''}
+                {entry.details && <span class="cv-details">{entry.details}</span>}
+              </span>
+            </div>
+          ))}
+        </div>
+      </Card>
+    ))}
+  </div>
+</Section>
+)}
+
+
+<!-- ============ 09 PRESENTATIONS ============ -->
+{presentations && (
+<Section id="presentations" num="09">
+  <h2><span class="cmd-prefix"><span class="cmd-name">cat</span> <span class="cmd-path">cv/presentations.md</span></span></h2>
+  <div class="cv-cards">
+    {presentations.groups.map((group: any) => (
+      <Card title={group.heading} sub={`${group.entries.length} ${group.entries.length === 1 ? 'talk' : 'talks'}`} iconBg="transparent" iconText={mintyIcon('red-minty-scanlines.png')}>
+        <div class="cv-entries">
+          {group.entries.map((entry: any) => (
+            <div class="cv-entry">
+              <span class="cv-year">{entry.years || entry.year || ''}</span>
+              <span class="cv-text">
+                {entry.text || entry.citation || ''}
+                {entry.details && <span class="cv-details">{entry.details}</span>}
+              </span>
+            </div>
+          ))}
+        </div>
+      </Card>
+    ))}
+  </div>
+</Section>
+)}
+
+
+<!-- ============ 10 IMPACT ============ -->
+{impact && (
+<Section id="impact" num="10">
+  <h2><span class="cmd-prefix"><span class="cmd-name">cat</span> <span class="cmd-path">cv/impact.md</span></span></h2>
+  <div class="cv-cards">
+    <Card title={impact.heading} sub="Research impact" iconBg="transparent" iconText={mintyIcon('crocodile-dundee-minty.png')}>
+      <div class="cv-text-block">
+        {impact.content.split('\n').map((line: string) => (
+          <p>{line}</p>
+        ))}
+      </div>
+    </Card>
+  </div>
+</Section>
+)}
+
+
+<!-- ============ 11 SUPERVISION ============ -->
+{supervision && (
+<Section id="supervision" num="11">
+  <h2><span class="cmd-prefix"><span class="cmd-name">cat</span> <span class="cmd-path">cv/supervision.md</span></span></h2>
+  <div class="cv-cards">
+    <Card title={supervision.heading} sub="HDR supervision" iconBg="transparent" iconText={mintyIcon('minty-indigo-scanlines.png')}>
+      <div class="cv-text-block">
+        {supervision.content.split('\n').map((line: string) => (
+          <p>{line}</p>
+        ))}
+      </div>
+    </Card>
+  </div>
+</Section>
+)}
+
+
+<!-- ============ 12 TEACHING ============ -->
+{teaching && (
+<Section id="teaching" num="12">
+  <h2><span class="cmd-prefix"><span class="cmd-name">cat</span> <span class="cmd-path">cv/teaching.md</span></span></h2>
+  <div class="cv-cards">
+    <Card title={teaching.heading} sub="Coursework teaching" iconBg="transparent" iconText={mintyIcon('img_2801.png')}>
+      <div class="cv-text-block">
+        {teaching.content.split('\n').map((line: string) => (
+          <p>{line}</p>
+        ))}
+      </div>
+    </Card>
+  </div>
+</Section>
+)}
+
+
+<!-- ============ 13 SERVICE ============ -->
+{service && (
+<Section id="service" num="13">
+  <h2><span class="cmd-prefix"><span class="cmd-name">cat</span> <span class="cmd-path">cv/service.md</span></span></h2>
+  <div class="cv-cards">
+    <Card title={service.heading} sub={`${service.entries.length} roles`} iconBg="transparent" iconText={mintyIconRoot('/assets/minty-teal.png')}>
+      <div class="cv-entries">
+        {service.entries.map((entry: any) => (
+          <div class="cv-entry">
+            <span class="cv-year">{entry.years || entry.year || ''}</span>
+            <span class="cv-text">
+              {entry.text || entry.citation || ''}
+              {entry.details && <span class="cv-details">{entry.details}</span>}
+            </span>
+          </div>
+        ))}
+      </div>
+    </Card>
+  </div>
+</Section>
+)}
+
+</main>
+</BaseLayout>

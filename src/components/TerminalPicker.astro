@@ -5,12 +5,12 @@ interface Props {
   items: PickerItem[];
   label?: string;
   pageSize?: number;
+  scroll?: boolean;
 }
 
-const { items: rawItems, label = 'items', pageSize = 5 } = Astro.props;
+const { items: rawItems, label = 'items', pageSize = 5, scroll = false } = Astro.props;
 
 // Auto-sort by date descending (most recent first)
-// Parses MM/YYYY into a sortable number, falls back to year * 100
 function sortKey(item: PickerItem): number {
   if (item.date) {
     const [mm, yyyy] = item.date.split('/');
@@ -21,64 +21,115 @@ function sortKey(item: PickerItem): number {
 const items = [...rawItems].sort((a, b) => sortKey(b) - sortKey(a));
 
 const totalPages = Math.ceil(items.length / pageSize);
-const barWidth = 3; // block chars per page segment
+const barWidth = 3;
+// For scroll mode, compute a reasonable number of bar segments
+const scrollSegments = Math.min(Math.ceil(items.length / 5), 20);
 ---
 
-<div class="tp" tabindex="0" data-tp data-tp-page-size={pageSize} data-tp-total-pages={totalPages}>
-
-  {Array.from({ length: totalPages }, (_, pageIdx) => (
-    <div class:list={["tp-page", { "tp-page--active": pageIdx === 0 }]} data-tp-page={pageIdx}>
-      {items.slice(pageIdx * pageSize, (pageIdx + 1) * pageSize).map((item, i) => {
-        const globalIdx = pageIdx * pageSize + i;
-        return (
-          <div class="tp-entry" data-tp-entry={globalIdx}>
-            <div
-              class:list={["tp-row", { "tp-row--active": globalIdx === 0 }]}
-              data-tp-row
-              data-index={globalIdx}
-            >
-              <span class="tp-chevron">&#10095;</span>
-              <span class="tp-num">{globalIdx + 1}.</span>
-              <div class="tp-body">
-                <div class="tp-head">
-                  {item.tag && <span class={`tp-tag tp-tag--${item.tag}`}>{item.tag}</span>}
-                  <span class="tp-title">{item.title}</span>
-                  <span class="tp-date">{item.date || item.year}</span>
-                </div>
-                <div class="tp-meta">
-                  {item.subtitle}
-                  {item.detail && <span class="tp-venue"> · {item.detail}</span>}
-                </div>
+{scroll ? (
+  /* ── Scroll mode: all items in a fixed-height scrollable container ── */
+  <div class="tp tp-scroll" tabindex="0" data-tp data-tp-scroll data-tp-total={items.length}>
+    <div class="tp-scroll-body" data-tp-scroll-body>
+      {items.map((item, i) => (
+        <div class="tp-entry" data-tp-entry={i}>
+          <div
+            class:list={["tp-row", { "tp-row--active": i === 0 }]}
+            data-tp-row
+            data-index={i}
+          >
+            <span class="tp-chevron">&#10095;</span>
+            <span class="tp-num">{i + 1}.</span>
+            <div class="tp-body">
+              <div class="tp-head">
+                {item.tag && <span class={`tp-tag tp-tag--${item.tag}`}>{item.tag}</span>}
+                <span class="tp-title">{item.title}</span>
+                <span class="tp-date">{item.date || item.year}</span>
+              </div>
+              <div class="tp-meta">
+                {item.subtitle}
+                {item.detail && <span class="tp-venue"> · {item.detail}</span>}
               </div>
             </div>
-            <div class="tp-expand" data-tp-expand>
-              {item.blurb && <p class="tp-blurb">{item.blurb}</p>}
-              {item.url && (
-                <a class="tp-source" href={item.url} target="_blank" rel="noopener noreferrer">
-                  View source &rarr;
-                </a>
-              )}
-            </div>
           </div>
-        );
-      })}
+          <div class="tp-expand" data-tp-expand>
+            {item.blurb && <p class="tp-blurb">{item.blurb}</p>}
+            {item.url && (
+              <a class="tp-source" href={item.url} target="_blank" rel="noopener noreferrer">
+                View source &rarr;
+              </a>
+            )}
+          </div>
+        </div>
+      ))}
     </div>
-  ))}
 
-  <div class="tp-status">
-    <span class="tp-nav tp-nav--prev tp-nav--hidden" data-tp-prev>&lsaquo;</span>
-    <span class="tp-bar">{Array.from({ length: totalPages }, (_, i) => (
-      <span class:list={["tp-seg", { "tp-seg--active": i === 0 }]} data-tp-seg={i}>{(i === 0 ? '\u2593' : '\u2591').repeat(barWidth)}</span>
-    ))}</span>
-    <span class:list={["tp-nav tp-nav--next", { "tp-nav--hidden": totalPages <= 1 }]} data-tp-next>&rsaquo;</span>
-    <span class="tp-counter" data-tp-counter>1&ndash;{Math.min(pageSize, items.length)} of {items.length}</span>
-    <span class="tp-hint">&uarr;&darr; navigate &middot; &larr;&rarr; page &middot; enter expand</span>
+    <div class="tp-status">
+      <span class="tp-bar">{Array.from({ length: scrollSegments }, (_, i) => (
+        <span class:list={["tp-seg", { "tp-seg--active": i === 0 }]} data-tp-seg={i}>{(i === 0 ? '\u2593' : '\u2591').repeat(barWidth)}</span>
+      ))}</span>
+      <span class="tp-counter" data-tp-counter>{items.length} {label}</span>
+      <span class="tp-hint">&uarr;&darr; scroll &middot; click to expand</span>
+    </div>
   </div>
+) : (
+  /* ── Page mode: original behavior ── */
+  <div class="tp" tabindex="0" data-tp data-tp-page-size={pageSize} data-tp-total-pages={totalPages}>
 
-</div>
+    {Array.from({ length: totalPages }, (_, pageIdx) => (
+      <div class:list={["tp-page", { "tp-page--active": pageIdx === 0 }]} data-tp-page={pageIdx}>
+        {items.slice(pageIdx * pageSize, (pageIdx + 1) * pageSize).map((item, i) => {
+          const globalIdx = pageIdx * pageSize + i;
+          return (
+            <div class="tp-entry" data-tp-entry={globalIdx}>
+              <div
+                class:list={["tp-row", { "tp-row--active": globalIdx === 0 }]}
+                data-tp-row
+                data-index={globalIdx}
+              >
+                <span class="tp-chevron">&#10095;</span>
+                <span class="tp-num">{globalIdx + 1}.</span>
+                <div class="tp-body">
+                  <div class="tp-head">
+                    {item.tag && <span class={`tp-tag tp-tag--${item.tag}`}>{item.tag}</span>}
+                    <span class="tp-title">{item.title}</span>
+                    <span class="tp-date">{item.date || item.year}</span>
+                  </div>
+                  <div class="tp-meta">
+                    {item.subtitle}
+                    {item.detail && <span class="tp-venue"> · {item.detail}</span>}
+                  </div>
+                </div>
+              </div>
+              <div class="tp-expand" data-tp-expand>
+                {item.blurb && <p class="tp-blurb">{item.blurb}</p>}
+                {item.url && (
+                  <a class="tp-source" href={item.url} target="_blank" rel="noopener noreferrer">
+                    View source &rarr;
+                  </a>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    ))}
+
+    <div class="tp-status">
+      <span class="tp-nav tp-nav--prev tp-nav--hidden" data-tp-prev>&lsaquo;</span>
+      <span class="tp-bar">{Array.from({ length: totalPages }, (_, i) => (
+        <span class:list={["tp-seg", { "tp-seg--active": i === 0 }]} data-tp-seg={i}>{(i === 0 ? '\u2593' : '\u2591').repeat(barWidth)}</span>
+      ))}</span>
+      <span class:list={["tp-nav tp-nav--next", { "tp-nav--hidden": totalPages <= 1 }]} data-tp-next>&rsaquo;</span>
+      <span class="tp-counter" data-tp-counter>1&ndash;{Math.min(pageSize, items.length)} of {items.length}</span>
+      <span class="tp-hint">&uarr;&darr; navigate &middot; &larr;&rarr; page &middot; enter expand</span>
+    </div>
+
+  </div>
+)}
 
 <script>
-  document.querySelectorAll<HTMLElement>('[data-tp]').forEach(tp => {
+  // ── Page mode ──
+  document.querySelectorAll<HTMLElement>('[data-tp]:not([data-tp-scroll])').forEach(tp => {
     const pages = Array.from(tp.querySelectorAll<HTMLElement>('[data-tp-page]'));
     const rows = Array.from(tp.querySelectorAll<HTMLElement>('[data-tp-row]'));
     const entries = Array.from(tp.querySelectorAll<HTMLElement>('[data-tp-entry]'));
@@ -143,30 +194,19 @@ const barWidth = 3; // block chars per page segment
       }
     }
 
-    // Mousewheel pages through
     let wheelAccum = 0;
     tp.addEventListener('wheel', (e: WheelEvent) => {
       e.preventDefault();
       wheelAccum += e.deltaY;
       const threshold = 60;
-      if (wheelAccum > threshold) {
-        goToPage(currentPage + 1);
-        wheelAccum = 0;
-      } else if (wheelAccum < -threshold) {
-        goToPage(currentPage - 1);
-        wheelAccum = 0;
-      }
+      if (wheelAccum > threshold) { goToPage(currentPage + 1); wheelAccum = 0; }
+      else if (wheelAccum < -threshold) { goToPage(currentPage - 1); wheelAccum = 0; }
     }, { passive: false });
 
-    // Clickable progress bar segments
     segs.forEach((seg, i) => {
-      seg.addEventListener('click', () => {
-        goToPage(i);
-        setActiveRow(i * pageSize);
-      });
+      seg.addEventListener('click', () => { goToPage(i); setActiveRow(i * pageSize); });
     });
 
-    // Row interactions
     rows.forEach((row, i) => {
       row.addEventListener('mouseenter', () => setActiveRow(i));
       row.addEventListener('click', (e) => {
@@ -175,82 +215,106 @@ const barWidth = 3; // block chars per page segment
       });
     });
 
-    // Keyboard
     tp.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Tab' && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
-        if (currentPage < totalPages - 1) {
-          e.preventDefault();
-          goToPage(currentPage + 1);
-          setActiveRow(currentPage * pageSize);
-        }
+        if (currentPage < totalPages - 1) { e.preventDefault(); goToPage(currentPage + 1); setActiveRow(currentPage * pageSize); }
       } else if (e.key === 'Tab' && e.shiftKey) {
-        if (currentPage > 0) {
-          e.preventDefault();
-          goToPage(currentPage - 1);
-          setActiveRow(currentPage * pageSize);
-        }
-      } else if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        goToPage(currentPage + 1);
-        setActiveRow(currentPage * pageSize);
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        goToPage(currentPage - 1);
-        setActiveRow(currentPage * pageSize);
+        if (currentPage > 0) { e.preventDefault(); goToPage(currentPage - 1); setActiveRow(currentPage * pageSize); }
+      } else if (e.key === 'ArrowRight') { e.preventDefault(); goToPage(currentPage + 1); setActiveRow(currentPage * pageSize);
+      } else if (e.key === 'ArrowLeft') { e.preventDefault(); goToPage(currentPage - 1); setActiveRow(currentPage * pageSize);
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
         const next = activeRow + 1;
         const pageEnd = Math.min((currentPage + 1) * pageSize, total);
-        if (next < pageEnd) {
-          setActiveRow(next);
-        } else if (currentPage < totalPages - 1) {
-          // Cross page boundary
-          goToPage(currentPage + 1);
-          setActiveRow(currentPage * pageSize);
-        }
+        if (next < pageEnd) setActiveRow(next);
+        else if (currentPage < totalPages - 1) { goToPage(currentPage + 1); setActiveRow(currentPage * pageSize); }
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         const pageStart = currentPage * pageSize;
-        if (activeRow - 1 >= pageStart) {
-          setActiveRow(activeRow - 1);
-        } else if (currentPage > 0) {
-          // Cross page boundary
-          goToPage(currentPage - 1);
-          const lastOnPage = Math.min((currentPage + 1) * pageSize, total) - 1;
-          setActiveRow(lastOnPage);
-        }
-      } else if (e.key === 'Enter') {
-        e.preventDefault();
-        toggleExpand(activeRow);
-      } else if (e.key === 'Escape') {
-        collapseAll();
-      }
+        if (activeRow - 1 >= pageStart) setActiveRow(activeRow - 1);
+        else if (currentPage > 0) { goToPage(currentPage - 1); const lastOnPage = Math.min((currentPage + 1) * pageSize, total) - 1; setActiveRow(lastOnPage); }
+      } else if (e.key === 'Enter') { e.preventDefault(); toggleExpand(activeRow);
+      } else if (e.key === 'Escape') { collapseAll(); }
     });
 
-    // Touch swipe navigation
-    let touchStartX = 0;
-    let touchStartY = 0;
-    tp.addEventListener('touchstart', (e: TouchEvent) => {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-    }, { passive: true });
+    let touchStartX = 0, touchStartY = 0;
+    tp.addEventListener('touchstart', (e: TouchEvent) => { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }, { passive: true });
     tp.addEventListener('touchend', (e: TouchEvent) => {
       const dx = e.changedTouches[0].clientX - touchStartX;
       const dy = e.changedTouches[0].clientY - touchStartY;
-      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
-        if (dx < 0) goToPage(currentPage + 1);
-        else goToPage(currentPage - 1);
-      }
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) { if (dx < 0) goToPage(currentPage + 1); else goToPage(currentPage - 1); }
     }, { passive: true });
 
-    // Chevron click navigation
-    prevNav?.addEventListener('click', () => {
-      goToPage(currentPage - 1);
-      setActiveRow(currentPage * pageSize);
+    prevNav?.addEventListener('click', () => { goToPage(currentPage - 1); setActiveRow(currentPage * pageSize); });
+    nextNav?.addEventListener('click', () => { goToPage(currentPage + 1); setActiveRow((currentPage) * pageSize); });
+  });
+
+  // ── Scroll mode ──
+  document.querySelectorAll<HTMLElement>('[data-tp-scroll]').forEach(tp => {
+    const scrollBody = tp.querySelector<HTMLElement>('[data-tp-scroll-body]');
+    const rows = Array.from(tp.querySelectorAll<HTMLElement>('[data-tp-row]'));
+    const entries = Array.from(tp.querySelectorAll<HTMLElement>('[data-tp-entry]'));
+    const segs = Array.from(tp.querySelectorAll<HTMLElement>('[data-tp-seg]'));
+    const total = rows.length;
+
+    if (!scrollBody || total === 0) return;
+
+    let activeRow = 0;
+    let expandedIdx: number | null = null;
+
+    function updateScrollBar() {
+      const scrollTop = scrollBody!.scrollTop;
+      const scrollMax = scrollBody!.scrollHeight - scrollBody!.clientHeight;
+      const pct = scrollMax > 0 ? scrollTop / scrollMax : 0;
+      const activeSeg = Math.min(Math.floor(pct * segs.length), segs.length - 1);
+      segs.forEach((seg, i) => {
+        seg.textContent = (i <= activeSeg ? '\u2593' : '\u2591').repeat(3);
+        seg.classList.toggle('tp-seg--active', i <= activeSeg);
+      });
+    }
+
+    scrollBody.addEventListener('scroll', updateScrollBar, { passive: true });
+
+    function setActiveRow(idx: number) {
+      if (idx < 0 || idx >= total) return;
+      rows[activeRow]?.classList.remove('tp-row--active');
+      activeRow = idx;
+      rows[activeRow]?.classList.add('tp-row--active');
+    }
+
+    function toggleExpand(idx: number) {
+      if (expandedIdx === idx) {
+        entries[idx]?.classList.remove('tp-entry--open');
+        expandedIdx = null;
+      } else {
+        if (expandedIdx !== null) entries[expandedIdx]?.classList.remove('tp-entry--open');
+        entries[idx]?.classList.add('tp-entry--open');
+        expandedIdx = idx;
+      }
+    }
+
+    // Clickable segments scroll to position
+    segs.forEach((seg, i) => {
+      seg.addEventListener('click', () => {
+        const scrollMax = scrollBody!.scrollHeight - scrollBody!.clientHeight;
+        const target = (i / segs.length) * scrollMax;
+        scrollBody!.scrollTo({ top: target, behavior: 'smooth' });
+      });
     });
-    nextNav?.addEventListener('click', () => {
-      goToPage(currentPage + 1);
-      setActiveRow((currentPage) * pageSize);
+
+    rows.forEach((row, i) => {
+      row.addEventListener('mouseenter', () => setActiveRow(i));
+      row.addEventListener('click', (e) => {
+        if ((e.target as HTMLElement).closest('.tp-source')) return;
+        toggleExpand(i);
+      });
+    });
+
+    tp.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Enter') { e.preventDefault(); toggleExpand(activeRow); }
+      else if (e.key === 'Escape') {
+        if (expandedIdx !== null) { entries[expandedIdx]?.classList.remove('tp-entry--open'); expandedIdx = null; }
+      }
     });
   });
 </script>
