@@ -2323,7 +2323,6 @@ export class LevelScene extends Phaser.Scene {
     if (sourceType === 'ventureCapitalistMoney') {
       s.destroy();
       if (this.invincible) return;
-      this.scrambleControls();
       this.cameras.main.flash(80, 255, 245, 180);
       this.takeDamage(SLOP_DAMAGE);
       return;
