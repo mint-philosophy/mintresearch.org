@@ -435,61 +435,76 @@ function linkify(text: string): string {
 </Section>
 )}
 
-<!-- Publication hover tooltip (single shared element) -->
+<!-- Publication click tooltip (single shared element) -->
 <div class="pub-tooltip" id="pub-tooltip">
   <p class="pub-tooltip-blurb" id="pub-tooltip-blurb"></p>
-  <span class="pub-tooltip-link" id="pub-tooltip-link"></span>
+  <a class="pub-tooltip-link" id="pub-tooltip-link" target="_blank" rel="noopener noreferrer"></a>
 </div>
 
 </main>
 
 <script>
-  // ── Publication entry hover tooltips ──────────────────────────────
+  // ── Publication entry click-to-show tooltips ──────────────────────
   const tooltip = document.getElementById('pub-tooltip');
   const ttBlurb = document.getElementById('pub-tooltip-blurb');
-  const ttLink = document.getElementById('pub-tooltip-link');
+  const ttLink = document.getElementById('pub-tooltip-link') as HTMLAnchorElement | null;
+  let activeEntry: Element | null = null;
+
   if (tooltip && ttBlurb && ttLink) {
     document.querySelectorAll('.pub-entry').forEach(entry => {
       const blurb = (entry as HTMLElement).dataset.blurb || '';
       const url = (entry as HTMLElement).dataset.url || '';
-      // Only show tooltip if there's content to show
       if (!blurb && !url) return;
 
-      entry.addEventListener('mouseenter', (e) => {
+      entry.addEventListener('click', (e) => {
+        // Don't intercept clicks on the title link itself
+        if ((e.target as HTMLElement).closest('a')) return;
+        e.stopPropagation();
+
+        // Toggle off if clicking the same entry
+        if (activeEntry === entry && tooltip.style.display === 'block') {
+          tooltip.style.display = 'none';
+          activeEntry = null;
+          return;
+        }
+
+        // Populate tooltip
         ttBlurb.textContent = blurb;
         ttBlurb.style.display = blurb ? 'block' : 'none';
         if (url) {
+          ttLink.href = url;
           ttLink.textContent = 'View source →';
           ttLink.style.display = 'inline-block';
         } else {
           ttLink.style.display = 'none';
         }
+
+        // Position below the clicked entry
+        const rect = (entry as HTMLElement).getBoundingClientRect();
+        const pad = 8;
+        let x = rect.left;
+        let y = rect.bottom + pad;
+
+        // Keep on screen
+        const tw = 420;
+        if (x + tw > window.innerWidth) x = window.innerWidth - tw - pad;
+        if (x < pad) x = pad;
+        if (y + 150 > window.innerHeight) y = rect.top - 150 - pad;
+
+        tooltip.style.left = x + 'px';
+        tooltip.style.top = y + 'px';
         tooltip.style.display = 'block';
-        positionTooltip(e as MouseEvent);
-      });
-
-      entry.addEventListener('mousemove', (e) => {
-        positionTooltip(e as MouseEvent);
-      });
-
-      entry.addEventListener('mouseleave', () => {
-        tooltip.style.display = 'none';
+        activeEntry = entry;
       });
     });
 
-    function positionTooltip(e: MouseEvent) {
-      if (!tooltip) return;
-      const pad = 12;
-      let x = e.clientX + pad;
-      let y = e.clientY + pad;
-      // Keep tooltip on screen
-      const tw = 420;
-      const th = tooltip.offsetHeight || 100;
-      if (x + tw > window.innerWidth) x = e.clientX - tw - pad;
-      if (y + th > window.innerHeight) y = e.clientY - th - pad;
-      tooltip.style.left = x + 'px';
-      tooltip.style.top = y + 'px';
-    }
+    // Click anywhere else to dismiss
+    document.addEventListener('click', (e) => {
+      if (tooltip.style.display === 'block' && !(e.target as HTMLElement).closest('.pub-tooltip')) {
+        tooltip.style.display = 'none';
+        activeEntry = null;
+      }
+    });
   }
 </script>
 
