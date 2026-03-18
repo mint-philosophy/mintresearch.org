@@ -62,7 +62,7 @@ export const teamMembers: PersonData[] = [
     role: 'PhD Student',
     disc: 'Philosophy, Cognitive Science',
     affiliation: 'Australian National University',
-    bio: 'PhD student at MINT Lab working at the intersection of philosophy and cognitive science, investigating normative competence in artificial and biological agents.',
+    bio: 'PhD student at MINT Lab working at the intersection of philosophy and cognitive science, with a focus on artificial and biological agents.',
   },
   {
     name: 'Tim Dubber',
