@@ -3,7 +3,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/Section.astro';
 import TerminalPicker from '../components/TerminalPicker.astro';
 import { publications, events, news } from '../data/deliverables';
+import { teamMembers } from '../data/people';
 
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <BaseLayout title="MINT Lab — Machine Intelligence and Normative Theory">
@@ -62,32 +64,28 @@ import { publications, events, news } from '../data/deliverables';
   <h2><span class="cmd-prefix"><span class="cmd-name">grep</span> <span class="cmd-flag">-r</span> <span class="cmd-arg">"people"</span> <span class="cmd-path">./lab/</span></span></h2>
 
   <h3>Team</h3>
-  <div class="people-grid">
-    <div class="person-card"><div class="person-name">Seth Lazar</div><div class="person-role">Principal Investigator</div><div class="person-disc">Philosophy</div></div>
-    <div class="person-card"><div class="person-name">Daniel Kilov</div><div class="person-role">Lab Manager, Research Fellow</div><div class="person-disc">Philosophy, Cybernetics</div></div>
-    <div class="person-card"><div class="person-name">Secil Yanik Guyot</div><div class="person-role">Research Engineer</div><div class="person-disc">Computer Science</div></div>
-    <div class="person-card"><div class="person-name">Ned Howells-Whitaker</div><div class="person-role">Research Fellow</div><div class="person-disc">Philosophy</div></div>
-    <div class="person-card"><div class="person-name">Jennifer Munt</div><div class="person-role">Research Fellow</div><div class="person-disc">Philosophy</div></div>
-    <div class="person-card"><div class="person-name">Kira Breithaupt</div><div class="person-role">PhD Student</div><div class="person-disc">Philosophy, Cognitive Science</div></div>
-    <div class="person-card"><div class="person-name">Tim Dubber</div><div class="person-role">PhD Student</div><div class="person-disc">Philosophy</div></div>
-    <div class="person-card"><div class="person-name">Iman Ferestade</div><div class="person-role">PhD Student</div><div class="person-disc">Philosophy</div></div>
-    <div class="person-card"><div class="person-name">Cameron Pattison</div><div class="person-role">PhD Student</div><div class="person-disc">Philosophy</div></div>
-    <div class="person-card"><div class="person-name">Andrew Smart</div><div class="person-role">PhD Student</div><div class="person-disc">Philosophy</div></div>
-    <div class="person-card"><div class="person-name">Jake Stone</div><div class="person-role">PhD Student</div><div class="person-disc">Philosophy</div></div>
-    <div class="person-card"><div class="person-name">Caroline Hendy</div><div class="person-role">Research Assistant</div><div class="person-disc">Linguistics, Statistics</div></div>
-    <div class="person-card"><div class="person-name">Theo Murray</div><div class="person-role">Research Assistant</div><div class="person-disc">Philosophy</div></div>
-    <div class="person-card"><div class="person-name">Charis Yang</div><div class="person-role">Research Assistant</div><div class="person-disc">Philosophy</div></div>
-    <div class="person-card"><div class="person-name">Sichao Li</div><div class="person-role">Visiting Fellow</div><div class="person-disc">Computer Science</div></div>
-    <div class="person-card"><div class="person-name">Elena Ajayi</div><div class="person-role">Visiting Student</div><div class="person-disc">Computer Science</div></div>
-    <div class="person-card"><div class="person-name">Abbas Bagwala</div><div class="person-role">Visiting Student</div><div class="person-disc">Philosophy</div></div>
-    <div class="person-card"><div class="person-name">Noah Birnbaum</div><div class="person-role">Visiting Student</div><div class="person-disc">Philosophy</div></div>
-    <div class="person-card"><div class="person-name">Angelica Chowdhury</div><div class="person-role">Visiting Student</div><div class="person-disc">Computer Science</div></div>
-    <div class="person-card"><div class="person-name">ChunYan (CY)</div><div class="person-role">Visiting Student</div><div class="person-disc">Computer Science, Philosophy</div></div>
-    <div class="person-card"><div class="person-name">Shira Gur Arieh</div><div class="person-role">Visiting Student</div><div class="person-disc">Law</div></div>
-    <div class="person-card"><div class="person-name">Changbai Li</div><div class="person-role">Visiting Student</div><div class="person-disc">Computer Science</div></div>
-    <div class="person-card"><div class="person-name">Lorenzo Manuali</div><div class="person-role">Visiting Student</div><div class="person-disc">Philosophy</div></div>
-    <div class="person-card"><div class="person-name">Lena Wang</div><div class="person-role">Visiting Student</div><div class="person-disc">Philosophy</div></div>
+
+  <div class="person-detail" id="personDetail">
+    <div class="person-detail-inner">
+      <button class="person-detail-close" id="personDetailClose">&times;</button>
+      <div class="person-detail-body">
+        <div class="person-detail-photo" id="personDetailPhoto"></div>
+        <div class="person-detail-facts" id="personDetailFacts"></div>
+      </div>
+    </div>
   </div>
+
+  <div class="people-grid">
+    {teamMembers.map((p, i) => (
+      <div class="person-card" data-person-idx={i}>
+        <div class="person-name">{p.name}</div>
+        <div class="person-role">{p.role}</div>
+        <div class="person-disc">{p.disc}</div>
+      </div>
+    ))}
+  </div>
+
+  <script id="personData" type="application/json" set:html={JSON.stringify(teamMembers.map(p => ({...p, headshot: p.headshot ? `${base}/assets/people/${p.headshot}` : null})))} />
 
   <h3>Affiliates</h3>
   <div class="people-grid people-grid--compact">
@@ -261,5 +259,63 @@ import { publications, events, news } from '../data/deliverables';
 </section>
 
 </main>
+
+<script>
+  const detailPanel = document.getElementById('personDetail');
+  const detailPhoto = document.getElementById('personDetailPhoto');
+  const detailFacts = document.getElementById('personDetailFacts');
+  const detailClose = document.getElementById('personDetailClose');
+  const personDataEl = document.getElementById('personData');
+
+  if (detailPanel && detailPhoto && detailFacts && personDataEl) {
+    const people: {
+      name: string; role: string; disc: string; affiliation: string;
+      bio: string; headshot: string | null; links?: { label: string; url: string }[];
+    }[] = JSON.parse(personDataEl.textContent || '[]');
+    let activeIdx = -1;
+
+    document.querySelectorAll('.person-card[data-person-idx]').forEach(card => {
+      card.addEventListener('click', () => {
+        const idx = parseInt((card as HTMLElement).dataset.personIdx || '-1');
+        if (idx === activeIdx) {
+          detailPanel.classList.remove('open');
+          activeIdx = -1;
+          document.querySelectorAll('.person-card').forEach(c => c.classList.remove('selected'));
+        } else {
+          const p = people[idx];
+          detailPhoto.innerHTML = p.headshot
+            ? `<img src="${p.headshot}" alt="${p.name}" />`
+            : `<span class="person-initials">${p.name.split(' ').map((w: string) => w[0]).join('')}</span>`;
+
+          const linksHtml = (p.links || []).map(
+            (l: { label: string; url: string }) =>
+              `<a href="${l.url}" target="_blank">${l.label}</a>`
+          ).join('');
+          detailFacts.innerHTML = `
+            <div class="pf-name">${p.name}</div>
+            <div class="pf-row"><span class="pf-label">role</span><span class="pf-value">${p.role}</span></div>
+            <div class="pf-row"><span class="pf-label">field</span><span class="pf-value">${p.disc}</span></div>
+            <div class="pf-row"><span class="pf-label">affil</span><span class="pf-value">${p.affiliation}</span></div>
+            <div class="pf-bio">${p.bio}</div>
+            ${linksHtml ? `<div class="pf-links">${linksHtml}</div>` : ''}
+          `;
+
+          detailPanel.classList.add('open');
+          activeIdx = idx;
+          document.querySelectorAll('.person-card').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+
+          detailPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      });
+    });
+
+    detailClose?.addEventListener('click', () => {
+      detailPanel.classList.remove('open');
+      activeIdx = -1;
+      document.querySelectorAll('.person-card').forEach(c => c.classList.remove('selected'));
+    });
+  }
+</script>
 
 </BaseLayout>

@@ -1020,6 +1020,116 @@ ul.clean li:last-child::before { content: '└── '; }
 .person-name { font-size: 12px; font-weight: 600; color: var(--cyan); }
 .person-role { font-size: 10px; color: var(--text-2); margin-top: 1px; }
 .person-disc { font-size: 9px; color: var(--yellow); margin-top: 2px; opacity: 0.7; }
+/* Team cards are clickable */
+.people-grid:not(.people-grid--compact) .person-card { cursor: pointer; }
+.person-card.selected { border-color: var(--accent-dim); }
+
+/* ===== Person Detail Panel ===== */
+.person-detail {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.25s ease;
+  opacity: 0;
+  margin-bottom: 0;
+}
+.person-detail.open {
+  max-height: 500px;
+  opacity: 1;
+  margin-bottom: 12px;
+}
+
+.person-detail-inner {
+  background: var(--bg-2);
+  border: 1px dashed var(--border);
+  position: relative;
+}
+.person-detail-inner::before {
+  content: '\25CF  \25CF  \25CF';
+  display: block; padding: 6px 10px;
+  font-size: 8px; letter-spacing: 3px;
+  background: var(--bg-3); border-bottom: 1px dashed var(--border);
+  color: var(--text-3);
+}
+
+.person-detail-close {
+  position: absolute; top: 8px; right: 10px;
+  font-family: var(--font); font-size: 14px;
+  color: var(--text-3); background: none;
+  border: none; cursor: pointer; padding: 2px 6px;
+  z-index: 1;
+}
+.person-detail-close:hover { color: var(--red); }
+
+.person-detail-body {
+  display: flex; gap: 20px; padding: 16px;
+}
+
+.person-detail-photo {
+  width: 120px; height: 120px;
+  flex-shrink: 0;
+  border: 1px dashed var(--accent-dim);
+  background: var(--bg-3);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+.person-detail-photo img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.person-detail-photo::after {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    to bottom, transparent 0px, transparent 2px,
+    rgba(0, 0, 0, 0.12) 2px, rgba(0, 0, 0, 0.12) 4px
+  );
+  pointer-events: none;
+}
+.person-initials {
+  font-size: 28px; font-weight: 700; color: var(--text-3);
+}
+
+.person-detail-facts { flex: 1; }
+
+.pf-name {
+  font-size: 16px; font-weight: 700; color: var(--text-bright);
+  margin-bottom: 8px;
+}
+.pf-row {
+  display: flex; gap: 8px; font-size: 11px; margin: 3px 0;
+}
+.pf-label {
+  color: var(--text-3); min-width: 48px; flex-shrink: 0;
+}
+.pf-label::after { content: ':'; }
+.pf-value { color: var(--text-1); }
+
+.pf-bio {
+  margin-top: 10px; padding: 8px 10px;
+  border: 1px dashed var(--border);
+  background: var(--bg-0);
+  font-size: 11px; color: var(--text-2); line-height: 1.6;
+}
+.pf-bio::before {
+  content: '# bio'; display: block;
+  color: var(--text-3); font-size: 10px; margin-bottom: 4px;
+}
+
+.pf-links {
+  margin-top: 8px; display: flex; gap: 12px; font-size: 11px;
+}
+.pf-links a {
+  color: var(--accent); text-decoration: none;
+}
+.pf-links a:hover { text-decoration: underline; }
+
+@media (max-width: 600px) {
+  .person-detail-body {
+    flex-direction: column; align-items: center;
+  }
+  .person-detail-photo { width: 100px; height: 100px; }
+}
+
 /* Affiliates get purple names */
 .people-grid--compact .person-name { color: var(--purple); }
 
