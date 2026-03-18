@@ -106,7 +106,7 @@ function parseCitationNoBlurb(entry: any): PickerItem {
   return item;
 }
 
-// ── Build TerminalPicker arrays from cv.json sections ───────────────
+// ── Build publication arrays from cv.json sections ───────────────
 const papers: PickerItem[] = [];
 const booksItems: PickerItem[] = [];
 
@@ -120,6 +120,11 @@ if (papersSection) {
     papers.push(...group.entries.map((e: any) => parseCitation(e)));
   }
 }
+
+// Sort by year descending (matching TerminalPicker behaviour)
+const sortByYear = (a: PickerItem, b: PickerItem) => b.year - a.year;
+booksItems.sort(sortByYear);
+papers.sort(sortByYear);
 
 // Helper for minty icon HTML
 function mintyIcon(filename: string): string {
@@ -225,16 +230,42 @@ function linkify(text: string): string {
 <!-- ============ 04 BOOKS & SYMPOSIA ============ -->
 <Section id="books" num="04">
   <h2><span class="cmd-prefix"><span class="cmd-name">cat</span> <span class="cmd-path">cv/books.md</span></span></h2>
-  <h3>Monographs, Edited Volumes, and Symposia <span class="t-dim">({booksItems.length})</span></h3>
-  <TerminalPicker items={booksItems as PickerItem[]} label="books" pageSize={8} scroll />
+  <div class="cv-cards">
+    <Card title="Monographs, Edited Volumes, and Symposia" sub={`${booksItems.length} publications`} iconBg="transparent" iconText={mintyIcon('blue-minty-scanlines.png')}>
+      <div class="pub-scroll">
+        {booksItems.map((item) => (
+          <div class="pub-entry" data-blurb={item.blurb || ''} data-url={item.url || ''}>
+            <span class="cv-year">{item.year}</span>
+            <span class="pub-text">
+              <span class="pub-title">{item.url ? <a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a> : item.title}</span>
+              <span class="pub-meta">{item.subtitle}{item.detail ? <> · <span class="pub-venue">{item.detail}</span></> : ''}</span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </Card>
+  </div>
 </Section>
 
 
 <!-- ============ 05 PAPERS ============ -->
 <Section id="papers" num="05">
   <h2><span class="cmd-prefix"><span class="cmd-name">cat</span> <span class="cmd-path">cv/papers.md</span></span></h2>
-  <h3>Published Articles, Pre-Prints, and Reports <span class="t-dim">({papers.length})</span></h3>
-  <TerminalPicker items={papers as PickerItem[]} label="papers" pageSize={8} scroll />
+  <div class="cv-cards">
+    <Card title="Published Articles, Pre-Prints, and Reports" sub={`${papers.length} papers`} iconBg="transparent" iconText={mintyIcon('minty-violet-scanlines.png')}>
+      <div class="pub-scroll">
+        {papers.map((item) => (
+          <div class="pub-entry" data-blurb={item.blurb || ''} data-url={item.url || ''}>
+            <span class="cv-year">{item.year}</span>
+            <span class="pub-text">
+              <span class="pub-title">{item.url ? <a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a> : item.title}</span>
+              <span class="pub-meta">{item.subtitle}{item.detail ? <> · <span class="pub-venue">{item.detail}</span></> : ''}</span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </Card>
+  </div>
 </Section>
 
 
@@ -404,5 +435,62 @@ function linkify(text: string): string {
 </Section>
 )}
 
+<!-- Publication hover tooltip (single shared element) -->
+<div class="pub-tooltip" id="pub-tooltip">
+  <p class="pub-tooltip-blurb" id="pub-tooltip-blurb"></p>
+  <span class="pub-tooltip-link" id="pub-tooltip-link"></span>
+</div>
+
 </main>
+
+<script>
+  // ── Publication entry hover tooltips ──────────────────────────────
+  const tooltip = document.getElementById('pub-tooltip');
+  const ttBlurb = document.getElementById('pub-tooltip-blurb');
+  const ttLink = document.getElementById('pub-tooltip-link');
+  if (tooltip && ttBlurb && ttLink) {
+    document.querySelectorAll('.pub-entry').forEach(entry => {
+      const blurb = (entry as HTMLElement).dataset.blurb || '';
+      const url = (entry as HTMLElement).dataset.url || '';
+      // Only show tooltip if there's content to show
+      if (!blurb && !url) return;
+
+      entry.addEventListener('mouseenter', (e) => {
+        ttBlurb.textContent = blurb;
+        ttBlurb.style.display = blurb ? 'block' : 'none';
+        if (url) {
+          ttLink.textContent = 'View source →';
+          ttLink.style.display = 'inline-block';
+        } else {
+          ttLink.style.display = 'none';
+        }
+        tooltip.style.display = 'block';
+        positionTooltip(e as MouseEvent);
+      });
+
+      entry.addEventListener('mousemove', (e) => {
+        positionTooltip(e as MouseEvent);
+      });
+
+      entry.addEventListener('mouseleave', () => {
+        tooltip.style.display = 'none';
+      });
+    });
+
+    function positionTooltip(e: MouseEvent) {
+      if (!tooltip) return;
+      const pad = 12;
+      let x = e.clientX + pad;
+      let y = e.clientY + pad;
+      // Keep tooltip on screen
+      const tw = 420;
+      const th = tooltip.offsetHeight || 100;
+      if (x + tw > window.innerWidth) x = e.clientX - tw - pad;
+      if (y + th > window.innerHeight) y = e.clientY - th - pad;
+      tooltip.style.left = x + 'px';
+      tooltip.style.top = y + 'px';
+    }
+  }
+</script>
+
 </BaseLayout>
