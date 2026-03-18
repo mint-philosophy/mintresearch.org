@@ -458,10 +458,12 @@ function linkify(text: string): string {
   document.querySelectorAll('.pub-scroll').forEach(scroll => {
     const items = scroll.querySelectorAll('.pub-item');
     items.forEach(item => {
-      const row = item.querySelector('.pub-row');
-      if (!row || !item.querySelector('.pub-expand')) return;
+      if (!item.querySelector('.pub-expand')) return;
 
-      row.addEventListener('click', () => {
+      item.addEventListener('click', (e) => {
+        // Don't intercept clicks on the View Source link
+        if ((e.target as HTMLElement).closest('a')) return;
+
         const wasOpen = item.classList.contains('pub-open');
         // Close all siblings in this scroll container
         items.forEach(other => other.classList.remove('pub-open'));
