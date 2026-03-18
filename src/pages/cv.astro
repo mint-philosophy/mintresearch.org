@@ -454,14 +454,20 @@ function linkify(text: string): string {
 </main>
 
 <script>
-  // ── Publication entry click-to-expand ──────────────────────────────
-  document.querySelectorAll('.pub-item').forEach(item => {
-    const row = item.querySelector('.pub-row');
-    const expand = item.querySelector('.pub-expand');
-    if (!row || !expand) return;
+  // ── Publication entry accordion (one open at a time per section) ───
+  document.querySelectorAll('.pub-scroll').forEach(scroll => {
+    const items = scroll.querySelectorAll('.pub-item');
+    items.forEach(item => {
+      const row = item.querySelector('.pub-row');
+      if (!row || !item.querySelector('.pub-expand')) return;
 
-    row.addEventListener('click', () => {
-      item.classList.toggle('pub-open');
+      row.addEventListener('click', () => {
+        const wasOpen = item.classList.contains('pub-open');
+        // Close all siblings in this scroll container
+        items.forEach(other => other.classList.remove('pub-open'));
+        // Toggle the clicked one
+        if (!wasOpen) item.classList.add('pub-open');
+      });
     });
   });
 </script>
