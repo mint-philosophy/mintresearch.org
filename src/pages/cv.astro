@@ -234,12 +234,20 @@ function linkify(text: string): string {
     <Card title="Monographs, Edited Volumes, and Symposia" sub={`${booksItems.length} publications`} iconBg="transparent" iconText={mintyIcon('blue-minty-scanlines.png')}>
       <div class="pub-scroll">
         {booksItems.map((item) => (
-          <div class="pub-entry" data-blurb={item.blurb || ''} data-url={item.url || ''}>
-            <span class="cv-year">{item.year}</span>
-            <span class="pub-text">
-              <span class="pub-title">{item.url ? <a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a> : item.title}</span>
-              <span class="pub-meta">{item.subtitle}{item.detail ? <> · <span class="pub-venue">{item.detail}</span></> : ''}</span>
-            </span>
+          <div class="pub-item">
+            <div class="pub-row">
+              <span class="cv-year">{item.year}</span>
+              <span class="pub-text">
+                <span class="pub-title">{item.title}</span>
+                <span class="pub-meta">{item.subtitle}{item.detail ? <> · <span class="pub-venue">{item.detail}</span></> : ''}</span>
+              </span>
+            </div>
+            {(item.blurb || item.url) && (
+              <div class="pub-expand">
+                {item.blurb && <p class="pub-blurb">{item.blurb}</p>}
+                {item.url && <a class="pub-source" href={item.url} target="_blank" rel="noopener noreferrer">View source →</a>}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -255,12 +263,20 @@ function linkify(text: string): string {
     <Card title="Published Articles, Pre-Prints, and Reports" sub={`${papers.length} papers`} iconBg="transparent" iconText={mintyIcon('minty-violet-scanlines.png')}>
       <div class="pub-scroll">
         {papers.map((item) => (
-          <div class="pub-entry" data-blurb={item.blurb || ''} data-url={item.url || ''}>
-            <span class="cv-year">{item.year}</span>
-            <span class="pub-text">
-              <span class="pub-title">{item.url ? <a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a> : item.title}</span>
-              <span class="pub-meta">{item.subtitle}{item.detail ? <> · <span class="pub-venue">{item.detail}</span></> : ''}</span>
-            </span>
+          <div class="pub-item">
+            <div class="pub-row">
+              <span class="cv-year">{item.year}</span>
+              <span class="pub-text">
+                <span class="pub-title">{item.title}</span>
+                <span class="pub-meta">{item.subtitle}{item.detail ? <> · <span class="pub-venue">{item.detail}</span></> : ''}</span>
+              </span>
+            </div>
+            {(item.blurb || item.url) && (
+              <div class="pub-expand">
+                {item.blurb && <p class="pub-blurb">{item.blurb}</p>}
+                {item.url && <a class="pub-source" href={item.url} target="_blank" rel="noopener noreferrer">View source →</a>}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -435,77 +451,19 @@ function linkify(text: string): string {
 </Section>
 )}
 
-<!-- Publication click tooltip (single shared element) -->
-<div class="pub-tooltip" id="pub-tooltip">
-  <p class="pub-tooltip-blurb" id="pub-tooltip-blurb"></p>
-  <a class="pub-tooltip-link" id="pub-tooltip-link" target="_blank" rel="noopener noreferrer"></a>
-</div>
-
 </main>
 
 <script>
-  // ── Publication entry click-to-show tooltips ──────────────────────
-  const tooltip = document.getElementById('pub-tooltip');
-  const ttBlurb = document.getElementById('pub-tooltip-blurb');
-  const ttLink = document.getElementById('pub-tooltip-link') as HTMLAnchorElement | null;
-  let activeEntry: Element | null = null;
+  // ── Publication entry click-to-expand ──────────────────────────────
+  document.querySelectorAll('.pub-item').forEach(item => {
+    const row = item.querySelector('.pub-row');
+    const expand = item.querySelector('.pub-expand');
+    if (!row || !expand) return;
 
-  if (tooltip && ttBlurb && ttLink) {
-    document.querySelectorAll('.pub-entry').forEach(entry => {
-      const blurb = (entry as HTMLElement).dataset.blurb || '';
-      const url = (entry as HTMLElement).dataset.url || '';
-      if (!blurb && !url) return;
-
-      entry.addEventListener('click', (e) => {
-        // Don't intercept clicks on the title link itself
-        if ((e.target as HTMLElement).closest('a')) return;
-        e.stopPropagation();
-
-        // Toggle off if clicking the same entry
-        if (activeEntry === entry && tooltip.style.display === 'block') {
-          tooltip.style.display = 'none';
-          activeEntry = null;
-          return;
-        }
-
-        // Populate tooltip
-        ttBlurb.textContent = blurb;
-        ttBlurb.style.display = blurb ? 'block' : 'none';
-        if (url) {
-          ttLink.href = url;
-          ttLink.textContent = 'View source →';
-          ttLink.style.display = 'inline-block';
-        } else {
-          ttLink.style.display = 'none';
-        }
-
-        // Position below the clicked entry
-        const rect = (entry as HTMLElement).getBoundingClientRect();
-        const pad = 8;
-        let x = rect.left;
-        let y = rect.bottom + pad;
-
-        // Keep on screen
-        const tw = 420;
-        if (x + tw > window.innerWidth) x = window.innerWidth - tw - pad;
-        if (x < pad) x = pad;
-        if (y + 150 > window.innerHeight) y = rect.top - 150 - pad;
-
-        tooltip.style.left = x + 'px';
-        tooltip.style.top = y + 'px';
-        tooltip.style.display = 'block';
-        activeEntry = entry;
-      });
+    row.addEventListener('click', () => {
+      item.classList.toggle('pub-open');
     });
-
-    // Click anywhere else to dismiss
-    document.addEventListener('click', (e) => {
-      if (tooltip.style.display === 'block' && !(e.target as HTMLElement).closest('.pub-tooltip')) {
-        tooltip.style.display = 'none';
-        activeEntry = null;
-      }
-    });
-  }
+  });
 </script>
 
 </BaseLayout>
