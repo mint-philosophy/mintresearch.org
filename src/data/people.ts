@@ -58,13 +58,6 @@ export const teamMembers: PersonData[] = [
     headshot: 'jennifer-munt.jpg',
   },
   {
-    name: 'Kira Breithaupt',
-    role: 'PhD Student',
-    disc: 'Philosophy, Cognitive Science',
-    affiliation: 'Australian National University',
-    bio: 'PhD student at MINT Lab working at the intersection of philosophy and cognitive science, with a focus on artificial and biological agents.',
-  },
-  {
     name: 'Tim Dubber',
     role: 'PhD Student',
     disc: 'Philosophy, Political Science',
