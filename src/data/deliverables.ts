@@ -197,7 +197,7 @@ export const publications: PickerItem[] = [
     subtitle: 'Lazar',
     detail: 'Collaborative Intelligence (CUP)',
     url: 'https://arxiv.org/abs/2404.05990',
-    blurb: 'Examines how ML and computational technologies create new forms of power over individuals, as corporations and diminished states exercise authority through automated systems.',
+    blurb: 'Revised and expanded version for the Cambridge University Press volume on collaborative intelligence, developing the account of algorithmic power with new attention to human-AI collaboration and institutional design.',
   },
   {
     year: 2024,
@@ -273,7 +273,7 @@ export const publications: PickerItem[] = [
     subtitle: 'Lazar',
     detail: 'Oxford Handbook of AI Governance',
     url: 'https://doi.org/10.1093/oxfordhb/9780197579329.013.12',
-    blurb: 'Examines how ML and computational technologies create new forms of power over individuals, as corporations and diminished states exercise authority through automated systems.',
+    blurb: 'Original version for the Oxford Handbook of AI Governance, arguing that ML and computational technologies create new forms of power as corporations and diminished states exercise authority through automated systems.',
   },
   {
     year: 2022,
@@ -391,7 +391,6 @@ export const events: PickerItem[] = [
     title: 'Workshop on Sociotechnical AI Safety',
     subtitle: 'Research workshop',
     detail: 'Stanford HAI',
-    url: 'https://mintresearch.org/ourwork/workshop-on-sociotechnical-ai-safety',
     blurb: 'Research workshop at Stanford\'s Human-Centered AI Institute on sociotechnical approaches to AI safety.',
   },
   {
@@ -400,7 +399,6 @@ export const events: PickerItem[] = [
     title: 'Workshop on Democracy and AI',
     subtitle: 'Joint workshop with Carnegie Endowment',
     detail: 'Carnegie Endowment for International Peace',
-    url: 'https://mintresearch.org/ourwork/workshop-on-democracy-and-ai-with-carnegie-endowment-for-international-peace',
     blurb: 'Joint workshop with the Carnegie Endowment for International Peace exploring the relationship between democratic governance and AI.',
   },
   {
@@ -418,7 +416,6 @@ export const events: PickerItem[] = [
     title: 'PAIS Workshop',
     subtitle: 'Philosophy, AI and Society workshop',
     detail: 'Stanford McCoy Center',
-    url: 'https://mintresearch.org/ourwork/pais-workshop-stanford',
     blurb: 'Philosophy, AI and Society workshop bringing together researchers across disciplines at Stanford\'s McCoy Center.',
   },
 
@@ -636,7 +633,6 @@ export const news: PickerItem[] = [
     title: 'Scholl Lecture: Catastrophic AI Risk',
     subtitle: 'Named lecture on catastrophic AI risk',
     detail: 'Purdue University',
-    url: 'https://mintresearch.org/ourwork/lecture-scholl-lecture',
     tag: 'keynote',
     blurb: 'Scholl Lecture at Purdue University on catastrophic AI risk and what should be done about it.',
   },
