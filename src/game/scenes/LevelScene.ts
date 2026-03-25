@@ -41,6 +41,7 @@ export class LevelScene extends Phaser.Scene {
   // Player
   private player!: Phaser.Physics.Arcade.Sprite;
   private playerHealth: number = PLAYER_MAX_HEALTH;
+  private maxPlayerHealth: number = PLAYER_MAX_HEALTH;
   private playerLives: number = PLAYER_LIVES;
   private score: number = 0;
   private papersCollected: number = 0;
@@ -147,6 +148,8 @@ export class LevelScene extends Phaser.Scene {
   private bridgeDropMaxSpeed: number = 0;
   private bridgeVelocityX: number = 0;
   private bridgeVelocityY: number = 0;
+  private basePlayerScaleMultiplier: number = 1;
+  private permanentDeepseekHat: boolean = false;
 
   constructor() {
     super({ key: SCENES.LEVEL });
@@ -159,7 +162,8 @@ export class LevelScene extends Phaser.Scene {
   create(): void {
     this.gsm = new GameStateManager();
     this.config = getLevelConfig(this.levelNum);
-    this.playerHealth = PLAYER_MAX_HEALTH;
+    this.maxPlayerHealth = this.levelNum === 10 ? PLAYER_MAX_HEALTH * 2 : PLAYER_MAX_HEALTH;
+    this.playerHealth = this.maxPlayerHealth;
     this.score = 0;
     this.papersCollected = 0;
     this.paperAmmo = 0;
@@ -223,6 +227,8 @@ export class LevelScene extends Phaser.Scene {
     this.bridgeDropMaxSpeed = 0;
     this.bridgeVelocityX = 0;
     this.bridgeVelocityY = 0;
+    this.basePlayerScaleMultiplier = this.levelNum === 10 ? 1.5 : 1;
+    this.permanentDeepseekHat = this.levelNum === 10;
 
     // Background
     this.cameras.main.setBackgroundColor(this.config.background);
@@ -257,6 +263,7 @@ export class LevelScene extends Phaser.Scene {
     this.player = this.physics.add.sprite(ps.x, ps.y, 'minty-teal');
     this.player.setCollideWorldBounds(true);
     this.resizePlayerVisual();
+    this.applyLevelStartBuffs();
 
     // Camera
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
@@ -309,6 +316,7 @@ export class LevelScene extends Phaser.Scene {
     // Launch HUD
     this.scene.launch(SCENES.HUD, {
       health: this.playerHealth,
+      maxHealth: this.maxPlayerHealth,
       lives: this.playerLives,
       score: this.score,
       papers: this.papersCollected,
@@ -420,7 +428,8 @@ export class LevelScene extends Phaser.Scene {
 
     const previousBottom = this.player.y + (this.player.displayHeight / 2);
     const baseSize = this.getBaseMintyDisplaySize();
-    this.player.setDisplaySize(baseSize.width * scaleMultiplier, baseSize.height * scaleMultiplier);
+    const totalScale = this.basePlayerScaleMultiplier * scaleMultiplier;
+    this.player.setDisplaySize(baseSize.width * totalScale, baseSize.height * totalScale);
     if (preserveFeet) {
       this.player.y = previousBottom - (this.player.displayHeight / 2);
     }
@@ -432,6 +441,39 @@ export class LevelScene extends Phaser.Scene {
 
     this.player.setTexture(textureKey);
     this.resizePlayerVisual(scaleMultiplier, preserveFeet);
+  }
+
+  private applyLevelStartBuffs(): void {
+    if (this.levelNum !== 10) return;
+
+    this.paperAmmo = 200;
+    this.goldPapersCollected = Math.max(this.goldPapersCollected, 4);
+    this.enableDeepseekMode();
+  }
+
+  private getHatOverlayY(): number {
+    return this.player.y - Math.max(18, this.player.displayHeight * 0.55);
+  }
+
+  private enableDeepseekMode(durationMs?: number): void {
+    this.deepseekActive = true;
+    this.hatOverlay?.destroy();
+    this.hatOverlay = this.add.sprite(this.player.x, this.getHatOverlayY(), 'green-hat');
+    this.hatOverlay.setDepth(this.player.depth + 2);
+
+    const existingTimer = this.activeEffects.get('deepseek');
+    existingTimer?.remove(false);
+    this.activeEffects.delete('deepseek');
+
+    if (durationMs && !this.permanentDeepseekHat) {
+      this.activeEffects.set('deepseek', this.time.delayedCall(durationMs, () => {
+        if (this.permanentDeepseekHat) return;
+        this.deepseekActive = false;
+        this.hatOverlay?.destroy();
+        this.hatOverlay = null;
+        this.activeEffects.delete('deepseek');
+      }));
+    }
   }
 
   private resetControlBindings(): void {
@@ -592,7 +634,7 @@ export class LevelScene extends Phaser.Scene {
       if (this.playerLives <= 0) {
         this.fsm.setState('dead');
       } else {
-        this.playerHealth = PLAYER_MAX_HEALTH;
+        this.playerHealth = this.maxPlayerHealth;
         const respawn = this.lastCheckpoint || this.config.playerStart;
         this.player.setPosition(respawn.x, respawn.y);
         this.player.setVelocity(0, 0);
@@ -864,7 +906,7 @@ export class LevelScene extends Phaser.Scene {
 
     // Hat overlay follows player
     if (this.hatOverlay) {
-      this.hatOverlay.setPosition(this.player.x, this.player.y - 18);
+      this.hatOverlay.setPosition(this.player.x, this.getHatOverlayY());
     }
 
     // Clawd follows player
@@ -1869,7 +1911,7 @@ export class LevelScene extends Phaser.Scene {
     const multiplier = isBlueCheck ? 5 : 1;
     this.papersCollected += multiplier;
     this.score += PAPER_SCORE * multiplier;
-    this.playerHealth = Math.min(PLAYER_MAX_HEALTH, this.playerHealth + PAPER_HEAL);
+    this.playerHealth = Math.min(this.maxPlayerHealth, this.playerHealth + PAPER_HEAL);
 
     // Each collected paper gives ammo
     this.paperAmmo += PAPER_AMMO_PER_COLLECT * multiplier;
@@ -1973,7 +2015,7 @@ export class LevelScene extends Phaser.Scene {
         }));
         break;
       case 'nvidia':
-        this.playerHealth = PLAYER_MAX_HEALTH;
+        this.playerHealth = this.maxPlayerHealth;
         this.emitHUDUpdate();
         this.spawnParticles(this.player.x, this.player.y, 0x76b900, 16);
         this.showStatusBanner('INTEGRITY RESTORED', '#a3e635');
@@ -2095,7 +2137,7 @@ export class LevelScene extends Phaser.Scene {
         if (this.playerLives <= 0) {
           this.fsm.setState('dead');
         } else {
-          this.playerHealth = PLAYER_MAX_HEALTH;
+          this.playerHealth = this.maxPlayerHealth;
           const respawn = this.lastCheckpoint || this.config.playerStart;
           this.player.setPosition(respawn.x, respawn.y);
           this.player.setVelocity(0, 0);
@@ -2145,16 +2187,7 @@ export class LevelScene extends Phaser.Scene {
         break;
       case 'deepseek':
         // Green hat overlay + red book ammo (2x damage)
-        this.deepseekActive = true;
-        this.hatOverlay?.destroy();
-        this.hatOverlay = this.add.sprite(this.player.x, this.player.y - 18, 'green-hat');
-        this.hatOverlay.setDepth(this.player.depth + 2);
-        this.activeEffects.set(type, this.time.delayedCall(POWERUP_DURATION.deepseek, () => {
-          this.deepseekActive = false;
-          this.hatOverlay?.destroy();
-          this.hatOverlay = null;
-          this.activeEffects.delete(type);
-        }));
+        this.enableDeepseekMode(POWERUP_DURATION.deepseek);
         break;
       case 'goldenGate':
         this.startGoldenGateRide();
@@ -2486,7 +2519,7 @@ export class LevelScene extends Phaser.Scene {
         this.fsm.setState('dead');
       } else {
         // Respawn
-        this.playerHealth = PLAYER_MAX_HEALTH;
+        this.playerHealth = this.maxPlayerHealth;
         const respawn = this.lastCheckpoint || this.config.playerStart;
         this.player.setPosition(respawn.x, respawn.y);
         this.player.setVelocity(0, 0);
@@ -3433,6 +3466,7 @@ export class LevelScene extends Phaser.Scene {
   private emitHUDUpdate(): void {
     const data = {
       health: this.playerHealth,
+      maxHealth: this.maxPlayerHealth,
       lives: this.playerLives,
       score: this.score,
       papers: this.papersCollected,

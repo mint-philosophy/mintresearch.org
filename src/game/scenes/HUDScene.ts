@@ -13,12 +13,15 @@ export class HUDScene extends Phaser.Scene {
   private muted: boolean = false;
   private bossBar: Phaser.GameObjects.Graphics | null = null;
   private bossNameText: Phaser.GameObjects.Text | null = null;
+  private maxHealth: number = PLAYER_MAX_HEALTH;
 
   constructor() {
     super({ key: SCENES.HUD });
   }
 
-  create(data: { health: number; lives: number; score: number; papers: number; ammo: number; level: number; levelName: string }): void {
+  create(data: { health: number; maxHealth?: number; lives: number; score: number; papers: number; ammo: number; level: number; levelName: string }): void {
+    this.maxHealth = data.maxHealth ?? PLAYER_MAX_HEALTH;
+
     const style = {
       fontFamily: '"JetBrains Mono", monospace',
       fontSize: '10px',
@@ -61,7 +64,8 @@ export class HUDScene extends Phaser.Scene {
     this.drawHealthBar(data.health);
 
     // Listen for updates from LevelScene
-    this.events.on('hudUpdate', (d: { health: number; lives: number; score: number; papers: number; ammo: number }) => {
+    this.events.on('hudUpdate', (d: { health: number; maxHealth?: number; lives: number; score: number; papers: number; ammo: number }) => {
+      this.maxHealth = d.maxHealth ?? this.maxHealth;
       this.healthText.setText(`${Math.max(0, d.health)}%`);
       this.scoreText.setText(`SCORE: ${d.score}`);
       this.papersText.setText(`PAPERS: ${d.papers}`);
@@ -121,7 +125,7 @@ export class HUDScene extends Phaser.Scene {
 
   private drawHealthBar(health: number): void {
     this.healthBar.clear();
-    const pct = Math.max(0, health / PLAYER_MAX_HEALTH);
+    const pct = Math.max(0, health / this.maxHealth);
     const barWidth = 60;
     const barHeight = 6;
     const x = 8;
