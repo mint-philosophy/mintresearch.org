@@ -11,10 +11,10 @@ export const PLAYER_SCALE = 0.35;
 export const PLAYER_BODY_WIDTH = 30;
 export const PLAYER_BODY_HEIGHT = 38;
 export const NPC_SCALE = 0.25;
-export const PLAYER_SPEED = 160;
+export const PLAYER_SPEED = 320;
 export const PLAYER_JUMP = -350;
-export const PLAYER_MAX_HEALTH = 100;
-export const PLAYER_LIVES = 3;
+export const PLAYER_MAX_HEALTH = 200;
+export const PLAYER_LIVES = 5;
 
 // Paper ammunition (replaces ink)
 export const PAPER_AMMO_PER_COLLECT = 5;

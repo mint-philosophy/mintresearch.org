@@ -162,7 +162,7 @@ export class LevelScene extends Phaser.Scene {
   create(): void {
     this.gsm = new GameStateManager();
     this.config = getLevelConfig(this.levelNum);
-    this.maxPlayerHealth = this.levelNum === 10 ? PLAYER_MAX_HEALTH * 2 : PLAYER_MAX_HEALTH;
+    this.maxPlayerHealth = PLAYER_MAX_HEALTH;
     this.playerHealth = this.maxPlayerHealth;
     this.score = 0;
     this.papersCollected = 0;
