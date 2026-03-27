@@ -17,6 +17,11 @@ const floatingMinties = [
 <BaseLayout title="Data Dash — MINT Lab">
 
 <main class="data-dash-page">
+  <nav class="dd-version-switch" aria-label="Data Dash versions">
+    <span class="dd-version-pill is-active">Data Dash 1</span>
+    <a href={`${base}/data-dash-64/`} class="dd-version-pill">Data Dash 64</a>
+  </nav>
+
   <!-- Floating Minties -->
   <div class="dd-floating-minties" aria-hidden="true">
     {floatingMinties.map((m, i) => (
@@ -197,6 +202,43 @@ const floatingMinties = [
     max-width: 960px;
     margin: 0 auto;
     min-height: 100vh;
+  }
+
+  .dd-version-switch {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 0 18px;
+  }
+
+  .dd-version-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 132px;
+    padding: 8px 14px;
+    border: 1px dashed var(--accent-dim);
+    background: rgba(10, 10, 10, 0.82);
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 10px;
+    text-decoration: none;
+    transition: border-color 160ms ease, color 160ms ease, transform 160ms ease;
+  }
+
+  .dd-version-pill:hover {
+    color: var(--text-1);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .dd-version-pill.is-active {
+    color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 18px rgba(46, 196, 182, 0.16);
   }
 
   /* ---- Floating Minties ---- */
