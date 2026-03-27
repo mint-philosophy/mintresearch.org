@@ -26,6 +26,19 @@ import { level7Track } from '../audio/tracks/level7';
 import { level8Track } from '../audio/tracks/level8';
 import { level9Track } from '../audio/tracks/level9';
 import { level10Track } from '../audio/tracks/level10';
+import {
+  level11Track,
+  level12Track,
+  level13Track,
+  level14Track,
+  level15Track,
+  level16Track,
+  level17Track,
+  level18Track,
+  level19Track,
+  level20Track,
+  level21Track,
+} from '../audio/tracks/lateCampaign';
 import { bossTrack } from '../audio/tracks/boss';
 import type { TrackData } from '../systems/AudioEngine';
 
@@ -148,6 +161,8 @@ export class LevelScene extends Phaser.Scene {
   private bridgeDropMaxSpeed: number = 0;
   private bridgeVelocityX: number = 0;
   private bridgeVelocityY: number = 0;
+  private flightActive: boolean = false;
+  private flightTimer: Phaser.Time.TimerEvent | null = null;
   private basePlayerScaleMultiplier: number = 1;
   private permanentDeepseekHat: boolean = false;
 
@@ -227,6 +242,8 @@ export class LevelScene extends Phaser.Scene {
     this.bridgeDropMaxSpeed = 0;
     this.bridgeVelocityX = 0;
     this.bridgeVelocityY = 0;
+    this.flightActive = false;
+    this.flightTimer = null;
     this.basePlayerScaleMultiplier = this.levelNum === 10 ? 1.5 : 1;
     this.permanentDeepseekHat = this.levelNum === 10;
 
@@ -264,6 +281,7 @@ export class LevelScene extends Phaser.Scene {
     this.player.setCollideWorldBounds(true);
     this.resizePlayerVisual();
     this.applyLevelStartBuffs();
+    this.applyLevelEnvironmentSetup();
 
     // Camera
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
@@ -360,6 +378,8 @@ export class LevelScene extends Phaser.Scene {
     const tracks: Record<number, TrackData> = {
       1: level1Track, 2: level2Track, 3: level3Track,
       4: level4Track, 5: level5Track, 6: level6Track, 7: level7Track, 8: level8Track, 9: level9Track, 10: level10Track,
+      11: level11Track, 12: level12Track, 13: level13Track, 14: level14Track, 15: level15Track,
+      16: level16Track, 17: level17Track, 18: level18Track, 19: level19Track, 20: level20Track, 21: level21Track,
     };
     audioEngine.init();
     const track = tracks[this.levelNum];
@@ -449,6 +469,18 @@ export class LevelScene extends Phaser.Scene {
     this.paperAmmo = 200;
     this.goldPapersCollected = Math.max(this.goldPapersCollected, 4);
     this.enableDeepseekMode();
+  }
+
+  private applyLevelEnvironmentSetup(): void {
+    if (this.levelNum === 17) {
+      this.player.setGravityY(-80);
+      return;
+    }
+    if (this.levelNum === 18) {
+      this.player.setGravityY(-260);
+      return;
+    }
+    this.player.setGravityY(0);
   }
 
   private getHatOverlayY(): number {
@@ -668,6 +700,7 @@ export class LevelScene extends Phaser.Scene {
     if (!this.player?.active || this.appleMelting) return;
 
     this.appleMelting = true;
+    this.endFlightMode(true);
     this.endGoldenGateRide(true);
     this.appleMeltTimer?.remove();
     this.clearShockSources();
@@ -728,6 +761,7 @@ export class LevelScene extends Phaser.Scene {
   }
 
   private startGoldenGateRide(): void {
+    this.endFlightMode(true);
     this.endGoldenGateRide(true);
 
     this.bridgeRideActive = true;
@@ -788,6 +822,64 @@ export class LevelScene extends Phaser.Scene {
 
     this.bridgeVelocityX = 0;
     this.bridgeVelocityY = 0;
+  }
+
+  private startFlightMode(): void {
+    if (!this.player?.active) return;
+
+    this.endGoldenGateRide(true);
+    this.flightTimer?.remove();
+    this.flightActive = true;
+
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+    body.setAllowGravity(false);
+    body.setVelocity(0, 0);
+
+    const timer = this.time.delayedCall(POWERUP_DURATION.jetpack, () => {
+      this.endFlightMode();
+    });
+    this.flightTimer = timer;
+    this.activeEffects.set('jetpack', timer);
+    this.showStatusBanner('JETPACK ONLINE', '#93c5fd');
+  }
+
+  private endFlightMode(forceCleanup: boolean = false): void {
+    if (!this.flightActive && !this.flightTimer) return;
+
+    this.flightActive = false;
+    this.flightTimer?.remove();
+    this.flightTimer = null;
+    this.activeEffects.delete('jetpack');
+
+    const body = this.player?.body as Phaser.Physics.Arcade.Body | undefined;
+    if (body) {
+      body.setAllowGravity(true);
+      this.applyLevelEnvironmentSetup();
+      if (!forceCleanup && body.velocity.y < 0) {
+        body.setVelocityY(0);
+      }
+    }
+
+    if (!forceCleanup) {
+      this.showStatusBanner('FLIGHT OVER', '#bfdbfe');
+    }
+  }
+
+  private updateFlightMode(moveDir: number): void {
+    if (!this.flightActive || !this.player?.active) return;
+
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+    const ascend = this.isActionDown('jump');
+    const descend = this.cursors.down.isDown || this.wasd.S.isDown;
+    const flightSpeedX = PLAYER_SPEED * 1.1;
+    const flightSpeedY = 220;
+
+    let vy = Math.sin(this.time.now * 0.006) * 24;
+    if (ascend && !descend) vy = -flightSpeedY;
+    else if (descend) vy = flightSpeedY;
+
+    body.setVelocity(moveDir * flightSpeedX, vy);
+    body.setAllowGravity(false);
   }
 
   private updateGoldenGateRide(moveDir: number): void {
@@ -852,10 +944,13 @@ export class LevelScene extends Phaser.Scene {
     else if (this.isActionDown('right')) moveDir = 1;
 
     if (this.controlsReversed) moveDir *= -1;
-    if (this.bridgeRideActive) {
+    if (this.flightActive) {
+      this.updateFlightMode(moveDir);
+    } else if (this.bridgeRideActive) {
       this.updateGoldenGateRide(moveDir);
     } else {
       body.setVelocityX(moveDir * speed);
+      this.applyAmbientLevelForces(body);
     }
 
     if (moveDir !== 0) {
@@ -864,14 +959,14 @@ export class LevelScene extends Phaser.Scene {
     }
 
     // Reset jumps when grounded
-    if (body.blocked.down && !this.bridgeRideActive) {
+    if (body.blocked.down && !this.bridgeRideActive && !this.flightActive) {
       this.jumpsRemaining = MAX_JUMPS;
     }
 
     // Jump (with double jump)
     const jumpPressed = this.isActionJustPressed('jump');
 
-    if (!this.bridgeRideActive && jumpPressed && this.jumpsRemaining > 0) {
+    if (!this.bridgeRideActive && !this.flightActive && jumpPressed && this.jumpsRemaining > 0) {
       if (this.jumpReversed) {
         // Copilot: backward launch instead of jump
         const body2 = this.player.body as Phaser.Physics.Arcade.Body;
@@ -1680,7 +1775,7 @@ export class LevelScene extends Phaser.Scene {
       ssi: 'pu-ssi', deepseek: 'pu-deepseek', nvidia: 'pu-nvidia',
       clippy: 'pd-clippy', fogCloud: 'pd-fog', grok: 'pd-grok', dataLeak: 'pd-leak',
       copilot: 'pd-copilot', meta: 'pd-meta', qwen: 'pd-qwen', openclaw: 'pd-openclaw', apple: 'pd-apple',
-      goldenGate: 'pu-goldenGate',
+      goldenGate: 'pu-goldenGate', jetpack: 'pu-jetpack',
     };
     const spawnPickup = (x: number, y: number, type: string) => {
       const tex = textureMap[type] || 'pu-shield';
@@ -1697,7 +1792,7 @@ export class LevelScene extends Phaser.Scene {
       });
     };
 
-    const fixedTypes = new Set(['goldenGate']);
+    const fixedTypes = new Set(['goldenGate', 'jetpack']);
     const fixedSpawns = this.config.powerUps.filter((powerUp) => fixedTypes.has(powerUp.type));
     const flexiblePositions = this.config.powerUps.filter((powerUp) => !fixedTypes.has(powerUp.type));
 
@@ -1772,12 +1867,13 @@ export class LevelScene extends Phaser.Scene {
     const bc = this.config.boss;
     const texKey = `boss-${bc.type}`;
     const bossSize = BOSS_SIZES[bc.type] || 96;
+    const flyingBosses = new Set(['bernie', 'launchVehicle', 'warClaude']);
 
     // Most bosses spawn near ground; flying bosses start high.
-    const bossY = bc.type === 'bernie' ? 140 : GAME_HEIGHT - 8 - (bossSize / 2);
+    const bossY = flyingBosses.has(bc.type) ? 140 : GAME_HEIGHT - 8 - (bossSize / 2);
     this.boss = this.enemies.create(bc.x, bossY, texKey) as Phaser.Physics.Arcade.Sprite;
     this.boss.setCollideWorldBounds(true);
-    if (bc.type === 'bernie') {
+    if (flyingBosses.has(bc.type)) {
       this.boss.body!.allowGravity = false;
     }
 
@@ -2129,6 +2225,7 @@ export class LevelScene extends Phaser.Scene {
       case 'qwen':
         // Instant explosion — lose a life
         // Particle burst
+        this.endFlightMode(true);
         this.spawnParticles(this.player.x, this.player.y, 0xEF4444, 20);
         this.cameras.main.shake(400, 0.03);
         this.cameras.main.flash(200, 255, 100, 100);
@@ -2191,6 +2288,9 @@ export class LevelScene extends Phaser.Scene {
         break;
       case 'goldenGate':
         this.startGoldenGateRide();
+        break;
+      case 'jetpack':
+        this.startFlightMode();
         break;
       case 'apple':
         this.startAppleMeltdown();
@@ -2387,9 +2487,12 @@ export class LevelScene extends Phaser.Scene {
     const damage = (p.getData('damage') as number) || 1;
     const sourceKind = (p.getData('sourceKind') as string) || 'paper';
 
-    if (e.getData('isBoss') && e.getData('type') === 'angryNeckbeard' && sourceKind === 'paper') {
-      this.reflectPaperAtPlayer(p, e);
-      return;
+    if (e.getData('isBoss') && sourceKind === 'paper') {
+      const bossType = e.getData('type') as string;
+      if (bossType === 'angryNeckbeard' || bossType === 'mirrorTower') {
+        this.reflectPaperAtPlayer(p, e);
+        return;
+      }
     }
 
     p.destroy();
@@ -2513,6 +2616,7 @@ export class LevelScene extends Phaser.Scene {
 
     if (this.playerHealth <= 0) {
       this.clearShockSources();
+      this.endFlightMode(true);
       this.endGoldenGateRide(true);
       this.playerLives--;
       if (this.playerLives <= 0) {
@@ -2534,6 +2638,7 @@ export class LevelScene extends Phaser.Scene {
     this.gsm.updateHighScore(this.score);
     this.gsm.addPapers(this.papersCollected);
     this.despawnClawd();
+    this.endFlightMode(true);
     this.endGoldenGateRide(true);
     this.clearShockSources();
 
@@ -2617,6 +2722,17 @@ export class LevelScene extends Phaser.Scene {
       case 'schmidhuber': this.updateBossSchmidhuber(now); break;
       case 'pauseSign': this.updateBossPauseSign(now); break;
       case 'bernie': this.updateBossBernie(now); break;
+      case 'euvScanner': this.updateBossEuvScanner(now); break;
+      case 'marketMaker': this.updateBossMarketMaker(now); break;
+      case 'hearingDais': this.updateBossHearingDais(now); break;
+      case 'aiActBinder': this.updateBossAiActBinder(now); break;
+      case 'mirrorTower': this.updateBossMirrorTower(now); break;
+      case 'robotaxi': this.updateBossRobotaxi(now); break;
+      case 'trawlerNet': this.updateBossTrawlerNet(now); break;
+      case 'launchVehicle': this.updateBossLaunchVehicle(now); break;
+      case 'deepfakeDirector': this.updateBossDeepfakeDirector(now); break;
+      case 'warClaude': this.updateBossWarClaude(now); break;
+      case 'weightsCore': this.updateBossWeightsCore(now); break;
     }
 
     // Update boss health bar in HUD
@@ -3158,6 +3274,529 @@ export class LevelScene extends Phaser.Scene {
     }
   }
 
+  private updateBossEuvScanner(now: number): void {
+    if (!this.boss?.active || !this.player?.active) return;
+
+    const phase = this.boss.getData('currentPhase') as number;
+    const originX = this.boss.getData('originX') as number;
+    this.boss.setVelocity(0, 0);
+    this.boss.setX(originX + Math.sin(now * 0.0012) * (32 + phase * 14));
+
+    const fireInterval = [1350, 1000, 760][phase] || 760;
+    if (now - this.bossLastAttack > fireInterval) {
+      this.bossLastAttack = now;
+      const volley = 2 + phase;
+      for (let i = 0; i < volley; i++) {
+        this.time.delayedCall(i * 100, () => {
+          if (!this.boss?.active || !this.player?.active) return;
+          this.throwBossProjectile(
+            'boss-projectile',
+            this.boss.x + Phaser.Math.Between(-24, 24),
+            this.boss.y + 14,
+            this.player.x + Phaser.Math.Between(-40, 40),
+            this.player.y - 8,
+            230 + phase * 18
+          );
+        });
+      }
+    }
+
+    const scanInterval = [4300, 3200, 2400][phase] || 2400;
+    if (now - this.bossLastSpecial > scanInterval) {
+      this.bossLastSpecial = now;
+      const count = 2 + phase;
+      const baseX = Phaser.Math.Clamp(this.player.x, 90, this.config.width - 90);
+      for (let i = 0; i < count; i++) {
+        const offset = (i - (count - 1) / 2) * 84;
+        this.telegraphColumnStrike(baseX + offset, 60, 0x4fd1c5, 18 + phase * 2, 720);
+      }
+    }
+  }
+
+  private updateBossMarketMaker(now: number): void {
+    if (!this.boss?.active || !this.player?.active) return;
+
+    const phase = this.boss.getData('currentPhase') as number;
+    const originX = this.boss.getData('originX') as number;
+    this.boss.setX(originX + Math.sin(now * 0.0018 + phase) * (58 + phase * 12));
+    this.boss.setVelocity(0, 0);
+
+    const fireInterval = [1250, 950, 720][phase] || 720;
+    if (now - this.bossLastAttack > fireInterval) {
+      this.bossLastAttack = now;
+      const spread = phase >= 2 ? 1 : 0;
+      for (let i = -spread; i <= spread; i++) {
+        this.throwBossProjectile(
+          'money-projectile',
+          this.boss.x,
+          this.boss.y - 10,
+          this.player.x + i * 70,
+          this.player.y - 8,
+          230 + phase * 18
+        );
+      }
+    }
+
+    const crashInterval = [4100, 3000, 2200][phase] || 2200;
+    if (now - this.bossLastSpecial > crashInterval) {
+      this.bossLastSpecial = now;
+      const count = 3 + phase;
+      for (let i = 0; i < count; i++) {
+        const x = Phaser.Math.Clamp(
+          this.player.x + Phaser.Math.Between(-220, 220),
+          90,
+          this.config.width - 90
+        );
+        this.telegraphColumnStrike(x, 54, 0x22c55e, 16 + phase * 2, 650);
+      }
+    }
+  }
+
+  private updateBossHearingDais(now: number): void {
+    if (!this.boss?.active || !this.player?.active) return;
+
+    const phase = this.boss.getData('currentPhase') as number;
+    this.boss.setVelocity(0, 0);
+
+    const fireInterval = [1300, 960, 740][phase] || 740;
+    if (now - this.bossLastAttack > fireInterval) {
+      this.bossLastAttack = now;
+      const burst = 2 + phase;
+      for (let i = 0; i < burst; i++) {
+        this.time.delayedCall(i * 95, () => {
+          if (!this.boss?.active || !this.player?.active) return;
+          this.throwBossProjectile(
+            'comment-projectile',
+            this.boss.x + Phaser.Math.Between(-36, 36),
+            this.boss.y - 28,
+            this.player.x + Phaser.Math.Between(-55, 55),
+            this.player.y - 10,
+            200 + phase * 12
+          );
+        });
+      }
+    }
+
+    const summonsInterval = [5000, 3900, 3000][phase] || 3000;
+    if (now - this.bossLastSpecial > summonsInterval) {
+      this.bossLastSpecial = now;
+      const leftX = Phaser.Math.Clamp(this.player.x - 220, 90, this.config.width - 90);
+      const rightX = Phaser.Math.Clamp(this.player.x + 220, 90, this.config.width - 90);
+      this.summonBossEnemy('critic', leftX, -40, phase >= 1 ? 'orange' : 'red', 90, true);
+      this.summonBossEnemy('troll', rightX, -80, phase >= 2 ? 'orange' : 'red', 90, true);
+    }
+  }
+
+  private updateBossAiActBinder(now: number): void {
+    if (!this.boss?.active || !this.player?.active) return;
+
+    const phase = this.boss.getData('currentPhase') as number;
+    const originX = this.boss.getData('originX') as number;
+    this.boss.setX(originX + Math.sin(now * 0.0013) * (24 + phase * 10));
+    this.boss.setVelocity(0, 0);
+
+    const fireInterval = [1400, 1100, 860, 700][phase] || 700;
+    if (now - this.bossLastAttack > fireInterval) {
+      this.bossLastAttack = now;
+      const volley = 2 + Math.min(2, phase);
+      for (let i = 0; i < volley; i++) {
+        this.time.delayedCall(i * 85, () => {
+          if (!this.boss?.active || !this.player?.active) return;
+          this.throwBossProjectile(
+            'paper-projectile',
+            this.boss.x + Phaser.Math.Between(-28, 28),
+            this.boss.y - 12,
+            this.player.x + Phaser.Math.Between(-36, 36),
+            this.player.y - 6,
+            210 + phase * 16
+          );
+        });
+      }
+    }
+
+    const stampInterval = [4400, 3300, 2500, 2100][phase] || 2100;
+    if (now - this.bossLastSpecial > stampInterval) {
+      this.bossLastSpecial = now;
+      const count = 2 + Math.min(2, phase);
+      for (let i = 0; i < count; i++) {
+        const x = Phaser.Math.Clamp(this.player.x + Phaser.Math.Between(-170, 170), 90, this.config.width - 90);
+        this.telegraphColumnStrike(x, 70, 0x2563eb, 18 + phase * 2, 760);
+      }
+    }
+  }
+
+  private updateBossMirrorTower(now: number): void {
+    if (!this.boss?.active || !this.player?.active) return;
+
+    const phase = this.boss.getData('currentPhase') as number;
+    const originX = this.boss.getData('originX') as number;
+    this.boss.setX(originX + Math.sin(now * 0.0014) * (18 + phase * 8));
+    this.boss.setVelocity(0, 0);
+
+    const fireInterval = [1250, 980, 780, 620][phase] || 620;
+    if (now - this.bossLastAttack > fireInterval) {
+      this.bossLastAttack = now;
+      const burst = 2 + Math.min(2, phase);
+      for (let i = -Math.floor(burst / 2); i <= Math.floor(burst / 2); i++) {
+        this.throwBossProjectile(
+          'spectacles-projectile',
+          this.boss.x,
+          this.boss.y - 18,
+          this.player.x + i * 70,
+          this.player.y - 12,
+          220 + phase * 16
+        );
+      }
+    }
+
+    const beamInterval = [4300, 3200, 2500, 2000][phase] || 2000;
+    if (now - this.bossLastSpecial > beamInterval) {
+      this.bossLastSpecial = now;
+      const x = Phaser.Math.Clamp(this.player.x, 90, this.config.width - 90);
+      this.telegraphColumnStrike(x, 86, 0xf97316, 20 + phase * 2, 780);
+    }
+  }
+
+  private updateBossRobotaxi(now: number): void {
+    if (!this.boss?.active || !this.player?.active) return;
+
+    const phase = this.boss.getData('currentPhase') as number;
+    const body = this.boss.body as Phaser.Physics.Arcade.Body;
+    const chargeUntil = (this.boss.getData('chargeUntil') as number) || 0;
+    const dir = this.player.x > this.boss.x ? 1 : -1;
+    this.boss.setFlipX(dir < 0);
+
+    if (chargeUntil > now) {
+      body.setVelocityX(dir * (260 + phase * 40));
+      return;
+    }
+
+    body.setVelocityX(dir * (70 + phase * 18));
+
+    const fireInterval = [1500, 1150, 900, 760][phase] || 760;
+    if (now - this.bossLastAttack > fireInterval) {
+      this.bossLastAttack = now;
+      this.throwBossProjectile(
+        'boss-projectile',
+        this.boss.x + dir * 32,
+        this.boss.y - 10,
+        this.player.x,
+        this.player.y - 8,
+        240 + phase * 16
+      );
+    }
+
+    const chargeInterval = [4200, 3200, 2500, 1900][phase] || 1900;
+    if (now - this.bossLastSpecial > chargeInterval) {
+      this.bossLastSpecial = now;
+      this.boss.setData('chargeUntil', now + 850);
+      this.showStatusBanner('HEADLIGHTS', '#fde68a');
+    }
+  }
+
+  private updateBossTrawlerNet(now: number): void {
+    if (!this.boss?.active || !this.player?.active) return;
+
+    const phase = this.boss.getData('currentPhase') as number;
+    const speed = 38 + phase * 12;
+    const dir = this.player.x > this.boss.x ? 1 : -1;
+    this.boss.setVelocityX(speed * dir * 0.7);
+
+    const fireInterval = [1400, 1050, 850, 700][phase] || 700;
+    if (now - this.bossLastAttack > fireInterval) {
+      this.bossLastAttack = now;
+      const volley = 2 + Math.min(2, phase);
+      for (let i = 0; i < volley; i++) {
+        this.time.delayedCall(i * 100, () => {
+          if (!this.boss?.active || !this.player?.active) return;
+          this.throwBossProjectile(
+            'boss-projectile',
+            this.boss.x + Phaser.Math.Between(-24, 24),
+            this.boss.y - 10,
+            this.player.x + Phaser.Math.Between(-45, 45),
+            this.player.y - 8,
+            210 + phase * 14
+          );
+        });
+      }
+    }
+
+    const pullInterval = [4500, 3400, 2600, 2100][phase] || 2100;
+    if (now - this.bossLastSpecial > pullInterval) {
+      this.bossLastSpecial = now;
+      this.time.addEvent({
+        delay: 60,
+        repeat: 18,
+        callback: () => {
+          if (!this.boss?.active || !this.player?.active) return;
+          const body = this.player.body as Phaser.Physics.Arcade.Body;
+          const pullDir = this.boss.x > this.player.x ? 1 : -1;
+          body.setVelocityX(body.velocity.x + pullDir * 10);
+        },
+      });
+      this.summonBossEnemy('waterWave', this.player.x + Phaser.Math.Between(-120, 120), -60, 'peach', 0, true);
+      if (phase >= 2) {
+        this.summonBossEnemy('gasBottle', this.player.x + Phaser.Math.Between(-180, 180), -100, 'red', 0, true);
+      }
+    }
+  }
+
+  private updateBossLaunchVehicle(now: number): void {
+    if (!this.boss?.active || !this.player?.active) return;
+
+    const phase = this.boss.getData('currentPhase') as number;
+    const targetX = this.player.x + Math.sin(now * 0.0018 + phase) * (110 + phase * 16);
+    const targetY = 118 + Math.cos(now * 0.0024 + phase) * (44 + phase * 10);
+    this.boss.setVelocity(
+      Phaser.Math.Clamp((targetX - this.boss.x) * 2.4, -230, 230),
+      Phaser.Math.Clamp((targetY - this.boss.y) * 2.5, -180, 180)
+    );
+
+    const fireInterval = [1200, 920, 760, 620][phase] || 620;
+    if (now - this.bossLastAttack > fireInterval) {
+      this.bossLastAttack = now;
+      const volley = 2 + Math.min(2, phase);
+      for (let i = 0; i < volley; i++) {
+        this.time.delayedCall(i * 90, () => {
+          if (!this.boss?.active || !this.player?.active) return;
+          this.throwBossProjectile(
+            'boss-projectile',
+            this.boss.x + Phaser.Math.Between(-16, 16),
+            this.boss.y + 32,
+            this.player.x + Phaser.Math.Between(-36, 36),
+            this.player.y + Phaser.Math.Between(-12, 24),
+            230 + phase * 18
+          );
+        });
+      }
+    }
+
+    const boosterInterval = [4200, 3100, 2400, 1900][phase] || 1900;
+    if (now - this.bossLastSpecial > boosterInterval) {
+      this.bossLastSpecial = now;
+      const count = 2 + Math.min(2, phase);
+      for (let i = 0; i < count; i++) {
+        const x = Phaser.Math.Clamp(this.player.x + Phaser.Math.Between(-140, 140), 90, this.config.width - 90);
+        this.telegraphColumnStrike(x, 62, 0x94a3b8, 18 + phase * 2, 700);
+      }
+      if (phase >= 2) {
+        this.summonBossEnemy('parrot', this.player.x + Phaser.Math.Between(-180, 180), -80, 'orange', 80, true);
+      }
+    }
+  }
+
+  private updateBossDeepfakeDirector(now: number): void {
+    if (!this.boss?.active || !this.player?.active) return;
+
+    const phase = this.boss.getData('currentPhase') as number;
+    const originX = this.boss.getData('originX') as number;
+    this.boss.setX(originX + Math.sin(now * 0.0017) * (42 + phase * 10));
+    this.boss.setVelocity(0, 0);
+
+    const fireInterval = [1250, 980, 760, 620][phase] || 620;
+    if (now - this.bossLastAttack > fireInterval) {
+      this.bossLastAttack = now;
+      this.throwBossProjectile(
+        phase % 2 === 0 ? 'comment-projectile' : 'tweet-projectile',
+        this.boss.x,
+        this.boss.y - 18,
+        this.player.x + Phaser.Math.Between(-50, 50),
+        this.player.y - 8,
+        220 + phase * 16
+      );
+    }
+
+    const fakeInterval = [4200, 3200, 2500, 1900][phase] || 1900;
+    if (now - this.bossLastSpecial > fakeInterval) {
+      this.bossLastSpecial = now;
+      for (let i = 0; i < 2 + Math.min(2, phase); i++) {
+        this.spawnFakePaperDecoy(
+          this.player.x + Phaser.Math.Between(-100, 100),
+          this.player.y - Phaser.Math.Between(40, 110),
+          0xec4899
+        );
+      }
+      if (phase >= 2 && !this.boss.getData(`deepfakeClone_${phase}`)) {
+        this.boss.setData(`deepfakeClone_${phase}`, true);
+        this.spawnBossClone();
+      }
+    }
+  }
+
+  private updateBossWarClaude(now: number): void {
+    if (!this.boss?.active || !this.player?.active) return;
+
+    const phase = this.boss.getData('currentPhase') as number;
+    const targetX = this.player.x + Math.sin(now * 0.0016 + phase) * (90 + phase * 12);
+    const targetY = 126 + Math.cos(now * 0.0021 + phase) * (30 + phase * 10);
+    this.boss.setVelocity(
+      Phaser.Math.Clamp((targetX - this.boss.x) * 2.2, -220, 220),
+      Phaser.Math.Clamp((targetY - this.boss.y) * 2.4, -180, 180)
+    );
+
+    const fireInterval = [1180, 900, 720, 600, 520][phase] || 520;
+    if (now - this.bossLastAttack > fireInterval) {
+      this.bossLastAttack = now;
+      const volley = 2 + Math.min(2, phase);
+      for (let i = 0; i < volley; i++) {
+        this.time.delayedCall(i * 85, () => {
+          if (!this.boss?.active || !this.player?.active) return;
+          this.throwBossProjectile(
+            i % 2 === 0 ? 'paper-projectile' : 'comment-projectile',
+            this.boss.x,
+            this.boss.y + 12,
+            this.player.x + Phaser.Math.Between(-44, 44),
+            this.player.y - 8,
+            235 + phase * 16
+          );
+        });
+      }
+    }
+
+    const strikeInterval = [3900, 3000, 2400, 1900, 1600][phase] || 1600;
+    if (now - this.bossLastSpecial > strikeInterval) {
+      this.bossLastSpecial = now;
+      this.showStatusBanner('TARGET LOCK', '#fca5a5');
+      const count = 2 + Math.min(2, phase);
+      for (let i = 0; i < count; i++) {
+        const offset = (i - (count - 1) / 2) * 96;
+        this.telegraphColumnStrike(
+          Phaser.Math.Clamp(this.player.x + offset, 90, this.config.width - 90),
+          70,
+          0xb91c1c,
+          20 + phase * 2,
+          760
+        );
+      }
+      this.summonBossEnemy('parrot', this.player.x + Phaser.Math.Between(-170, 170), -90, 'orange', 90, true);
+    }
+  }
+
+  private updateBossWeightsCore(now: number): void {
+    if (!this.boss?.active || !this.player?.active) return;
+
+    const phase = this.boss.getData('currentPhase') as number;
+    const originX = this.boss.getData('originX') as number;
+    this.boss.setX(originX + Math.sin(now * 0.0015 + phase) * (46 + phase * 14));
+    this.boss.setVelocity(0, 0);
+
+    const fireInterval = [980, 820, 680, 580, 500][phase] || 500;
+    if (now - this.bossLastAttack > fireInterval) {
+      this.bossLastAttack = now;
+      const textures = ['boss-projectile', 'comment-projectile', 'tweet-projectile'];
+      for (let i = 0; i < 3 + Math.min(2, phase); i++) {
+        this.time.delayedCall(i * 70, () => {
+          if (!this.boss?.active || !this.player?.active) return;
+          const texture = textures[i % textures.length];
+          this.throwBossProjectile(
+            texture,
+            this.boss.x + Phaser.Math.Between(-28, 28),
+            this.boss.y - 18,
+            this.player.x + Phaser.Math.Between(-70, 70),
+            this.player.y + Phaser.Math.Between(-30, 20),
+            240 + phase * 18
+          );
+        });
+      }
+    }
+
+    const comboInterval = [3400, 2800, 2200, 1800, 1500][phase] || 1500;
+    if (now - this.bossLastSpecial > comboInterval) {
+      this.bossLastSpecial = now;
+      const count = 2 + Math.min(3, phase);
+      for (let i = 0; i < count; i++) {
+        const x = Phaser.Math.Clamp(this.player.x + Phaser.Math.Between(-180, 180), 90, this.config.width - 90);
+        this.telegraphColumnStrike(x, 74, 0xa855f7, 20 + phase * 2, 720);
+      }
+
+      const summons: Array<{ type: EnemySpawn['type']; tier: EnemyTier }> = [
+        { type: 'meanComment', tier: 'red' },
+        { type: 'parrot', tier: 'orange' },
+        { type: 'bciOctopus', tier: 'orange' },
+      ];
+      const summon = summons[phase % summons.length];
+      this.summonBossEnemy(summon.type, this.player.x + Phaser.Math.Between(-200, 200), -90, summon.tier, 90, true);
+
+      if (phase >= 2 && !this.boss.getData(`weightsClone_${phase}`)) {
+        this.boss.setData(`weightsClone_${phase}`, true);
+        this.spawnBossClone();
+      }
+    }
+  }
+
+  private applyAmbientLevelForces(body: Phaser.Physics.Arcade.Body): void {
+    if (this.levelNum === 17) {
+      const current = Math.sin(this.time.now * 0.0022 + this.player.y * 0.01) * 1.1;
+      body.setVelocityX(Phaser.Math.Clamp(body.velocity.x + current, -PLAYER_SPEED * 1.6, PLAYER_SPEED * 1.6));
+      return;
+    }
+
+    if (this.levelNum === 18) {
+      const drift = Math.cos(this.time.now * 0.0018) * 0.6;
+      body.setVelocityX(Phaser.Math.Clamp(body.velocity.x + drift, -PLAYER_SPEED * 1.7, PLAYER_SPEED * 1.7));
+      if (body.velocity.y > 250) {
+        body.setVelocityY(250);
+      }
+    }
+  }
+
+  private summonBossEnemy(
+    type: EnemySpawn['type'],
+    x: number,
+    y: number,
+    tier: EnemyTier = 'red',
+    patrolRange: number = 90,
+    fromSky: boolean = false
+  ): void {
+    const spawnX = Phaser.Math.Clamp(x, 80, this.config.width - 80);
+    this.spawnEnemy({ type, x: spawnX, y, tier, patrolRange }, { x: spawnX, y, fromSky });
+  }
+
+  private telegraphColumnStrike(
+    x: number,
+    width: number,
+    color: number,
+    damage: number,
+    delayMs: number = 700
+  ): void {
+    const strike = this.add.rectangle(x, GAME_HEIGHT / 2, width, GAME_HEIGHT, color, 0.12);
+    strike.setDepth(58);
+    strike.setBlendMode(Phaser.BlendModes.ADD);
+    this.tweens.add({
+      targets: strike,
+      alpha: { from: 0.06, to: 0.28 },
+      duration: 100,
+      yoyo: true,
+      repeat: Math.max(1, Math.floor(delayMs / 180)),
+    });
+
+    this.time.delayedCall(delayMs, () => {
+      if (strike.active) strike.destroy();
+      if (!this.player?.active) return;
+      this.cameras.main.shake(150, 0.008);
+      this.spawnParticles(x, Phaser.Math.Between(90, GAME_HEIGHT - 40), color, 12);
+      if (!this.invincible && Math.abs(this.player.x - x) <= width / 2) {
+        this.takeDamage(damage);
+      }
+    });
+  }
+
+  private spawnFakePaperDecoy(x: number, y: number, tint: number = 0xff44aa): void {
+    const fakePaper = this.papers.create(x, y, 'paper') as Phaser.Physics.Arcade.Sprite;
+    fakePaper.body!.allowGravity = false;
+    fakePaper.setTint(tint);
+    fakePaper.setData('isFakePaper', true);
+    fakePaper.setData('isGold', false);
+    this.tweens.add({
+      targets: fakePaper,
+      y: y - 6,
+      duration: 1200,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+  }
+
   // ── Envelop Mechanic ──
   private startEnvelopCharge(): void {
     if (!this.boss?.active || !this.player?.active) return;
@@ -3419,6 +4058,7 @@ export class LevelScene extends Phaser.Scene {
     this.gsm.updateHighScore(this.score);
     this.gsm.addPapers(this.papersCollected);
     this.despawnClawd();
+    this.endFlightMode(true);
     this.endGoldenGateRide(true);
     this.clearShockSources();
 
@@ -3507,6 +4147,17 @@ export class LevelScene extends Phaser.Scene {
       case 8: this.drawBgNeurips(); break;
       case 9: this.drawBgSanFrancisco(); break;
       case 10: this.drawBgDatacenter(); break;
+      case 11: this.drawBgChipFoundry(); break;
+      case 12: this.drawBgWallStreet(); break;
+      case 13: this.drawBgCongressionalHearing(); break;
+      case 14: this.drawBgBrussels(); break;
+      case 15: this.drawBgDesertCompute(); break;
+      case 16: this.drawBgRobotaxiCity(); break;
+      case 17: this.drawBgUndersea(); break;
+      case 18: this.drawBgOrbit(); break;
+      case 19: this.drawBgStudio(); break;
+      case 20: this.drawBgWarClaude(); break;
+      case 21: this.drawBgWeights(); break;
     }
   }
 
@@ -4090,6 +4741,358 @@ export class LevelScene extends Phaser.Scene {
         yoyo: true,
         repeat: -1,
         delay: Phaser.Math.Between(0, 1200),
+      });
+    }
+  }
+
+  private drawBgChipFoundry(): void {
+    const w = this.config.width;
+
+    const fab = this.add.graphics().setScrollFactor(0.06);
+    fab.fillStyle(0x041014, 0.88);
+    fab.fillRect(0, 0, w, GAME_HEIGHT);
+    fab.fillStyle(0x0d2a30, 0.4);
+    for (let x = 0; x < w; x += 120) {
+      fab.fillRect(x, 70, 80, 230);
+    }
+
+    for (let i = 0; i < 18; i++) {
+      const x = Phaser.Math.Between(40, w - 40);
+      const y = Phaser.Math.Between(50, 260);
+      const wafer = this.add.circle(x, y, Phaser.Math.Between(12, 22), 0x4fd1c5, 0.06);
+      wafer.setScrollFactor(0.18);
+      this.tweens.add({
+        targets: wafer,
+        alpha: { from: 0.03, to: 0.12 },
+        scale: { from: 0.9, to: 1.08 },
+        duration: Phaser.Math.Between(1800, 3200),
+        yoyo: true,
+        repeat: -1,
+      });
+    }
+
+    const arms = this.add.graphics().setScrollFactor(0.14);
+    arms.fillStyle(0x94a3b8, 0.22);
+    for (let x = 80; x < w; x += 280) {
+      arms.fillRect(x, 38, 10, 90);
+      arms.fillRect(x + 10, 118, 52, 8);
+      arms.fillRect(x + 54, 108, 8, 32);
+    }
+  }
+
+  private drawBgWallStreet(): void {
+    const w = this.config.width;
+
+    const skyline = this.add.graphics().setScrollFactor(0.08);
+    skyline.fillStyle(0x050b05, 0.9);
+    skyline.fillRect(0, 0, w, GAME_HEIGHT);
+    skyline.fillStyle(0x112311, 0.5);
+    for (let x = 0; x < w; x += 90) {
+      skyline.fillRect(x, GAME_HEIGHT - Phaser.Math.Between(120, 260), 70, Phaser.Math.Between(120, 260));
+    }
+
+    const chart = this.add.graphics().setScrollFactor(0.16);
+    let px = 0;
+    let py = 220;
+    chart.lineStyle(3, 0x22c55e, 0.14);
+    chart.beginPath();
+    chart.moveTo(px, py);
+    while (px < w) {
+      px += Phaser.Math.Between(70, 120);
+      py += Phaser.Math.Between(-70, 60);
+      py = Phaser.Math.Clamp(py, 60, 320);
+      chart.lineTo(px, py);
+    }
+    chart.strokePath();
+
+    for (let i = 0; i < 10; i++) {
+      this.add.text(140 + i * 760, 80 + (i % 3) * 40, '$$$', {
+        fontFamily: '"JetBrains Mono", monospace',
+        fontSize: '20px',
+        color: '#22c55e',
+      }).setAlpha(0.08).setScrollFactor(0.12);
+    }
+  }
+
+  private drawBgCongressionalHearing(): void {
+    const w = this.config.width;
+
+    const chamber = this.add.graphics().setScrollFactor(0.06);
+    chamber.fillStyle(0x1a1209, 0.88);
+    chamber.fillRect(0, 0, w, GAME_HEIGHT);
+    chamber.fillStyle(0x402814, 0.38);
+    chamber.fillRect(0, 90, w, 150);
+    chamber.fillStyle(0x654321, 0.24);
+    for (let x = 0; x < w; x += 110) {
+      chamber.fillRect(x, GAME_HEIGHT - 150, 84, 110);
+    }
+
+    const flags = this.add.graphics().setScrollFactor(0.12);
+    for (let x = 120; x < w; x += 480) {
+      flags.fillStyle(0xcbd5e1, 0.18);
+      flags.fillRect(x, 40, 4, 80);
+      flags.fillStyle(0xef4444, 0.1);
+      flags.fillRect(x + 4, 46, 46, 10);
+      flags.fillStyle(0x60a5fa, 0.1);
+      flags.fillRect(x + 4, 60, 46, 10);
+      flags.fillStyle(0xef4444, 0.1);
+      flags.fillRect(x + 4, 74, 46, 10);
+    }
+
+    for (let i = 0; i < 14; i++) {
+      const x = Phaser.Math.Between(30, w - 30);
+      const y = GAME_HEIGHT - Phaser.Math.Between(26, 70);
+      this.add.circle(x, y, Phaser.Math.Between(8, 12), 0xf59e0b, 0.08).setScrollFactor(0.18);
+    }
+  }
+
+  private drawBgBrussels(): void {
+    const w = this.config.width;
+
+    const maze = this.add.graphics().setScrollFactor(0.08);
+    maze.fillStyle(0x08111f, 0.9);
+    maze.fillRect(0, 0, w, GAME_HEIGHT);
+    maze.fillStyle(0x13305b, 0.26);
+    for (let x = 0; x < w; x += 140) {
+      maze.fillRect(x, Phaser.Math.Between(40, 120), 24, Phaser.Math.Between(160, 280));
+    }
+    for (let y = 80; y < GAME_HEIGHT - 100; y += 90) {
+      maze.fillRect(0, y, w, 10);
+    }
+
+    for (let i = 0; i < 16; i++) {
+      const x = Phaser.Math.Between(50, w - 50);
+      const y = Phaser.Math.Between(40, 220);
+      this.add.text(x, y, 'EU', {
+        fontFamily: '"JetBrains Mono", monospace',
+        fontSize: '18px',
+        color: '#2563eb',
+      }).setAlpha(0.08).setScrollFactor(0.14);
+    }
+
+    const binders = this.add.graphics().setScrollFactor(0.2);
+    binders.fillStyle(0x93c5fd, 0.12);
+    for (let x = 80; x < w; x += 320) {
+      binders.fillRect(x, GAME_HEIGHT - 110, 18, 54);
+      binders.fillRect(x + 24, GAME_HEIGHT - 120, 18, 64);
+      binders.fillRect(x + 48, GAME_HEIGHT - 102, 18, 46);
+    }
+  }
+
+  private drawBgDesertCompute(): void {
+    const w = this.config.width;
+
+    const desert = this.add.graphics().setScrollFactor(0.05);
+    desert.fillStyle(0x221207, 0.9);
+    desert.fillRect(0, 0, w, GAME_HEIGHT);
+    desert.fillStyle(0x5b2f0d, 0.2);
+    for (let x = 0; x < w; x += 160) {
+      desert.fillRect(x, GAME_HEIGHT - Phaser.Math.Between(70, 150), 120, Phaser.Math.Between(70, 150));
+    }
+    desert.fillStyle(0xf97316, 0.08);
+    desert.fillCircle(120, 90, 54);
+
+    const towers = this.add.graphics().setScrollFactor(0.12);
+    towers.fillStyle(0xcbd5e1, 0.12);
+    for (let x = 220; x < w; x += 420) {
+      towers.fillRoundedRect(x, GAME_HEIGHT - 170, 54, 120, 14);
+      towers.fillRect(x + 12, GAME_HEIGHT - 196, 30, 28);
+    }
+
+    const shimmer = this.add.graphics().setScrollFactor(0.18);
+    shimmer.fillStyle(0xf59e0b, 0.05);
+    for (let i = 0; i < 20; i++) {
+      shimmer.fillRect(Phaser.Math.Between(0, w), Phaser.Math.Between(40, 300), 48, 2);
+    }
+  }
+
+  private drawBgRobotaxiCity(): void {
+    const w = this.config.width;
+
+    const roads = this.add.graphics().setScrollFactor(0.08);
+    roads.fillStyle(0x090909, 0.88);
+    roads.fillRect(0, 0, w, GAME_HEIGHT);
+    roads.fillStyle(0x1f2937, 0.36);
+    roads.fillRect(0, GAME_HEIGHT - 110, w, 56);
+    roads.fillRect(0, GAME_HEIGHT - 220, w, 40);
+    roads.fillStyle(0xfacc15, 0.18);
+    for (let x = 0; x < w; x += 64) {
+      roads.fillRect(x, GAME_HEIGHT - 84, 28, 4);
+      roads.fillRect(x + 12, GAME_HEIGHT - 200, 22, 3);
+    }
+
+    const cars = this.add.graphics().setScrollFactor(0.16);
+    cars.fillStyle(0xfacc15, 0.14);
+    for (let x = 40; x < w; x += 240) {
+      cars.fillRoundedRect(x, GAME_HEIGHT - 145, 54, 20, 6);
+      cars.fillRect(x + 10, GAME_HEIGHT - 152, 24, 8);
+      cars.fillStyle(0xffffff, 0.1);
+      cars.fillRect(x + 42, GAME_HEIGHT - 138, 6, 2);
+      cars.fillStyle(0xfacc15, 0.14);
+    }
+  }
+
+  private drawBgUndersea(): void {
+    const w = this.config.width;
+
+    const sea = this.add.graphics().setScrollFactor(0.05);
+    sea.fillStyle(0x03131d, 0.92);
+    sea.fillRect(0, 0, w, GAME_HEIGHT);
+    sea.fillStyle(0x0c3b52, 0.22);
+    for (let y = 40; y < GAME_HEIGHT; y += 70) {
+      sea.fillRect(0, y, w, 2);
+    }
+
+    const cable = this.add.graphics().setScrollFactor(0.12);
+    cable.lineStyle(4, 0x06b6d4, 0.16);
+    cable.beginPath();
+    cable.moveTo(0, 220);
+    for (let x = 120; x <= w; x += 120) {
+      cable.lineTo(x, 220 + Math.sin(x * 0.003) * 36);
+    }
+    cable.strokePath();
+
+    for (let i = 0; i < 26; i++) {
+      const bubble = this.add.circle(
+        Phaser.Math.Between(20, w - 20),
+        Phaser.Math.Between(50, GAME_HEIGHT - 50),
+        Phaser.Math.Between(3, 8),
+        0x67e8f9,
+        0.08
+      );
+      bubble.setScrollFactor(0.18);
+      this.tweens.add({
+        targets: bubble,
+        y: bubble.y - Phaser.Math.Between(20, 70),
+        alpha: 0.02,
+        duration: Phaser.Math.Between(1600, 3400),
+        yoyo: true,
+        repeat: -1,
+      });
+    }
+  }
+
+  private drawBgOrbit(): void {
+    const w = this.config.width;
+
+    const stars = this.add.graphics().setScrollFactor(0.02);
+    stars.fillStyle(0x02030a, 0.98);
+    stars.fillRect(0, 0, w, GAME_HEIGHT);
+    for (let i = 0; i < 120; i++) {
+      stars.fillStyle(0xffffff, Phaser.Math.FloatBetween(0.04, 0.16));
+      stars.fillCircle(Phaser.Math.Between(0, w), Phaser.Math.Between(0, GAME_HEIGHT), Phaser.Math.Between(1, 2));
+    }
+
+    const earth = this.add.graphics().setScrollFactor(0.04);
+    earth.fillStyle(0x1d4ed8, 0.16);
+    earth.fillCircle(w * 0.2, GAME_HEIGHT + 180, 320);
+    earth.fillStyle(0x22d3ee, 0.1);
+    earth.fillCircle(w * 0.2, GAME_HEIGHT + 180, 280);
+
+    const sats = this.add.graphics().setScrollFactor(0.16);
+    sats.fillStyle(0x94a3b8, 0.18);
+    for (let x = 120; x < w; x += 420) {
+      sats.fillRect(x, 80, 28, 12);
+      sats.fillRect(x - 22, 82, 18, 8);
+      sats.fillRect(x + 32, 82, 18, 8);
+      sats.fillRect(x + 10, 68, 6, 10);
+    }
+  }
+
+  private drawBgStudio(): void {
+    const w = this.config.width;
+
+    const studio = this.add.graphics().setScrollFactor(0.06);
+    studio.fillStyle(0x120612, 0.92);
+    studio.fillRect(0, 0, w, GAME_HEIGHT);
+    studio.fillStyle(0x2b1230, 0.28);
+    for (let x = 0; x < w; x += 180) {
+      studio.fillRect(x, 70, 120, 170);
+    }
+
+    const rigs = this.add.graphics().setScrollFactor(0.14);
+    rigs.fillStyle(0xec4899, 0.12);
+    for (let x = 120; x < w; x += 320) {
+      rigs.fillRect(x, 80, 6, 120);
+      rigs.fillRect(x - 16, 196, 38, 4);
+      rigs.fillCircle(x + 18, 92, 16);
+    }
+
+    for (let i = 0; i < 12; i++) {
+      this.add.text(120 + i * 620, 46 + (i % 3) * 38, 'LIVE', {
+        fontFamily: '"JetBrains Mono", monospace',
+        fontSize: '14px',
+        color: '#ec4899',
+      }).setAlpha(0.08).setScrollFactor(0.12);
+    }
+  }
+
+  private drawBgWarClaude(): void {
+    const w = this.config.width;
+
+    const base = this.add.graphics().setScrollFactor(0.05);
+    base.fillStyle(0x120707, 0.94);
+    base.fillRect(0, 0, w, GAME_HEIGHT);
+    base.fillStyle(0x3f1b12, 0.26);
+    for (let x = 0; x < w; x += 140) {
+      base.fillRect(x, GAME_HEIGHT - Phaser.Math.Between(80, 160), 110, Phaser.Math.Between(80, 160));
+    }
+
+    const drones = this.add.graphics().setScrollFactor(0.14);
+    drones.fillStyle(0xb91c1c, 0.14);
+    for (let x = 100; x < w; x += 280) {
+      drones.fillCircle(x, 90 + (x % 3) * 18, 10);
+      drones.fillRect(x - 20, 88 + (x % 3) * 18, 12, 4);
+      drones.fillRect(x + 8, 88 + (x % 3) * 18, 12, 4);
+    }
+
+    const labels = ['PROJECT MAVEN', 'PALANTIR', 'ANDURIL', 'DEPARTMENT OF WAR'];
+    labels.forEach((label, index) => {
+      this.add.text(120 + index * 760, 46 + (index % 2) * 48, label, {
+        fontFamily: '"JetBrains Mono", monospace',
+        fontSize: '11px',
+        color: '#fca5a5',
+      }).setAlpha(0.09).setScrollFactor(0.1);
+    });
+  }
+
+  private drawBgWeights(): void {
+    const w = this.config.width;
+
+    const cathedral = this.add.graphics().setScrollFactor(0.04);
+    cathedral.fillStyle(0x05050b, 0.98);
+    cathedral.fillRect(0, 0, w, GAME_HEIGHT);
+    cathedral.fillStyle(0x18122a, 0.42);
+    for (let x = 0; x < w; x += 160) {
+      cathedral.fillRect(x, 40, 28, GAME_HEIGHT - 90);
+    }
+
+    const core = this.add.graphics().setScrollFactor(0.12);
+    for (let x = 220; x < w; x += 720) {
+      core.fillStyle(0xa855f7, 0.08);
+      core.fillCircle(x, 180, 84);
+      core.fillStyle(0x22d3ee, 0.06);
+      core.fillCircle(x + 18, 176, 48);
+      core.fillStyle(0xf59e0b, 0.06);
+      core.fillCircle(x - 22, 188, 28);
+    }
+
+    for (let i = 0; i < 18; i++) {
+      const orb = this.add.circle(
+        Phaser.Math.Between(60, w - 60),
+        Phaser.Math.Between(40, 260),
+        Phaser.Math.Between(6, 12),
+        [0xa855f7, 0x22d3ee, 0xf59e0b][i % 3],
+        0.06
+      );
+      orb.setScrollFactor(0.18);
+      this.tweens.add({
+        targets: orb,
+        y: orb.y - Phaser.Math.Between(10, 26),
+        alpha: 0.015,
+        duration: Phaser.Math.Between(1800, 3200),
+        yoyo: true,
+        repeat: -1,
       });
     }
   }

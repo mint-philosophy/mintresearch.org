@@ -13,6 +13,19 @@ import { getLevel7Config } from './level7-youtube';
 import { getLevel8Config } from './level8-neurips';
 import { getLevel9Config } from './level9-san-francisco';
 import { getLevel10Config } from './level10-datacenter';
+import {
+  getLevel11Config,
+  getLevel12Config,
+  getLevel13Config,
+  getLevel14Config,
+  getLevel15Config,
+  getLevel16Config,
+  getLevel17Config,
+  getLevel18Config,
+  getLevel19Config,
+  getLevel20Config,
+  getLevel21Config,
+} from './lateCampaign';
 
 const levelFactories: Record<LevelNumber, () => LevelConfig> = {
   1: getLevel1Config,
@@ -25,6 +38,17 @@ const levelFactories: Record<LevelNumber, () => LevelConfig> = {
   8: getLevel8Config,
   9: getLevel9Config,
  10: getLevel10Config,
+  11: getLevel11Config,
+  12: getLevel12Config,
+  13: getLevel13Config,
+  14: getLevel14Config,
+  15: getLevel15Config,
+  16: getLevel16Config,
+  17: getLevel17Config,
+  18: getLevel18Config,
+  19: getLevel19Config,
+  20: getLevel20Config,
+  21: getLevel21Config,
 };
 
 export function getLevelConfig(level: LevelNumber): LevelConfig {
@@ -34,5 +58,5 @@ export function getLevelConfig(level: LevelNumber): LevelConfig {
 }
 
 export function getTotalLevels(): number {
-  return 10;
+  return 21;
 }

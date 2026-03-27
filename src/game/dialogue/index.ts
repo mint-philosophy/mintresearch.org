@@ -104,6 +104,105 @@ const dialogues: Record<string, DialogueData> = {
       'Grab an Apple puddle power-up only if you need a clean slate—he melts Minty, then snaps him back to the start after 3 seconds.',
     ],
   },
+
+  'l11-green': {
+    speaker: 'Green Minty',
+    lines: [
+      'The foundry is packed with stamping machines and brittle routes, so keep moving and don’t let the Paper Flood boxes pin you.',
+      'Cloudflare walls here work like cleanroom barriers. Break the barrier first, then sweep the papers behind it.',
+      'The EUV scanner telegraphs its beams before it fires. Read the lane, move early, then punish it between sweeps.',
+    ],
+  },
+
+  'l12-yellow': {
+    speaker: 'Yellow Minty',
+    lines: [
+      'The bubble level throws venture capitalists and influencers at you from both heights and the floor. Protect your ammo and don’t get cornered.',
+      'When the market turns red, the whole arena gets busier. Leave yourself a safe platform before you chase a gold paper.',
+      'The boss drops candlestick crashes in marked columns. Watch the floor, not just the chart-face.',
+    ],
+  },
+
+  'l13-purple': {
+    speaker: 'Purple Minty',
+    lines: [
+      'Critics and trolls are trying to box you into the hearing room. Clear the speakers on the high platforms first.',
+      'The dais keeps summoning fresh nuisance enemies, so don’t spend too long dueling one target.',
+      'When the microphones start to flash, the strike lanes are already chosen. Step out, then hit back.',
+    ],
+  },
+
+  'l14-indigo': {
+    speaker: 'Indigo Minty',
+    lines: [
+      'This maze is all about traffic control. The barriers make the route look worse than it is, but only if you panic.',
+      'Paper Flood machines in Brussels love to guard high-value papers. Pick the machine or the paper first; don’t split your attention.',
+      'The binder boss keeps dropping compliance lanes on your current position. Break rhythm and it will miss.',
+    ],
+  },
+
+  'l15-red': {
+    speaker: 'Red Minty',
+    lines: [
+      'The desert campus punishes hesitation. Water, gas, and reactor hazards all want to rush you at once.',
+      'Use the Nvidia heals aggressively here; the stage is long and the mirror tower can turn your own papers back against you.',
+      'If your papers start reflecting, stop shooting and reposition. The tower only stays safe while it’s lit up.',
+    ],
+  },
+
+  'l16-cool': {
+    speaker: 'Cool Minty',
+    lines: [
+      'Robotaxi City is faster than it looks. The floor enemies want to herd you into the floating nuisances above.',
+      'Zuck heads still steal papers, so don’t let the traffic patterns trap you in a shallow lane.',
+      'The robotaxi boss wins if you stand in front of a charge. Bait it, jump clear, then punish the recovery.',
+    ],
+  },
+
+  'l17-teal': {
+    speaker: 'Teal Minty',
+    lines: [
+      'The trench current keeps dragging everything sideways. Short corrections beat big ones down here.',
+      'Water waves and gas bottles move like they know where you’re going, so fight them on platforms with room to reverse.',
+      'The trawler net pulls first and punishes second. Save your jump until the pull starts.',
+    ],
+  },
+
+  'l18-indigo': {
+    speaker: 'Indigo Minty',
+    lines: [
+      'Orbit changes the jump arc. Minty hangs in the air longer, and so do your mistakes.',
+      'Parrots and mean comments are nastier with floaty gravity, so clear the air before you commit to a long crossing.',
+      'The launch vehicle rains danger from above. Watch the booster lanes as much as the rocket itself.',
+    ],
+  },
+
+  'l19-purple': {
+    speaker: 'Purple Minty',
+    lines: [
+      'The studio is trying to flood you with doubles, decoys, and obnoxious attention magnets. Pick one side of the screen and reclaim it.',
+      'BCI octopuses still die to a clean stomp, which matters more here because the fake clutter wants your ammo.',
+      'The director boss mixes fake papers with real pressure. If the arena starts feeling crowded, slow down and read it.',
+    ],
+  },
+
+  'l20-red': {
+    speaker: 'Red Minty',
+    lines: [
+      'War Claude marks the floor before the big strikes land. Cover is a fantasy here, so movement is the whole plan.',
+      'Project Maven, Palantir, and Anduril all get a cameo in the background, but the parrots up top are the ones that will actually ruin your day.',
+      'When you see the lock indicators, don’t shoot. Run first, then answer the memo volley.',
+    ],
+  },
+
+  'l21-cool': {
+    speaker: 'Cool Minty',
+    lines: [
+      'The Weights is the whole game folding back on itself. Every bad habit gets collected here.',
+      'You don’t need to kill everything. You need to keep enough space to read the boss cycle and stay alive.',
+      'When the core starts layering strike lanes, clones, and volleys together, take the safe route and trust the long game.',
+    ],
+  },
 };
 
 export function getDialogue(key: string): DialogueData {

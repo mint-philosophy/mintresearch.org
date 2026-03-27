@@ -89,6 +89,17 @@ export class HUDScene extends Phaser.Scene {
           schmidhuber: 'SCHMIDHUBER',
           pauseSign: 'PAUSE SIGN',
           bernie: 'BERNIE',
+          euvScanner: 'EUV SCANNER',
+          marketMaker: 'MARKET MAKER',
+          hearingDais: 'HEARING DAIS',
+          aiActBinder: 'AI ACT BINDER',
+          mirrorTower: 'MIRROR TOWER',
+          robotaxi: 'ROBOTAXI',
+          trawlerNet: 'TRAWLER NET',
+          launchVehicle: 'LAUNCH VEHICLE',
+          deepfakeDirector: 'DEEPFAKE DIRECTOR',
+          warClaude: 'WAR CLAUDE',
+          weightsCore: 'THE WEIGHTS',
         };
         this.bossNameText = this.add.text(GAME_WIDTH / 2, 76, bossNames[d.name] || d.name.toUpperCase(), {
           fontFamily: '"JetBrains Mono", monospace',

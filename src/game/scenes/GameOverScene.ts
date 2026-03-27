@@ -50,7 +50,7 @@ export class GameOverScene extends Phaser.Scene {
         ...style, fontSize: '14px', color: '#e5c07b',
       }).setOrigin(0.5);
 
-      this.add.text(GAME_WIDTH / 2, 110, 'The Bernie head has finally landed and the racks can cool off.', {
+      this.add.text(GAME_WIDTH / 2, 110, 'You crossed the whole stack, from the feeds to the fabs to the weights.', {
         ...style, fontSize: '11px', color: '#5c6370',
       }).setOrigin(0.5);
 

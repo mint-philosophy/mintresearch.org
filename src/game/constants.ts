@@ -63,6 +63,7 @@ export const POWERUP_DURATION = {
   ssi: 10000,
   deepseek: 20000,
   goldenGate: 15000,
+  jetpack: 12000,
   nvidia: 0,
 } as const;
 
@@ -114,7 +115,18 @@ export const LEVEL_THEMES = {
   7: { name: 'YouTube',        color: 0xFF0000, bg: '#180808' },
   8: { name: 'NeurIPS',        color: 0x87CEFA, bg: '#060b19' },
   9: { name: 'San Francisco',  color: 0xFF9416, bg: '#050714' },
- 10: { name: 'Mega Datacenter', color: 0x8bc34a, bg: '#04050a' },
+  10: { name: 'Mega Datacenter', color: 0x8bc34a, bg: '#04050a' },
+  11: { name: 'Chip Foundry', color: 0x4fd1c5, bg: '#061416' },
+  12: { name: 'Wall Street AI Bubble', color: 0x22c55e, bg: '#081208' },
+  13: { name: 'Congressional Hearing', color: 0xf59e0b, bg: '#17110a' },
+  14: { name: 'Brussels AI Act Maze', color: 0x2563eb, bg: '#08111f' },
+  15: { name: 'Desert Compute Campus', color: 0xf97316, bg: '#1b1107' },
+  16: { name: 'Robotaxi City', color: 0xfacc15, bg: '#11130a' },
+  17: { name: 'Undersea Cable Trench', color: 0x06b6d4, bg: '#02131b' },
+  18: { name: 'Low-Earth Orbit', color: 0x94a3b8, bg: '#030511' },
+  19: { name: 'Synthetic Media Studio', color: 0xec4899, bg: '#130612' },
+  20: { name: 'War Claude', color: 0xb91c1c, bg: '#110707' },
+  21: { name: 'The Weights', color: 0xa855f7, bg: '#05050b' },
 } as const;
 
 // Minty sprite colors for power-up cycling
@@ -133,7 +145,18 @@ export const LEVEL_PLATFORM_KEYS: Record<number, string> = {
   7: 'platform-youtube',
   8: 'platform-neurips',
   9: 'platform-sf',
- 10: 'platform-datacenter',
+  10: 'platform-datacenter',
+  11: 'platform-foundry',
+  12: 'platform-wallstreet',
+  13: 'platform-hearing',
+  14: 'platform-brussels',
+  15: 'platform-desert',
+  16: 'platform-robotaxi',
+  17: 'platform-undersea',
+  18: 'platform-orbit',
+  19: 'platform-studio',
+  20: 'platform-warclaude',
+  21: 'platform-weights',
 };
 
 // Enemy death text per level
@@ -147,7 +170,18 @@ export const DEATH_TEXTS: Record<number, string[]> = {
   7: ['DEMONETIZED', 'COMMENT REMOVED', 'AGE RESTRICTED', 'SKIPPED AD'],
   8: ['PAPER TRAIL BURNED', 'PEER REVIEWED', 'LINKED OUT', 'FUNDING REVOKED'],
   9: ['NO DATACENTER', 'GOLDEN GATE BOUNCE', 'BRIDGE BURNED', 'PAUSE AI FALL'],
- 10: ['GPU OVERLOAD', 'BERNIE STARE', 'RACK MELTDOWN', 'ULTRA SHOCK'],
+  10: ['GPU OVERLOAD', 'BERNIE STARE', 'RACK MELTDOWN', 'ULTRA SHOCK'],
+  11: ['WAFER CRACKED', 'YIELD LOSS', 'PHOTORESIST RUINED', 'CLEANROOM EJECTED'],
+  12: ['MARGIN CALLED', 'BUBBLE POPPED', 'SHORTED', 'TRADING HALTED'],
+  13: ['RECORDED FOR THE RECORD', 'MIC CUT', 'TIME EXPIRED', 'UNDER OATH'],
+  14: ['NON-COMPLIANT', 'ARTICLE 52', 'RISK-TIERED', 'STAMPED'],
+  15: ['HEAT SOAKED', 'WATER DRAWN DOWN', 'MIRAGE SHATTERED', 'COOLANT LOSS'],
+  16: ['ROUTE RECOMPUTED', 'LIDAR SPIKED', 'FLEET RECALLED', 'TRAFFIC LOCK'],
+  17: ['CURRENT TOOK YOU', 'CABLE CUT', 'NETTED', 'PRESSURE LOSS'],
+  18: ['DEORBITED', 'TELEMETRY LOST', 'VACUUMED', 'STAGE SEPARATED'],
+  19: ['WATERMARKED', 'FACE SWAP FAILED', 'CLAPPERBOARD CUT', 'DETECTED'],
+  20: ['TARGET LOCK BROKEN', 'SORTIE DENIED', 'MAVEN BLIND', 'NO STRIKE'],
+  21: ['WEIGHTS COLLAPSED', 'LATENT SPACE TORN', 'GRADIENT SHOCK', 'STACK UNWOUND'],
 };
 
 // Scene keys
@@ -168,7 +202,9 @@ export type MintyColor = typeof MINTY_COLORS[number];
 export type EnemyTier = keyof typeof ENEMY_TIERS;
 export type PowerUpType = keyof typeof POWERUP_DURATION;
 export type PowerDownType = keyof typeof POWERDOWN_DURATION | 'dataLeak';
-export type LevelNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+export type LevelNumber =
+  1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+  11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21;
 
 export interface PlatformData {
   x: number;
@@ -232,6 +268,17 @@ export const BOSS_SIZES: Record<string, number> = {
   schmidhuber: 200,
   pauseSign: 220,
   bernie: 220,
+  euvScanner: 200,
+  marketMaker: 200,
+  hearingDais: 220,
+  aiActBinder: 220,
+  mirrorTower: 220,
+  robotaxi: 200,
+  trawlerNet: 220,
+  launchVehicle: 220,
+  deepfakeDirector: 200,
+  warClaude: 220,
+  weightsCore: 240,
 };
 
 export interface LevelConfig {
