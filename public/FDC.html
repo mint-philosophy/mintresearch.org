@@ -678,21 +678,24 @@ function positionOverlay(triggerEl) {
   overlay.style.left = left + 'px';
 }
 
+const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 document.querySelectorAll('.tip').forEach(tip => {
   const src = tip.querySelector('.tiptext');
   if (!src) return;
 
-  // Desktop hover
-  tip.addEventListener('mouseenter', () => {
-    overlay.innerHTML = src.innerHTML;
-    activeTip = tip;
-    positionOverlay(tip);
-  });
-  tip.addEventListener('mouseleave', () => {
-    overlay.style.display = 'none'; activeTip = null;
-  });
+  if (!isTouch) {
+    // Desktop: hover to show/hide
+    tip.addEventListener('mouseenter', () => {
+      overlay.innerHTML = src.innerHTML;
+      activeTip = tip;
+      positionOverlay(tip);
+    });
+    tip.addEventListener('mouseleave', () => {
+      overlay.style.display = 'none'; activeTip = null;
+    });
+  }
 
-  // Mobile tap toggle
+  // Tap toggle (works on both, but primary input on touch)
   tip.addEventListener('click', (e) => {
     e.stopPropagation();
     if (activeTip === tip) {
