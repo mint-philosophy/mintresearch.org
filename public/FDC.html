@@ -163,6 +163,17 @@ nav {
   background-size: 20px 20px;
 }
 
+/* Nav buttons */
+.nav-btn {
+  display: none; /* hidden on desktop by default */
+  width: 40px; height: 40px;
+  border: 2px solid var(--black); background: var(--cream);
+  font-family: var(--serif); font-size: 24px; font-weight: 700;
+  cursor: pointer; transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-btn:hover, .nav-btn:active { background: var(--yellow); }
+
 /* ── Tablet ── */
 @media (max-width: 900px) {
   body { font-size: 26px; }
@@ -199,6 +210,9 @@ nav {
   .agi-grid p { font-size: 22px !important; }
   .agi-grid { grid-template-columns: 1fr !important; }
   .cur-grid { grid-template-columns: 1fr !important; }
+  /* Show tap buttons, hide keyboard hints */
+  .nav-btn { display: flex; align-items: center; justify-content: center; }
+  .nav-keys { display: none; }
 }
 
 /* ── Phone ── */
@@ -283,6 +297,9 @@ nav {
 
   /* Slide 1 title subtitle */
   .slide:first-child .split-right > div { max-width: none !important; }
+
+  /* Nav buttons — larger tap targets on phone */
+  .nav-btn { width: 44px; height: 44px; font-size: 28px; }
 
   /* Closing slide contact */
   .slide:last-child .dim { font-size: 14px !important; }
@@ -591,7 +608,10 @@ nav {
 <nav>
   <div style="color:var(--mid);font-weight:700;"><span id="slide-counter">1 / 10</span></div>
   <div style="display:flex;align-items:center;"><div class="nav-dots" id="nav-dots"></div><div class="nav-section"><span id="section-name">Title</span></div></div>
-  <div style="display:flex;align-items:center;gap:12px;"><div class="nav-right"><kbd>←</kbd> <kbd>→</kbd> navigate</div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="nav-btn" id="nav-prev" aria-label="Previous slide">‹</button>
+    <button class="nav-btn" id="nav-next" aria-label="Next slide">›</button>
+    <span class="nav-right nav-keys"><kbd>←</kbd> <kbd>→</kbd></span>
   </div>
 </nav>
 
@@ -610,7 +630,9 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='Home'){e.preventDefault();go(0);}
   else if(e.key==='End'){e.preventDefault();go(total-1);}
   });
-let tx=0;document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].screenX;});document.addEventListener('touchend',e=>{const d=e.changedTouches[0].screenX-tx;if(Math.abs(d)>50){if(d<0)go(cur+1);else go(cur-1);}});
+// Nav buttons (scroll to top on mobile when navigating)
+document.getElementById('nav-prev').onclick=()=>{go(cur-1);slides[cur]&&(slides[cur].scrollTop=0);};
+document.getElementById('nav-next').onclick=()=>{go(cur+1);slides[cur]&&(slides[cur].scrollTop=0);};
 
 // ── Tooltip system ──
 // Single overlay div positioned absolutely on <body>, content copied from .tiptext spans
@@ -674,11 +696,7 @@ document.querySelectorAll('.tip').forEach(tip => {
   });
 });
 
-// Swap nav hint for touch devices
-if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-  const navRight = document.querySelector('.nav-right');
-  if (navRight) navRight.innerHTML = 'swipe to navigate';
-}
+
 </script>
 
 
