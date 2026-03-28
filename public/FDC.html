@@ -163,12 +163,129 @@ nav {
   background-size: 20px 20px;
 }
 
+/* ── Tablet ── */
 @media (max-width: 900px) {
-  .split, .split.wide-left, .split.wide-right { grid-template-columns: 1fr; }
+  body { font-size: 26px; }
+  /* Stacked splits need auto height + scroll */
+  .slide { height: auto; min-height: 100%; }
+  .split, .split.wide-left, .split.wide-right { grid-template-columns: 1fr; height: auto; min-height: 100%; }
   .split-left { border-right: none; border-bottom: var(--border); }
-  h1 { font-size: 50px; } h1.mega { font-size: 58px; }
-  .full { padding: 32px 28px; }
+  h1 { font-size: 50px !important; } h1.mega { font-size: 56px !important; }
+  h3 { font-size: 36px !important; }
+  p { font-size: 26px; } p.big { font-size: 30px; } p.dim { font-size: 22px; }
+  .full { padding: 32px 28px; padding-bottom: calc(var(--nav-h) + 16px); }
+  .split-left, .split-right { padding: 32px 28px; }
+  /* Bottom clearance so content isn't hidden behind fixed nav */
+  .split-right { padding-bottom: calc(var(--nav-h) + 16px); }
+  .domain-grid { grid-template-columns: 1fr 1fr; }
+  .vlabel { display: none; }
+  blockquote { font-size: 26px; }
+  .comp-number { font-size: 46px; min-width: 54px; }
+  .comp-body .comp-title { font-size: 30px; }
+  .comp-body .comp-desc { font-size: 22px; }
+  .verif-label { min-width: auto; font-size: 17px; }
+  .verif-text { font-size: 22px; }
+  .cap-card .cap-label { font-size: 17px; }
+  .cap-card .cap-text { font-size: 22px; }
+  .cur-item .cur-title { font-size: 28px; }
+  .cur-item .cur-text { font-size: 22px; }
+  .obstacle-item { font-size: 24px; }
+  .dc-label { font-size: 17px; }
+  .dc-text { font-size: 22px; }
+  .label { font-size: 17px; }
+  h2 { font-size: 17px; }
+  /* Override inline font-sizes on AGI-type cards */
+  .agi-grid h3 { font-size: 30px !important; }
+  .agi-grid p { font-size: 22px !important; }
+  .agi-grid { grid-template-columns: 1fr !important; }
+  .cur-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ── Phone ── */
+@media (max-width: 600px) {
+  :root { --nav-h: 54px; }
+  body { font-size: 18px; }
+  h1 { font-size: 32px !important; } h1.mega { font-size: 36px !important; }
+  h2 { font-size: 14px; letter-spacing: 2px; }
+  h3 { font-size: 26px !important; }
+  p { font-size: 18px; } p.big { font-size: 21px; } p.dim { font-size: 16px; }
+  .full { padding: 20px 18px; padding-bottom: calc(var(--nav-h) + 20px); }
+  .split-left, .split-right { padding: 24px 18px; }
+  .split-right { padding-bottom: calc(var(--nav-h) + 20px); }
+  /* For slides with only split-left (closing slide) */
+  .slide:last-child .split-left { padding-bottom: calc(var(--nav-h) + 20px); }
+  .slides { margin-top: 32px; }
+
+  /* Ticker */
+  .ticker { height: 32px; }
+  .ticker-track { font-size: 12px; letter-spacing: 1.5px; gap: 24px; }
+
+  /* Progress bar */
+  .progress { top: 32px; }
+
+  /* All multi-column grids become single column */
   .domain-grid { grid-template-columns: 1fr; }
+  .agi-grid { grid-template-columns: 1fr !important; }
+  .agi-grid h3 { font-size: 22px !important; }
+  .agi-grid p { font-size: 17px !important; }
+  .agi-grid .label { font-size: 12px; }
+  .cur-grid { grid-template-columns: 1fr !important; }
+
+  /* Domain cards */
+  .domain-card { padding: 14px 16px; }
+  .domain-card .dc-label { font-size: 14px; letter-spacing: 1.5px; margin-bottom: 4px; }
+  .domain-card .dc-text { font-size: 17px; }
+
+  /* Competencies */
+  .comp-card { gap: 12px; padding: 12px 0; }
+  .comp-number { font-size: 36px; min-width: 42px; }
+  .comp-body .comp-title { font-size: 24px; }
+  .comp-body .comp-desc { font-size: 16px; }
+
+  /* Verification — stack label above text */
+  .verif-item { flex-direction: column; gap: 4px; padding: 10px 0; }
+  .verif-label { min-width: auto; font-size: 14px; }
+  .verif-text { font-size: 17px; }
+
+  /* Capacity cards */
+  .cap-card { padding: 14px 16px; }
+  .cap-card .cap-label { font-size: 14px; letter-spacing: 1.5px; }
+  .cap-card .cap-text { font-size: 17px; }
+
+  /* Obstacle items */
+  .obstacle-item { font-size: 18px; gap: 10px; padding: 10px 0; }
+  .obstacle-item .arrow { font-size: 18px; }
+
+  /* Curriculum */
+  .cur-item .cur-title { font-size: 22px; }
+  .cur-item .cur-text { font-size: 16px; }
+
+  /* Labels */
+  .label { font-size: 14px; letter-spacing: 1.5px; }
+
+  /* Blockquotes */
+  blockquote { font-size: 18px; padding: 10px 14px; margin: 12px 0; }
+  blockquote cite { font-size: 14px; }
+
+  /* Code */
+  code { font-size: 0.8em; }
+
+  /* Nav */
+  nav { height: var(--nav-h); padding: 0 14px; font-size: 13px; }
+  .nav-dot { width: 10px; height: 10px; }
+  .nav-dots { gap: 3px; }
+  .nav-section { margin-left: 8px; font-size: 12px; }
+  .nav-right { font-size: 12px; }
+  .nav-right kbd { font-size: 12px; padding: 1px 4px; }
+
+  /* Tooltip */
+  #tooltip-overlay { width: 90vw !important; max-width: 90vw; font-size: 16px; padding: 14px 16px; }
+
+  /* Slide 1 title subtitle */
+  .slide:first-child .split-right > div { max-width: none !important; }
+
+  /* Closing slide contact */
+  .slide:last-child .dim { font-size: 14px !important; }
 }
 </style>
 </head>
@@ -232,7 +349,7 @@ nav {
     <h2 class="fi">What AGI Actually Looks Like</h2>
     <p class="fi d1" style="margin-bottom:20px;">We've already achieved something that would have been widely regarded as AGI three years ago if it arrived all at once. The label is contentious, but the capabilities are incontrovertible. Worth indexing on specific sets of capabilities — one locked in, two not yet but worth preparing for.</p>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;" class="fi d2">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;" class="fi d2 agi-grid">
       <div style="border:var(--border);padding:20px 22px;margin:-1px;background:var(--yellow);">
         <div class="label" style="margin-bottom:8px;">Locked in</div>
         <h3 style="font-size:41px;">Agentic AI</h3>
@@ -429,7 +546,7 @@ nav {
   <div class="full" style="position:relative;padding:48px 72px;">
     <div class="vlabel">08 — Curriculum</div>
     <h2 class="fi">Fitting This Into the Program</h2>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;" class="fi d1">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;" class="fi d1 cur-grid">
       <div class="cur-item" style="padding:18px 24px;border:var(--border);margin:-1px;background:var(--yellow);">
         <div class="cur-title">AI-native methods courses</div>
         <div class="cur-text">~All core methods courses should be AI-native. A fundamental element of acquiring a skill should be learning how to oversee AI agents that 10× your ability to use that skill.</div>
@@ -534,6 +651,7 @@ document.querySelectorAll('.tip').forEach(tip => {
   const src = tip.querySelector('.tiptext');
   if (!src) return;
 
+  // Desktop hover
   tip.addEventListener('mouseenter', () => {
     overlay.innerHTML = src.innerHTML;
     activeTip = tip;
@@ -542,7 +660,25 @@ document.querySelectorAll('.tip').forEach(tip => {
   tip.addEventListener('mouseleave', () => {
     overlay.style.display = 'none'; activeTip = null;
   });
+
+  // Mobile tap toggle
+  tip.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (activeTip === tip) {
+      hideTooltip();
+    } else {
+      overlay.innerHTML = src.innerHTML;
+      activeTip = tip;
+      positionOverlay(tip);
+    }
+  });
 });
+
+// Swap nav hint for touch devices
+if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+  const navRight = document.querySelector('.nav-right');
+  if (navRight) navRight.innerHTML = 'swipe to navigate';
+}
 </script>
 
 
