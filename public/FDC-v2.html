@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The AGI-Ready Policy Student — Seth Lazar</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --yellow:#FFD054;--cream:#FFFAED;--black:#161300;
+  --serif:'Newsreader',Georgia,serif;
+  --mono:'Space Mono',monospace;
+  --slide-pad:clamp(1.5rem,4vw,4rem);
+  --fs-hero:clamp(2rem,5vw + 1rem,5.5rem);
+  --fs-section:clamp(1.4rem,3vw + 0.5rem,3.2rem);
+  --fs-body:clamp(0.9rem,1.2vw + 0.4rem,1.15rem);
+  --fs-small:clamp(0.7rem,0.9vw + 0.3rem,0.85rem);
+  --fs-label:clamp(0.6rem,0.7vw + 0.25rem,0.75rem);
+  --fs-number:clamp(1.8rem,4vw,3.5rem);
+  --gap:clamp(0.8rem,2vw,2rem);
+  --border-w:clamp(1px,0.15vw,2px);
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{
+  background:var(--cream);color:var(--black);
+  font-family:var(--serif);line-height:1.5;
+  overflow:hidden;height:100dvh;width:100vw;
+}
+
+/* TICKER */
+.ticker{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:var(--black);color:var(--yellow);
+  font-family:var(--mono);font-size:var(--fs-label);
+  letter-spacing:0.15em;text-transform:uppercase;
+  height:clamp(1.8rem,3vh,2.4rem);display:flex;align-items:center;
+  overflow:hidden;white-space:nowrap;
+}
+.ticker-track{
+  display:flex;gap:clamp(2rem,4vw,4rem);
+  animation:tickerScroll 30s linear infinite;
+}
+@keyframes tickerScroll{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-50%)}
+}
+.ticker-track span{flex-shrink:0;padding:0 clamp(0.5rem,1vw,1rem)}
+.ticker-track span::before{content:'◆ ';opacity:0.4}
+
+/* SLIDES CONTAINER */
+.deck{
+  position:fixed;
+  top:clamp(1.8rem,3vh,2.4rem);
+  bottom:clamp(2rem,4vh,3rem);
+  left:0;right:0;
+  overflow:hidden;
+}
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:var(--slide-pad);
+  padding-top:clamp(1rem,2vh,2rem);
+  opacity:0;visibility:hidden;
+  transition:opacity 0.6s cubic-bezier(0.25,0.46,0.45,0.94),
+             visibility 0.6s;
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:var(--yellow) transparent;
+}
+.slide.active{opacity:1;visibility:visible}
+.slide>*{
+  opacity:0;transform:translateY(clamp(10px,2vh,25px));
+  transition:opacity 0.5s ease,transform 0.5s ease;
+}
+.slide.active>*{opacity:1;transform:translateY(0)}
+.slide.active>*:nth-child(1){transition-delay:0.1s}
+.slide.active>*:nth-child(2){transition-delay:0.2s}
+.slide.active>*:nth-child(3){transition-delay:0.3s}
+.slide.active>*:nth-child(4){transition-delay:0.4s}
+.slide.active>*:nth-child(5){transition-delay:0.5s}
+.slide.active>*:nth-child(6){transition-delay:0.55s}
+.slide.active>*:nth-child(7){transition-delay:0.6s}
+.slide.active>*:nth-child(8){transition-delay:0.65s}
+
+/* NAVIGATION DOTS */
+.nav-dots{
+  position:fixed;bottom:0;left:0;right:0;
+  height:clamp(2rem,4vh,3rem);
+  display:flex;align-items:center;justify-content:center;
+  gap:clamp(0.4rem,0.8vw,0.8rem);
+  background:var(--cream);z-index:100;
+}
+.nav-dot{
+  width:clamp(6px,0.8vw,10px);height:clamp(6px,0.8vw,10px);
+  border-radius:50%;border:var(--border-w) solid var(--black);
+  background:transparent;cursor:pointer;
+  transition:all 0.3s ease;
+}
+.nav-dot.active{background:var(--yellow);border-color:var(--yellow);transform:scale(1.3)}
+.nav-dot:hover{background:var(--black)}
+
+/* TYPOGRAPHY */
+.slide-label{
+  font-family:var(--mono);font-size:var(--fs-label);
+  letter-spacing:0.2em;text-transform:uppercase;
+  opacity:0.6;margin-bottom:clamp(0.3rem,0.5vh,0.6rem);
+}
+.slide-title{
+  font-family:var(--serif);font-size:var(--fs-section);
+  font-weight:600;line-height:1.15;
+  margin-bottom:clamp(0.3rem,0.8vh,0.8rem);
+}
+.slide-subtitle{
+  font-family:var(--mono);font-size:var(--fs-small);
+  letter-spacing:0.05em;color:var(--black);opacity:0.7;
+  margin-bottom:clamp(0.5rem,1.5vh,1.5rem);
+}
+.body-text{
+  font-size:var(--fs-body);line-height:1.6;
+  max-width:min(65ch,90%);
+  margin-bottom:clamp(0.5rem,1vh,1rem);
+}
+
+/* HERO (slide 0) */
+.hero{justify-content:center;align-items:center;text-align:center}
+.hero-institution{
+  font-family:var(--mono);font-size:var(--fs-label);
+  letter-spacing:0.3em;text-transform:uppercase;opacity:0.5;
+  margin-bottom:clamp(0.5rem,1vh,1rem);
+}
+.hero-title{
+  font-family:var(--serif);font-size:var(--fs-hero);
+  font-weight:700;line-height:1.05;
+  margin-bottom:clamp(0.5rem,1.5vh,1.5rem);
+}
+.hero-author{
+  font-family:var(--mono);font-size:var(--fs-small);
+  letter-spacing:0.15em;text-transform:uppercase;
+  margin-bottom:clamp(1rem,2vh,2rem);
+}
+.hero-author span{display:block;opacity:0.5;font-size:0.85em;margin-top:0.2em}
+.hero-desc{
+  font-size:var(--fs-body);max-width:min(50ch,85%);
+  line-height:1.6;opacity:0.8;
+  margin-bottom:clamp(0.3rem,0.5vh,0.5rem);
+}
+.hero-keywords{
+  font-family:var(--mono);font-size:var(--fs-label);
+  letter-spacing:0.1em;opacity:0.5;
+}
+
+/* CARDS / GRID */
+.card-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,clamp(200px,25vw,320px)),1fr));
+  gap:var(--gap);
+  margin-top:clamp(0.5rem,1vh,1rem);
+}
+.card{
+  border:var(--border-w) dashed var(--black);
+  padding:clamp(0.8rem,1.5vw,1.5rem);
+  border-radius:clamp(4px,0.5vw,8px);
+  transition:border-color 0.3s,background 0.3s;
+}
+.card:hover{border-color:var(--yellow);background:rgba(255,208,84,0.08)}
+.card-number{
+  font-family:var(--mono);font-size:var(--fs-number);
+  font-weight:700;color:var(--yellow);line-height:1;
+  margin-bottom:clamp(0.3rem,0.5vh,0.5rem);
+}
+.card-title{
+  font-family:var(--serif);font-size:clamp(1rem,1.5vw + 0.3rem,1.3rem);
+  font-weight:600;margin-bottom:clamp(0.2rem,0.4vh,0.4rem);
+}
+.card-body{font-size:var(--fs-small);line-height:1.5;opacity:0.8}
+
+/* COLUMNS */
+.two-col{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,clamp(250px,30vw,400px)),1fr));
+  gap:var(--gap);
+  margin-top:clamp(0.5rem,1vh,1rem);
+}
+
+/* DOMAIN BLOCKS */
+.domain-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,clamp(150px,18vw,250px)),1fr));
+  gap:clamp(0.5rem,1vw,1rem);
+  margin-top:clamp(0.5rem,1vh,1rem);
+}
+.domain-block{
+  border-left:clamp(2px,0.3vw,4px) solid var(--yellow);
+  padding:clamp(0.5rem,1vw,1rem);
+}
+.domain-block h4{
+  font-family:var(--mono);font-size:var(--fs-label);
+  letter-spacing:0.1em;text-transform:uppercase;
+  margin-bottom:clamp(0.2rem,0.3vh,0.3rem);
+}
+.domain-block p{font-size:var(--fs-small);line-height:1.5;opacity:0.8}
+
+/* CAPABILITY TAGS */
+.cap-row{
+  display:flex;flex-wrap:wrap;gap:clamp(0.5rem,1vw,1rem);
+  margin-top:clamp(0.5rem,1vh,1rem);
+}
+.cap-tag{
+  border:var(--border-w) dashed var(--black);
+  padding:clamp(0.6rem,1vw,1rem) clamp(0.8rem,1.5vw,1.5rem);
+  border-radius:clamp(4px,0.5vw,8px);
+  flex:1 1 clamp(150px,25%,300px);
+}
+.cap-tag h4{
+  font-family:var(--mono);font-size:var(--fs-label);
+  letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--yellow);margin-bottom:0.2em;
+}
+.cap-tag .status{
+  font-family:var(--mono);font-size:clamp(0.55rem,0.6vw + 0.2rem,0.7rem);
+  opacity:0.5;margin-top:clamp(0.2rem,0.3vh,0.4rem);
+}
+.cap-tag p{font-size:var(--fs-small);line-height:1.4}
+
+/* TOOLTIPS */
+.tip{
+  position:relative;
+  border-bottom:var(--border-w) dashed var(--yellow);
+  cursor:help;
+}
+.tip .tiptext{
+  position:absolute;bottom:calc(100% + clamp(4px,0.5vh,8px));
+  left:50%;transform:translateX(-50%) translateY(5px);
+  background:var(--black);color:var(--cream);
+  font-size:var(--fs-small);line-height:1.5;
+  padding:clamp(0.5rem,1vw,1rem);
+  border-radius:clamp(4px,0.4vw,6px);
+  width:clamp(200px,30vw,360px);
+  pointer-events:none;opacity:0;
+  transition:opacity 0.3s,transform 0.3s;
+  z-index:50;
+}
+.tip:hover .tiptext{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* KEY FRAMING BOX */
+.key-frame{
+  border:var(--border-w) dashed var(--yellow);
+  padding:clamp(0.8rem,1.5vw,1.5rem);
+  margin-top:clamp(0.5rem,1vh,1rem);
+  border-radius:clamp(4px,0.5vw,8px);
+}
+.key-frame h4{
+  font-family:var(--mono);font-size:var(--fs-label);
+  letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--yellow);margin-bottom:0.3em;
+}
+.key-frame p{font-size:var(--fs-body);line-height:1.6}
+
+/* REFERENCE BLOCKS */
+.ref-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,clamp(200px,22vw,300px)),1fr));
+  gap:var(--gap);margin-top:clamp(0.5rem,1vh,1rem);
+}
+.ref-block{
+  border:var(--border-w) dashed var(--black);
+  padding:clamp(0.6rem,1.2vw,1.2rem);
+  border-radius:clamp(4px,0.5vw,8px);
+}
+.ref-block h4{
+  font-family:var(--mono);font-size:var(--fs-label);
+  letter-spacing:0.08em;text-transform:uppercase;
+  margin-bottom:0.3em;
+}
+.ref-block p{font-size:var(--fs-small);line-height:1.5;opacity:0.8}
+
+/* FINAL SLIDE */
+.final{justify-content:center;align-items:center;text-align:center}
+.final-title{
+  font-family:var(--serif);font-size:clamp(1.8rem,4vw + 0.5rem,4rem);
+  font-weight:700;line-height:1.1;
+  margin-bottom:clamp(0.5rem,1.5vh,1.5rem);
+}
+.final-text{
+  font-size:var(--fs-body);max-width:min(55ch,85%);
+  line-height:1.6;opacity:0.8;
+}
+.final-cta{
+  margin-top:clamp(1rem,2vh,2rem);
+  font-family:var(--mono);font-size:var(--fs-small);
+  letter-spacing:0.1em;
+}
+.final-cta a{
+  color:var(--black);border-bottom:2px solid var(--yellow);
+  text-decoration:none;padding-bottom:2px;
+  transition:color 0.3s;
+}
+.final-cta a:hover{color:var(--yellow)}
+
+/* MOBILE ADAPTATIONS */
+@media(max-width:600px){
+  .slide{padding:clamp(1rem,3vw,1.5rem);padding-top:clamp(0.5rem,1vh,1rem)}
+  .card-grid,.domain-grid,.ref-grid{grid-template-columns:1fr}
+  .two-col{grid-template-columns:1fr}
+  .tip .tiptext{
+    position:fixed;left:5vw!important;right:5vw;
+    bottom:auto;top:50%;transform:translateY(-50%)!important;
+    width:auto;
+  }
+  .tip:hover .tiptext{transform:translateY(-50%)!important}
+}
+@media(max-height:500px){
+  .slide{justify-content:flex-start;padding-top:clamp(0.3rem,0.5vh,0.5rem)}
+}
+</style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track" id="ticker">
+    <span>Vulnerability Scanning</span><span>Obstacle Mapping</span>
+    <span>Capacity Building</span><span>Agent Fluency</span>
+    <span>Verification</span><span>Societal Adaptation</span>
+    <span>The Billion Golems</span><span>Domain by Domain</span>
+    <span>Governance Futurism</span>
+    <span>Vulnerability Scanning</span><span>Obstacle Mapping</span>
+    <span>Capacity Building</span><span>Agent Fluency</span>
+    <span>Verification</span><span>Societal Adaptation</span>
+    <span>The Billion Golems</span><span>Domain by Domain</span>
+    <span>Governance Futurism</span>
+  </div>
+</div>
+
+<!-- DECK -->
+<div class="deck">
+
+<!-- SLIDE 0: HERO -->
+<div class="slide hero active">
+  <div class="hero-institution">JHU School of Government &amp; Policy</div>
+  <div class="hero-author">Seth Lazar<span>Professor, JHU SGP</span></div>
+  <h1 class="hero-title">The AGI-Ready<br>Policy Student</h1>
+  <p class="hero-desc">Four competencies for navigating the societal transition to powerful AI.</p>
+  <p class="hero-keywords">Vulnerability and obstacle mapping, building capacity, agent fluency</p>
+</div>
+
+<!-- SLIDE 1: CONTEXT -->
+<div class="slide">
+  <div class="slide-label">01 — Context</div>
+  <h2 class="slide-title">A Plausible World Model</h2>
+  <p class="slide-subtitle">Institutional decline meets transformative AI</p>
+  <p class="body-text">250-year-old liberal democratic institutions are sliding into a basin of mutually reinforcing crises. Into this comes math that wakes sand up.</p>
+  <p class="body-text">The variance of possible outcomes is very high. By the end of the 2030s we could no longer be able to use networked computers; AI-enabled authoritarianism might dominate the world. Or AI may be our best hope for escaping the civilisational basin.</p>
+  <div class="key-frame">
+    <h4>Key Framing</h4>
+    <p>AI's role in governance and policy is not just, or even mostly, about governing AI itself.</p>
+    <p style="margin-top:0.5em;opacity:0.8">Instead it is about navigating this transition to powerful AI. This will affect everything. The people we train now will helm it.</p>
+  </div>
+</div>
+
+<!-- SLIDE 2: CAPABILITIES -->
+<div class="slide">
+  <div class="slide-label">02 — Capabilities</div>
+  <h2 class="slide-title">What AGI Actually Looks Like</h2>
+  <p class="body-text">We've already achieved something that would have been widely regarded as AGI three years ago if it arrived all at once. Whatever you think of the labels, the capabilities speak for themselves.</p>
+  <div class="cap-row">
+    <div class="cap-tag">
+      <h4>Locked In</h4>
+      <p>Agentic AI — drop-in remote workers across all knowledge work. The "Claude Code moment" is the confirmation signal.</p>
+      <div class="status tip"><span class="tip">Essentially a solved problem<span class="tiptext">Needs only good RL environments and reward signals. There's still a threshold in competence/insight/judgment, but (a) that threshold is higher than most entry-level employees, and (b) every reason to think it will be crossed.</span></span></div>
+    </div>
+    <div class="cap-tag">
+      <h4>On the Horizon</h4>
+      <p>AI for Science — superhuman expertise and originality. The kind that enables accelerating recursive self-improvement.</p>
+      <div class="status tip"><span class="tip">Early signs<span class="tiptext">AI for math is the canary in the coal mine. Modest RSI is already happening — Anthropic's engineers barely write code themselves — but as yet it is a "lossy" form of self-improvement.</span></span></div>
+    </div>
+    <div class="cap-tag">
+      <h4>Can't Rule Out</h4>
+      <p>Independent ASI — autonomous superintelligence. Plausibly beyond current architectures, but maybe don't bet against it.</p>
+      <div class="status tip"><span class="tip">Surprisingly few Rubicons remain<span class="tiptext">Between AI-for-science and ASI there may be surprisingly few remaining Rubicons. Embodied AI (robotics) is a separate path, also worth watching. Worth factoring into models but should not be the focus.</span></span></div>
+    </div>
+  </div>
+  <p class="body-text" style="margin-top:var(--gap);font-size:var(--fs-small);opacity:0.7">Where we are now: GPT-4 was the first inflection point. o1 the next. Opus 4.5 the third. The junior analyst threshold has been crossed. The next Rubicon is creativity and originality.</p>
+</div>
+
+<!-- SLIDE 3: THE STUDENT -->
+<div class="slide">
+  <div class="slide-label">03 — The Student</div>
+  <h2 class="slide-title">The AGI-Ready MPP Student</h2>
+  <p class="slide-subtitle">Four AGI-ready competencies</p>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-number">1</div>
+      <div class="card-title">Vulnerability Scanning</div>
+      <p class="card-body">Model how AI agents disrupt institutional equilibria. Make the analysis concrete, not speculative.</p>
+    </div>
+    <div class="card">
+      <div class="card-number">2</div>
+      <div class="card-title">Obstacle Mapping</div>
+      <p class="card-body">Distinguish load-bearing safety features from calcified incompetence or rent-seeking. Treat deployment barriers as a to-do list, not laws of nature.</p>
+    </div>
+    <div class="card">
+      <div class="card-number">3</div>
+      <div class="card-title">Capacity Building</div>
+      <p class="card-body">Identify where AI can revolutionise state capacity — RL environments, participatory processes, reduced transaction costs.</p>
+    </div>
+    <div class="card">
+      <div class="card-number">4</div>
+      <div class="card-title">Agent Fluency + Verification</div>
+      <p class="card-body">Use agents as core professional tools. Design workflows with meaningful verification steps that surface assumptions and catch failures before they compound.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: VULNERABILITY SCANNING -->
+<div class="slide">
+  <div class="slide-label">04 — Scan</div>
+  <h2 class="slide-title">Vulnerability Scanning</h2>
+  <p class="body-text">Our institutions are an ecosystem co-evolved with human agents. Introducing billions of AI agents is like introducing cane toads to Australia's island ecology — they will find unoccupied niches and break equilibria that depend on specifically human properties.</p>
+  <div class="domain-grid">
+    <div class="domain-block">
+      <h4>Democracy</h4>
+      <p>Erosion of costly signals sustaining trust; agency laundering through intermediaries; dissolving the co-location constraint that forces inclusive politics</p>
+    </div>
+    <div class="domain-block">
+      <h4>Markets</h4>
+      <p>Strategic replicators that self-clone; agent capital concentration creating novel inequality dynamics; the intelligence curse</p>
+    </div>
+    <div class="domain-block">
+      <h4>Bureaucracy</h4>
+      <p>Parliamentary vs. presidential systems have very different vulnerability profiles for AI-enabled state automation</p>
+    </div>
+    <div class="domain-block">
+      <h4>Law</h4>
+      <p>What happens when everyone has legal representation for everything? Solve the backlog or radically exacerbate it?</p>
+    </div>
+    <div class="domain-block">
+      <h4>Security</h4>
+      <p>AI surveillance and lethal force settled by corporate contract; geopolitical implications of AI agents deploying across borders</p>
+    </div>
+    <div class="domain-block">
+      <h4>Social</h4>
+      <p>Parasocial relationships at scale; epistemic isolation; the end of boredom as a creative force</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: OBSTACLE MAPPING -->
+<div class="slide">
+  <div class="slide-label">05 — Map</div>
+  <h2 class="slide-title">Obstacle Mapping</h2>
+  <p class="body-text">The barriers to AI deployment are not a wall, they are a jungle. Some obstacles protect people; some protect incumbents. Obstacle mapping means examining each barrier and asking: is this load-bearing safety, or is it calcified incompetence, rent-seeking, or reflexive caution?</p>
+  <div class="two-col">
+    <div>
+      <div class="key-frame">
+        <h4>Load-bearing safety</h4>
+        <p>Requirements that genuinely protect people. Removing them creates real harm. Identify these and protect them fiercely — they're the ones most likely to be labelled "red tape" by people who don't bear the risks.</p>
+      </div>
+    </div>
+    <div>
+      <div class="key-frame">
+        <h4>Calcified incompetence</h4>
+        <p>Procedures that once served a purpose but now persist through institutional inertia. The obstacle mapper treats these as a to-do list: understand their original purpose, design replacements that preserve the function, then remove the obstacle.</p>
+      </div>
+    </div>
+  </div>
+  <p class="body-text" style="margin-top:var(--gap);font-size:var(--fs-small);opacity:0.7">The key skill is telling these apart. Most policy discourse treats all barriers as one or the other. The AGI-ready student sees the taxonomy.</p>
+</div>
+
+<!-- SLIDE 6: BUILD -->
+<div class="slide">
+  <div class="slide-label">06 — Build</div>
+  <h2 class="slide-title">Building State Capacity</h2>
+  <p class="slide-subtitle">Using AI to revolutionise state capacity</p>
+  <p class="body-text">If AI were used to massively improve bureaucracies and core service delivery, many democratic concerns about AI would dissipate. Municipal government may be the most promising level.</p>
+  <p class="body-text" style="font-size:var(--fs-small);opacity:0.7">Key design question: layer agents over dysfunction, or zero-based budgeting for procedure first?</p>
+  <div class="ref-grid">
+    <div class="ref-block">
+      <h4>RL Environments for Government</h4>
+      <p>Any government knowledge-work bottleneck is low-hanging fruit. <span class="tip">But beware the McKinsey problem on steroids<span class="tiptext">Building RL environments through competing private companies recreates the consulting trap: governments outsourced, saved on public service costs, but spent more on consultants with conflicting interests. Public institutions need to control the RL environments while using private models.</span></span> — public institutions must control the RL environments.</p>
+    </div>
+    <div class="ref-block">
+      <h4>Participatory Decision-Making</h4>
+      <p>Current mechanisms are reactionary and superficial. AI agents could enable genuine deliberation: <span class="tip">open-source urban planning<span class="tiptext">Citizens produce specification-backed alternatives rather than vague objections — analogous to forking a software repo, but for policy. Agents survey preferences efficiently and show participants the systemic consequences of their choices.</span></span>, showing systemic consequences of choices.</p>
+    </div>
+    <div class="ref-block">
+      <h4>Reducing Costs of Negotiation</h4>
+      <p>AI agents can dramatically lower transaction costs across labour relations, procurement, regulatory compliance, intergovernmental coordination. When negotiation is cheaper, more problems become solvable through cooperation.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: USE + VERIFY -->
+<div class="slide">
+  <div class="slide-label">07 — Use + Verify</div>
+  <h2 class="slide-title">Agent Fluency &amp; Verification</h2>
+  <p class="body-text">Agent fluency is a core professional competency. But the productivity multiplier is precisely what makes human expertise indispensable.</p>
+  <p class="body-text">Research on Palantir's "Maven" claims 20 people can do the work of 2,000 in selecting military targets. It would be extraordinary if 20 people could verify that work. There is no git revert for people's lives.</p>
+  <p class="body-text" style="font-size:var(--fs-small);opacity:0.7">This requires real graduate-level management skill. Some people find it demotivating to verify an AI agent's work; need to unlock the sense of potential that comes with being able to 10x your productivity.</p>
+  <div class="ref-grid">
+    <div class="ref-block">
+      <h4>Verification Gap</h4>
+      <p>Checking frontier AI math proofs: 20 minutes → days in six months. Output difficulty grows faster than confirmation difficulty. Kirchner et al. 2024</p>
+    </div>
+    <div class="ref-block">
+      <h4>Cognitive Debt</h4>
+      <p>Moving fast without a mental map accumulates zombie systems. Open question whether time is saved if everything requires verification. Storey 2026</p>
+    </div>
+    <div class="ref-block">
+      <h4>Bainbridge Irony</h4>
+      <p>Intuition comes from being nose-to-nose with the problem. As AI takes over more of the work, the remaining human verification becomes harder — exactly when it matters most.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: CURRICULUM -->
+<div class="slide">
+  <div class="slide-label">08 — Curriculum</div>
+  <h2 class="slide-title">What This Looks Like in Practice</h2>
+  <p class="body-text">A curriculum built around these four competencies doesn't replace traditional policy education — it extends it into the territory that will define the next decade.</p>
+  <div class="two-col">
+    <div class="key-frame">
+      <h4>Core Modules</h4>
+      <p>Domain-specific vulnerability analysis. Obstacle taxonomy workshops. State capacity design labs. Agent-assisted policy drafting with verification protocols.</p>
+    </div>
+    <div class="key-frame">
+      <h4>Practicum</h4>
+      <p>Real-world projects with municipal governments. Students design AI-enhanced processes, map obstacles, and build verification frameworks — not simulations.</p>
+    </div>
+  </div>
+  <p class="body-text" style="margin-top:var(--gap)">The goal is graduates who can walk into any policy institution and immediately contribute to the AI transition — not as technologists, but as people who understand what's coming and can shape how it lands.</p>
+</div>
+
+<!-- SLIDE 9: FINAL -->
+<div class="slide final">
+  <h2 class="final-title">The people we train now<br>will helm the transition.</h2>
+  <p class="final-text">The next generation of policy professionals will navigate the most consequential technological shift in human history. They need to be ready — not just to govern AI, but to govern with it.</p>
+  <div class="final-cta">
+    <p>Seth Lazar · <a href="https://mintresearch.org">mintresearch.org</a></p>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<!-- NAV DOTS -->
+<div class="nav-dots" id="dots"></div>
+
+<script>
+(function(){
+  const slides=document.querySelectorAll('.slide');
+  const dotsContainer=document.getElementById('dots');
+  let current=0;
+  const total=slides.length;
+
+  // Create dots
+  for(let i=0;i<total;i++){
+    const d=document.createElement('div');
+    d.className='nav-dot'+(i===0?' active':'');
+    d.addEventListener('click',()=>goTo(i));
+    dotsContainer.appendChild(d);
+  }
+  const dots=dotsContainer.querySelectorAll('.nav-dot');
+
+  function goTo(n){
+    if(n<0||n>=total||n===current)return;
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current=n;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+    slides[current].scrollTop=0;
+  }
+
+  // Keyboard
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key==='ArrowDown')goTo(current+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')goTo(current-1);
+  });
+
+  // Touch/swipe
+  let tx=0,ty=0;
+  document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+  document.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-tx;
+    const dy=e.changedTouches[0].clientY-ty;
+    if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>50){
+      dx<0?goTo(current+1):goTo(current-1);
+    }
+  },{passive:true});
+
+  // Wheel
+  let wheelLock=false;
+  document.addEventListener('wheel',e=>{
+    if(wheelLock)return;
+    const slide=slides[current];
+    const atTop=slide.scrollTop<=0;
+    const atBottom=slide.scrollTop+slide.clientHeight>=slide.scrollHeight-2;
+    if(e.deltaY>30&&atBottom){wheelLock=true;goTo(current+1);setTimeout(()=>wheelLock=false,800)}
+    if(e.deltaY<-30&&atTop){wheelLock=true;goTo(current-1);setTimeout(()=>wheelLock=false,800)}
+  },{passive:true});
+})();
+</script>
+</body>
+</html>
