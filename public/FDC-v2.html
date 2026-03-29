@@ -4,30 +4,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The AGI-Ready Policy Student — Seth Lazar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --cream: #FFFAED; --yellow: #FFD054; --orange: #ee7a44;
   --black: #161300; --ink: #1a1a1a; --mid: #555; --light: #999;
   --blue: #5299F2; --green: #259344; --red: #BF4E30;
-  --border: clamp(1px,0.15vw,2px) dashed var(--black); --border-dot: clamp(1px,0.15vw,2px) dotted var(--black);
+  --border: 2px dashed var(--black); --border-dot: 2px dotted var(--black);
   --mono: 'Space Mono', monospace; --serif: 'Newsreader', Georgia, serif;
-  --nav-h: clamp(54px, 5vh, 64px);
+  --nav-h: 64px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { background: var(--cream); }
-body { font-family: var(--serif); background: var(--cream); color: var(--black); line-height: 1.5; font-size: clamp(18px, 2.5vw, 34px); -webkit-font-smoothing: antialiased; overflow: hidden; height: 100vh; width: 100vw; }
+body { font-family: var(--serif); background: var(--cream); color: var(--black); line-height: 1.5; font-size: 34px; -webkit-font-smoothing: antialiased; overflow: hidden; height: 100vh; width: 100vw; }
 
 .slides { position: relative; width: 100vw; height: calc(100vh - var(--nav-h)); overflow: hidden; }
 .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; opacity: 0; transform: translateY(6px); transition: opacity 0.35s ease, transform 0.35s ease; pointer-events: none; overflow-y: auto; }
 .slide.active { opacity: 1; transform: translateY(0); pointer-events: all; }
 
-/* Layouts — use more screen */
-.full { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: clamp(24px, 4vh, 48px) 10vw; }
+/* Layouts */
+.full { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 48px 10vw; }
 .split { display: grid; grid-template-columns: 1fr 1fr; width: 100%; height: 100%; }
 .split.wide-left { grid-template-columns: 1.2fr 0.8fr; }
 .split.wide-right { grid-template-columns: 0.8fr 1.2fr; }
-.split-left, .split-right { display: flex; flex-direction: column; justify-content: center; padding: clamp(24px, 4vh, 48px) 8%; }
+.split-left, .split-right { display: flex; flex-direction: column; justify-content: center; padding: 48px 8%; }
 .split-left { border-right: var(--border); }
 .yellow-bg { background: var(--yellow); }
 .black-bg { background: var(--black); color: var(--cream); }
@@ -38,93 +38,93 @@ body { font-family: var(--serif); background: var(--cream); color: var(--black);
 .black-bg .tip:hover { background: rgba(255,250,237,0.08); color: var(--cream); }
 
 .vlabel {
-  position: absolute; left: clamp(12px, 1.5vw, 18px); top: 50%; transform: rotate(-90deg) translateX(-50%);
+  position: absolute; left: 18px; top: 50%; transform: rotate(-90deg) translateX(-50%);
   transform-origin: left center;
-  font-family: var(--mono); font-size: clamp(11px, 1.1vw, 16px); font-weight: 700;
+  font-family: var(--mono); font-size: 16px; font-weight: 700;
   text-transform: uppercase; letter-spacing: 3px; color: var(--mid); white-space: nowrap;
 }
 .black-bg .vlabel { color: rgba(255,250,237,0.25); }
 
-/* Typography — Zoom-readable on 14" shared screen */
-h1 { font-family: var(--serif); font-size: clamp(32px, 5vw, 69px); font-weight: 700; line-height: 1.05; letter-spacing: -1px; margin-bottom: clamp(8px, 1vh, 14px); }
-h1.mega { font-size: clamp(36px, 5.5vw, 76px); }
-h2 { font-family: var(--mono); font-size: clamp(14px, 1.5vw, 21px); font-weight: 700; text-transform: uppercase; letter-spacing: 3px; margin-bottom: clamp(12px, 1.5vh, 18px); }
-h3 { font-family: var(--serif); font-size: clamp(26px, 3.5vw, 46px); font-weight: 500; line-height: 1.2; margin-bottom: clamp(4px, 0.5vh, 8px); }
-p { font-size: clamp(18px, 2.5vw, 34px); line-height: 1.5; margin-bottom: clamp(6px, 0.8vh, 10px); }
-p.big { font-size: clamp(21px, 2.8vw, 39px); line-height: 1.45; }
-p.dim { color: var(--mid); font-size: clamp(16px, 2vw, 28px); }
+/* Typography */
+h1 { font-family: var(--serif); font-size: 69px; font-weight: 700; line-height: 1.05; letter-spacing: -1px; margin-bottom: 14px; }
+h1.mega { font-size: 76px; }
+h2 { font-family: var(--mono); font-size: 21px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 18px; }
+h3 { font-family: var(--serif); font-size: 46px; font-weight: 500; line-height: 1.2; margin-bottom: 8px; }
+p { font-size: 34px; line-height: 1.5; margin-bottom: 10px; }
+p.big { font-size: 39px; line-height: 1.45; }
+p.dim { color: var(--mid); font-size: 28px; }
 strong { font-weight: 600; }
 code { font-family: var(--mono); font-size: 0.85em; background: rgba(0,0,0,0.06); padding: 2px 5px; }
 
 .highlight { background: var(--yellow); padding: 2px 6px; }
 .black-bg .highlight { background: var(--orange); color: var(--cream); }
-.label { font-family: var(--mono); font-size: clamp(13px, 1.5vw, 21px); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--mid); }
+.label { font-family: var(--mono); font-size: 21px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--mid); }
 
-blockquote { border-left: 4px solid var(--black); padding: clamp(10px, 1.2vh, 14px) clamp(14px, 1.5vw, 20px); margin: clamp(12px, 1.5vh, 18px) 0; font-style: italic; font-size: clamp(18px, 2.5vw, 34px); line-height: 1.5; }
-blockquote cite { display: block; font-style: normal; font-family: var(--mono); font-size: clamp(12px, 1.2vw, 18px); text-transform: uppercase; letter-spacing: 1.5px; color: var(--mid); margin-top: clamp(4px, 0.5vh, 8px); }
+blockquote { border-left: 4px solid var(--black); padding: 14px 20px; margin: 18px 0; font-style: italic; font-size: 34px; line-height: 1.5; }
+blockquote cite { display: block; font-style: normal; font-family: var(--mono); font-size: 18px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--mid); margin-top: 8px; }
 
 /* Tooltips */
 .tip {
   display: inline-block; border-bottom: 2px dashed var(--mid); cursor: help;
 }
-/* tiptext spans are hidden in the DOM; the #tooltip-overlay displays content */
 .tip .tiptext { display: none; }
 #tooltip-overlay {
   display: none;
   position: absolute; top: 0; left: 0; z-index: 99999;
-  width: min(630px, 80vw); max-width: 80vw; padding: clamp(14px, 1.5vw, 20px) clamp(16px, 2vw, 24px);
+  width: 630px; max-width: 80vw; padding: 20px 24px;
   background: var(--black); color: var(--cream);
-  font-family: var(--serif); font-size: clamp(14px, 1.5vw, 20px); font-style: normal; line-height: 1.5;
+  font-family: var(--serif); font-size: 20px; font-style: normal; line-height: 1.5;
   border: 3px solid var(--yellow);
   box-shadow: 0 8px 32px rgba(0,0,0,0.6);
 }
+
 /* Domain cards */
-.domain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(clamp(180px, 28vw, 340px), 1fr)); gap: 0; }
-.domain-card { border: var(--border); padding: clamp(12px, 1.5vw, 18px) clamp(14px, 1.5vw, 20px); margin: -1px; transition: background 0.15s; position: relative; }
+.domain-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; }
+.domain-card { border: var(--border); padding: 18px 20px; margin: -1px; transition: background 0.15s; position: relative; }
 .domain-card:hover { background: var(--yellow); }
-.domain-card .dc-label { font-family: var(--mono); font-size: clamp(13px, 1.5vw, 21px); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: clamp(4px, 0.5vh, 6px); }
-.domain-card .dc-text { font-size: clamp(16px, 2vw, 28px); line-height: 1.4; }
+.domain-card .dc-label { font-family: var(--mono); font-size: 21px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
+.domain-card .dc-text { font-size: 28px; line-height: 1.4; }
 
 /* Obstacle items */
-.obstacle-item { padding: clamp(8px, 1vh, 14px) 0; border-bottom: var(--border-dot); font-size: clamp(18px, 2.3vw, 32px); line-height: 1.45; display: flex; gap: clamp(8px, 1vw, 14px); }
+.obstacle-item { padding: 14px 0; border-bottom: var(--border-dot); font-size: 32px; line-height: 1.45; display: flex; gap: 14px; }
 .obstacle-item:last-child { border-bottom: none; }
-.obstacle-item .arrow { font-family: var(--mono); font-size: clamp(18px, 2vw, 28px); color: var(--mid); flex-shrink: 0; }
+.obstacle-item .arrow { font-family: var(--mono); font-size: 28px; color: var(--mid); flex-shrink: 0; }
 
 /* Competency cards */
-.comp-stack { margin: clamp(8px, 1vh, 12px) 0; }
-.comp-card { display: flex; gap: clamp(10px, 1.3vw, 18px); padding: clamp(10px, 1.2vh, 16px) 0; border-bottom: var(--border); align-items: baseline; }
+.comp-stack { margin: 12px 0; }
+.comp-card { display: flex; gap: 18px; padding: 16px 0; border-bottom: var(--border); align-items: baseline; }
 .comp-card:last-child { border-bottom: none; }
-.comp-number { font-family: var(--serif); font-size: clamp(36px, 4.5vw, 60px); font-weight: 300; line-height: 1; min-width: clamp(42px, 5vw, 70px); }
-.comp-body .comp-title { font-family: var(--serif); font-size: clamp(24px, 2.8vw, 39px); font-weight: 500; margin-bottom: 2px; }
-.comp-body .comp-desc { font-size: clamp(16px, 2vw, 28px); line-height: 1.4; color: var(--ink); }
+.comp-number { font-family: var(--serif); font-size: 60px; font-weight: 300; line-height: 1; min-width: 70px; }
+.comp-body .comp-title { font-family: var(--serif); font-size: 39px; font-weight: 500; margin-bottom: 2px; }
+.comp-body .comp-desc { font-size: 28px; line-height: 1.4; color: var(--ink); }
 
 /* Verification items */
-.verif-item { display: flex; gap: clamp(10px, 1.2vw, 16px); padding: clamp(8px, 1vh, 12px) 0; border-bottom: 1px dotted var(--black); align-items: baseline; }
+.verif-item { display: flex; gap: 16px; padding: 12px 0; border-bottom: 1px dotted var(--black); align-items: baseline; }
 .verif-item:last-child { border-bottom: none; }
-.verif-label { font-family: var(--mono); font-size: clamp(12px, 1.4vw, 20px); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; min-width: clamp(140px, 18vw, 260px); flex-shrink: 0; }
-.verif-text { font-size: clamp(16px, 2vw, 28px); line-height: 1.4; }
+.verif-label { font-family: var(--mono); font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; min-width: 260px; flex-shrink: 0; }
+.verif-text { font-size: 28px; line-height: 1.4; }
 
 /* Capacity cards */
-.cap-card { border: var(--border); padding: clamp(12px, 1.5vw, 18px) clamp(14px, 1.5vw, 20px); margin-bottom: -2px; transition: background 0.15s; }
+.cap-card { border: var(--border); padding: 18px 20px; margin-bottom: -2px; transition: background 0.15s; }
 .cap-card:hover { background: var(--yellow); }
-.cap-card .cap-label { font-family: var(--mono); font-size: clamp(13px, 1.5vw, 21px); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: clamp(4px, 0.5vh, 6px); }
-.cap-card .cap-text { font-size: clamp(16px, 2vw, 28px); line-height: 1.45; }
+.cap-card .cap-label { font-family: var(--mono); font-size: 21px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
+.cap-card .cap-text { font-size: 28px; line-height: 1.45; }
 
 /* Curriculum items */
-.cur-item { padding: clamp(8px, 1vh, 14px) 0; border-bottom: var(--border-dot); }
+.cur-item { padding: 14px 0; border-bottom: var(--border-dot); }
 .cur-item:last-child { border-bottom: none; }
-.cur-item .cur-title { font-family: var(--serif); font-size: clamp(22px, 2.6vw, 36px); font-weight: 500; margin-bottom: 3px; }
-.cur-item .cur-text { font-size: clamp(16px, 2vw, 28px); line-height: 1.4; color: var(--ink); }
+.cur-item .cur-title { font-family: var(--serif); font-size: 36px; font-weight: 500; margin-bottom: 3px; }
+.cur-item .cur-text { font-size: 28px; line-height: 1.4; color: var(--ink); }
 
 /* Ticker */
 .ticker {
-  position: fixed; top: 0; left: 0; width: 100%; height: clamp(32px, 3.5vh, 40px);
+  position: fixed; top: 0; left: 0; width: 100%; height: 40px;
   background: var(--yellow); border-bottom: var(--border);
   overflow: hidden; z-index: 200; display: flex; align-items: center;
 }
 .ticker-track {
-  display: flex; gap: clamp(20px, 3vw, 40px); white-space: nowrap;
-  font-family: var(--mono); font-size: clamp(11px, 1.2vw, 16px); font-weight: 700;
+  display: flex; gap: 40px; white-space: nowrap;
+  font-family: var(--mono); font-size: 16px; font-weight: 700;
   text-transform: uppercase; letter-spacing: 2px;
   animation: scroll-ticker 55s linear infinite;
 }
@@ -136,18 +136,29 @@ nav {
   position: fixed; bottom: 0; left: 0; width: 100%; height: var(--nav-h);
   background: var(--cream); border-top: var(--border);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 clamp(14px, 2vw, 24px); z-index: 100;
-  font-family: var(--mono); font-size: clamp(12px, 1.2vw, 16px); text-transform: uppercase; letter-spacing: 2px;
+  padding: 0 24px; z-index: 100;
+  font-family: var(--mono); font-size: 16px; text-transform: uppercase; letter-spacing: 2px;
 }
-.nav-dots { display: flex; gap: clamp(3px, 0.3vw, 4px); }
-.nav-dot { width: clamp(10px, 1vw, 14px); height: clamp(10px, 1vw, 14px); border: 2px solid var(--black); cursor: pointer; transition: background 0.15s; }
+.nav-dots { display: flex; gap: 4px; }
+.nav-dot { width: 14px; height: 14px; border: 2px solid var(--black); cursor: pointer; transition: background 0.15s; }
 .nav-dot:hover { background: var(--yellow); }
 .nav-dot.active { background: var(--black); }
-.nav-section { color: var(--mid); margin-left: clamp(8px, 1vw, 12px); }
-.nav-right { color: var(--light); }
-.nav-right kbd { border: 1px solid var(--mid); padding: 2px 6px; font-family: var(--mono); font-size: clamp(11px, 1vw, 15px); }
+.nav-section { color: var(--mid); margin-left: 12px; }
+.nav-right { color: var(--light); display: flex; align-items: center; gap: 12px; }
+.nav-right kbd { border: 1px solid var(--mid); padding: 2px 6px; font-family: var(--mono); font-size: 15px; }
 
-.progress { position: fixed; top: clamp(32px, 3.5vh, 40px); left: 0; width: 100%; height: 3px; z-index: 150; }
+/* Pretext status badge */
+#pretext-badge {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--mid); opacity: 0;
+  transition: opacity 0.5s ease;
+  white-space: nowrap;
+}
+#pretext-badge.active { opacity: 0.55; }
+#pretext-badge.ready { opacity: 1; color: var(--green); }
+
+.progress { position: fixed; top: 40px; left: 0; width: 100%; height: 3px; z-index: 150; }
 .progress-fill { height: 100%; background: var(--black); width: 0%; transition: width 0.35s ease; }
 
 .fi { opacity: 0; transform: translateY(10px); transition: opacity 0.45s ease, transform 0.45s ease; }
@@ -165,91 +176,115 @@ nav {
 
 /* Nav buttons */
 .nav-btn {
-  display: none; /* hidden on desktop by default */
-  width: clamp(36px, 3vw, 40px); height: clamp(36px, 3vw, 40px);
+  display: none;
+  width: 40px; height: 40px;
   border: 2px solid var(--black); background: var(--cream);
-  font-family: var(--serif); font-size: clamp(20px, 1.8vw, 24px); font-weight: 700;
+  font-family: var(--serif); font-size: 24px; font-weight: 700;
   cursor: pointer; transition: background 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
 .nav-btn:hover, .nav-btn:active { background: var(--yellow); }
 
-/* ── Tablet ── */
+/* Tablet */
 @media (max-width: 900px) {
-  /* Slide must be block (not flex) so children can grow beyond viewport and scroll */
+  body { font-size: 26px; }
   .slide { display: block; -webkit-overflow-scrolling: touch; }
-  /* Children must be height:auto so they grow with content and trigger slide scroll */
   .split, .split.wide-left, .split.wide-right { grid-template-columns: 1fr; height: auto; min-height: 100%; }
   .full { height: auto; min-height: 100%; justify-content: flex-start; }
   .split-left, .split-right { justify-content: flex-start; }
   .split-left { border-right: none; border-bottom: var(--border); }
-  .full { padding: clamp(28px, 4vh, 48px) clamp(18px, 4vw, 28px) calc(var(--nav-h) + clamp(28px, 4vh, 48px)) !important; }
-  .split-left, .split-right { padding: clamp(20px, 3vh, 36px) clamp(18px, 4vw, 28px); }
-  /* Bottom clearance so content isn't hidden behind fixed nav */
-  .split-right { padding-bottom: calc(var(--nav-h) + clamp(28px, 4vh, 48px)); }
+  h1 { font-size: 50px !important; } h1.mega { font-size: 56px !important; }
+  h3 { font-size: 36px !important; }
+  p { font-size: 26px; } p.big { font-size: 30px; } p.dim { font-size: 22px; }
+  .full { padding: 48px 28px calc(var(--nav-h) + 48px) !important; }
+  .split-left, .split-right { padding: 36px 28px; }
+  .split-right { padding-bottom: calc(var(--nav-h) + 48px); }
   .domain-grid { grid-template-columns: 1fr 1fr; }
   .vlabel { display: none; }
-  /* Override inline font-sizes on AGI-type cards */
-  .agi-grid h3 { font-size: clamp(24px, 3.5vw, 30px) !important; }
-  .agi-grid p { font-size: clamp(16px, 2.5vw, 22px) !important; }
+  blockquote { font-size: 26px; }
+  .comp-number { font-size: 46px; min-width: 54px; }
+  .comp-body .comp-title { font-size: 30px; }
+  .comp-body .comp-desc { font-size: 22px; }
+  .verif-label { min-width: auto; font-size: 17px; }
+  .verif-text { font-size: 22px; }
+  .cap-card .cap-label { font-size: 17px; }
+  .cap-card .cap-text { font-size: 22px; }
+  .cur-item .cur-title { font-size: 28px; }
+  .cur-item .cur-text { font-size: 22px; }
+  .obstacle-item { font-size: 24px; }
+  .dc-label { font-size: 17px; }
+  .dc-text { font-size: 22px; }
+  .label { font-size: 17px; }
+  h2 { font-size: 17px; }
+  .agi-grid h3 { font-size: 30px !important; }
+  .agi-grid p { font-size: 22px !important; }
   .agi-grid { grid-template-columns: 1fr !important; }
   .cur-grid { grid-template-columns: 1fr !important; }
-  h1 { font-size: clamp(32px, 6vw, 50px) !important; }
-  h1.mega { font-size: clamp(36px, 7vw, 56px) !important; }
-  h3 { font-size: clamp(26px, 4.5vw, 36px) !important; }
-  /* Show tap buttons, hide keyboard hints */
   .nav-btn { display: flex; align-items: center; justify-content: center; }
   .nav-keys { display: none; }
+  #pretext-badge { display: none; }
 }
 
-/* ── Phone ── */
+/* Phone */
 @media (max-width: 600px) {
   :root { --nav-h: 54px; }
-  .full { padding: clamp(20px, 3vh, 36px) clamp(14px, 4vw, 18px) calc(var(--nav-h) + clamp(28px, 4vh, 56px)) !important; }
-  .split-left, .split-right { padding: clamp(16px, 2.5vh, 28px) clamp(14px, 4vw, 18px); }
-  .split-right { padding-bottom: calc(var(--nav-h) + clamp(28px, 4vh, 56px)); }
-  /* For slides with only split-left (closing slide) */
-  .slide:last-child .split-left { padding-bottom: calc(var(--nav-h) + clamp(28px, 4vh, 56px)); }
+  body { font-size: 18px; }
+  h1 { font-size: 32px !important; } h1.mega { font-size: 36px !important; }
+  h2 { font-size: 14px; letter-spacing: 2px; }
+  h3 { font-size: 26px !important; }
+  p { font-size: 18px; } p.big { font-size: 21px; } p.dim { font-size: 16px; }
+  .full { padding: 36px 18px calc(var(--nav-h) + 56px) !important; }
+  .split-left, .split-right { padding: 28px 18px; }
+  .split-right { padding-bottom: calc(var(--nav-h) + 56px); }
+  .slide:last-child .split-left { padding-bottom: calc(var(--nav-h) + 56px); }
   .slides { margin-top: 32px; }
-
-  h1 { font-size: clamp(26px, 8vw, 32px) !important; }
-  h1.mega { font-size: clamp(30px, 9vw, 36px) !important; }
-  h3 { font-size: clamp(20px, 6vw, 26px) !important; }
-
-  /* All multi-column grids become single column */
+  .ticker { height: 32px; }
+  .ticker-track { font-size: 12px; letter-spacing: 1.5px; gap: 24px; }
+  .progress { top: 32px; }
   .domain-grid { grid-template-columns: 1fr; }
   .agi-grid { grid-template-columns: 1fr !important; }
-  .agi-grid h3 { font-size: clamp(18px, 5.5vw, 22px) !important; }
-  .agi-grid p { font-size: clamp(14px, 4.5vw, 17px) !important; }
-  .agi-grid .label { font-size: clamp(10px, 3vw, 12px); }
+  .agi-grid h3 { font-size: 22px !important; }
+  .agi-grid p { font-size: 17px !important; }
+  .agi-grid .label { font-size: 12px; }
   .cur-grid { grid-template-columns: 1fr !important; }
-
-  /* Verification — stack label above text */
-  .verif-item { flex-direction: column; gap: 4px; padding: clamp(8px, 2vh, 10px) 0; }
-  .verif-label { min-width: auto; }
-
-  /* Nav */
-  nav { height: var(--nav-h); }
-  .nav-dot { width: clamp(8px, 2.5vw, 10px); height: clamp(8px, 2.5vw, 10px); }
+  .domain-card { padding: 14px 16px; }
+  .domain-card .dc-label { font-size: 14px; letter-spacing: 1.5px; margin-bottom: 4px; }
+  .domain-card .dc-text { font-size: 17px; }
+  .comp-card { gap: 12px; padding: 12px 0; }
+  .comp-number { font-size: 36px; min-width: 42px; }
+  .comp-body .comp-title { font-size: 24px; }
+  .comp-body .comp-desc { font-size: 16px; }
+  .verif-item { flex-direction: column; gap: 4px; padding: 10px 0; }
+  .verif-label { min-width: auto; font-size: 14px; }
+  .verif-text { font-size: 17px; }
+  .cap-card { padding: 14px 16px; }
+  .cap-card .cap-label { font-size: 14px; letter-spacing: 1.5px; }
+  .cap-card .cap-text { font-size: 17px; }
+  .obstacle-item { font-size: 18px; gap: 10px; padding: 10px 0; }
+  .obstacle-item .arrow { font-size: 18px; }
+  .cur-item .cur-title { font-size: 22px; }
+  .cur-item .cur-text { font-size: 16px; }
+  .label { font-size: 14px; letter-spacing: 1.5px; }
+  blockquote { font-size: 18px; padding: 10px 14px; margin: 12px 0; }
+  blockquote cite { font-size: 14px; }
+  code { font-size: 0.8em; }
+  nav { height: var(--nav-h); padding: 0 14px; font-size: 13px; }
+  .nav-dot { width: 10px; height: 10px; }
   .nav-dots { gap: 3px; }
-
-  /* Tooltip */
-  #tooltip-overlay { width: 90vw !important; max-width: 90vw; }
-
-  /* Slide 1 title subtitle */
+  .nav-section { margin-left: 8px; font-size: 12px; }
+  .nav-right { font-size: 12px; }
+  .nav-right kbd { font-size: 12px; padding: 1px 4px; }
+  #tooltip-overlay { width: 90vw !important; max-width: 90vw; font-size: 16px; padding: 14px 16px; }
   .slide:first-child .split-right > div { max-width: none !important; }
-
-  /* Nav buttons — larger tap targets on phone */
-  .nav-btn { width: clamp(40px, 10vw, 44px); height: clamp(40px, 10vw, 44px); font-size: clamp(24px, 7vw, 28px); }
-
-  /* Closing slide contact */
-  .slide:last-child .dim { font-size: clamp(12px, 3.5vw, 14px) !important; }
+  .nav-btn { width: 44px; height: 44px; font-size: 28px; }
+  .slide:last-child .dim { font-size: 14px !important; }
 }
 </style>
 </head>
-<body class="editing">
+<body>
 
-<div id="tooltip-overlay" style="width: 630px; display: none; top: 614.656px; left: 2134.8px;">Citizens produce specification-backed alternatives rather than vague objections — analogous to forking a software repo, but for policy. Agents survey preferences efficiently and show participants the systemic consequences of their choices.</div>
+<div id="tooltip-overlay"></div>
+
 <div class="ticker">
   <div class="ticker-track">
     <span>Vulnerability Scanning</span><span>Obstacle Mapping</span><span>Capacity Building</span><span>Agent Fluency</span><span>Verification</span>
@@ -259,7 +294,7 @@ nav {
   </div>
 </div>
 
-<div class="progress"><div class="progress-fill" id="progress-fill" style="width: 0%;"></div></div>
+<div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
 
 <div class="slides" style="height: calc(100vh - var(--nav-h)); margin-top: 40px;">
 
@@ -312,19 +347,19 @@ nav {
         <div class="label" style="margin-bottom:8px;">Locked in</div>
         <h3 style="font-size:41px;">Agentic AI</h3>
         <p style="font-size:28px;line-height:1.45;margin-bottom:8px;">Drop-in remote workers across all knowledge work. The "Claude Code moment" is the confirmation signal.</p>
-        <p style="font-size:28px;line-height:1.45;" class="tip tip-down">Essentially a solved problem<span class="tiptext" style="display: none;">Needs only good RL environments and reward signals. There's still a threshold in competence/insight/judgment, but (a) that threshold is higher than most entry-level employees, and (b) every reason to think it will be crossed.</span></p>
+        <p style="font-size:28px;line-height:1.45;" class="tip">Essentially a solved problem<span class="tiptext">Needs only good RL environments and reward signals. There's still a threshold in competence/insight/judgment, but (a) that threshold is higher than most entry-level employees, and (b) every reason to think it will be crossed.</span></p>
       </div>
       <div style="border:var(--border);padding:20px 22px;margin:-1px;">
         <div class="label" style="margin-bottom:8px;">On the horizon</div>
         <h3 style="font-size:41px;">AI for Science</h3>
         <p style="font-size:28px;line-height:1.45;margin-bottom:8px;">Superhuman expertise and originality. The kind that enables accelerating recursive self-improvement.</p>
-        <p style="font-size:28px;line-height:1.45;" class="tip tip-down">Early signs<span class="tiptext" style="display: none; width: 630px; left: 818.184px; top: 728.391px;">AI for math is the canary in the coal mine. Modest RSI is already happening — Anthropic's engineers barely write code themselves — but as yet it is a "<a href="https://www.interconnects.ai/p/lossy-self-improvement" style="color:var(--yellow);">lossy</a>" form of self-improvement.</span></p>
+        <p style="font-size:28px;line-height:1.45;" class="tip">Early signs<span class="tiptext">AI for math is the canary in the coal mine. Modest RSI is already happening — Anthropic's engineers barely write code themselves — but as yet it is a "lossy" form of self-improvement.</span></p>
       </div>
       <div style="border:var(--border);padding:20px 22px;margin:-1px;">
         <div class="label" style="margin-bottom:8px;">Can't rule out</div>
         <h3 style="font-size:41px;">Independent ASI</h3>
         <p style="font-size:28px;line-height:1.45;margin-bottom:8px;">Autonomous superintelligence. Plausibly beyond current architectures, but maybe don't bet against it.</p>
-        <p style="font-size:28px;line-height:1.45;" class="tip tip-down">Surprisingly few Rubicons remain<span class="tiptext" style="width: 630px; display: none; left: 2197px; top: 626.594px;">Between AI-for-science and ASI there may be surprisingly few remaining Rubicons. Embodied AI (robotics) is a separate path, also worth watching. Worth factoring into models but should not be the focus.</span></p>
+        <p style="font-size:28px;line-height:1.45;" class="tip">Surprisingly few Rubicons remain<span class="tiptext">Between AI-for-science and ASI there may be surprisingly few remaining Rubicons. Embodied AI (robotics) is a separate path, also worth watching. Worth factoring into models but should not be the focus.</span></p>
       </div>
     </div>
 
@@ -360,7 +395,7 @@ nav {
           <div class="comp-number">3</div>
           <div class="comp-body">
             <div class="comp-title">Capacity Building</div>
-            <div class="comp-desc">Identify where AI can revolutionise state capacity — RL environments, participatory processes, reduced transaction costs.&nbsp;</div>
+            <div class="comp-desc">Identify where AI can revolutionise state capacity — RL environments, participatory processes, reduced transaction costs.</div>
           </div>
         </div>
         <div class="comp-card">
@@ -407,7 +442,6 @@ nav {
         <div class="dc-text">Cooperation is a skill that must be practised — outsource all interaction and you lose the capacity, not just the occasions</div>
       </div>
     </div>
-    <p class="fi d3" style="margin-top:12px;"><br></p>
   </div>
 </div>
 
@@ -447,11 +481,11 @@ nav {
       <div class="fi d3">
         <div class="cap-card">
           <div class="cap-label">RL Environments for Government</div>
-          <div class="cap-text">Any government knowledge-work bottleneck is low-hanging fruit. <span class="tip">But beware the McKinsey problem on steroids<span class="tiptext" style="display: none;">Building RL environments through competing private companies recreates the consulting trap: governments outsourced, saved on public service costs, but spent more on consultants with conflicting interests. Public institutions need to control the RL environments while using private models.</span></span> — public institutions must control the RL environments.</div>
+          <div class="cap-text">Any government knowledge-work bottleneck is low-hanging fruit. <span class="tip">But beware the McKinsey problem on steroids<span class="tiptext">Building RL environments through competing private companies recreates the consulting trap: governments outsourced, saved on public service costs, but spent more on consultants with conflicting interests. Public institutions need to control the RL environments while using private models.</span></span> — public institutions must control the RL environments.</div>
         </div>
         <div class="cap-card">
           <div class="cap-label">Participatory Decision-Making</div>
-          <div class="cap-text">Current mechanisms are reactionary and superficial. AI agents could enable genuine deliberation: <span class="tip">open-source urban planning<span class="tiptext" style="display: none;">Citizens produce specification-backed alternatives rather than vague objections — analogous to forking a software repo, but for policy. Agents survey preferences efficiently and show participants the systemic consequences of their choices.</span></span>, showing systemic consequences of choices.</div>
+          <div class="cap-text">Current mechanisms are reactionary and superficial. AI agents could enable genuine deliberation: <span class="tip">open-source urban planning<span class="tiptext">Citizens produce specification-backed alternatives rather than vague objections — analogous to forking a software repo, but for policy. Agents survey preferences efficiently and show participants the systemic consequences of their choices.</span></span>, showing systemic consequences of choices.</div>
         </div>
         <div class="cap-card">
           <div class="cap-label">Reducing Costs of Negotiation</div>
@@ -538,17 +572,16 @@ nav {
   </div>
 </div>
 
-</div>
-
-
+</div><!-- /slides -->
 
 <nav>
   <div style="color:var(--mid);font-weight:700;"><span id="slide-counter">1 / 10</span></div>
   <div style="display:flex;align-items:center;"><div class="nav-dots" id="nav-dots"></div><div class="nav-section"><span id="section-name">Title</span></div></div>
-  <div style="display:flex;align-items:center;gap:8px;">
+  <div class="nav-right">
+    <span id="pretext-badge">◆ pretext</span>
     <button class="nav-btn" id="nav-prev" aria-label="Previous slide">‹</button>
     <button class="nav-btn" id="nav-next" aria-label="Next slide">›</button>
-    <span class="nav-right nav-keys"><kbd>←</kbd> <kbd>→</kbd></span>
+    <span class="nav-keys"><kbd>←</kbd> <kbd>→</kbd></span>
   </div>
 </nav>
 
@@ -561,13 +594,11 @@ function hideTooltip(){overlay.style.display='none';activeTip=null;}
 function go(n){if(n<0||n>=total||n===cur)return;hideTooltip();slides[cur].classList.remove('active');cur=n;slides[cur].classList.add('active');document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===n));prog.style.width=((n/(total-1))*100)+'%';counter.textContent=(n+1)+' / '+total;secName.textContent=slides[n].dataset.name||'';}
 document.addEventListener('click',e=>{if(!e.target.closest('.tip')&&!e.target.closest('#tooltip-overlay'))hideTooltip();});
 document.addEventListener('keydown',e=>{
-  // In edit mode, don't hijack arrow keys (needed for text cursor)
   if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(cur+1);}
   else if(e.key==='ArrowLeft'){e.preventDefault();go(cur-1);}
   else if(e.key==='Home'){e.preventDefault();go(0);}
   else if(e.key==='End'){e.preventDefault();go(total-1);}
   });
-// Horizontal swipe navigation (only triggers when swipe is more horizontal than vertical)
 let tx=0,ty=0;
 document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].screenX;ty=e.changedTouches[0].screenY;});
 document.addEventListener('touchend',e=>{
@@ -577,12 +608,10 @@ document.addEventListener('touchend',e=>{
     slides[cur]&&(slides[cur].scrollTop=0);
   }
 });
-// Nav buttons (scroll to top on mobile when navigating)
 document.getElementById('nav-prev').onclick=()=>{go(cur-1);slides[cur]&&(slides[cur].scrollTop=0);};
 document.getElementById('nav-next').onclick=()=>{go(cur+1);slides[cur]&&(slides[cur].scrollTop=0);};
 
 // ── Tooltip system ──
-// Single overlay div positioned absolutely on <body>, content copied from .tiptext spans
 const overlay = document.getElementById('tooltip-overlay');
 let activeTip = null;
 
@@ -592,13 +621,9 @@ function positionOverlay(triggerEl) {
   const w = Math.min(630, window.innerWidth - gutter * 2);
   overlay.style.width = w + 'px';
   overlay.style.display = 'block';
-
-  // Measure height
   const h = overlay.offsetHeight;
   const tickerH = 50;
   const navH = 72;
-
-  // Vertical: prefer above trigger, then below, then center
   let top;
   if (r.top - h - 12 > tickerH) {
     top = r.top - h - 12 + window.scrollY;
@@ -607,11 +632,8 @@ function positionOverlay(triggerEl) {
   } else {
     top = (window.innerHeight - tickerH - navH - h) / 2 + tickerH + window.scrollY;
   }
-
-  // Horizontal: center on trigger, clamp within gutters
   let left = r.left + r.width / 2 - w / 2 + window.scrollX;
   left = Math.max(gutter, Math.min(left, window.innerWidth - w - gutter));
-
   overlay.style.top = top + 'px';
   overlay.style.left = left + 'px';
 }
@@ -620,9 +642,7 @@ const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 document.querySelectorAll('.tip').forEach(tip => {
   const src = tip.querySelector('.tiptext');
   if (!src) return;
-
   if (!isTouch) {
-    // Desktop: hover to show/hide
     tip.addEventListener('mouseenter', () => {
       overlay.innerHTML = src.innerHTML;
       activeTip = tip;
@@ -632,8 +652,6 @@ document.querySelectorAll('.tip').forEach(tip => {
       overlay.style.display = 'none'; activeTip = null;
     });
   }
-
-  // Tap toggle (works on both, but primary input on touch)
   tip.addEventListener('click', (e) => {
     e.stopPropagation();
     if (activeTip === tip) {
@@ -645,9 +663,275 @@ document.querySelectorAll('.tip').forEach(tip => {
     }
   });
 });
-
-
 </script>
 
+<!-- ═══ PRETEXT TEXT LAYOUT ENGINE ═══
+  Canvas-based text measurement + optimal (TeX-style) line breaking.
+  Phase 1 — prepare(): measures each segment via OffscreenCanvas (one-time per text block, ~19ms/500 texts)
+  Phase 2 — layoutWithLines(): pure arithmetic to compute optimal breaks for any container width (~0.09ms)
+  On resize: only Phase 2 runs — no DOM measurement, no reflow.
+-->
+<script type="module">
+
+// Try multiple CDN sources for robustness
+const CDN_URLS = [
+  'https://esm.sh/@chenglou/pretext',
+  'https://cdn.jsdelivr.net/npm/@chenglou/pretext/dist/layout.js',
+  'https://unpkg.com/@chenglou/pretext/dist/layout.js',
+];
+
+async function loadPretext() {
+  for (const url of CDN_URLS) {
+    try {
+      const mod = await import(url);
+      if (typeof mod.prepare === 'function') {
+        console.log(`[pretext] Loaded from ${url}`);
+        return mod;
+      }
+    } catch (e) {
+      console.warn(`[pretext] Failed to load from ${url}:`, e.message);
+    }
+  }
+  return null;
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function buildFontSpec(el) {
+  const s = getComputedStyle(el);
+  // CSS font shorthand for canvas context: [style] [weight] size family
+  const style = s.fontStyle !== 'normal' ? s.fontStyle + ' ' : '';
+  return `${style}${s.fontWeight} ${s.fontSize} ${s.fontFamily}`;
+}
+
+function getLineHeightPx(el) {
+  const s = getComputedStyle(el);
+  if (s.lineHeight === 'normal') return parseFloat(s.fontSize) * 1.5;
+  return parseFloat(s.lineHeight);
+}
+
+// Returns true if the element contains only text (no child element nodes).
+// These are safe for pretext line-break injection since we can replace textContent.
+// Elements with inline HTML (spans, links, etc.) are excluded — pretext still
+// measures them for height equalization but doesn't modify their DOM content.
+function isPureText(el) {
+  return el.children.length === 0;
+}
+
+// ── State ─────────────────────────────────────────────────────────────────────
+
+const state = {
+  // Map from element → { prepared, lineHeight, pureText }
+  // 'prepared' is the opaque pretext handle created by prepare()
+  // It contains all canvas measurements and is reused for every layout() call.
+  texts: new Map(),
+
+  // Groups of sibling cards for height equalization
+  // [ [card, card, card], [card, card], … ]
+  cardGroups: [],
+
+  ptx: null, // the loaded pretext module
+};
+
+// ── Initialisation ────────────────────────────────────────────────────────────
+
+const badge = document.getElementById('pretext-badge');
+
+async function init() {
+  badge.classList.add('active');
+
+  // 1. Load the pretext module
+  state.ptx = await loadPretext();
+  if (!state.ptx) {
+    console.warn('[pretext] Could not load from any CDN. Falling back to CSS layout.');
+    badge.textContent = '✗ pretext unavailable';
+    badge.style.color = 'var(--red)';
+    badge.classList.add('ready');
+    return;
+  }
+
+  const { prepare } = state.ptx;
+
+  // 2. Wait for web fonts so canvas measurements match rendered glyphs
+  await document.fonts.ready;
+
+  // 3. Measure all text blocks — Phase 1 of pretext (canvas, runs once)
+  const t0 = performance.now();
+
+  const selectors = [
+    'p',
+    '.dc-text',
+    '.comp-desc',
+    '.verif-text',
+    '.cap-text',
+    '.cur-text',
+  ].join(', ');
+
+  let preparedCount = 0;
+  for (const el of document.querySelectorAll(selectors)) {
+    const text = el.textContent.trim();
+    // Skip very short strings and elements with no visible text
+    if (text.length < 12) continue;
+
+    const font = buildFontSpec(el);
+    const lineHeight = getLineHeightPx(el);
+    const pure = isPureText(el);
+
+    try {
+      const prepared = prepare(text, font);
+      state.texts.set(el, { prepared, lineHeight, pureText: pure });
+      preparedCount++;
+    } catch (err) {
+      // Skip — font not available in canvas context, or other measurement error
+    }
+  }
+
+  const prepareMs = (performance.now() - t0).toFixed(1);
+  console.log(`[pretext] Phase 1 (prepare): ${preparedCount} blocks measured in ${prepareMs}ms`);
+
+  // 4. Discover card groups for height equalization
+  discoverCardGroups();
+
+  // 5. Initial layout — Phase 2 (pure arithmetic)
+  relayout();
+
+  // 6. On resize, only Phase 2 runs — no DOM measurement in the hot path
+  let rafId = null;
+  window.addEventListener('resize', () => {
+    if (rafId !== null) return; // already scheduled
+    rafId = requestAnimationFrame(() => {
+      relayout();
+      rafId = null;
+    });
+  }, { passive: true });
+
+  badge.textContent = `◆ pretext · ${preparedCount} blocks`;
+  badge.classList.add('ready');
+}
+
+// ── Card group discovery ──────────────────────────────────────────────────────
+
+function discoverCardGroups() {
+  // Domain cards — 3-column grid; equalize within each row of 3
+  const domainCards = Array.from(document.querySelectorAll('.domain-card'));
+  for (let i = 0; i < domainCards.length; i += 3) {
+    const row = domainCards.slice(i, i + 3);
+    if (row.length > 1) state.cardGroups.push(row);
+  }
+
+  // Competency cards — single vertical stack (equalize across all)
+  const compCards = Array.from(document.querySelectorAll('.comp-card'));
+  if (compCards.length > 1) state.cardGroups.push(compCards);
+
+  // Curriculum items — 2-column grid; equalize within each row of 2
+  const curItems = Array.from(document.querySelectorAll('.cur-item'));
+  for (let i = 0; i < curItems.length; i += 2) {
+    const row = curItems.slice(i, i + 2);
+    if (row.length > 1) state.cardGroups.push(row);
+  }
+}
+
+// ── Phase 2: layout ───────────────────────────────────────────────────────────
+
+function relayout() {
+  if (!state.ptx) return;
+  const { layoutWithLines } = state.ptx;
+
+  const t0 = performance.now();
+
+  // Pass 1: Batch all DOM reads (container widths)
+  // Reading before any writes avoids interleaved read/write layout thrashing.
+  const widths = new Map();
+  for (const [el] of state.texts) {
+    // getBoundingClientRect works even for elements in hidden (opacity:0) slides
+    // because they are absolutely positioned and their containing block has a size.
+    widths.set(el, el.getBoundingClientRect().width || el.offsetWidth);
+  }
+
+  // Pass 2: Compute optimal line breaks for every block — pure arithmetic, zero DOM access.
+  // This is pretext's key capability: O(n·lines) arithmetic using cached canvas measurements,
+  // as opposed to the browser's greedy first-fit algorithm.
+  const lineResults = new Map();
+  for (const [el, info] of state.texts) {
+    const w = widths.get(el);
+    if (!w) continue;
+    try {
+      lineResults.set(el, layoutWithLines(info.prepared, w, info.lineHeight));
+    } catch (err) {
+      // Measurement mismatch (e.g. font changed) — skip silently
+    }
+  }
+
+  // Pass 3: Batch DOM writes — apply optimal line breaks to pure-text elements.
+  // Elements with inline HTML (tips, links, <strong>) are left untouched;
+  // pretext still measured them in Pass 2 for height equalization below.
+  for (const [el, result] of lineResults) {
+    const info = state.texts.get(el);
+    if (!info.pureText) continue;
+    if (!result || result.lines.length === 0) continue;
+
+    // Join lines with explicit newline characters and set white-space: pre-wrap.
+    // The browser respects these breaks exactly — no additional CSS word-wrap runs —
+    // giving us pretext's optimal (TeX-style) line breaking instead of greedy first-fit.
+    el.textContent = result.lines.map(l => l.text).join('\n');
+    el.style.whiteSpace = 'pre-wrap';
+  }
+
+  // Pass 4: Card height equalization using pretext-computed heights
+  equalizeCardGroups(lineResults);
+
+  const layoutMs = (performance.now() - t0).toFixed(2);
+  console.debug(`[pretext] Phase 2 (layout): ${layoutMs}ms for ${state.texts.size} blocks`);
+}
+
+// ── Height equalization ───────────────────────────────────────────────────────
+
+function equalizeCardGroups(lineResults) {
+  // Reset all cards first (batch reads need a clean slate)
+  for (const group of state.cardGroups) {
+    for (const card of group) {
+      card.style.minHeight = '';
+    }
+  }
+
+  // For each group, read heights and set uniform minimum
+  for (const group of state.cardGroups) {
+    // Use pretext-computed text heights where available, otherwise measure DOM.
+    // Even using DOM here is acceptable: this is a separate, isolated read pass
+    // after all text writes are complete, so no interleaved read/write thrashing.
+    const heights = group.map(card => {
+      // Accumulate pretext heights for all text children in this card
+      let pretextH = 0;
+      let hasPretextData = false;
+      for (const [el, result] of lineResults) {
+        if (card.contains(el) && result) {
+          pretextH += result.height;
+          hasPretextData = true;
+        }
+      }
+      // Fall back to DOM measurement for cards with no pretext-measured children
+      // (e.g. cards whose text has inline HTML)
+      return hasPretextData ? pretextH : card.offsetHeight;
+    });
+
+    const maxH = Math.max(...heights);
+    for (const card of group) {
+      card.style.minHeight = maxH + 'px';
+    }
+  }
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+
+init().catch(err => {
+  console.error('[pretext] Initialisation error:', err);
+  if (badge) {
+    badge.textContent = '✗ pretext error';
+    badge.style.color = 'var(--red)';
+    badge.classList.add('ready');
+  }
+});
+
+</script>
 
 </body></html>
