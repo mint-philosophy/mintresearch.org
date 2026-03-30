@@ -882,14 +882,10 @@ document.getElementById('subscribe-form').addEventListener('submit', function(e)
        style="position:absolute;width:100px;height:100px;image-rendering:pixelated;image-rendering:crisp-edges;filter:drop-shadow(0 0 6px rgba(46,196,182,0.35));pointer-events:auto;cursor:grab;animation:bob 2.4s ease-in-out infinite" />
 </div>
 
-<!-- ══ STATUS LINE ══ -->
-<div id="minty-statusline" style="position:fixed;bottom:0;left:0;right:0;height:28px;background:#2ec4b6;color:#0a0a0a;display:flex;align-items:center;gap:10px;padding:0 14px;font-size:11px;font-weight:700;z-index:8500;font-family:'JetBrains Mono',monospace">
-  <span style="background:rgba(0,0,0,0.18);padding:2px 8px">WASD</span>
-  <span style="opacity:0.4;font-weight:400">│</span>
-  <span id="minty-pos" style="font-weight:400;font-size:10px;opacity:0.8">Minty: (0, 0)</span>
-  <span style="opacity:0.4;font-weight:400">│</span>
-  <span style="font-weight:400;font-size:10px;opacity:0.7">guide-v2.html</span>
-  <span id="ptx-badge" style="margin-left:auto;font-weight:400;font-size:10px">⧖ pretext loading</span>
+<!-- ══ MINTY HUD (small floating badge, doesn't replace production footer) ══ -->
+<div id="minty-hud" style="position:fixed;bottom:40px;right:12px;z-index:8500;font-family:'JetBrains Mono',monospace;font-size:9px;color:#2ec4b6;background:rgba(10,10,10,0.85);border:1px solid rgba(46,196,182,0.3);padding:4px 8px;pointer-events:none;opacity:0.7;border-radius:2px">
+  <span id="minty-pos">WASD · drag</span>
+  <span id="ptx-badge" style="margin-left:6px;opacity:0.6"></span>
 </div>
 
 <style>
@@ -902,7 +898,7 @@ document.getElementById('subscribe-form').addEventListener('submit', function(e)
   50% { transform: translateY(-2px); }
 }
 #minty-sprite.moving { animation: bob-fast 0.32s ease-in-out infinite !important; }
-body { padding-bottom: 28px !important; } /* room for status bar */
+/* no extra padding — production footer is preserved */
 </style>
 
 <script type="module">
@@ -914,7 +910,7 @@ body { padding-bottom: 28px !important; } /* room for status bar */
 // ════════════════════════════════════════════════════════════════════════════
 
 const SPRITE_W = 100, SPRITE_H = 100;
-const GAP = 6;            // px padding around silhouette edges
+const GAP = 18;           // px padding around silhouette for readable text
 const MAX_SPEED = 6;
 const FRICTION = 0.84;
 const DEAD_ZONE = 0.15;
@@ -1143,6 +1139,32 @@ async function initPretext() {
     repelEls.push(el);
   }
 
+  // SVG pipeline nodes — repel individually with SVG-aware transforms
+  for (const svg of document.querySelectorAll('svg')) {
+    const svgRect = svg.getBoundingClientRect();
+    const vb = svg.viewBox.baseVal;
+    if (!vb || !vb.width) continue;
+    const scaleX = vb.width / svgRect.width;
+    const scaleY = vb.height / svgRect.height;
+
+    for (const g of svg.querySelectorAll('g.pn, g[transform]')) {
+      const origTransform = g.getAttribute('transform') || '';
+      g._origTransform = origTransform;
+      g._svgScaleX = scaleX;
+      g._svgScaleY = scaleY;
+      g._isSvgNode = true;
+      repelEls.push(g);
+    }
+    // Also repel SVG lines, circles, text, rects, images
+    for (const el of svg.querySelectorAll('line, circle, rect:not(defs rect), text, image')) {
+      el._isSvgNode = true;
+      el._origTransform = el.getAttribute('transform') || '';
+      el._svgScaleX = scaleX;
+      el._svgScaleY = scaleY;
+      repelEls.push(el);
+    }
+  }
+
   console.log('[pretext] prepared ' + count + ' text blocks, ' + repelEls.length + ' repellable in ' + (performance.now() - t0).toFixed(1) + 'ms');
   ptxReady = true;
   ptxBadge.textContent = '\u25C6 pretext \u00B7 ' + count + ' blocks';
@@ -1279,11 +1301,27 @@ function repelElements() {
     const dx = rect.left + rect.width / 2 - mcx;
     const dy = rect.top + rect.height / 2 - mcy;
     const dist = Math.hypot(dx, dy);
+
     if (dist < REPEL_RADIUS && dist > 1) {
       const f = Math.pow(1 - dist / REPEL_RADIUS, 2) * REPEL_FORCE;
-      el.style.transform = 'translate(' + (dx / dist * f).toFixed(1) + 'px,' + (dy / dist * f).toFixed(1) + 'px)';
-    } else if (el.style.transform) {
-      el.style.transform = '';
+      const tx = dx / dist * f;
+      const ty = dy / dist * f;
+
+      if (el._isSvgNode) {
+        // SVG elements: convert px offset to SVG user units and prepend to original transform
+        const sx = el._svgScaleX || 1, sy = el._svgScaleY || 1;
+        const orig = el._origTransform || '';
+        el.setAttribute('transform', orig + ' translate(' + (tx * sx).toFixed(1) + ',' + (ty * sy).toFixed(1) + ')');
+      } else {
+        el.style.transform = 'translate(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px)';
+      }
+    } else {
+      if (el._isSvgNode) {
+        const orig = el._origTransform || '';
+        if (el.getAttribute('transform') !== orig) el.setAttribute('transform', orig);
+      } else if (el.style.transform) {
+        el.style.transform = '';
+      }
     }
   }
 }
@@ -1329,7 +1367,7 @@ function loop(ts) {
     }
 
     const maxX = window.innerWidth - SPRITE_W;
-    const maxY = window.innerHeight - SPRITE_H - 36;
+    const maxY = window.innerHeight - SPRITE_H - 20;
     minty.x = Math.max(0, Math.min(maxX, minty.x));
     minty.y = Math.max(0, Math.min(maxY, minty.y));
 
