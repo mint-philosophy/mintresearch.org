@@ -920,8 +920,8 @@ const FRICTION = 0.84;
 const DEAD_ZONE = 0.15;
 const SCROLL_ZONE = 60;
 const SCROLL_SPEED = 8;
-const REPEL_RADIUS = 140;
-const REPEL_FORCE = 35;
+const REPEL_RADIUS = 180;
+const REPEL_FORCE = 80;
 
 const minty = window.__minty = {
   x: 0, y: 0, vx: 0, vy: 0, facingLeft: false, moving: false,
@@ -1079,12 +1079,36 @@ async function initPretext() {
   }
 
   // Repellable elements
-  const repelSel = 'table, details, .card, .cards, .callout, .pipeline-flow, .prompt-grid, .prompt-item, .q-grid, .ingest-stages, .hierarchy, .grid-2';
+  // Target INDIVIDUAL items within grids (not containers) for visible parting effect
+  const repelSel = [
+    '.card',                    // individual cards
+    '.pf-card',                 // pipeline flow cards
+    '.prompt-item',             // prompt grid items
+    '.q-cell',                  // semantic dimension cells
+    '.ingest-stage',            // ingest pipeline stages
+    '.ingest-box',              // ingest boxes
+    'details',                  // accordions
+    '.callout',                 // callout blocks
+    '.h-node',                  // hierarchy nodes
+    '.score-row',               // score bars
+    'table',                    // tables
+    '.detail-row',              // detail rows inside cards
+    'thead tr, tbody tr',       // individual table rows
+    '.nav-item',                // sidebar nav items
+    'h2, h3',                   // headings
+    'code',                     // code blocks
+    '.tag',                     // tags
+  ].join(', ');
   for (const el of mainEl.querySelectorAll(repelSel)) {
     if (el.closest('svg')) continue;
     const rect = el.getBoundingClientRect();
-    if (rect.width < 50 || rect.height < 20) continue;
-    el.style.transition = 'transform 0.15s ease-out';
+    if (rect.width < 30 || rect.height < 10) continue;
+    el.style.transition = 'transform 0.12s ease-out';
+    repelEls.push(el);
+  }
+  // Also add sidebar nav items
+  for (const el of document.querySelectorAll('.nav-item, .sidebar-hint')) {
+    el.style.transition = 'transform 0.12s ease-out';
     repelEls.push(el);
   }
 
