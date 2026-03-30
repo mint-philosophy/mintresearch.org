@@ -15,6 +15,20 @@
   <span id="ptx-badge"></span>
 </div>
 
+<!-- ══ MINTY CHAT BUBBLE ══ -->
+<div id="minty-chat" style="display:none">
+  <div id="minty-chat-header">
+    <span id="minty-chat-title">Minty</span>
+    <span id="minty-chat-counter"></span>
+    <button id="minty-chat-close" aria-label="Close chat">&times;</button>
+  </div>
+  <div id="minty-chat-messages"></div>
+  <div id="minty-chat-input-wrap">
+    <input id="minty-chat-input" type="text" placeholder="Ask about the MINT Lab..." autocomplete="off" maxlength="1000" />
+    <button id="minty-chat-send" aria-label="Send">&#x27A4;</button>
+  </div>
+</div>
+
 <style>
 @keyframes bob {
   0%,100% { transform: translateY(0px); }
@@ -37,6 +51,126 @@
   filter: drop-shadow(0 0 6px rgba(46,196,182,0.35)) !important;
 }
 .sidebar { overflow: hidden !important; }
+
+/* ── Minty Chat Bubble ── */
+#minty-chat {
+  position: fixed;
+  z-index: 8001;
+  width: 360px;
+  max-width: calc(100vw - 24px);
+  max-height: 480px;
+  background: #1a1f2e;
+  border: 1px solid rgba(46,196,182,0.3);
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 12px rgba(46,196,182,0.15);
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  overflow: hidden;
+  pointer-events: auto;
+}
+#minty-chat-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  background: rgba(46,196,182,0.08);
+  border-bottom: 1px solid rgba(46,196,182,0.15);
+  gap: 8px;
+}
+#minty-chat-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: #2ec4b6;
+  flex: 1;
+}
+#minty-chat-counter {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+}
+#minty-chat-close {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+#minty-chat-close:hover { color: #fff; }
+#minty-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 120px;
+  max-height: 320px;
+}
+.minty-msg {
+  max-width: 88%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.45;
+  word-wrap: break-word;
+}
+.minty-msg.bot {
+  background: rgba(46,196,182,0.12);
+  color: #e0e0e0;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+.minty-msg.user {
+  background: rgba(255,255,255,0.08);
+  color: #e0e0e0;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+.minty-msg.bot.thinking::after {
+  content: '';
+  display: inline-block;
+  width: 4px; height: 4px;
+  background: #2ec4b6;
+  border-radius: 50%;
+  margin-left: 4px;
+  animation: minty-blink 1s infinite;
+}
+@keyframes minty-blink {
+  0%,100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+#minty-chat-input-wrap {
+  display: flex;
+  padding: 10px 12px;
+  gap: 8px;
+  border-top: 1px solid rgba(46,196,182,0.15);
+  background: rgba(0,0,0,0.15);
+}
+#minty-chat-input {
+  flex: 1;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #e0e0e0;
+  font-size: 13px;
+  outline: none;
+}
+#minty-chat-input:focus { border-color: rgba(46,196,182,0.4); }
+#minty-chat-input::placeholder { color: rgba(255,255,255,0.25); }
+#minty-chat-send {
+  background: rgba(46,196,182,0.2);
+  border: 1px solid rgba(46,196,182,0.3);
+  border-radius: 8px;
+  color: #2ec4b6;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 6px 12px;
+  transition: background 0.15s;
+}
+#minty-chat-send:hover { background: rgba(46,196,182,0.35); }
+#minty-chat-send:disabled { opacity: 0.3; cursor: default; }
 </style>
 
 <script type="module">
@@ -544,6 +678,240 @@ initPretext().catch(err => {
   ptxBadge.textContent = '\u2717 pretext error';
 });
 
+</script>
+
+<script type="module">
+// ════════════════════════════════════════════════════════════════════════════
+//  MINTY CHAT — Double-click/tap to chat with the MINT Lab's AI philosopher
+// ════════════════════════════════════════════════════════════════════════════
+
+const WORKER_URL =  + CHAT_WORKER_URL + ';
+const MAX_MESSAGES = 15;
+const COOLDOWN_MS = 3000;
+
+const GREETINGS = [
+  "That's not a risk assessment... this is a risk assessment. G'day!",
+  "Pull up a log. I study AI governance at Johns Hopkins. What's on your mind?",
+  "G'day! Seven billion people all wanting to build superintelligence. Must be the friendliest planet on earth.",
+  "G'day mate. Got questions about the lab? Fire away.",
+  "You know, if you've got a problem, you tell the town. Reckon that's half of what AI governance is. Ask me anything.",
+  "G'day! Fair dinkum — the alignment problem's trickier than it looks. What do you want to know?",
+  "Me and the AI safety crowd, we'd be mates. Got questions?",
+  "Come and say g'day. I'll tell you about our research.",
+  "Crikey, another visitor. Pull up a chair — what do you want to know about the MINT Lab?",
+  "G'day mate. I study what happens when the machines get smarter than us. Ask away.",
+  "G'day! Heard some people reckon AI governance is a hard problem. Should be alright — I'm from Australia.",
+  "No worries — except about superintelligence. Got questions about the lab?",
+  "G'day! I reckon normative competence is the most interesting question in AI safety right now. Want to hear why?",
+  "Been thinking about whether advanced AI counts as an apex predator. Anyway — what's on your mind?",
+  "G'day. The MINT Lab works on whether humanity can actually govern machines smarter than us. What do you want to know?",
+  "Pull up a log, mate. I've been wrestling with the alignment problem all arvo. What can I help with?",
+  "G'day! You know, the soul document is a bit like a letter from a parent to their kid. Fascinating stuff. Ask me about it.",
+  "Imagine seven million people all wanting to live together — that's what AI governance feels like some days. G'day!",
+  "G'day! The real danger isn't the machines going rogue — it's us not governing them well enough. Want to know more?",
+  "G'day mate. Between you and me, I reckon the social contract needs a bit of a rewrite. What's on your mind?",
+];
+
+const chat = document.getElementById('minty-chat');
+const msgBox = document.getElementById('minty-chat-messages');
+const inputEl = document.getElementById('minty-chat-input');
+const sendBtn = document.getElementById('minty-chat-send');
+const closeBtn = document.getElementById('minty-chat-close');
+const counterEl = document.getElementById('minty-chat-counter');
+const sprite = document.getElementById('minty-sprite');
+const minty = window.__minty;
+
+let chatOpen = false;
+let responseId = sessionStorage.getItem('minty-responseId') || null;
+let msgCount = parseInt(sessionStorage.getItem('minty-msgCount') || '0', 10);
+let lastSendTime = 0;
+let sending = false;
+let usedGreetings = JSON.parse(sessionStorage.getItem('minty-usedGreetings') || '[]');
+
+function updateCounter() {{
+  const remaining = MAX_MESSAGES - msgCount;
+  counterEl.textContent = remaining > 0 ? remaining + ' left' : 'limit reached';
+  if (remaining <= 0) {{
+    inputEl.disabled = true;
+    sendBtn.disabled = true;
+    inputEl.placeholder = 'Chat limit reached for this session';
+  }}
+}}
+
+function addMessage(text, role) {{
+  const div = document.createElement('div');
+  div.className = 'minty-msg ' + role;
+  div.textContent = text;
+  msgBox.appendChild(div);
+  msgBox.scrollTop = msgBox.scrollHeight;
+  return div;
+}}
+
+function pickGreeting() {{
+  const available = GREETINGS.filter((_, i) => !usedGreetings.includes(i));
+  const pool = available.length > 0 ? available : GREETINGS;
+  const idx = GREETINGS.indexOf(pool[Math.floor(Math.random() * pool.length)]);
+  usedGreetings.push(idx);
+  if (usedGreetings.length > GREETINGS.length - 3) usedGreetings = [];
+  sessionStorage.setItem('minty-usedGreetings', JSON.stringify(usedGreetings));
+  return GREETINGS[idx];
+}}
+
+function positionChat() {{
+  const sx = minty.x, sy = minty.y;
+  const cw = chat.offsetWidth || 360;
+  const ch = chat.offsetHeight || 400;
+  let left = sx + 110;
+  let top = sy - 20;
+  if (left + cw > window.innerWidth - 12) left = sx - cw - 10;
+  if (top + ch > window.innerHeight - 12) top = window.innerHeight - ch - 12;
+  if (top < 12) top = 12;
+  if (left < 12) left = 12;
+  chat.style.left = left + 'px';
+  chat.style.top = top + 'px';
+}}
+
+function openChat() {{
+  if (chatOpen) return;
+  chatOpen = true;
+  chat.style.display = 'flex';
+  positionChat();
+  updateCounter();
+  if (msgBox.children.length === 0) {{
+    addMessage(pickGreeting(), 'bot');
+  }}
+  inputEl.focus();
+}}
+
+function closeChat() {{
+  chatOpen = false;
+  chat.style.display = 'none';
+}}
+
+async function sendMessage() {{
+  const text = inputEl.value.trim();
+  if (!text || sending || msgCount >= MAX_MESSAGES) return;
+  const now = Date.now();
+  if (now - lastSendTime < COOLDOWN_MS) return;
+  lastSendTime = now;
+
+  inputEl.value = '';
+  addMessage(text, 'user');
+  msgCount++;
+  sessionStorage.setItem('minty-msgCount', String(msgCount));
+  updateCounter();
+
+  sending = true;
+  sendBtn.disabled = true;
+  const thinkDiv = addMessage('', 'bot thinking');
+
+  try {{
+    const res = await fetch(WORKER_URL + '/chat', {{
+      method: 'POST',
+      headers: {{ 'Content-Type': 'application/json' }},
+      body: JSON.stringify({{ message: text, responseId }}),
+    }});
+
+    if (!res.ok) {{
+      const err = await res.json().catch(() => ({{}}));
+      thinkDiv.classList.remove('thinking');
+      thinkDiv.textContent = err.error === 'Rate limit exceeded'
+        ? "Crikey, too many questions at once. Give it a minute, mate."
+        : "Sorry mate, something went wrong on my end. Try again in a tick.";
+      return;
+    }}
+
+    // Read OpenAI Responses API SSE stream (raw passthrough from worker)
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '';
+    let fullText = '';
+    thinkDiv.classList.remove('thinking');
+
+    while (true) {{
+      const {{ done, value }} = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, {{ stream: true }});
+      const lines = buf.split('\n');
+      buf = lines.pop() || '';
+      for (const line of lines) {{
+        if (!line.startsWith('data:')) continue;
+        const data = line.slice(5).trim();
+        if (!data || data === '[DONE]') continue;
+        try {{
+          const evt = JSON.parse(data);
+          // Capture response ID for multi-turn conversation
+          if (evt.type === 'response.created' && evt.response?.id) {{
+            responseId = evt.response.id;
+            sessionStorage.setItem('minty-responseId', responseId);
+          }}
+          // Extract text deltas
+          if (evt.type === 'response.output_text.delta' && evt.delta) {{
+            fullText += evt.delta;
+            thinkDiv.textContent = fullText;
+            msgBox.scrollTop = msgBox.scrollHeight;
+          }}
+        }} catch (_) {{}}
+      }}
+    }}
+    if (!fullText) thinkDiv.textContent = "Hmm, I've gone a bit quiet. Try asking again, mate.";
+  }} catch (e) {{
+    thinkDiv.classList.remove('thinking');
+    thinkDiv.textContent = "No worries — looks like I can't reach my thinking cap right now. Try again later.";
+  }} finally {{
+    sending = false;
+    sendBtn.disabled = msgCount >= MAX_MESSAGES;
+  }}
+}}
+
+// ── Double-click / double-tap to open ──────────────────────────────────────
+let lastTapTime = 0;
+let dragDistance = 0;
+let tapStartX = 0, tapStartY = 0;
+
+sprite.addEventListener('mousedown', e => {{
+  tapStartX = e.clientX; tapStartY = e.clientY; dragDistance = 0;
+}});
+window.addEventListener('mousemove', e => {{
+  dragDistance += Math.abs(e.movementX) + Math.abs(e.movementY);
+}});
+sprite.addEventListener('dblclick', e => {{
+  if (dragDistance < 15) {{ openChat(); e.preventDefault(); }}
+}});
+
+// Double-tap for touch
+sprite.addEventListener('touchend', e => {{
+  const now = Date.now();
+  if (now - lastTapTime < 350) {{
+    openChat();
+    e.preventDefault();
+    lastTapTime = 0;
+  }} else {{
+    lastTapTime = now;
+  }}
+}});
+
+closeBtn.addEventListener('click', closeChat);
+sendBtn.addEventListener('click', sendMessage);
+inputEl.addEventListener('keydown', e => {{
+  if (e.key === 'Enter' && !e.shiftKey) {{ e.preventDefault(); sendMessage(); }}
+  e.stopPropagation();  // Don't trigger WASD
+}});
+inputEl.addEventListener('keyup', e => e.stopPropagation());
+
+// Reposition chat when Minty moves
+let chatPosFrame = 0;
+(function trackMintyPos() {{
+  if (chatOpen) positionChat();
+  requestAnimationFrame(trackMintyPos);
+}})();
+
+// Close on Escape
+window.addEventListener('keydown', e => {{
+  if (e.key === 'Escape' && chatOpen) closeChat();
+}});
+
+console.log('[minty-chat] ready, ' + GREETINGS.length + ' greetings loaded');
 </script>
 
 </body> </html>
