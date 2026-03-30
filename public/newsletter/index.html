@@ -836,12 +836,12 @@ function positionChat() {
   const sx = minty.x, sy = minty.y;
   const cw = chat.offsetWidth || 360;
   const ch = chat.offsetHeight || 400;
+  const vw = window.innerWidth, vh = window.innerHeight;
   let left = sx + 110;
+  if (left + cw > vw - 12) left = sx - cw - 10;
+  left = Math.max(12, Math.min(left, vw - cw - 12));
   let top = sy - 20;
-  if (left + cw > window.innerWidth - 12) left = sx - cw - 10;
-  if (top + ch > window.innerHeight - 12) top = window.innerHeight - ch - 12;
-  if (top < 12) top = 12;
-  if (left < 12) left = 12;
+  top = Math.max(12, Math.min(top, vh - ch - 12));
   chat.style.left = left + 'px';
   chat.style.top = top + 'px';
 }

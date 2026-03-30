@@ -15,6 +15,7 @@ const ALLOWED_ORIGINS = [
   'https://mintresearch.org',
   'https://www.mintresearch.org',
   'http://localhost:4321',
+  'http://localhost:9123',
 ];
 
 /**
@@ -151,7 +152,7 @@ async function createStreamingResponse(apiKey, message, env, previousResponseId)
     input: message,
     stream: true,
     max_output_tokens: parseInt(env.MAX_OUTPUT_TOKENS, 10) || 500,
-    reasoning: { effort: env.REASONING_EFFORT || 'xhigh' },
+    reasoning: { effort: env.REASONING_EFFORT || 'medium' },
     tools: [{
       type: 'file_search',
       vector_store_ids: [env.VECTOR_STORE_ID],
