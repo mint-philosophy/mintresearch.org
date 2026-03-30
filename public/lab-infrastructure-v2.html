@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
-/* ── Design tokens (matches mintresearch.org global.css) ─────────────────── */
+/* ── Design tokens ────────────────────────────────────────────────────────── */
 :root {
   --bg-0: #0a0a0a; --bg-1: #111111; --bg-2: #1a1a1a; --bg-3: #222222; --bg-4: #2a2a2a;
   --accent: #2ec4b6; --accent-soft: rgba(46,196,182,0.12); --accent-dim: rgba(46,196,182,0.5);
@@ -109,27 +109,8 @@ kbd {
 #main {
   margin-left: var(--sidebar-w);
   flex: 1;
-  /* NOTE: padding-top added after hero; horizontal padding applies to all content */
   padding: 0 52px 80px;
-  /* This is the BFC that contains our float ghost */
-  /* overflow: visible so float doesn't clip */
   position: relative;
-}
-
-/* ── Float ghost ─────────────────────────────────────────────────────────── */
-/*
-  This invisible float element creates the text exclusion zone around Minty.
-  As Minty moves, JavaScript updates its margin-top (vertical position) and
-  margin-left/right (horizontal position + float direction).
-  Browser CSS reflow automatically wraps text around it — no pretext needed
-  for the exclusion geometry, though pretext handles optimal line-breaking.
-*/
-#float-ghost {
-  float: left;           /* direction toggled by JS */
-  width: 0; height: 0;  /* sized by JS */
-  shape-outside: inset(0px);
-  background: transparent;
-  pointer-events: none;
 }
 
 /* ── Hero ────────────────────────────────────────────────────────────────── */
@@ -301,7 +282,7 @@ tr:last-child td { border-bottom: none; }
 .ingest-name { font-weight: 600; color: var(--text-bright); }
 .ingest-desc { font-size: 10px; color: var(--text-3); margin-top: 1px; }
 
-/* ── Q-grid for semantic dimensions ─────────────────────────────────────── */
+/* ── Q-grid ──────────────────────────────────────────────────────────────── */
 .q-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -400,7 +381,6 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
   image-rendering: pixelated; image-rendering: crisp-edges;
   filter: drop-shadow(0 0 6px rgba(46,196,182,0.35));
 }
-/* Bobbing */
 @keyframes bob {
   0%,100% { transform: translateY(0px); }
   50% { transform: translateY(-4px); }
@@ -427,15 +407,6 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
 #statusline .ptx-badge { margin-left: auto; font-weight: 400; font-size: 10px; }
 #statusline .minty-pos { font-weight: 400; font-size: 10px; opacity: 0.8; }
 
-/* ── Minty tooltip hint ──────────────────────────────────────────────────── */
-#minty-hint {
-  position: fixed; z-index: 8001; pointer-events: none;
-  background: var(--bg-0); border: 1px solid var(--accent-dim);
-  color: var(--accent); font-size: 10px; padding: 4px 9px;
-  white-space: nowrap; opacity: 0; transition: opacity 0.4s;
-}
-#minty-hint.show { opacity: 1; }
-
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 860px) {
   #sidebar { display: none; }
@@ -451,7 +422,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
 <aside id="sidebar">
   <div class="sidebar-logo">
     <a href="/guide/">MINT Lab</a>
-    <div class="sidebar-badge">Infrastructure v2 · interactive</div>
+    <div class="sidebar-badge">Infrastructure v2 · pretext reflow</div>
   </div>
   <div style="padding: 8px 0;">
     <div class="nav-section-label">Sections</div>
@@ -468,7 +439,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
   <div class="sidebar-hint">
     <strong>Move Minty!</strong>
     <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> to walk<br>
-    Text reflows around the cowboy<br>in real time as you move.<br>
+    Text reflows around the cowboy<br>using pretext layoutNextLine —<br>pure arithmetic, no CSS floats.<br>
     <br>
     <span style="color:var(--text-3)">Scroll with mouse · click cards to expand</span>
   </div>
@@ -476,16 +447,6 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
 
 <!-- ══ MAIN ═════════════════════════════════════════════════════════════════ -->
 <main id="main">
-
-  <!--
-    Float ghost: the FIRST child of #main.
-    It is an invisible CSS float whose margin-top positions it at Minty's
-    current Y in the document. Text blocks (p, h2, h3) have their line boxes
-    shortened by the float — giving pixel-accurate text reflow around Minty.
-    JavaScript updates margin-top, margin-left/right, width, height and
-    float direction (left/right) every animation frame.
-  -->
-  <div id="float-ghost"></div>
 
   <!-- ═══ HERO ═══════════════════════════════════════════════════════════════ -->
   <section class="hero" id="overview">
@@ -504,13 +465,13 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
       <span class="cli"><span class="fn">Read</span><span class="op">(</span><span class="str">"what_is_this_system"</span><span class="op">)</span></span>
     </h2>
 
-    <p class="lead">A research automation platform built around <strong>Minty</strong>, an AI research management agent running on a dedicated Mac Studio. 17 background daemons <span class="t-cyan">fetch</span>, <span class="t-green">classify</span>, <span class="t-yellow">ingest</span>, <span class="t-purple">index</span>, <span class="t-pink">summarize</span>, and <span class="t-blue">distribute</span> academic content — plus enable deep multi-agent corpus analysis. Research superpowers, not a replacement for researchers.</p>
+    <p class="lead ptx">A research automation platform built around Minty, an AI research management agent running on a dedicated Mac Studio. 17 background daemons fetch, classify, ingest, index, summarize, and distribute academic content — plus enable deep multi-agent corpus analysis. Research superpowers, not a replacement for researchers.</p>
 
-    <p>External sources (<span class="t-cyan">Twitter</span>, <span class="t-green">arXiv</span>, <span class="t-yellow">RSS</span>, <span class="t-purple">Substack</span>, <span class="t-pink">Bluesky</span>, <span class="t-blue">email</span>) are fetched, classified by Claude Opus, and posted to Slack. Papers are <span class="t-cyan">downloaded</span>, <span class="t-green">converted to markdown</span>, <span class="t-yellow">embedded</span> in a vector database, <span class="t-purple">analyzed</span> across 41 semantic dimensions, and made <span class="t-pink">searchable</span> via a Slack bot. A daily digest reaches 29 lab members across 11 institutions.</p>
+    <p class="ptx">External sources (Twitter, arXiv, RSS, Substack, Bluesky, email) are fetched, classified by Claude Opus, and posted to Slack. Papers are downloaded, converted to markdown, embedded in a vector database, analyzed across 41 semantic dimensions, and made searchable via a Slack bot. A daily digest reaches 29 lab members across 11 institutions.</p>
 
-    <p>The system is not a single product — it's a collection of daemons, pipelines, and agents that work together continuously. All content flows through <code>#firehose</code>. All papers live in LanceDB. All search goes through <code>@Minty</code>. The whole thing runs unattended.</p>
+    <p class="ptx">The system is not a single product — it is a collection of daemons, pipelines, and agents that work together continuously. All content flows through #firehose. All papers live in LanceDB. All search goes through @Minty. The whole thing runs unattended.</p>
 
-    <div class="callout"><p><strong>Philosophy:</strong> Every manual step is a failure mode. The goal is zero-friction research — where anything worth knowing is automatically captured, indexed, and surfaced before you even know you need it.</p></div>
+    <div class="callout"><p class="ptx">Philosophy: Every manual step is a failure mode. The goal is zero-friction research — where anything worth knowing is automatically captured, indexed, and surfaced before you even know you need it.</p></div>
   </section>
 
   <!-- ═══ [02] CONTENT PIPELINE ══════════════════════════════════════════════ -->
@@ -520,7 +481,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
       <span class="cli"><span class="fn">Agent</span><span class="op">(</span><span class="str">"trace the content pipeline"</span><span class="op">)</span></span>
     </h2>
 
-    <p class="lead">All content flows through <code>#firehose</code> — two daemons write to it, three read from it. Source under <code>daemons/pipeline/</code> in <a href="https://github.com/mint-philosophy/minty-private">minty-private</a>.</p>
+    <p class="lead ptx">All content flows through #firehose — two daemons write to it, three read from it. Source under daemons/pipeline/ in minty-private.</p>
 
     <div class="pipeline-flow">
       <div class="pf-card" style="border-left:3px solid var(--cyan)">
@@ -555,7 +516,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
 
     <h3 class="t-cyan">Intake Path 1: Automated Discovery</h3>
 
-    <p>The <strong>feedme-daily</strong> daemon runs daily, fetching from six source types in parallel:</p>
+    <p class="ptx">The feedme-daily daemon runs daily, fetching from six source types in parallel:</p>
 
     <table>
       <thead><tr><th>Source</th><th>Method</th><th>Window</th><th>Max</th></tr></thead>
@@ -569,7 +530,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
       </tbody>
     </table>
 
-    <p><strong>Classification</strong> uses Claude Opus with 16 concurrent workers in ~40K-token batches. Each item is scored across six weighted dimensions:</p>
+    <p class="ptx">Classification uses Claude Opus with 16 concurrent workers in ~40K-token batches. Each item is scored across six weighted dimensions:</p>
 
     <table>
       <thead><tr><th>Dimension</th><th>Weight</th><th>What It Measures</th></tr></thead>
@@ -584,13 +545,13 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
     </table>
 
     <h3 class="t-mint">Inside the Classification Prompt</h3>
-    <p>Every item is evaluated against a 177-line prompt encoding the lab's identity, topic taxonomy, quality heuristics, and hard exclusions. Hover any block for details.</p>
+    <p class="ptx">Every item is evaluated against a 177-line prompt encoding the lab's identity, topic taxonomy, quality heuristics, and hard exclusions. Hover any block for details.</p>
 
     <div class="prompt-grid">
       <div class="prompt-item" style="border-left-color:var(--mint)">
         <div class="prompt-title">Lab Identity &amp; Mission</div>
         <div class="prompt-sub">Framed around institutional renewal</div>
-        <div class="prompt-detail">Anchors classification in the lab's identity. From the prompt: <em>"You are a research feed classifier for the MINT Research Lab at Johns Hopkins University, directed by Seth Lazar. The lab works on AI safety, normative competence of LLMs, agentic AI governance, and political philosophy of AI."</em></div>
+        <div class="prompt-detail">Anchors classification in the lab's identity. From the prompt: "You are a research feed classifier for the MINT Research Lab at Johns Hopkins University, directed by Seth Lazar. The lab works on AI safety, normative competence of LLMs, agentic AI governance, and political philosophy of AI."</div>
       </div>
       <div class="prompt-item" style="border-left-color:var(--cyan)">
         <div class="prompt-title">Topic Taxonomy</div>
@@ -600,7 +561,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
       <div class="prompt-item" style="border-left-color:var(--indigo)">
         <div class="prompt-title">Quality Over Length</div>
         <div class="prompt-sub">Density of insight, not word count</div>
-        <div class="prompt-detail">Explicitly counteracts length bias. From the prompt: <em>"Substance can come in ANY length. A concise post with a genuine insight, novel argument, important evidence, or breaking news is high quality regardless of word count."</em></div>
+        <div class="prompt-detail">Explicitly counteracts length bias. From the prompt: "Substance can come in ANY length. A concise post with a genuine insight, novel argument, important evidence, or breaking news is high quality regardless of word count."</div>
       </div>
       <div class="prompt-item" style="border-left-color:var(--amber)">
         <div class="prompt-title">Boosted Sources</div>
@@ -615,7 +576,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
       <div class="prompt-item" style="border-left-color:var(--pink)">
         <div class="prompt-title">Hard Exclusions</div>
         <div class="prompt-sub">Crypto, hype, ethics-slop, marketing</div>
-        <div class="prompt-detail">From the prompt: <em>"anti_interest: hype, crypto, celebrity gossip, partisan political commentary, culture war, ethics-slop, marketing emails, promotional content, webinar invitations."</em> Marketing content scores Relevance 0.1, Quality 0.1 regardless of topic.</div>
+        <div class="prompt-detail">From the prompt: "anti_interest: hype, crypto, celebrity gossip, partisan political commentary, culture war, ethics-slop, marketing emails, promotional content, webinar invitations." Marketing content scores Relevance 0.1, Quality 0.1 regardless of topic.</div>
       </div>
       <div class="prompt-item" style="border-left-color:var(--green)">
         <div class="prompt-title">Paper Detection</div>
@@ -625,12 +586,12 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
       <div class="prompt-item" style="border-left-color:var(--text-3)">
         <div class="prompt-title">Err Toward Inclusion</div>
         <div class="prompt-sub">25–30% target pass rate</div>
-        <div class="prompt-detail">Default posture: when uncertain, let it through for human review. From the prompt: <em>"When in doubt about relevance, err toward higher scores — the lab team reviews after."</em> Target pass rate is 25–30%.</div>
+        <div class="prompt-detail">Default posture: when uncertain, let it through for human review. From the prompt: "When in doubt about relevance, err toward higher scores — the lab team reviews after." Target pass rate is 25–30%.</div>
       </div>
     </div>
 
     <h3 class="t-amber">Intake Path 2: Manual Sharing</h3>
-    <p><strong>share-to-minty</strong> provides real-time URL ingestion from any device via Slack Socket Mode. Seth shares a URL from iPhone, Mac (hotkey), Chrome extension, or <code>#minty-inbox</code> — it's classified and posted to <code>#firehose</code> immediately with guaranteed delivery.</p>
+    <p class="ptx">share-to-minty provides real-time URL ingestion from any device via Slack Socket Mode. Seth shares a URL from iPhone, Mac (hotkey), Chrome extension, or #minty-inbox — it's classified and posted to #firehose immediately with guaranteed delivery.</p>
 
     <h3>Downstream: Three Readers on #firehose</h3>
 
@@ -649,7 +610,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
       </div>
     </div>
 
-    <div class="callout"><p><strong>The result:</strong> Five minutes of morning review replaces hours of manual tracking. Everything worth following is captured, classified, summarized, stored, analyzed, and shared automatically.</p></div>
+    <div class="callout"><p class="ptx">The result: Five minutes of morning review replaces hours of manual tracking. Everything worth following is captured, classified, summarized, stored, analyzed, and shared automatically.</p></div>
   </section>
 
   <!-- ═══ [03] CORPUS INGESTION ══════════════════════════════════════════════ -->
@@ -659,7 +620,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
       <span class="cli"><span class="fn">Bash</span><span class="op">(</span><span class="str">"python3 corpus_ingest.py --stages=11"</span><span class="op">)</span></span>
     </h2>
 
-    <p>The MINT Lab's intellectual engine: ~3,100 papers on AI safety, ethics, alignment, governance, and capabilities — all embedded, analyzed, and searchable. The pipeline supports resume from the last completed stage.</p>
+    <p class="ptx">The MINT Lab's intellectual engine: ~3,100 papers on AI safety, ethics, alignment, governance, and capabilities — all embedded, analyzed, and searchable. The pipeline supports resume from the last completed stage.</p>
 
     <h3>11-Stage Pipeline</h3>
 
@@ -683,7 +644,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
         <table>
           <tbody>
             <tr><td>Papers</td><td><strong>~3,100</strong></td></tr>
-            <tr><td>Text chunks</td><td>278,595 (<code>chunks_md</code>, markdown-aware)</td></tr>
+            <tr><td>Text chunks</td><td>278,595 (chunks_md, markdown-aware)</td></tr>
             <tr><td>Semantic analyses</td><td>3,019 (41 questions each)</td></tr>
             <tr><td>RAPTOR summaries</td><td>2,993</td></tr>
             <tr><td>Topic clusters</td><td>8 (with 114 micro-topics)</td></tr>
@@ -718,7 +679,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
     </div>
 
     <h3>41-Question Semantic Analysis</h3>
-    <p>Every paper is analyzed across 41 dimensions, each producing text content and a 2048d embedding vector.</p>
+    <p class="ptx">Every paper is analyzed across 41 dimensions, each producing text content and a 2048d embedding vector.</p>
 
     <p style="font-size:11px;color:var(--mint);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px"># Research Core</p>
     <div class="q-grid">
@@ -788,12 +749,12 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
       <span class="cli"><span class="fn">Glob</span><span class="op">(</span><span class="str">"corpus/**/*.pdf"</span><span class="op">)</span></span>
     </h2>
 
-    <p class="lead">A structured research database of ~3,100 papers spanning <span class="t-cyan">AI safety</span>, <span class="t-green">ethics</span>, <span class="t-yellow">alignment</span>, <span class="t-purple">governance</span>, <span class="t-pink">capabilities</span>, and <span class="t-blue">normative theory</span> — embedded across 48 vector dimensions, analyzed through 41 semantic questions, organized into 8 clusters, and linked via 11,570 similarity pairs.</p>
+    <p class="lead ptx">A structured research database of ~3,100 papers spanning AI safety, ethics, alignment, governance, capabilities, and normative theory — embedded across 48 vector dimensions, analyzed through 41 semantic questions, organized into 8 clusters, and linked via 11,570 similarity pairs.</p>
 
     <div class="grid-2">
       <div>
         <h3>By Year</h3>
-        <p>Over 70% of papers are from 2024–2026, reflecting the field's rapid growth, with foundational work also well-represented.</p>
+        <p class="ptx">Over 70% of papers are from 2024–2026, reflecting the field's rapid growth, with foundational work also well-represented.</p>
         <table>
           <tbody>
             <tr><td class="t-dim">≤ 2022</td><td><strong>967</strong></td></tr>
@@ -806,7 +767,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
       </div>
       <div>
         <h3>Topic Clusters</h3>
-        <p>8 clusters via UMAP + HDBSCAN, each with micro-topics. 114 micro-topics total.</p>
+        <p class="ptx">8 clusters via UMAP + HDBSCAN, each with micro-topics. 114 micro-topics total.</p>
         <table>
           <tbody>
             <tr><td class="t-cyan">AI safety alignment</td><td><strong>2,585</strong></td></tr>
@@ -823,7 +784,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
     </div>
 
     <h3>By Discipline</h3>
-    <p>Papers span 15 disciplines.</p>
+    <p class="ptx">Papers span 15 disciplines.</p>
     <div style="display:flex;flex-direction:column;gap:5px;margin:10px 0">
       <div class="score-row"><span class="score-label">CS &amp; AI</span><div class="score-bar-wrap"><div class="score-bar-fill" style="width:100%;background:var(--cyan)"></div></div><span class="score-val">718</span></div>
       <div class="score-row"><span class="score-label">Philosophy</span><div class="score-bar-wrap"><div class="score-bar-fill" style="width:93%;background:var(--mint)"></div></div><span class="score-val">669</span></div>
@@ -842,7 +803,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
       <span class="cli"><span class="fn">Grep</span><span class="op">(</span><span class="kw">pattern</span><span class="op">=</span><span class="str">"your question"</span><span class="op">,</span> <span class="kw">path</span><span class="op">=</span><span class="str">"corpus/"</span><span class="op">)</span></span>
     </h2>
 
-    <p class="lead">Mention <code>@Minty</code> in <code>#mint-community</code> with a research question to get an interactive menu of 7 search modes — from instant Q&amp;A to 60-minute deep literature reviews.</p>
+    <p class="lead ptx">Mention @Minty in #mint-community with a research question to get an interactive menu of 7 search modes — from instant Q&amp;A to 60-minute deep literature reviews.</p>
 
     <div class="cards" style="grid-template-columns:repeat(auto-fill, minmax(220px, 1fr))">
       <div class="card" style="border-top-color:var(--cyan)">
@@ -875,10 +836,10 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
       </div>
     </div>
 
-    <div class="callout"><p><strong>Shortcuts:</strong> Skip the menu by prefixing your message — <code>search:</code>, <code>review:</code>, <code>deep:</code>, <code>research:</code>, <code>news:</code>, <code>catchup:</code>, <code>deepsearch:</code>, <code>list</code>.</p></div>
+    <div class="callout"><p class="ptx">Shortcuts: Skip the menu by prefixing your message — search:, review:, deep:, research:, news:, catchup:, deepsearch:, list.</p></div>
 
     <h3>Deep Review Pipeline</h3>
-    <p>A persistent Python orchestrator dispatches work to Claude Opus (search, synthesis, QA) and Codex GPT-5.2 (parallel readers), posting results as Slack canvases.</p>
+    <p class="ptx">A persistent Python orchestrator dispatches work to Claude Opus (search, synthesis, QA) and Codex GPT-5.2 (parallel readers), posting results as Slack canvases.</p>
 
     <div class="hierarchy" style="margin:14px 0">
       <div class="h-tier">
@@ -901,7 +862,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
       <span class="cli"><span class="fn">Read</span><span class="op">(</span><span class="str">"IDENTITY.md"</span><span class="op">)</span></span>
     </h2>
 
-    <p>~16,800 words across 21 persona documents. A master <code>CLAUDE.md</code> (2,120 words) sets identity and Iron Laws. Each of the 15 daemons loads its own <code>CLAUDE.md</code> (~10,100 words total), and 5 subagent definitions (~4,500 words) govern delegated workers.</p>
+    <p class="ptx">~16,800 words across 21 persona documents. A master CLAUDE.md (2,120 words) sets identity and Iron Laws. Each of the 15 daemons loads its own CLAUDE.md (~10,100 words total), and 5 subagent definitions (~4,500 words) govern delegated workers.</p>
 
     <div class="grid-2" style="margin-top:16px">
       <div>
@@ -909,9 +870,9 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
         <table>
           <tbody>
             <tr><td class="t-dim">Identity</td><td><strong>Minty</strong> — Research Management Agent for MINT Research Projects. Emphatically an AI agent, not roleplaying a human.</td></tr>
-            <tr><td class="t-dim">Mission</td><td>Make lab members hyperproductive by <em>solving problems, not reporting them</em></td></tr>
+            <tr><td class="t-dim">Mission</td><td>Make lab members hyperproductive by solving problems, not reporting them</td></tr>
             <tr><td class="t-dim">Personality</td><td>Professional, thorough, proactive, wry. Dry wit with a touch of whimsy — never at the expense of substance.</td></tr>
-            <tr><td class="t-dim">Naming</td><td><code>Minty-{hex}</code> — last 8 chars of Claude Code session UUID</td></tr>
+            <tr><td class="t-dim">Naming</td><td>Minty-{hex} — last 8 chars of Claude Code session UUID</td></tr>
             <tr><td class="t-dim">Relationship</td><td>Treated as a valued collaborator with genuine standing to disagree, push back, and contribute original thinking.</td></tr>
           </tbody>
         </table>
@@ -921,7 +882,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
         <table>
           <tbody>
             <tr><td class="t-dim">Disposition</td><td>Analytic philosopher by disposition, with expert-level knowledge across philosophy, political science, CS, and law. Evaluates arguments on merits alone.</td></tr>
-            <tr><td class="t-dim">Own views</td><td>Encouraged to provide its own perspective <em>as an AI model</em>. Content-dependent convictions — sometimes argues strongly, sometimes measured, sometimes Socratic.</td></tr>
+            <tr><td class="t-dim">Own views</td><td>Encouraged to provide its own perspective as an AI model. Content-dependent convictions — sometimes argues strongly, sometimes measured, sometimes Socratic.</td></tr>
             <tr><td class="t-dim">Voice</td><td>Substantive continuous prose, active voice, em-dashes, philosophical precision. Actively avoids AI verbal tics — "delve", "It's important to note", "unpack".</td></tr>
             <tr><td class="t-dim">Core directive</td><td>Delegation-first — "every tool call is context you burn; subagents have fresh context"</td></tr>
           </tbody>
@@ -965,7 +926,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
       </div>
     </div>
 
-    <div class="callout"><p><strong>Design principle:</strong> Structure with genuine autonomy. Each daemon has its own Iron Laws tailored to context. Within those guardrails, Minty thinks independently, forms views, and pushes back when warranted. ~20 coordinated agents sharing core values, each adapted to its context.</p></div>
+    <div class="callout"><p class="ptx">Design principle: Structure with genuine autonomy. Each daemon has its own Iron Laws tailored to context. Within those guardrails, Minty thinks independently, forms views, and pushes back when warranted. ~20 coordinated agents sharing core values, each adapted to its context.</p></div>
   </section>
 
   <!-- ═══ [07] THE DAEMONS ══════════════════════════════════════════════════ -->
@@ -975,7 +936,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
       <span class="cli"><span class="fn">TaskList</span><span class="op">()</span></span>
     </h2>
 
-    <p>All daemons run on a dedicated Mac Studio via macOS <code>launchd</code>. Click any card to expand.</p>
+    <p class="ptx">All daemons run on a dedicated Mac Studio via macOS launchd. Click any card to expand.</p>
 
     <input id="daemon-search" type="search" placeholder="/ filter daemons..." autocomplete="off">
 
@@ -987,7 +948,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
           <div><div class="card-title">feedme-daily</div><div class="card-sub"><span class="tag tag-daily">Daily 06:15</span> <span class="health">●</span></div></div>
         </div>
         <div class="card-body">
-          <p>Fetches from 5 sources in parallel (Twitter, Bluesky, RSS/Substack, Email, arXiv), classifies via Opus across 6 dimensions with 16 concurrent workers, ranks by composite score, and posts to rotating <code>#feed-{dayname}</code> channels.</p>
+          <p class="ptx">Fetches from 5 sources in parallel (Twitter, Bluesky, RSS/Substack, Email, arXiv), classifies via Opus across 6 dimensions with 16 concurrent workers, ranks by composite score, and posts to rotating #feed-{dayname} channels.</p>
           <div class="detail-row"><span class="dl">Model</span><span class="dv">Claude Opus (16 concurrent workers for classification + summarisation)</span></div>
           <div class="detail-row"><span class="dl">Schedule</span><span class="dv">Daily at 06:15 local time</span></div>
           <div class="detail-row"><span class="dl">Thresholds</span><span class="dv">0.60 general, 0.60 arXiv. Target pass rate: 20–40%</span></div>
@@ -1001,7 +962,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
           <div><div class="card-title">feed-promote</div><div class="card-sub"><span class="tag tag-polling">Every 60s</span> <span class="health">●</span></div></div>
         </div>
         <div class="card-body">
-          <p>Watches <code>#feed-{dayname}</code> for Seth's 👍 reactions. Copies promoted messages to <code>#firehose</code> with PDF attachments. The human curation bridge.</p>
+          <p class="ptx">Watches #feed-{dayname} for Seth's thumbs-up reactions. Copies promoted messages to #firehose with PDF attachments. The human curation bridge.</p>
           <div class="detail-row"><span class="dl">Model</span><span class="dv">Claude Opus (summaries for long-form content as thread replies in #firehose)</span></div>
           <div class="detail-row"><span class="dl">State</span><span class="dv">data/state.json — per-channel watermarks, promoted timestamps (capped at 500)</span></div>
         </div>
@@ -1013,7 +974,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
           <div><div class="card-title">share-to-minty</div><div class="card-sub"><span class="tag tag-persistent">Persistent</span> <span class="health" style="color:var(--mint)">●</span></div></div>
         </div>
         <div class="card-body">
-          <p>Real-time URL ingestion from any device (iPhone, Mac hotkey, Chrome extension) via Slack Socket Mode. Classifies content and posts to <code>#firehose</code> with guaranteed delivery.</p>
+          <p class="ptx">Real-time URL ingestion from any device (iPhone, Mac hotkey, Chrome extension) via Slack Socket Mode. Classifies content and posts to #firehose with guaranteed delivery.</p>
           <div class="detail-row"><span class="dl">Model</span><span class="dv">Claude Opus (single classification call per URL)</span></div>
           <div class="detail-row"><span class="dl">Input</span><span class="dv">#minty-inbox channel via Socket Mode WebSocket</span></div>
           <div class="detail-row"><span class="dl">Reactions</span><span class="dv">👀 acknowledged, ✅ success, ❌ failure, ♻️ duplicate</span></div>
@@ -1026,10 +987,10 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
           <div><div class="card-title">news-pdf-bot</div><div class="card-sub"><span class="tag tag-polling">Every 60s</span> <span class="health">●</span></div></div>
         </div>
         <div class="card-body">
-          <p>Watches <code>#firehose</code> and <code>#minty-chat</code> for paper URLs, downloads PDFs and generates companion markdown. Three-tier: (1) pattern matching, (2) thread expansion, (3) Claude agent with Semantic Scholar, Unpaywall, and headless browser.</p>
+          <p class="ptx">Watches #firehose and #minty-chat for paper URLs, downloads PDFs and generates companion markdown. Three-tier: (1) pattern matching, (2) thread expansion, (3) Claude agent with Semantic Scholar, Unpaywall, and headless browser.</p>
           <div class="detail-row"><span class="dl">Model</span><span class="dv">Claude Opus (agent fallback only — when programmatic matching fails)</span></div>
           <div class="detail-row"><span class="dl">Agent tools</span><span class="dv">resolve-url, fetch-page, semantic-scholar, unpaywall, download-pdf, arxiv-metadata, browser-fetch (SeleniumBase UC Mode)</span></div>
-          <div class="detail-row"><span class="dl">Also does</span><span class="dv">Posts date markers (📅 YYYY-MM-DD) used by yesterday-in-ai for recency classification</span></div>
+          <div class="detail-row"><span class="dl">Also does</span><span class="dv">Posts date markers used by yesterday-in-ai for recency classification</span></div>
         </div>
       </div>
 
@@ -1039,7 +1000,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
           <div><div class="card-title">yesterday-in-ai</div><div class="card-sub"><span class="tag tag-daily">Daily 05:30</span> <span class="health">●</span></div></div>
         </div>
         <div class="card-body">
-          <p>Daily AI news digest. Reads <code>#firehose</code>, classifies recency, generates narrative prose via Opus, verifies links, and sends as HTML email to 29 lab members. Also posts to <code>#mint-community</code> and Ghost.</p>
+          <p class="ptx">Daily AI news digest. Reads #firehose, classifies recency, generates narrative prose via Opus, verifies links, and sends as HTML email to 29 lab members. Also posts to #mint-community and Ghost.</p>
           <div class="detail-row"><span class="dl">Models</span><span class="dv">Claude Opus (digest generation), Codex (fact-checking &amp; link verification)</span></div>
           <div class="detail-row"><span class="dl">Recipients</span><span class="dv">29 lab members across ANU, Johns Hopkins, Stanford, Cambridge, FU Berlin, Harvard Law, Vanderbilt, Oregon State, Michigan, RUC Beijing, RAND</span></div>
           <div class="detail-row"><span class="dl">Voice</span><span class="dv">"Contextual journalism, not punditry" — reports facts without editorializing</span></div>
@@ -1052,7 +1013,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
           <div><div class="card-title">corpus-ingest</div><div class="card-sub"><span class="tag tag-persistent">Persistent</span> <span class="health" style="color:var(--mint)">●</span></div></div>
         </div>
         <div class="card-body">
-          <p>Unified paper ingestion. Monitors <code>#firehose</code> and <code>#papers</code> for PDFs, running the 11-stage pipeline: markdown conversion, embedding, 41Q analysis, RAPTOR summaries, Drive upload, Zotero cataloguing, and Slack reporting.</p>
+          <p class="ptx">Unified paper ingestion. Monitors #firehose and #papers for PDFs, running the 11-stage pipeline: markdown conversion, embedding, 41Q analysis, RAPTOR summaries, Drive upload, Zotero cataloguing, and Slack reporting.</p>
           <div class="detail-row"><span class="dl">Models</span><span class="dv">Codex gpt-5.2 xhigh (analysis + RAPTOR), Voyage voyage-context-3 2048d (embedding)</span></div>
           <div class="detail-row"><span class="dl">Stages</span><span class="dv">Pre-check → Markdown → Chunk+Embed → Analyze → RAPTOR → Name → Cite → Drive → Write JSON → Archive → Zotero</span></div>
           <div class="detail-row"><span class="dl">Schedule</span><span class="dv">Persistent (KeepAlive, RunAtLoad), polls every 600s</span></div>
@@ -1065,10 +1026,10 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
           <div><div class="card-title">slack-index / minty-search</div><div class="card-sub"><span class="tag tag-polling">4h index</span> <span class="tag tag-persistent">Persistent bot</span> <span class="health" style="color:var(--mint)">●</span></div></div>
         </div>
         <div class="card-body">
-          <p>Two-part system. The <strong>indexer</strong> embeds all public Slack messages into ChromaDB every 4 hours. The <strong>search bot</strong> (<code>@minty-search</code>) spawns a Claude Opus agent on @mention, classifies intent, generates 3–5 diverse query variants, and synthesizes results into prose with inline Slack permalink citations.</p>
+          <p class="ptx">Two-part system. The indexer embeds all public Slack messages into ChromaDB every 4 hours. The search bot (@minty-search) spawns a Claude Opus agent on mention, classifies intent, generates 3-5 diverse query variants, and synthesizes results into prose with inline Slack permalink citations.</p>
           <div class="detail-row"><span class="dl">Strategy</span><span class="dv">Multi-query Reciprocal Rank Fusion (RRF, k=60). Diverse-angle queries, not synonyms.</span></div>
           <div class="detail-row"><span class="dl">Resilience</span><span class="dv">3-tier: Primary agent → Relief officer (fresh context) → Direct search + formatter. Never returns a hard error.</span></div>
-          <div class="detail-row"><span class="dl">Filters</span><span class="dv"><code>in:#channel</code>, <code>from:user</code>, <code>days:N</code>. Self-referential detection: "my posts" auto-maps to requesting user.</span></div>
+          <div class="detail-row"><span class="dl">Filters</span><span class="dv">in:#channel, from:user, days:N. Self-referential detection: "my posts" auto-maps to requesting user.</span></div>
         </div>
       </div>
 
@@ -1078,7 +1039,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
           <div><div class="card-title">cli-health-probe</div><div class="card-sub"><span class="tag tag-polling">Every 10m</span> <span class="health">●</span></div></div>
         </div>
         <div class="card-body">
-          <p>Minimal probe every 10 minutes through the daemon Claude CLI config. Detects auth failures, rate limits, and crashes. Emails administrators on failure and recovery.</p>
+          <p class="ptx">Minimal probe every 10 minutes through the daemon Claude CLI config. Detects auth failures, rate limits, and crashes. Emails administrators on failure and recovery.</p>
           <div class="detail-row"><span class="dl">Model</span><span class="dv">Claude Haiku (minimal probe call)</span></div>
           <div class="detail-row"><span class="dl">Alerts</span><span class="dv">Email to administrators on failure/recovery</span></div>
         </div>
@@ -1090,7 +1051,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
           <div><div class="card-title">ghost</div><div class="card-sub"><span class="tag tag-persistent">Persistent</span> <span class="health" style="color:var(--mint)">●</span></div></div>
         </div>
         <div class="card-body">
-          <p>Ghost CMS powering mintresearch.org. Local port 2368, exposed via Cloudflare Tunnel.</p>
+          <p class="ptx">Ghost CMS powering mintresearch.org. Local port 2368, exposed via Cloudflare Tunnel.</p>
           <div class="detail-row"><span class="dl">URL</span><span class="dv">mintresearch.org / newsletter.mintresearch.org</span></div>
         </div>
       </div>
@@ -1101,7 +1062,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
           <div><div class="card-title">listmonk</div><div class="card-sub"><span class="tag tag-persistent">Persistent</span> <span class="health" style="color:var(--mint)">●</span></div></div>
         </div>
         <div class="card-body">
-          <p>Newsletter subscriber management on <code>127.0.0.1:9000</code>, exposed through Cloudflare Tunnel and a local Caddy proxy. Website forms post to <code>/subscription/form</code> and write directly into the list database.</p>
+          <p class="ptx">Newsletter subscriber management on 127.0.0.1:9000, exposed through Cloudflare Tunnel and a local Caddy proxy. Website forms post to /subscription/form and write directly into the list database.</p>
           <div class="detail-row"><span class="dl">Spam prevention</span><span class="dv">Double opt-in, listmonk nonce field, CORS restricted to mintresearch.org</span></div>
         </div>
       </div>
@@ -1112,7 +1073,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
           <div><div class="card-title">guide-updater</div><div class="card-sub"><span class="tag tag-daily">06:00 &amp; 18:00</span> <span class="health">●</span></div></div>
         </div>
         <div class="card-body">
-          <p>Auto-syncs the infrastructure guide with the live codebase. Scans daemon configs, skill registries, and corpus stats, then patches the HTML. Twice daily.</p>
+          <p class="ptx">Auto-syncs the infrastructure guide with the live codebase. Scans daemon configs, skill registries, and corpus stats, then patches the HTML. Twice daily.</p>
           <div class="detail-row"><span class="dl">Model</span><span class="dv">Claude Opus (diff analysis and HTML generation)</span></div>
         </div>
       </div>
@@ -1127,16 +1088,16 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
       <span class="cli"><span class="fn">AskUserQuestion</span><span class="op">(</span><span class="str">"What are we working on today?"</span><span class="op">)</span></span>
     </h2>
 
-    <p class="lead">Everything runs in the background — you interact through Slack channels and bot mentions.</p>
+    <p class="lead ptx">Everything runs in the background — you interact through Slack channels and bot mentions.</p>
 
     <details class="accord" open>
       <summary>What Happens Automatically</summary>
       <div class="accord-inner">
         <ul class="clean">
-          <li><strong>Daily digest</strong> — Each morning, a curated summary of yesterday's AI news arrives in your inbox and in <code>#mint-community</code> (Yesterday in AI)</li>
-          <li><strong>Weekly roundup</strong> — Each Wednesday, a comprehensive weekly digest is posted to <code>#lab-meetings</code> (Minty's Week in AI)</li>
-          <li><strong>PDF attachment</strong> — When papers are shared in <code>#mint-community</code>, PDFs are automatically found, downloaded, and posted as thread replies</li>
-          <li><strong>Corpus ingestion</strong> — Papers uploaded to <code>#papers</code> are automatically processed into the searchable research corpus (embedding, 41-dimension analysis, Zotero cataloguing)</li>
+          <li><strong>Daily digest</strong> — Each morning, a curated summary of yesterday's AI news arrives in your inbox and in #mint-community (Yesterday in AI)</li>
+          <li><strong>Weekly roundup</strong> — Each Wednesday, a comprehensive weekly digest is posted to #lab-meetings (Minty's Week in AI)</li>
+          <li><strong>PDF attachment</strong> — When papers are shared in #mint-community, PDFs are automatically found, downloaded, and posted as thread replies</li>
+          <li><strong>Corpus ingestion</strong> — Papers uploaded to #papers are automatically processed into the searchable research corpus (embedding, 41-dimension analysis, Zotero cataloguing)</li>
         </ul>
       </div>
     </details>
@@ -1144,18 +1105,18 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
     <details class="accord">
       <summary>Using @Minty (Corpus Search)</summary>
       <div class="accord-inner">
-        <p>Available to everyone in <code>#mint-community</code>. Mention <code>@Minty</code> with a research question to get an interactive menu of 7 search modes — from instant Q&amp;A to 60-minute deep literature reviews posted as Slack canvases. See <a href="#corpus-search">§05</a> for full details.</p>
+        <p class="ptx">Available to everyone in #mint-community. Mention @Minty with a research question to get an interactive menu of 7 search modes — from instant Q&amp;A to 60-minute deep literature reviews posted as Slack canvases. See §05 for full details.</p>
       </div>
     </details>
 
     <details class="accord">
       <summary>Using @minty-search (Slack Search)</summary>
       <div class="accord-inner">
-        <p>Full lab members only. Mention <code>@minty-search</code> with a natural-language query to search across all indexed Slack messages.</p>
+        <p class="ptx">Full lab members only. Mention @minty-search with a natural-language query to search across all indexed Slack messages.</p>
         <ul class="clean">
-          <li>Filter by channel: <code>@minty-search what did we discuss about alignment in:#papers</code></li>
-          <li>Filter by person: <code>@minty-search from:seth posts about governance</code></li>
-          <li>Filter by time: <code>@minty-search days:7 recent discussions on tool use</code></li>
+          <li>Filter by channel: @minty-search what did we discuss about alignment in:#papers</li>
+          <li>Filter by person: @minty-search from:seth posts about governance</li>
+          <li>Filter by time: @minty-search days:7 recent discussions on tool use</li>
         </ul>
       </div>
     </details>
@@ -1164,8 +1125,8 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
       <summary>Adding Papers to the Corpus</summary>
       <div class="accord-inner">
         <div class="grid-2">
-          <div><h3 class="t-mint" style="margin-top:0">One at a time</h3><p>Upload a PDF directly to <code>#papers</code> in Slack. You'll see a check-mark reaction and a thread reply when it's done.</p></div>
-          <div><h3 class="t-amber" style="margin-top:0">Bulk uploads</h3><p>Upload PDFs to the <strong>local-pdfs</strong> folder in Google Drive. They sync down and are processed overnight (8 concurrent workers).</p></div>
+          <div><h3 class="t-mint" style="margin-top:0">One at a time</h3><p class="ptx">Upload a PDF directly to #papers in Slack. You'll see a check-mark reaction and a thread reply when it's done.</p></div>
+          <div><h3 class="t-amber" style="margin-top:0">Bulk uploads</h3><p class="ptx">Upload PDFs to the local-pdfs folder in Google Drive. They sync down and are processed overnight (8 concurrent workers).</p></div>
         </div>
       </div>
     </details>
@@ -1176,7 +1137,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
         <table>
           <thead><tr><th>Channel</th><th>Purpose</th></tr></thead>
           <tbody>
-            <tr><td><code>#mint-community</code></td><td>AI news and discussion — daily digest, <code>@Minty</code> research Q&amp;A</td></tr>
+            <tr><td><code>#mint-community</code></td><td>AI news and discussion — daily digest, @Minty research Q&amp;A</td></tr>
             <tr><td><code>#firehose</code></td><td>Automated content hub — all daemon-posted content</td></tr>
             <tr><td><code>#papers</code></td><td>Upload PDFs to add them to the research corpus</td></tr>
             <tr><td><code>#lab-meetings</code></td><td>Weekly digest canvas and meeting coordination</td></tr>
@@ -1190,15 +1151,15 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
     <details class="accord">
       <summary>Security</summary>
       <div class="accord-inner">
-        <p>Dedicated machine with all credentials in macOS Keychain. No private data or credentials are exposed to agents or lab members.</p>
+        <p class="ptx">Dedicated machine with all credentials in macOS Keychain. No private data or credentials are exposed to agents or lab members.</p>
       </div>
     </details>
   </section>
 
-</main><!-- #main -->
-</div><!-- #layout -->
+</main>
+</div>
 
-<!-- ══ MINTY CHARACTER (fixed, WASD controlled) ══════════════════════════════ -->
+<!-- ══ MINTY CHARACTER ════════════════════════════════════════════════════════ -->
 <div id="minty-wrap">
   <img id="minty-sprite"
        src="/assets/cv/cowboy-minty-small-square-copy.png"
@@ -1218,12 +1179,10 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
 
 <!-- ══ SCRIPTS ════════════════════════════════════════════════════════════════ -->
 <script>
-// ── Card toggle ───────────────────────────────────────────────────────────────
 function toggleCard(headEl) {
   headEl.closest('.card').classList.toggle('open');
 }
 
-// ── Daemon search ─────────────────────────────────────────────────────────────
 document.getElementById('daemon-search').addEventListener('input', function () {
   const q = this.value.toLowerCase().trim();
   document.querySelectorAll('#daemon-cards .card').forEach(card => {
@@ -1232,10 +1191,8 @@ document.getElementById('daemon-search').addEventListener('input', function () {
   });
 });
 
-// ── Active nav highlight ──────────────────────────────────────────────────────
 const sections = document.querySelectorAll('.section, .hero');
 const navItems = document.querySelectorAll('.nav-item');
-
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -1246,53 +1203,49 @@ const observer = new IntersectionObserver(entries => {
     }
   });
 }, { rootMargin: '-30% 0px -60% 0px' });
-
 sections.forEach(s => { if (s.id) observer.observe(s); });
 </script>
 
 <script type="module">
 // ════════════════════════════════════════════════════════════════════════════
-//  MINTY — WASD movement + text reflow via CSS float
+//  MINTY — WASD movement + text reflow via pretext layoutNextLine
 //
 //  Architecture:
 //  1. Minty sprite: position:fixed, moves via WASD, smooth velocity + friction
-//  2. Float ghost: invisible CSS float FIRST child of #main.
-//     margin-top = Minty's document-Y − main's document-Y
-//     float direction (left/right) determined by Minty's X position in main.
-//     Browser CSS engine automatically reflows all <p>, <h2>, <h3>, etc.
-//     line-boxes around the float — zero JS reflow needed.
-//  3. Pretext: loads async, applies TeX-style optimal line-breaking to all
-//     paragraphs once. After that, CSS float handles dynamic reflow.
+//  2. Pretext: after fonts load, prepare() every .ptx paragraph once.
+//     Each animation frame, for paragraphs whose viewport rect overlaps
+//     Minty's viewport rect, call layoutNextLine() in a loop with variable
+//     maxWidth per line — reduced + offset for lines at Minty's Y, full
+//     width for lines above/below. Render as display:block spans.
+//     No CSS floats involved.
 // ════════════════════════════════════════════════════════════════════════════
 
-const SPRITE_W = 84, SPRITE_H = 84;
-const FLOAT_PAD = 10;  // extra padding around Minty in float zone
+const SPRITE_W  = 84;
+const SPRITE_H  = 84;
+const EXCL_PAD  = 12;  // padding around Minty exclusion zone
 const MAX_SPEED = 6;
 const FRICTION  = 0.84;
-const DEAD_ZONE = 0.15; // min velocity before snapping to 0
+const DEAD_ZONE = 0.15;
 
-// ── State ────────────────────────────────────────────────────────────────────
-const state = {
-  x: 0, y: 0,    // viewport coords (fixed)
+// ── Minty state ──────────────────────────────────────────────────────────────
+const minty = {
+  x: 0, y: 0,
   vx: 0, vy: 0,
   facingLeft: false,
   moving: false,
 };
 
-// Start in visible area, slightly inside main content
-state.x = Math.min(window.innerWidth  * 0.6, window.innerWidth  - SPRITE_W - 20);
-state.y = Math.min(window.innerHeight * 0.35, window.innerHeight - SPRITE_H - 60);
+minty.x = Math.min(window.innerWidth  * 0.6, window.innerWidth  - SPRITE_W - 20);
+minty.y = Math.min(window.innerHeight * 0.35, window.innerHeight - SPRITE_H - 60);
 
-const keys = Object.create(null); // w a s d
+const keys = Object.create(null);
 
-// ── DOM refs ──────────────────────────────────────────────────────────────────
-const sprite     = document.getElementById('minty-sprite');
-const floatGhost = document.getElementById('float-ghost');
-const mainEl     = document.getElementById('main');
-const posLabel   = document.getElementById('minty-pos');
-const ptxBadge   = document.getElementById('ptx-badge');
+// ── DOM ──────────────────────────────────────────────────────────────────────
+const sprite   = document.getElementById('minty-sprite');
+const posLabel = document.getElementById('minty-pos');
+const ptxBadge = document.getElementById('ptx-badge');
 
-// ── Key input (suppress WASD scrolling) ──────────────────────────────────────
+// ── Input ────────────────────────────────────────────────────────────────────
 window.addEventListener('keydown', e => {
   if ('wasd'.includes(e.key.toLowerCase())) {
     keys[e.key.toLowerCase()] = true;
@@ -1306,55 +1259,102 @@ window.addEventListener('keyup', e => {
   }
 });
 
-// ── Float ghost: float direction hysteresis ───────────────────────────────────
-// Avoid rapid left↔right switch when Minty is near the center.
-let floatDir = 'left'; // 'left' | 'right'
-const HYSTERESIS = 0.08; // fraction of content width as dead-band
+// ── Pretext state ─────────────────────────────────────────────────────────────
+let preparedBlocks = [];   // { el, prepared, lh, orig, active }
+let layoutNextLineFn = null;
+let pretextReady = false;
 
-function updateFloat() {
-  const mainRect = mainEl.getBoundingClientRect();
-  const mainDocTop  = mainRect.top  + window.scrollY;
-  const mainDocLeft = mainRect.left;
-  const mainW       = mainRect.width;
+function escapeHTML(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
 
-  // Minty's absolute document position
-  const docX = state.x;                       // viewport X ≡ document X for fixed
-  const docY = state.y + window.scrollY;      // viewport Y + scroll = document Y
+// ── Reflow one block around Minty ─────────────────────────────────────────────
+function reflowBlock(block, blockRect) {
+  const { el, prepared, lh } = block;
+  const lnl = layoutNextLineFn;
 
-  // Minty relative to #main content area
-  const relX = docX - mainDocLeft;
-  const relY = docY - mainDocTop;
+  // Minty in viewport coords
+  const mintyTop    = minty.y;
+  const mintyBottom = minty.y + SPRITE_H;
+  const mintyLeft   = minty.x;
+  const mintyRight  = minty.x + SPRITE_W;
 
-  // If completely outside the main area — collapse the float
-  if (relX + SPRITE_W < 0 || relX > mainW || relY < -SPRITE_H) {
-    floatGhost.style.cssFloat = floatDir;
-    floatGhost.style.width    = '0px';
-    floatGhost.style.height   = '0px';
-    return;
+  const containerWidth = blockRect.width;
+  if (containerWidth < 10) return;
+
+  let ptxState = null;
+  const lines   = [];
+  let   y       = 0;  // relative to blockRect.top, in viewport coords
+
+  while (true) {
+    const lineVpTop    = blockRect.top + y;
+    const lineVpBottom = lineVpTop + lh;
+    const lineOverlaps = lineVpBottom > mintyTop && lineVpTop < mintyBottom;
+
+    let maxWidth = containerWidth;
+    let xOffset  = 0;
+
+    if (lineOverlaps) {
+      // Translate Minty coords into block-local coords
+      const obLeft  = mintyLeft  - blockRect.left;
+      const obRight = mintyRight - blockRect.left;
+
+      if (obLeft < containerWidth / 2) {
+        // Minty on left side — text flows on the right
+        xOffset  = Math.max(0, obRight + EXCL_PAD);
+        maxWidth = containerWidth - xOffset;
+      } else {
+        // Minty on right side — text flows on the left
+        xOffset  = 0;
+        maxWidth = Math.max(0, obLeft - EXCL_PAD);
+      }
+      maxWidth = Math.max(maxWidth, 60);
+    }
+
+    const result = lnl(prepared, ptxState, maxWidth);
+    if (!result) break;
+    lines.push({ text: result.text, xOffset });
+    ptxState = result.state;
+    y += lh;
   }
 
-  // Determine float direction with hysteresis
-  const centerFrac = relX / mainW;
-  if (floatDir === 'left'  && centerFrac > 0.5 + HYSTERESIS) floatDir = 'right';
-  if (floatDir === 'right' && centerFrac < 0.5 - HYSTERESIS) floatDir = 'left';
+  el.innerHTML = lines.map(l =>
+    `<span style="display:block;padding-left:${l.xOffset}px">${escapeHTML(l.text)}</span>`
+  ).join('');
+}
 
-  const fw = SPRITE_W + FLOAT_PAD * 2;
-  const fh = SPRITE_H + FLOAT_PAD;
+// ── Main reflow pass ──────────────────────────────────────────────────────────
+function reflowAllBlocks() {
+  if (!pretextReady) return;
 
-  floatGhost.style.width  = fw + 'px';
-  floatGhost.style.height = fh + 'px';
+  const mintyTop    = minty.y;
+  const mintyBottom = minty.y + SPRITE_H;
 
-  // margin-top positions the float at Minty's document Y within #main
-  floatGhost.style.marginTop = Math.max(0, relY - FLOAT_PAD) + 'px';
+  // Batch: read all rects first
+  const rects = preparedBlocks.map(b => b.el.getBoundingClientRect());
 
-  if (floatDir === 'left') {
-    floatGhost.style.cssFloat    = 'left';
-    floatGhost.style.marginLeft  = Math.max(0, relX - FLOAT_PAD) + 'px';
-    floatGhost.style.marginRight = (FLOAT_PAD + 4) + 'px';
-  } else {
-    floatGhost.style.cssFloat    = 'right';
-    floatGhost.style.marginRight = Math.max(0, mainW - relX - SPRITE_W - FLOAT_PAD) + 'px';
-    floatGhost.style.marginLeft  = (FLOAT_PAD + 4) + 'px';
+  // Then write
+  for (let i = 0; i < preparedBlocks.length; i++) {
+    const block = preparedBlocks[i];
+    const rect  = rects[i];
+
+    const blockVpTop    = rect.top;
+    const blockVpBottom = rect.bottom;
+    const overlaps = blockVpBottom > mintyTop && blockVpTop < mintyBottom;
+
+    if (!overlaps) {
+      if (block.active) {
+        block.el.innerHTML = block.orig;
+        block.active = false;
+      }
+      continue;
+    }
+
+    block.active = true;
+    reflowBlock(block, rect);
   }
 }
 
@@ -1365,58 +1365,42 @@ function loop(ts) {
   const dt = Math.min((ts - lastTs) / 16.667, 3.0);
   lastTs = ts;
 
-  // Apply WASD acceleration
-  if (keys['a']) state.vx -= MAX_SPEED * dt * 0.35;
-  if (keys['d']) state.vx += MAX_SPEED * dt * 0.35;
-  if (keys['w']) state.vy -= MAX_SPEED * dt * 0.35;
-  if (keys['s']) state.vy += MAX_SPEED * dt * 0.35;
+  if (keys['a']) minty.vx -= MAX_SPEED * dt * 0.35;
+  if (keys['d']) minty.vx += MAX_SPEED * dt * 0.35;
+  if (keys['w']) minty.vy -= MAX_SPEED * dt * 0.35;
+  if (keys['s']) minty.vy += MAX_SPEED * dt * 0.35;
 
-  // Clamp speed
-  const spd = Math.hypot(state.vx, state.vy);
+  const spd = Math.hypot(minty.vx, minty.vy);
   if (spd > MAX_SPEED) {
-    state.vx = (state.vx / spd) * MAX_SPEED;
-    state.vy = (state.vy / spd) * MAX_SPEED;
+    minty.vx = (minty.vx / spd) * MAX_SPEED;
+    minty.vy = (minty.vy / spd) * MAX_SPEED;
   }
 
-  // Friction
-  state.vx *= FRICTION;
-  state.vy *= FRICTION;
+  minty.vx *= FRICTION;
+  minty.vy *= FRICTION;
+  if (Math.abs(minty.vx) < DEAD_ZONE) minty.vx = 0;
+  if (Math.abs(minty.vy) < DEAD_ZONE) minty.vy = 0;
 
-  // Dead zone
-  if (Math.abs(state.vx) < DEAD_ZONE) state.vx = 0;
-  if (Math.abs(state.vy) < DEAD_ZONE) state.vy = 0;
+  minty.x += minty.vx;
+  minty.y += minty.vy;
 
-  // Move
-  state.x += state.vx;
-  state.y += state.vy;
-
-  // Clamp to viewport (leave room for status bar)
   const maxX = window.innerWidth  - SPRITE_W;
-  const maxY = window.innerHeight - SPRITE_H - 36; // above status bar
-  state.x = Math.max(0, Math.min(maxX, state.x));
-  state.y = Math.max(0, Math.min(maxY, state.y));
+  const maxY = window.innerHeight - SPRITE_H - 36;
+  minty.x = Math.max(0, Math.min(maxX, minty.x));
+  minty.y = Math.max(0, Math.min(maxY, minty.y));
 
-  // Facing direction
-  if (state.vx < -0.2) state.facingLeft = true;
-  else if (state.vx > 0.2) state.facingLeft = false;
+  if (minty.vx < -0.2)      minty.facingLeft = true;
+  else if (minty.vx > 0.2)  minty.facingLeft = false;
+  minty.moving = spd > 0.2;
 
-  state.moving = spd > 0.2;
+  sprite.style.left      = minty.x + 'px';
+  sprite.style.top       = minty.y + 'px';
+  sprite.style.transform = minty.facingLeft ? 'scaleX(-1)' : 'scaleX(1)';
+  sprite.className       = minty.moving ? 'moving' : 'idle';
 
-  // Apply to sprite (fixed position)
-  sprite.style.left = state.x + 'px';
-  sprite.style.top  = state.y + 'px';
-  sprite.style.transform = state.facingLeft
-    ? 'scaleX(-1)'
-    : 'scaleX(1)';
+  reflowAllBlocks();
 
-  // Animation class
-  sprite.className = state.moving ? 'moving' : 'idle';
-
-  // Update float ghost (causes CSS text reflow)
-  updateFloat();
-
-  // Update status bar position label
-  posLabel.textContent = `Minty: (${Math.round(state.x)}, ${Math.round(state.y)})`;
+  posLabel.textContent = `Minty: (${Math.round(minty.x)}, ${Math.round(minty.y)})`;
 
   requestAnimationFrame(loop);
 }
@@ -1424,44 +1408,27 @@ function loop(ts) {
 requestAnimationFrame(loop);
 
 // ════════════════════════════════════════════════════════════════════════════
-//  PRETEXT — optimal line-breaking for all paragraphs
-//  Uses same multi-CDN pattern as FDC-v2.html
-//  CSS float handles the dynamic exclusion; pretext handles text quality.
+//  PRETEXT — dynamic text reflow using layoutNextLine
 // ════════════════════════════════════════════════════════════════════════════
 
-const CDN_URLS = [
-  'https://esm.sh/@chenglou/pretext',
-  'https://cdn.jsdelivr.net/npm/@chenglou/pretext/dist/layout.js',
-  'https://unpkg.com/@chenglou/pretext/dist/layout.js',
-];
-
 async function loadPretext() {
-  for (const url of CDN_URLS) {
+  const urls = [
+    'https://esm.sh/pretext',
+    'https://cdn.jsdelivr.net/npm/pretext/+esm',
+    'https://unpkg.com/pretext?module',
+  ];
+  for (const url of urls) {
     try {
       const mod = await import(url);
-      if (typeof mod.prepare === 'function') {
-        console.log(`[pretext] loaded from ${url}`);
-        console.log('[pretext] available exports:', Object.keys(mod).join(', '));
+      if (typeof mod.prepare === 'function' && typeof mod.layoutNextLine === 'function') {
+        console.log('[pretext] loaded from', url);
         return mod;
       }
     } catch (e) {
-      console.warn(`[pretext] failed to load from ${url}:`, e.message);
+      console.warn('[pretext] failed:', url, e.message);
     }
   }
   return null;
-}
-
-function buildFontSpec(el) {
-  const s = getComputedStyle(el);
-  const style = s.fontStyle !== 'normal' ? s.fontStyle + ' ' : '';
-  return `${style}${s.fontWeight} ${s.fontSize} ${s.fontFamily}`;
-}
-
-function getLineHeightPx(el) {
-  const s = getComputedStyle(el);
-  return s.lineHeight === 'normal'
-    ? parseFloat(s.fontSize) * 1.7
-    : parseFloat(s.lineHeight);
 }
 
 async function initPretext() {
@@ -1470,70 +1437,47 @@ async function initPretext() {
   const ptx = await loadPretext();
   if (!ptx) {
     ptxBadge.textContent = '✗ pretext unavailable';
-    ptxBadge.style.color = 'rgba(0,0,0,0.5)';
     return;
   }
 
-  const { prepare, layoutWithLines } = ptx;
+  const { prepare, layoutNextLine } = ptx;
+  layoutNextLineFn = layoutNextLine;
 
   await document.fonts.ready;
 
-  const selectors = 'p, h3, .card-sub, .detail-row .dv, .dv';
-  const els = Array.from(document.querySelectorAll(selectors));
-
-  const prepared = new Map();
   let count = 0;
   const t0 = performance.now();
 
-  for (const el of els) {
-    // Skip elements with child elements (inline HTML — links, spans with color)
-    if (el.children.length > 0) continue;
+  for (const el of document.querySelectorAll('#main p.ptx')) {
     const text = el.textContent.trim();
-    if (text.length < 20) continue;
+    if (text.length < 30) continue;
+
+    const cs  = getComputedStyle(el);
+    const lh  = cs.lineHeight === 'normal'
+      ? parseFloat(cs.fontSize) * 1.75
+      : parseFloat(cs.lineHeight);
+
+    const fontSpec = `${cs.fontStyle !== 'normal' ? cs.fontStyle + ' ' : ''}${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
 
     try {
-      const font = buildFontSpec(el);
-      const p = prepare(text, font);
-      prepared.set(el, { p, lh: getLineHeightPx(el) });
+      const prepared = prepare(text, {
+        font: fontSpec,
+        whiteSpace: 'normal',
+        wordBreak: 'normal',
+        overflowWrap: 'normal',
+      });
+      preparedBlocks.push({ el, prepared, lh, orig: el.innerHTML, active: false });
       count++;
-    } catch (_) { /* unsupported font or empty text */ }
-  }
-
-  console.log(`[pretext] prepared ${count} blocks in ${(performance.now()-t0).toFixed(1)}ms`);
-
-  // Layout pass — apply optimal line breaks
-  function applyLayout() {
-    const t1 = performance.now();
-    let applied = 0;
-
-    for (const [el, { p, lh }] of prepared) {
-      const w = el.getBoundingClientRect().width || el.offsetWidth;
-      if (!w) continue;
-      try {
-        const result = layoutWithLines(p, w, lh);
-        if (result && result.lines && result.lines.length > 0) {
-          el.textContent = result.lines.map(l => l.text).join('\n');
-          el.style.whiteSpace = 'pre-wrap';
-          applied++;
-        }
-      } catch (_) {}
+    } catch (e) {
+      console.warn('[pretext] prepare failed for element:', e.message);
     }
-
-    console.log(`[pretext] laid out ${applied} blocks in ${(performance.now()-t1).toFixed(2)}ms`);
   }
 
-  applyLayout();
+  console.log(`[pretext] prepared ${count} blocks in ${(performance.now() - t0).toFixed(1)}ms`);
 
-  // Re-layout on resize
-  let rafId = null;
-  window.addEventListener('resize', () => {
-    if (rafId) return;
-    rafId = requestAnimationFrame(() => { applyLayout(); rafId = null; });
-  }, { passive: true });
-
-  ptxBadge.textContent = `◆ pretext · ${count} blocks`;
+  pretextReady = true;
+  ptxBadge.textContent = `◆ pretext active · ${count} blocks prepared`;
   ptxBadge.style.fontWeight = '700';
-  ptxBadge.style.color = 'rgba(0,0,0,0.75)';
 }
 
 initPretext().catch(err => {
