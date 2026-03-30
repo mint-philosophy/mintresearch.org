@@ -920,8 +920,8 @@ const FRICTION = 0.84;
 const DEAD_ZONE = 0.15;
 const SCROLL_ZONE = 60;
 const SCROLL_SPEED = 8;
-const REPEL_RADIUS = 180;
-const REPEL_FORCE = 80;
+const REPEL_RADIUS = 250;
+const REPEL_FORCE = 120;
 
 const minty = window.__minty = {
   x: 0, y: 0, vx: 0, vy: 0, facingLeft: false, moving: false,
@@ -1061,11 +1061,12 @@ async function initPretext() {
   const t0 = performance.now();
   const mainEl = document.querySelector('main') || document.body;
 
-  for (const el of mainEl.querySelectorAll('p, .lead')) {
+  // Prepare ALL text-containing elements: paragraphs, table cells, card text, list items
+  for (const el of mainEl.querySelectorAll('p, .lead, td, th, li, .card-sub, .card-title, .detail-row .dv, .prompt-detail, .prompt-sub, .accord-inner p, .callout p, .ingest-desc')) {
     const text = el.textContent.trim();
-    if (text.length < 40 || el.closest('svg')) continue;
+    if (text.length < 25 || el.closest('svg')) continue;
     const rect = el.getBoundingClientRect();
-    if (rect.width < 200) continue;
+    if (rect.width < 100) continue;
 
     const cs = getComputedStyle(el);
     const lh = cs.lineHeight === 'normal' ? parseFloat(cs.fontSize) * 1.75 : parseFloat(cs.lineHeight);
@@ -1094,10 +1095,15 @@ async function initPretext() {
     'table',                    // tables
     '.detail-row',              // detail rows inside cards
     'thead tr, tbody tr',       // individual table rows
+    'td, th',                   // individual table cells
+    'li',                       // list items
+    '.card-sub',                // card subtitles
     '.nav-item',                // sidebar nav items
     'h2, h3',                   // headings
     'code',                     // code blocks
     '.tag',                     // tags
+    '.accord-inner',            // accordion content
+    '.sidebar-logo',            // sidebar logo
   ].join(', ');
   for (const el of mainEl.querySelectorAll(repelSel)) {
     if (el.closest('svg')) continue;
