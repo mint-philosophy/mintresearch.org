@@ -377,7 +377,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
 }
 #minty-sprite {
   position: absolute;
-  width: 84px; height: 84px;
+  width: 100px; height: 100px;
   image-rendering: pixelated; image-rendering: crisp-edges;
   filter: drop-shadow(0 0 6px rgba(46,196,182,0.35));
 }
@@ -1162,7 +1162,7 @@ ul.clean li::before { content: '– '; color: var(--text-3); }
 <!-- ══ MINTY CHARACTER ════════════════════════════════════════════════════════ -->
 <div id="minty-wrap">
   <img id="minty-sprite"
-       src="/assets/cv/cowboy-minty-small-square-copy.png"
+       src="/assets/cv/crocodile-dundee-minty.png"
        alt="Minty"
        class="idle" />
 </div>
@@ -1208,241 +1208,97 @@ sections.forEach(s => { if (s.id) observer.observe(s); });
 
 <script type="module">
 // ════════════════════════════════════════════════════════════════════════════
-//  MINTY — WASD movement + text reflow via pretext layoutNextLine
+//  MINTY — WASD movement + text reflow via pretext layoutNextLine()
 //
-//  Architecture:
-//  1. Minty sprite: position:fixed, moves via WASD, smooth velocity + friction
-//  2. Pretext: after fonts load, prepare() every .ptx paragraph once.
-//     Each animation frame, for paragraphs whose viewport rect overlaps
-//     Minty's viewport rect, call layoutNextLine() in a loop with variable
-//     maxWidth per line — reduced + offset for lines at Minty's Y, full
-//     width for lines above/below. Render as display:block spans.
-//     No CSS floats involved.
+//  1. Minty sprite: position:fixed, moves via WASD with physics
+//  2. On font load: prepareWithSegments() every .ptx paragraph once
+//  3. Each frame: layoutNextLine() with variable maxWidth per line
+//  4. NO CSS floats, NO shape-outside — pure pretext arithmetic reflow
 // ════════════════════════════════════════════════════════════════════════════
 
-const SPRITE_W  = 84;
-const SPRITE_H  = 84;
-const EXCL_PAD  = 12;  // padding around Minty exclusion zone
+const SPRITE_W  = 100;
+const SPRITE_H  = 100;
+const EXCL_PAD  = 14;
 const MAX_SPEED = 6;
 const FRICTION  = 0.84;
 const DEAD_ZONE = 0.15;
 
 // ── Minty state ──────────────────────────────────────────────────────────────
-const minty = {
-  x: 0, y: 0,
-  vx: 0, vy: 0,
-  facingLeft: false,
-  moving: false,
+const minty = window.__minty = {
+  x: 0, y: 0, vx: 0, vy: 0,
+  facingLeft: false, moving: false,
 };
-
-minty.x = Math.min(window.innerWidth  * 0.6, window.innerWidth  - SPRITE_W - 20);
+minty.x = Math.min(window.innerWidth * 0.6, window.innerWidth - SPRITE_W - 20);
 minty.y = Math.min(window.innerHeight * 0.35, window.innerHeight - SPRITE_H - 60);
 
 const keys = Object.create(null);
 
-// ── DOM ──────────────────────────────────────────────────────────────────────
+// ── DOM refs ─────────────────────────────────────────────────────────────────
 const sprite   = document.getElementById('minty-sprite');
 const posLabel = document.getElementById('minty-pos');
 const ptxBadge = document.getElementById('ptx-badge');
 
+sprite.style.left = minty.x + 'px';
+sprite.style.top  = minty.y + 'px';
+
 // ── Input ────────────────────────────────────────────────────────────────────
 window.addEventListener('keydown', e => {
-  if ('wasd'.includes(e.key.toLowerCase())) {
-    keys[e.key.toLowerCase()] = true;
+  const k = e.key.toLowerCase();
+  if (k === 'w' || k === 'a' || k === 's' || k === 'd') {
+    keys[k] = true;
     e.preventDefault();
   }
 }, { passive: false });
 
 window.addEventListener('keyup', e => {
-  if ('wasd'.includes(e.key.toLowerCase())) {
-    keys[e.key.toLowerCase()] = false;
+  const k = e.key.toLowerCase();
+  if (k === 'w' || k === 'a' || k === 's' || k === 'd') {
+    keys[k] = false;
   }
 });
 
-// ── Pretext state ─────────────────────────────────────────────────────────────
-let preparedBlocks = [];   // { el, prepared, lh, orig, active }
+// ── Utilities ────────────────────────────────────────────────────────────────
+function escHTML(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ── Pretext state ────────────────────────────────────────────────────────────
+const blocks = [];
 let layoutNextLineFn = null;
-let pretextReady = false;
+let ptxReady = false;
+let prevRX = -999, prevRY = -999;
 
-function escapeHTML(str) {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-}
-
-// ── Reflow one block around Minty ─────────────────────────────────────────────
-function reflowBlock(block, blockRect) {
-  const { el, prepared, lh } = block;
-  const lnl = layoutNextLineFn;
-
-  // Minty in viewport coords
-  const mintyTop    = minty.y;
-  const mintyBottom = minty.y + SPRITE_H;
-  const mintyLeft   = minty.x;
-  const mintyRight  = minty.x + SPRITE_W;
-
-  const containerWidth = blockRect.width;
-  if (containerWidth < 10) return;
-
-  let ptxState = null;
-  const lines   = [];
-  let   y       = 0;  // relative to blockRect.top, in viewport coords
-
-  while (true) {
-    const lineVpTop    = blockRect.top + y;
-    const lineVpBottom = lineVpTop + lh;
-    const lineOverlaps = lineVpBottom > mintyTop && lineVpTop < mintyBottom;
-
-    let maxWidth = containerWidth;
-    let xOffset  = 0;
-
-    if (lineOverlaps) {
-      // Translate Minty coords into block-local coords
-      const obLeft  = mintyLeft  - blockRect.left;
-      const obRight = mintyRight - blockRect.left;
-
-      if (obLeft < containerWidth / 2) {
-        // Minty on left side — text flows on the right
-        xOffset  = Math.max(0, obRight + EXCL_PAD);
-        maxWidth = containerWidth - xOffset;
-      } else {
-        // Minty on right side — text flows on the left
-        xOffset  = 0;
-        maxWidth = Math.max(0, obLeft - EXCL_PAD);
-      }
-      maxWidth = Math.max(maxWidth, 60);
-    }
-
-    const result = lnl(prepared, ptxState, maxWidth);
-    if (!result) break;
-    lines.push({ text: result.text, xOffset });
-    ptxState = result.state;
-    y += lh;
-  }
-
-  el.innerHTML = lines.map(l =>
-    `<span style="display:block;padding-left:${l.xOffset}px">${escapeHTML(l.text)}</span>`
-  ).join('');
-}
-
-// ── Main reflow pass ──────────────────────────────────────────────────────────
-function reflowAllBlocks() {
-  if (!pretextReady) return;
-
-  const mintyTop    = minty.y;
-  const mintyBottom = minty.y + SPRITE_H;
-
-  // Batch: read all rects first
-  const rects = preparedBlocks.map(b => b.el.getBoundingClientRect());
-
-  // Then write
-  for (let i = 0; i < preparedBlocks.length; i++) {
-    const block = preparedBlocks[i];
-    const rect  = rects[i];
-
-    const blockVpTop    = rect.top;
-    const blockVpBottom = rect.bottom;
-    const overlaps = blockVpBottom > mintyTop && blockVpTop < mintyBottom;
-
-    if (!overlaps) {
-      if (block.active) {
-        block.el.innerHTML = block.orig;
-        block.active = false;
-      }
-      continue;
-    }
-
-    block.active = true;
-    reflowBlock(block, rect);
-  }
-}
-
-// ── Game loop ─────────────────────────────────────────────────────────────────
-let lastTs = performance.now();
-
-function loop(ts) {
-  const dt = Math.min((ts - lastTs) / 16.667, 3.0);
-  lastTs = ts;
-
-  if (keys['a']) minty.vx -= MAX_SPEED * dt * 0.35;
-  if (keys['d']) minty.vx += MAX_SPEED * dt * 0.35;
-  if (keys['w']) minty.vy -= MAX_SPEED * dt * 0.35;
-  if (keys['s']) minty.vy += MAX_SPEED * dt * 0.35;
-
-  const spd = Math.hypot(minty.vx, minty.vy);
-  if (spd > MAX_SPEED) {
-    minty.vx = (minty.vx / spd) * MAX_SPEED;
-    minty.vy = (minty.vy / spd) * MAX_SPEED;
-  }
-
-  minty.vx *= FRICTION;
-  minty.vy *= FRICTION;
-  if (Math.abs(minty.vx) < DEAD_ZONE) minty.vx = 0;
-  if (Math.abs(minty.vy) < DEAD_ZONE) minty.vy = 0;
-
-  minty.x += minty.vx;
-  minty.y += minty.vy;
-
-  const maxX = window.innerWidth  - SPRITE_W;
-  const maxY = window.innerHeight - SPRITE_H - 36;
-  minty.x = Math.max(0, Math.min(maxX, minty.x));
-  minty.y = Math.max(0, Math.min(maxY, minty.y));
-
-  if (minty.vx < -0.2)      minty.facingLeft = true;
-  else if (minty.vx > 0.2)  minty.facingLeft = false;
-  minty.moving = spd > 0.2;
-
-  sprite.style.left      = minty.x + 'px';
-  sprite.style.top       = minty.y + 'px';
-  sprite.style.transform = minty.facingLeft ? 'scaleX(-1)' : 'scaleX(1)';
-  sprite.className       = minty.moving ? 'moving' : 'idle';
-
-  reflowAllBlocks();
-
-  posLabel.textContent = `Minty: (${Math.round(minty.x)}, ${Math.round(minty.y)})`;
-
-  requestAnimationFrame(loop);
-}
-
-requestAnimationFrame(loop);
-
-// ════════════════════════════════════════════════════════════════════════════
-//  PRETEXT — dynamic text reflow using layoutNextLine
-// ════════════════════════════════════════════════════════════════════════════
-
+// ── Load pretext from CDN ────────────────────────────────────────────────────
 async function loadPretext() {
   const urls = [
-    'https://esm.sh/pretext',
-    'https://cdn.jsdelivr.net/npm/pretext/+esm',
-    'https://unpkg.com/pretext?module',
+    'https://esm.sh/@chenglou/pretext',
+    'https://cdn.jsdelivr.net/npm/@chenglou/pretext/+esm',
   ];
   for (const url of urls) {
     try {
       const mod = await import(url);
-      if (typeof mod.prepare === 'function' && typeof mod.layoutNextLine === 'function') {
+      if (typeof mod.prepareWithSegments === 'function' && typeof mod.layoutNextLine === 'function') {
         console.log('[pretext] loaded from', url);
         return mod;
       }
     } catch (e) {
-      console.warn('[pretext] failed:', url, e.message);
+      console.warn('[pretext] CDN failed:', url, e.message);
     }
   }
   return null;
 }
 
+// ── Initialize pretext ───────────────────────────────────────────────────────
 async function initPretext() {
-  ptxBadge.textContent = '⧖ pretext…';
+  ptxBadge.textContent = '\u29D6 pretext\u2026';
 
   const ptx = await loadPretext();
   if (!ptx) {
-    ptxBadge.textContent = '✗ pretext unavailable';
+    ptxBadge.textContent = '\u2717 pretext unavailable';
     return;
   }
 
-  const { prepare, layoutNextLine } = ptx;
-  layoutNextLineFn = layoutNextLine;
-
+  layoutNextLineFn = ptx.layoutNextLine;
   await document.fonts.ready;
 
   let count = 0;
@@ -1452,38 +1308,177 @@ async function initPretext() {
     const text = el.textContent.trim();
     if (text.length < 30) continue;
 
-    const cs  = getComputedStyle(el);
-    const lh  = cs.lineHeight === 'normal'
+    const cs = getComputedStyle(el);
+    const lh = cs.lineHeight === 'normal'
       ? parseFloat(cs.fontSize) * 1.75
       : parseFloat(cs.lineHeight);
 
-    const fontSpec = `${cs.fontStyle !== 'normal' ? cs.fontStyle + ' ' : ''}${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const fontStr = `${cs.fontWeight} ${cs.fontSize}/${cs.lineHeight} ${cs.fontFamily}`;
 
     try {
-      const prepared = prepare(text, {
-        font: fontSpec,
-        whiteSpace: 'normal',
-        wordBreak: 'normal',
-        overflowWrap: 'normal',
-      });
-      preparedBlocks.push({ el, prepared, lh, orig: el.innerHTML, active: false });
+      // MUST use prepareWithSegments — layoutNextLine requires it
+      const prepared = ptx.prepareWithSegments(text, fontStr);
+      blocks.push({ el, prepared, lh, orig: el.innerHTML, active: false, lastHTML: '' });
       count++;
     } catch (e) {
-      console.warn('[pretext] prepare failed for element:', e.message);
+      console.warn('[pretext] prepare skip:', e.message);
     }
   }
 
   console.log(`[pretext] prepared ${count} blocks in ${(performance.now() - t0).toFixed(1)}ms`);
-
-  pretextReady = true;
-  ptxBadge.textContent = `◆ pretext active · ${count} blocks prepared`;
+  ptxReady = true;
+  ptxBadge.textContent = `\u25C6 pretext \u00B7 ${count} blocks`;
   ptxBadge.style.fontWeight = '700';
 }
 
+// ── Reflow a single block around Minty ───────────────────────────────────────
+function reflowBlock(block, blockRect) {
+  const lnl = layoutNextLineFn;
+  const { el, prepared, lh } = block;
+  const cw = blockRect.width;
+  if (cw < 100) return;
+
+  const mT = minty.y, mB = minty.y + SPRITE_H;
+  const mL = minty.x, mR = minty.x + SPRITE_W;
+
+  // Start cursor — always begin at segment 0, grapheme 0
+  let cursor = { segmentIndex: 0, graphemeIndex: 0 };
+  const lines = [];
+  let y = 0;
+
+  for (let safety = 0; safety < 500; safety++) {
+    const lt = blockRect.top + y;
+    const lb = lt + lh;
+    const overlap = lb > mT && lt < mB;
+
+    let maxW = cw, xOff = 0;
+
+    if (overlap) {
+      const obL = mL - blockRect.left;
+      const obR = mR - blockRect.left;
+      if (obL < cw / 2) {
+        xOff = Math.max(0, obR + EXCL_PAD);
+        maxW = cw - xOff;
+      } else {
+        maxW = Math.max(0, obL - EXCL_PAD);
+      }
+      if (maxW < 80) { maxW = cw; xOff = 0; }
+    }
+
+    let line;
+    try {
+      line = lnl(prepared, cursor, maxW);
+    } catch (_) {
+      break;
+    }
+    if (!line) break;
+
+    lines.push({ t: line.text, x: xOff });
+    cursor = line.end;  // pass .end as next cursor
+    y += lh;
+  }
+
+  const html = lines.map(l =>
+    `<span style="display:block;padding-left:${l.x}px">${escHTML(l.t)}</span>`
+  ).join('');
+
+  if (html !== block.lastHTML) {
+    el.innerHTML = html;
+    block.lastHTML = html;
+  }
+}
+
+// ── Main reflow pass ─────────────────────────────────────────────────────────
+function reflowAll() {
+  if (!ptxReady) return;
+
+  const mT = minty.y, mB = minty.y + SPRITE_H;
+  const rects = blocks.map(b => b.el.getBoundingClientRect());
+
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i];
+    const rect  = rects[i];
+    const overlaps = rect.bottom > mT - 5 && rect.top < mB + 5
+                  && minty.x + SPRITE_W > rect.left && minty.x < rect.right;
+
+    if (!overlaps) {
+      if (block.active) {
+        block.el.innerHTML = block.orig;
+        block.active = false;
+        block.lastHTML = '';
+      }
+      continue;
+    }
+
+    block.active = true;
+    try { reflowBlock(block, rect); } catch (_) {}
+  }
+}
+
+// ── Game loop ────────────────────────────────────────────────────────────────
+let lastTs = performance.now();
+
+function loop(ts) {
+  try {
+    const dt = Math.min((ts - lastTs) / 16.667, 3.0);
+    lastTs = ts;
+
+    if (keys['a']) minty.vx -= MAX_SPEED * dt * 0.35;
+    if (keys['d']) minty.vx += MAX_SPEED * dt * 0.35;
+    if (keys['w']) minty.vy -= MAX_SPEED * dt * 0.35;
+    if (keys['s']) minty.vy += MAX_SPEED * dt * 0.35;
+
+    const spd = Math.hypot(minty.vx, minty.vy);
+    if (spd > MAX_SPEED) {
+      minty.vx = (minty.vx / spd) * MAX_SPEED;
+      minty.vy = (minty.vy / spd) * MAX_SPEED;
+    }
+
+    minty.vx *= FRICTION;
+    minty.vy *= FRICTION;
+    if (Math.abs(minty.vx) < DEAD_ZONE) minty.vx = 0;
+    if (Math.abs(minty.vy) < DEAD_ZONE) minty.vy = 0;
+
+    minty.x += minty.vx;
+    minty.y += minty.vy;
+
+    const maxX = window.innerWidth  - SPRITE_W;
+    const maxY = window.innerHeight - SPRITE_H - 36;
+    minty.x = Math.max(0, Math.min(maxX, minty.x));
+    minty.y = Math.max(0, Math.min(maxY, minty.y));
+
+    if (minty.vx < -0.2)      minty.facingLeft = true;
+    else if (minty.vx > 0.2)  minty.facingLeft = false;
+    minty.moving = spd > 0.2;
+
+    sprite.style.left      = minty.x + 'px';
+    sprite.style.top       = minty.y + 'px';
+    sprite.style.transform = minty.facingLeft ? 'scaleX(-1)' : 'scaleX(1)';
+    sprite.className       = minty.moving ? 'moving' : 'idle';
+
+    const rx = Math.round(minty.x), ry = Math.round(minty.y);
+    if (rx !== prevRX || ry !== prevRY) {
+      reflowAll();
+      prevRX = rx;
+      prevRY = ry;
+    }
+
+    posLabel.textContent = `Minty: (${rx}, ${ry})`;
+  } catch (err) {
+    console.error('[minty] loop error:', err);
+  }
+
+  requestAnimationFrame(loop);
+}
+
+requestAnimationFrame(loop);
+
+// ── Init pretext (non-blocking) ──────────────────────────────────────────────
 initPretext().catch(err => {
   console.error('[pretext] init error:', err);
-  ptxBadge.textContent = '✗ pretext error';
+  ptxBadge.textContent = '\u2717 pretext error';
 });
+
 </script>
 
 </body>
