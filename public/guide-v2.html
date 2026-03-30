@@ -1082,28 +1082,53 @@ async function initPretext() {
   // Repellable elements
   // Target INDIVIDUAL items within grids (not containers) for visible parting effect
   const repelSel = [
-    '.card',                    // individual cards
-    '.pf-card',                 // pipeline flow cards
-    '.prompt-item',             // prompt grid items
-    '.q-cell',                  // semantic dimension cells
-    '.ingest-stage',            // ingest pipeline stages
-    '.ingest-box',              // ingest boxes
-    'details',                  // accordions
-    '.callout',                 // callout blocks
-    '.h-node',                  // hierarchy nodes
-    '.score-row',               // score bars
-    'table',                    // tables
-    '.detail-row',              // detail rows inside cards
-    'thead tr, tbody tr',       // individual table rows
-    'td, th',                   // individual table cells
-    'li',                       // list items
-    '.card-sub',                // card subtitles
-    '.nav-item',                // sidebar nav items
-    'h2, h3',                   // headings
-    'code',                     // code blocks
-    '.tag',                     // tags
-    '.accord-inner',            // accordion content
-    '.sidebar-logo',            // sidebar logo
+    // Cards & card internals
+    '.card', '.card-head', '.card-body', '.card-icon', '.card-title', '.card-sub',
+    // Pipeline flow
+    '.pf-card', '.pf-hub', '.pipeline-tip',
+    // Prompt grid
+    '.prompt-item', '.prompt-icon', '.prompt-label', '.prompt-title', '.prompt-sub', '.prompt-detail',
+    // Q-grid
+    '.q-cell', '.q-id', '.q-key',
+    // Ingest pipeline
+    '.ingest-stage', '.ingest-box', '.ingest-dot', '.ingest-line',
+    '.ingest-name', '.ingest-num', '.ingest-desc', '.ingest-info',
+    '.ingest-detail-block', '.ingest-detail-title', '.ingest-detail-text',
+    // Hierarchy
+    '.h-node', '.h-title', '.h-sub', '.h-connector', '.h-tier',
+    // Scores & bars
+    '.score-row', '.score-label', '.score-bar-wrap', '.score-val',
+    // Tables
+    'table', 'thead tr', 'tbody tr', 'td', 'th',
+    // Lists
+    'li', 'ul.clean',
+    // Accordions
+    'details', 'summary', '.accord-inner', '.accordion-inner', '.lab-accordion',
+    // Text blocks
+    '.callout', '.detail-row', '.detail-label', '.detail-val',
+    // Headings
+    'h1', 'h2', 'h3', 'h4', '.cli-call', '.section-num', '.section-label',
+    // Badges & tags
+    '.badge', '.tag', '.tag-daily', '.tag-persistent', '.tag-polling',
+    '.health-ok', '.status-pulse',
+    // Code & CLI
+    'code', '.line-numbered', '.cli-line',
+    // Navigation
+    '.nav-item', '.sidebar-logo', '.sidebar-hint',
+    // Images & media
+    'img:not(#minty-sprite)', '.watermark',
+    // Forms
+    'form', 'input', 'button',
+    // Sections & containers (light repel)
+    'section', '.hero', '.grid-2',
+    // Timeline
+    '.timeline-wrap', '.timeline-hours',
+    // Links & inline
+    'a', 'strong', 'em',
+    // SVG diagrams
+    'svg:not([data-anim-delayed])',
+    // iframe / canvas
+    'iframe', 'canvas',
   ].join(', ');
   for (const el of mainEl.querySelectorAll(repelSel)) {
     if (el.closest('svg')) continue;
