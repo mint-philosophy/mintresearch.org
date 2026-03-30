@@ -683,7 +683,7 @@ initPretext().catch(err => {
 //  MINTY CHAT — Double-click/tap to chat with the MINT Lab's AI philosopher
 // ════════════════════════════════════════════════════════════════════════════
 
-const WORKER_URL =  + CHAT_WORKER_URL + ';
+const WORKER_URL = 'https://minty-chatbot.mintresearch.workers.dev';
 const MAX_MESSAGES = 15;
 const COOLDOWN_MS = 3000;
 
@@ -726,26 +726,26 @@ let lastSendTime = 0;
 let sending = false;
 let usedGreetings = JSON.parse(sessionStorage.getItem('minty-usedGreetings') || '[]');
 
-function updateCounter() {{
+function updateCounter() {
   const remaining = MAX_MESSAGES - msgCount;
   counterEl.textContent = remaining > 0 ? remaining + ' left' : 'limit reached';
-  if (remaining <= 0) {{
+  if (remaining <= 0) {
     inputEl.disabled = true;
     sendBtn.disabled = true;
     inputEl.placeholder = 'Chat limit reached for this session';
-  }}
-}}
+  }
+}
 
-function addMessage(text, role) {{
+function addMessage(text, role) {
   const div = document.createElement('div');
   div.className = 'minty-msg ' + role;
   div.textContent = text;
   msgBox.appendChild(div);
   msgBox.scrollTop = msgBox.scrollHeight;
   return div;
-}}
+}
 
-function pickGreeting() {{
+function pickGreeting() {
   const available = GREETINGS.filter((_, i) => !usedGreetings.includes(i));
   const pool = available.length > 0 ? available : GREETINGS;
   const idx = GREETINGS.indexOf(pool[Math.floor(Math.random() * pool.length)]);
@@ -753,9 +753,9 @@ function pickGreeting() {{
   if (usedGreetings.length > GREETINGS.length - 3) usedGreetings = [];
   sessionStorage.setItem('minty-usedGreetings', JSON.stringify(usedGreetings));
   return GREETINGS[idx];
-}}
+}
 
-function positionChat() {{
+function positionChat() {
   const sx = minty.x, sy = minty.y;
   const cw = chat.offsetWidth || 360;
   const ch = chat.offsetHeight || 400;
@@ -767,26 +767,26 @@ function positionChat() {{
   if (left < 12) left = 12;
   chat.style.left = left + 'px';
   chat.style.top = top + 'px';
-}}
+}
 
-function openChat() {{
+function openChat() {
   if (chatOpen) return;
   chatOpen = true;
   chat.style.display = 'flex';
   positionChat();
   updateCounter();
-  if (msgBox.children.length === 0) {{
+  if (msgBox.children.length === 0) {
     addMessage(pickGreeting(), 'bot');
-  }}
+  }
   inputEl.focus();
-}}
+}
 
-function closeChat() {{
+function closeChat() {
   chatOpen = false;
   chat.style.display = 'none';
-}}
+}
 
-async function sendMessage() {{
+async function sendMessage() {
   const text = inputEl.value.trim();
   if (!text || sending || msgCount >= MAX_MESSAGES) return;
   const now = Date.now();
@@ -803,21 +803,21 @@ async function sendMessage() {{
   sendBtn.disabled = true;
   const thinkDiv = addMessage('', 'bot thinking');
 
-  try {{
-    const res = await fetch(WORKER_URL + '/chat', {{
+  try {
+    const res = await fetch(WORKER_URL + '/chat', {
       method: 'POST',
-      headers: {{ 'Content-Type': 'application/json' }},
-      body: JSON.stringify({{ message: text, responseId }}),
-    }});
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text, responseId }),
+    });
 
-    if (!res.ok) {{
-      const err = await res.json().catch(() => ({{}}));
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
       thinkDiv.classList.remove('thinking');
       thinkDiv.textContent = err.error === 'Rate limit exceeded'
         ? "Crikey, too many questions at once. Give it a minute, mate."
         : "Sorry mate, something went wrong on my end. Try again in a tick.";
       return;
-    }}
+    }
 
     // Read OpenAI Responses API SSE stream (raw passthrough from worker)
     const reader = res.body.getReader();
@@ -826,88 +826,88 @@ async function sendMessage() {{
     let fullText = '';
     thinkDiv.classList.remove('thinking');
 
-    while (true) {{
-      const {{ done, value }} = await reader.read();
+    while (true) {
+      const { done, value } = await reader.read();
       if (done) break;
-      buf += decoder.decode(value, {{ stream: true }});
+      buf += decoder.decode(value, { stream: true });
       const lines = buf.split('\n');
       buf = lines.pop() || '';
-      for (const line of lines) {{
+      for (const line of lines) {
         if (!line.startsWith('data:')) continue;
         const data = line.slice(5).trim();
         if (!data || data === '[DONE]') continue;
-        try {{
+        try {
           const evt = JSON.parse(data);
           // Capture response ID for multi-turn conversation
-          if (evt.type === 'response.created' && evt.response?.id) {{
+          if (evt.type === 'response.created' && evt.response?.id) {
             responseId = evt.response.id;
             sessionStorage.setItem('minty-responseId', responseId);
-          }}
+          }
           // Extract text deltas
-          if (evt.type === 'response.output_text.delta' && evt.delta) {{
+          if (evt.type === 'response.output_text.delta' && evt.delta) {
             fullText += evt.delta;
             thinkDiv.textContent = fullText;
             msgBox.scrollTop = msgBox.scrollHeight;
-          }}
-        }} catch (_) {{}}
-      }}
-    }}
+          }
+        } catch (_) {}
+      }
+    }
     if (!fullText) thinkDiv.textContent = "Hmm, I've gone a bit quiet. Try asking again, mate.";
-  }} catch (e) {{
+  } catch (e) {
     thinkDiv.classList.remove('thinking');
     thinkDiv.textContent = "No worries — looks like I can't reach my thinking cap right now. Try again later.";
-  }} finally {{
+  } finally {
     sending = false;
     sendBtn.disabled = msgCount >= MAX_MESSAGES;
-  }}
-}}
+  }
+}
 
 // ── Double-click / double-tap to open ──────────────────────────────────────
 let lastTapTime = 0;
 let dragDistance = 0;
 let tapStartX = 0, tapStartY = 0;
 
-sprite.addEventListener('mousedown', e => {{
+sprite.addEventListener('mousedown', e => {
   tapStartX = e.clientX; tapStartY = e.clientY; dragDistance = 0;
-}});
-window.addEventListener('mousemove', e => {{
+});
+window.addEventListener('mousemove', e => {
   dragDistance += Math.abs(e.movementX) + Math.abs(e.movementY);
-}});
-sprite.addEventListener('dblclick', e => {{
-  if (dragDistance < 15) {{ openChat(); e.preventDefault(); }}
-}});
+});
+sprite.addEventListener('dblclick', e => {
+  if (dragDistance < 15) { openChat(); e.preventDefault(); }
+});
 
 // Double-tap for touch
-sprite.addEventListener('touchend', e => {{
+sprite.addEventListener('touchend', e => {
   const now = Date.now();
-  if (now - lastTapTime < 350) {{
+  if (now - lastTapTime < 350) {
     openChat();
     e.preventDefault();
     lastTapTime = 0;
-  }} else {{
+  } else {
     lastTapTime = now;
-  }}
-}});
+  }
+});
 
 closeBtn.addEventListener('click', closeChat);
 sendBtn.addEventListener('click', sendMessage);
-inputEl.addEventListener('keydown', e => {{
-  if (e.key === 'Enter' && !e.shiftKey) {{ e.preventDefault(); sendMessage(); }}
+inputEl.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   e.stopPropagation();  // Don't trigger WASD
-}});
+});
 inputEl.addEventListener('keyup', e => e.stopPropagation());
 
 // Reposition chat when Minty moves
 let chatPosFrame = 0;
-(function trackMintyPos() {{
+(function trackMintyPos() {
   if (chatOpen) positionChat();
   requestAnimationFrame(trackMintyPos);
-}})();
+})();
 
 // Close on Escape
-window.addEventListener('keydown', e => {{
+window.addEventListener('keydown', e => {
   if (e.key === 'Escape' && chatOpen) closeChat();
-}});
+});
 
 console.log('[minty-chat] ready, ' + GREETINGS.length + ' greetings loaded');
 </script>
