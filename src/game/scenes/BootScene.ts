@@ -13,9 +13,9 @@ export class BootScene extends Phaser.Scene {
     colors.forEach(c => {
       this.load.image(`minty-${c}`, `${base}/assets/minty-${c}.png`);
     });
-    this.load.image('minty-shades', `${base}/assets/minty-shades-scan.png`);
-    this.load.image('minty-cool-scan', `${base}/assets/minty-cool-scan.png`);
-    this.load.image('minty-bandage', `${base}/assets/minty-bandage.png`);
+    this.load.image('minty-shades', `${base}/assets/minty-shades-scan.webp`);
+    this.load.image('minty-cool-scan', `${base}/assets/minty-cool-scan.webp`);
+    this.load.image('minty-bandage', `${base}/assets/minty-bandage.webp`);
   }
 
   create(): void {
