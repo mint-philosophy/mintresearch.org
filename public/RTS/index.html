@@ -508,16 +508,90 @@ body {
 .range-toggle.in .dot { background: var(--ok); }
 .range-toggle.out .dot { background: var(--danger); }
 
-/* ===== ENEMY ===== */
-.enemy .unit-badge { background: var(--csa); opacity: 0.85; }
-.enemy .unit-badge.cav { background: #4a2018; }
-.enemy .unit-badge.cmd { background: var(--paper); border-color: var(--gold); color: var(--gold); opacity: 1; }
+/* ===== ENEMY (COLLAPSIBLE) ===== */
+.enemy-panel {
+  border-bottom: 1px solid var(--rule);
+}
+
+.enemy-panel > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(107, 58, 43, 0.06);
+  border-left: 3px solid var(--csa);
+}
+
+.enemy-panel > summary::-webkit-details-marker { display: none; }
+
+.enemy-panel > summary .chev {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-faint);
+  transition: transform 0.2s;
+}
+
+.enemy-panel[open] > summary .chev {
+  transform: rotate(90deg);
+}
+
+.enemy-summary-stats {
+  display: flex;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+
+.enemy-summary-stats .pair { display: inline-flex; gap: 3px; }
+.enemy-summary-stats .pair b { color: var(--csa); font-weight: 700; }
+
+.enemy-body {
+  padding: 4px 18px 12px;
+}
+
+.enemy-body .unit-badge { background: var(--csa); opacity: 0.85; }
+.enemy-body .unit-badge.cav { background: #4a2018; }
+.enemy-body .unit-badge.cmd { background: var(--paper); border-color: var(--gold); color: var(--gold); opacity: 1; }
+
 .enemy-note {
   font-size: 10px;
   font-style: italic;
   color: var(--ink-faint);
   margin-top: 4px;
 }
+
+/* ===== SECTOR CHIP ===== */
+.sector-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 6px;
+  background: var(--paper-dark);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  font-size: 9px;
+  letter-spacing: 0.3px;
+  color: var(--ink-soft);
+}
+
+.sector-chip::before {
+  content: "◉";
+  font-size: 7px;
+  color: var(--ink-faint);
+}
+
+.sector-chip.pending {
+  border-color: var(--gold);
+  background: rgba(169,134,54,0.15);
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.sector-chip.pending::before { color: var(--gold); content: "✦"; }
 
 /* ===== LOG ===== */
 .log {
@@ -774,7 +848,7 @@ body {
         <div class="unit-name">1st Massachusetts</div>
         <div class="unit-sub">
           <span>Infantry</span>
-          <span>Vanguard · Left</span>
+          <span class="sector-chip">Vanguard · Left</span>
           <span>Range <span class="ruler-hint">1L</span></span>
         </div>
       </div>
@@ -790,7 +864,7 @@ body {
         <div class="unit-name">2nd Massachusetts</div>
         <div class="unit-sub">
           <span>Infantry</span>
-          <span>Vanguard · Center</span>
+          <span class="sector-chip">Vanguard · Center</span>
           <span class="unit-tag dry">No ammo</span>
           <span class="morale-mod penalty">–10%</span>
         </div>
@@ -824,8 +898,7 @@ body {
         <div class="unit-name">5th Pennsylvania</div>
         <div class="unit-sub">
           <span>Cavalry</span>
-          <span>Center · Right</span>
-          <span>Move <span class="ruler-hint">1L + 1S</span></span>
+          <span class="sector-chip pending">Center · Right — tap to confirm</span>
           <span>Range <span class="ruler-hint">1L</span></span>
         </div>
       </div>
@@ -858,7 +931,7 @@ body {
         <div class="unit-name">1st U.S. Sharpshooters</div>
         <div class="unit-sub">
           <span>Skirmishers</span>
-          <span>Vanguard · Right</span>
+          <span class="sector-chip">Vanguard · Right</span>
           <span>Range <span class="ruler-hint">2L</span></span>
         </div>
       </div>
@@ -874,7 +947,7 @@ body {
         <div class="unit-name">Battery B, 4th U.S.</div>
         <div class="unit-sub">
           <span>Artillery</span>
-          <span>Center · Center</span>
+          <span class="sector-chip">Center · Center</span>
           <span class="unit-tag building">In Building</span>
         </div>
       </div>
@@ -890,7 +963,7 @@ body {
         <div class="unit-name">Supply Train A</div>
         <div class="unit-sub">
           <span>Wagon</span>
-          <span>Reserve · Center</span>
+          <span class="sector-chip">Reserve · Center</span>
           <span>Move <span class="ruler-hint">1S</span></span>
         </div>
       </div>
@@ -901,62 +974,72 @@ body {
 
   </div>
 
-  <!-- ENEMY -->
-  <div class="section enemy">
-    <div class="section-header">
-      <span class="section-title">Enemy Dispositions</span>
-      <span class="section-meta">visible · 5 divisions</span>
-    </div>
-
-    <div class="unit">
-      <div class="unit-badge">I</div>
-      <div class="unit-info">
-        <div class="unit-name">15th Alabama</div>
-        <div class="unit-sub">
-          <span>CSA Infantry</span>
-          <span>Vanguard · Center</span>
-          <span>in range of 1st MA</span>
+  <!-- ENEMY (COLLAPSIBLE) -->
+  <details class="enemy-panel">
+    <summary>
+      <div>
+        <div class="section-title">Enemy Dispositions</div>
+        <div class="enemy-summary-stats">
+          <span class="pair"><b>5</b> divisions</span>
+          <span class="pair"><b>28</b> figures</span>
+          <span class="pair"><b>4</b> cards · deck <b>1</b></span>
         </div>
       </div>
-      <div class="unit-stats">
-        <div class="strength-bar"><div class="strength-bar-fill" style="width:90%"></div></div>
-        <div>9/10</div>
-      </div>
-    </div>
+      <span class="chev">▸</span>
+    </summary>
+    <div class="enemy-body">
 
-    <div class="unit">
-      <div class="unit-badge cav">C</div>
-      <div class="unit-info">
-        <div class="unit-name">1st Virginia Cavalry</div>
-        <div class="unit-sub">
-          <span>CSA Cavalry</span>
-          <span>Center · Left</span>
-          <span class="unit-tag moved">Moved T3</span>
-          <span class="morale-mod penalty">–20%</span>
+      <div class="unit">
+        <div class="unit-badge">I</div>
+        <div class="unit-info">
+          <div class="unit-name">15th Alabama</div>
+          <div class="unit-sub">
+            <span>CSA Infantry</span>
+            <span class="sector-chip">Vanguard · Center</span>
+            <span>in range of 1st MA</span>
+          </div>
+        </div>
+        <div class="unit-stats">
+          <div class="strength-bar"><div class="strength-bar-fill" style="width:90%"></div></div>
+          <div>9/10</div>
         </div>
       </div>
-      <div class="unit-stats">
-        <div class="strength-bar"><div class="strength-bar-fill warn" style="width:67%"></div></div>
-        <div>4/6</div>
-      </div>
-    </div>
 
-    <div class="unit">
-      <div class="unit-badge skr">S</div>
-      <div class="unit-info">
-        <div class="unit-name">Hampton's Legion</div>
-        <div class="unit-sub">
-          <span>CSA Skirmishers</span>
-          <span>Vanguard · Right</span>
+      <div class="unit">
+        <div class="unit-badge cav">C</div>
+        <div class="unit-info">
+          <div class="unit-name">1st Virginia Cavalry</div>
+          <div class="unit-sub">
+            <span>CSA Cavalry</span>
+            <span class="sector-chip">Center · Left</span>
+            <span class="unit-tag moved">Moved T3</span>
+            <span class="morale-mod penalty">–20%</span>
+          </div>
+        </div>
+        <div class="unit-stats">
+          <div class="strength-bar"><div class="strength-bar-fill warn" style="width:67%"></div></div>
+          <div>4/6</div>
         </div>
       </div>
-      <div class="unit-stats">
-        <div class="strength-bar"><div class="strength-bar-fill" style="width:100%"></div></div>
-        <div>8/8</div>
+
+      <div class="unit">
+        <div class="unit-badge skr">S</div>
+        <div class="unit-info">
+          <div class="unit-name">Hampton's Legion</div>
+          <div class="unit-sub">
+            <span>CSA Skirmishers</span>
+            <span class="sector-chip">Vanguard · Right</span>
+          </div>
+        </div>
+        <div class="unit-stats">
+          <div class="strength-bar"><div class="strength-bar-fill" style="width:100%"></div></div>
+          <div>8/8</div>
+        </div>
       </div>
+
+      <div class="enemy-note">Last known positions. Tap any unit to see engagement history.</div>
     </div>
-    <div class="enemy-note">Cards in opponent's hand: 4 · Deck: 1</div>
-  </div>
+  </details>
 
   <!-- LOG -->
   <div class="log">
