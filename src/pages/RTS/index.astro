@@ -1,0 +1,130 @@
+---
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RTS — MINT Lab Wargame Helper</title>
+  <link rel="icon" type="image/x-icon" href={`${base}/favicon.ico`} />
+  <style>
+    :root {
+      --paper: #e8dfc9;
+      --ink: #1a1612;
+      --ink-soft: #4a413a;
+      --ink-faint: #7b6e62;
+      --gold: #a98636;
+      --serif: "Hoefler Text", "Baskerville", Georgia, serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: #2a2520;
+      color: var(--paper);
+      font-family: var(--sans);
+      min-height: 100vh;
+    }
+    body {
+      padding: 60px 24px;
+      display: flex;
+      justify-content: center;
+    }
+    .wrap { max-width: 560px; width: 100%; }
+    h1 {
+      font-family: var(--serif);
+      font-size: 32px;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .lede {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 14px;
+      color: #c6b798;
+      margin-bottom: 36px;
+      line-height: 1.5;
+    }
+    .mockups {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .mockup-card {
+      display: block;
+      padding: 18px 20px;
+      background: rgba(232,223,201,0.06);
+      border: 1px solid rgba(232,223,201,0.15);
+      border-left: 3px solid var(--gold);
+      border-radius: 4px;
+      color: var(--paper);
+      text-decoration: none;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .mockup-card:hover {
+      background: rgba(232,223,201,0.12);
+      border-left-color: #d4b45e;
+    }
+    .mockup-card .title {
+      font-family: var(--serif);
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+    .mockup-card .tag {
+      font-family: "SF Mono", monospace;
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .mockup-card .desc {
+      font-size: 13px;
+      color: #b5a58a;
+      line-height: 1.45;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 11px;
+      color: #8a7f6d;
+      font-style: italic;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>RTS</h1>
+    <div class="lede">
+      American Civil War tabletop wargame helper — phone-first companion that runs your turn, rolls dice, and keeps score. Work in progress.
+    </div>
+
+    <div class="mockups">
+
+      <a href={`${base}/RTS/prototype/`} class="mockup-card">
+        <div class="tag">Interactive prototype</div>
+        <div class="title">Play a turn →</div>
+        <div class="desc">Hand of 10 cards, full army, d10 combat resolution. Tap a card, authorize units, pick sectors, resolve attacks. One player, no opponent AI yet.</div>
+      </a>
+
+      <a href={`${base}/RTS/detail.html`} class="mockup-card">
+        <div class="tag">Static mockup</div>
+        <div class="title">Unit detail drawer + sector picker</div>
+        <div class="desc">Design study for the per-unit detail panel and the 3×3 sector-picker modal. Side-by-side phone views.</div>
+      </a>
+
+      <a href={`${base}/RTS/dashboard.html`} class="mockup-card">
+        <div class="tag">Static mockup</div>
+        <div class="title">Turn-4 dashboard</div>
+        <div class="desc">Original dashboard layout: top bar, victory tracker, hand, army, collapsible enemy panel, battle log.</div>
+      </a>
+
+    </div>
+
+    <div class="footer">
+      Seth Lazar · MINT Lab · mintresearch.org
+    </div>
+  </div>
+</body>
+</html>
