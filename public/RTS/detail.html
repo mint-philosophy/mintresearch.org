@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RTS — Unit Detail & Sector Picker</title>
+<style>
+:root {
+  --paper: #e8dfc9;
+  --paper-dark: #d4c9ae;
+  --paper-deeper: #c4b795;
+  --ink: #1a1612;
+  --ink-soft: #4a413a;
+  --ink-faint: #7b6e62;
+  --union: #1e3a5f;
+  --union-soft: #2d4a6f;
+  --csa: #6b3a2b;
+  --csa-soft: #8b5a4b;
+  --gold: #a98636;
+  --gold-soft: #c6a858;
+  --danger: #8b2f2f;
+  --ok: #3f5d3d;
+  --warn: #b77a1e;
+  --rule: #a09078;
+  --serif: "Hoefler Text", "Baskerville", Georgia, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  --mono: "SF Mono", "Menlo", monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #2a2520;
+  font-family: var(--sans);
+  color: var(--ink);
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.stage {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 1800px;
+  margin: 0 auto;
+}
+
+.stage-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.stage-label {
+  font-family: var(--serif);
+  color: var(--paper);
+  font-size: 16px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.stage-label .sub {
+  display: block;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.6;
+  margin-top: 4px;
+  max-width: 390px;
+}
+
+.phone {
+  width: 390px;
+  min-height: 844px;
+  background: var(--paper);
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(139,115,80,0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(139,115,80,0.06) 0%, transparent 50%);
+  border-radius: 36px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* ===== TOP BAR ===== */
+.topbar {
+  background: var(--union);
+  color: var(--paper);
+  padding: 12px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--gold);
+}
+
+.topbar .turn {
+  font-family: var(--serif);
+  font-size: 18px;
+}
+
+.topbar .phase {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.topbar .player {
+  font-family: var(--serif);
+  font-size: 12px;
+  font-style: italic;
+  text-align: right;
+}
+
+/* ===== SECTION ===== */
+.section {
+  padding: 12px 18px 8px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.section-title {
+  font-family: var(--serif);
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.section-meta {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-faint);
+}
+
+/* ===== COMPACT UNIT ROW ===== */
+.unit {
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--rule);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.unit:last-child { border-bottom: none; }
+
+.unit-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  background: var(--union);
+  color: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.unit-badge.cav { background: var(--csa); }
+.unit-badge.art { background: var(--danger); }
+.unit-badge.skr { background: var(--ok); }
+.unit-badge.sup { background: var(--gold); }
+
+.unit-info .unit-name {
+  font-family: var(--serif);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.unit-info .unit-sub {
+  font-size: 10px;
+  color: var(--ink-faint);
+  margin-top: 2px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.unit-stats {
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 10px;
+}
+
+.strength-bar {
+  width: 60px;
+  height: 4px;
+  background: var(--paper-dark);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 3px;
+}
+
+.strength-bar-fill { height: 100%; background: var(--ok); }
+.strength-bar-fill.warn { background: var(--gold); }
+.strength-bar-fill.danger { background: var(--danger); }
+
+.sector-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 6px;
+  background: var(--paper-dark);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  font-size: 9px;
+  color: var(--ink-soft);
+}
+
+.sector-chip::before {
+  content: "◉";
+  font-size: 7px;
+  color: var(--ink-faint);
+}
+
+.sector-chip.pending {
+  border-color: var(--gold);
+  background: rgba(169,134,54,0.15);
+  color: var(--gold);
+  font-weight: 600;
+}
+.sector-chip.pending::before { color: var(--gold); content: "✦"; }
+
+.ruler-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 5px;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 2px;
+  font-family: var(--mono);
+  font-size: 9px;
+}
+
+.morale-mod {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+}
+.morale-mod.penalty { background: var(--danger); color: var(--paper); }
+.morale-mod.buff { background: var(--ok); color: var(--paper); }
+
+.unit-tag {
+  padding: 1px 5px;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 6px;
+  font-size: 8px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+.unit-tag.building { background: var(--ok); }
+.unit-tag.moved { background: var(--gold); color: var(--ink); }
+.unit-tag.fired { background: var(--csa); }
+.unit-tag.melee { background: var(--danger); }
+.unit-tag.dry { background: var(--danger); }
+.unit-tag.activated { background: var(--ink); color: var(--gold-soft); border: 1px solid var(--gold); }
+
+/* ===== EXPANDED UNIT DRAWER ===== */
+.unit.expanded {
+  background: linear-gradient(180deg, rgba(30,58,95,0.08) 0%, rgba(30,58,95,0.02) 100%);
+  margin: 0 -18px;
+  padding: 14px 18px 0;
+  border-left: 3px solid var(--union);
+  display: block;
+  cursor: default;
+}
+
+.unit.expanded .unit-summary {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.unit.expanded .unit-badge {
+  width: 44px;
+  height: 44px;
+  font-size: 16px;
+}
+
+.unit.expanded .unit-info .unit-name {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.drawer {
+  padding: 12px 0 14px;
+}
+
+.drawer-section {
+  margin-bottom: 12px;
+}
+
+.drawer-section:last-child { margin-bottom: 0; }
+
+.drawer-label {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 10px;
+  color: var(--ink-faint);
+  letter-spacing: 0.5px;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+
+.drawer-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 10px;
+  padding: 3px 0;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.drawer-row .k {
+  color: var(--ink-faint);
+  font-family: var(--mono);
+  font-size: 10px;
+}
+
+.drawer-row .v {
+  color: var(--ink);
+}
+
+.drawer-row .v b { font-weight: 700; }
+
+.drawer-row .v .sector-chip {
+  vertical-align: middle;
+}
+
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 2px;
+}
+
+.pill {
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 9px;
+  letter-spacing: 0.3px;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  color: var(--ink-soft);
+}
+
+.pill.hot { background: rgba(139,47,47,0.12); border-color: var(--danger); color: var(--danger); }
+.pill.cold { background: rgba(30,58,95,0.08); border-color: var(--union); color: var(--union); }
+.pill.warn { background: rgba(183,122,30,0.12); border-color: var(--warn); color: var(--warn); }
+.pill.good { background: rgba(63,93,61,0.12); border-color: var(--ok); color: var(--ok); }
+.pill.gold { background: rgba(169,134,54,0.15); border-color: var(--gold); color: var(--gold); font-weight: 600; }
+
+.range-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 9px;
+  text-transform: uppercase;
+  border: 1px solid;
+  letter-spacing: 0.3px;
+}
+
+.range-toggle.in {
+  background: rgba(63,93,61,0.15);
+  color: var(--ok);
+  border-color: var(--ok);
+}
+.range-toggle.out {
+  background: rgba(139,47,47,0.12);
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.range-toggle .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+.range-toggle.in .dot { background: var(--ok); }
+.range-toggle.out .dot { background: var(--danger); }
+
+/* Figure dots (visualize casualties) */
+.figures {
+  display: inline-flex;
+  gap: 2px;
+}
+.figure-dot {
+  width: 8px;
+  height: 10px;
+  background: var(--union);
+  border-radius: 1px;
+}
+.figure-dot.dead {
+  background: transparent;
+  border: 1px solid var(--ink-faint);
+  opacity: 0.4;
+}
+
+/* Ammo dots */
+.ammo-dots {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+}
+.ammo-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--ink);
+  border-radius: 50%;
+}
+.ammo-dot.spent {
+  background: transparent;
+  border: 1px solid var(--ink-faint);
+  width: 4px;
+  height: 4px;
+}
+
+/* Order queue */
+.order-queue {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--gold);
+  border-radius: 3px;
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.order-item.done {
+  opacity: 0.5;
+  text-decoration: line-through;
+  border-left-color: var(--ok);
+}
+
+.order-item .step-num {
+  font-family: var(--mono);
+  color: var(--ink-faint);
+  font-size: 9px;
+  width: 14px;
+  text-align: center;
+}
+
+.order-item .from-card {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 9px;
+  color: var(--gold);
+  margin-left: auto;
+}
+
+/* Threat/LOS callouts */
+.threat {
+  padding: 8px 10px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--danger);
+  border-radius: 3px;
+  font-size: 10px;
+  line-height: 1.3;
+  margin-bottom: 4px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.threat.visible { border-left-color: var(--csa); }
+.threat.adj { border-left-color: var(--danger); background: rgba(139,47,47,0.08); }
+
+.threat-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  background: var(--csa);
+  color: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.threat-dist {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--ink-faint);
+}
+
+/* Card-eligible badge on unit (preview) */
+.card-hits {
+  display: flex;
+  gap: 3px;
+  margin-top: 4px;
+}
+
+.card-hit {
+  font-size: 8px;
+  padding: 2px 5px;
+  background: rgba(169,134,54,0.15);
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  border-radius: 3px;
+  letter-spacing: 0.3px;
+}
+
+/* Drawer buttons */
+.drawer-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.drawer-btn {
+  padding: 8px;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  border-radius: 4px;
+  font-family: var(--serif);
+  font-size: 11px;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.drawer-btn.primary {
+  background: var(--union);
+  color: var(--paper);
+  border-color: var(--union);
+}
+
+.drawer-btn.ghost { background: transparent; border-style: dashed; color: var(--ink-faint); }
+
+.drawer-close {
+  text-align: center;
+  padding: 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-faint);
+  cursor: pointer;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-top: 1px solid var(--rule);
+  margin-top: 8px;
+}
+
+/* ===== SECTOR PICKER MODAL ===== */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(20,16,12,0.55);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 10;
+}
+
+.picker {
+  width: 100%;
+  background: var(--paper);
+  border: 2px solid var(--gold);
+  border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+  padding: 16px;
+}
+
+.picker-header {
+  text-align: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 12px;
+}
+
+.picker-header .eyebrow {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 10px;
+  color: var(--ink-faint);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.picker-header .title {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.picker-header .sub {
+  font-size: 10px;
+  color: var(--ink-soft);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.compass {
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--ink-faint);
+  letter-spacing: 2px;
+  padding: 4px 0 6px;
+}
+
+.compass .arrow {
+  color: var(--union);
+  font-weight: 700;
+}
+
+.grid-wrap {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr 1fr;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.grid-col-header {
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  color: var(--ink-faint);
+  padding-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.grid-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 6px;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.grid-cell {
+  aspect-ratio: 1;
+  background: var(--paper-dark);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 6px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  min-height: 72px;
+}
+
+.grid-cell:hover { background: var(--paper-deeper); }
+
+.grid-cell.current {
+  border-style: dashed;
+  border-color: var(--ink-faint);
+  background: var(--paper);
+}
+
+.grid-cell.current::after {
+  content: "WAS HERE";
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-family: var(--mono);
+  font-size: 7px;
+  color: var(--ink-faint);
+  letter-spacing: 0.5px;
+}
+
+.grid-cell.selected {
+  border: 2px solid var(--gold);
+  background: rgba(169,134,54,0.2);
+  box-shadow: 0 0 0 4px rgba(169,134,54,0.25), inset 0 0 0 1px rgba(169,134,54,0.3);
+}
+
+.grid-cell.selected::after {
+  content: "✦ NEW";
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-family: var(--mono);
+  font-size: 7px;
+  color: var(--gold);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.grid-cell.enemy-zone {
+  background: rgba(107,58,43,0.08);
+  border-color: var(--csa-soft);
+}
+
+.grid-cell.blocked {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--paper-dark),
+    var(--paper-dark) 4px,
+    rgba(139,47,47,0.15) 4px,
+    rgba(139,47,47,0.15) 8px
+  );
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.cell-tokens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.token {
+  width: 16px;
+  height: 16px;
+  background: var(--union);
+  color: var(--paper);
+  font-family: var(--serif);
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.token.cav { background: var(--csa); }
+.token.art { background: var(--danger); }
+.token.skr { background: var(--ok); }
+.token.sup { background: var(--gold); color: var(--ink); }
+.token.cmd { background: var(--paper); color: var(--gold); border: 1px solid var(--gold); }
+
+.token.foe {
+  opacity: 0.75;
+  background: var(--csa-soft);
+}
+
+.token.foe.foe-cav { background: #4a2018; }
+
+.token.moving {
+  border: 1.5px solid var(--gold);
+  box-shadow: 0 0 5px var(--gold);
+}
+
+.cell-note {
+  font-family: var(--mono);
+  font-size: 7px;
+  color: var(--ink-faint);
+  letter-spacing: 0.3px;
+}
+
+.picker-footer {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
+}
+
+.move-trace {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-soft);
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.move-trace b { color: var(--gold); font-weight: 700; }
+
+.picker-actions {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 8px;
+}
+
+.picker-btn {
+  padding: 10px;
+  font-family: var(--serif);
+  font-size: 13px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+}
+
+.picker-btn.primary {
+  background: var(--gold);
+  color: var(--ink);
+  border-color: var(--gold);
+  font-weight: 600;
+}
+
+.picker-btn.ghost { background: transparent; color: var(--ink-soft); }
+
+/* Behind-scrim dimmed state */
+.dimmed { pointer-events: none; }
+
+/* ===== ACTION BAR (shared) ===== */
+.actions {
+  margin-top: auto;
+  padding: 10px 14px 20px;
+  background: var(--paper-dark);
+  border-top: 2px solid var(--gold);
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 10px 6px;
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  font-family: var(--serif);
+  font-size: 11px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.action-btn.primary {
+  background: var(--union);
+  color: var(--paper);
+  border-color: var(--union);
+}
+
+/* Caption text under phones */
+.caption {
+  max-width: 390px;
+  color: var(--paper);
+  opacity: 0.75;
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
+  font-style: italic;
+}
+
+.caption b { color: var(--gold-soft); font-style: normal; }
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <!-- ============================================================ -->
+  <!-- COLUMN 1: UNIT DETAIL DRAWER                                  -->
+  <!-- ============================================================ -->
+  <div class="stage-col">
+    <div class="stage-label">
+      Unit Detail Drawer
+      <span class="sub">Tap any unit row to expand. Full state for the chatbot to reference.</span>
+    </div>
+
+    <div class="phone">
+      <div class="topbar">
+        <div>
+          <div class="turn">Turn IV</div>
+          <div class="phase">Your Turn · Movement</div>
+        </div>
+        <div class="player">Maj. Gen. Pope</div>
+      </div>
+
+      <!-- Compact units above the expanded one -->
+      <div class="section">
+        <div class="section-header">
+          <span class="section-title">Your Army</span>
+          <span class="section-meta">6 div · 2 cmd</span>
+        </div>
+
+        <div class="unit">
+          <div class="unit-badge">I</div>
+          <div class="unit-info">
+            <div class="unit-name">1st Massachusetts</div>
+            <div class="unit-sub">
+              <span class="sector-chip">Vanguard · Left</span>
+              <span class="unit-tag activated">Activated</span>
+            </div>
+          </div>
+          <div class="unit-stats">
+            <div class="strength-bar"><div class="strength-bar-fill" style="width:100%"></div></div>
+            <div>10/10</div>
+          </div>
+        </div>
+
+        <!-- EXPANDED UNIT: 2nd Massachusetts -->
+        <div class="unit expanded">
+          <div class="unit-summary">
+            <div class="unit-badge">I</div>
+            <div class="unit-info">
+              <div class="unit-name">2nd Massachusetts</div>
+              <div class="unit-sub">
+                <span>Infantry · 4 figs · <span class="morale-mod penalty">–10%</span></span>
+              </div>
+            </div>
+            <div class="unit-stats">
+              <div class="strength-bar"><div class="strength-bar-fill danger" style="width:40%"></div></div>
+              <div>4 / 10</div>
+            </div>
+          </div>
+
+          <div class="drawer">
+
+            <!-- Composition -->
+            <div class="drawer-section">
+              <div class="drawer-label">Composition</div>
+              <div class="drawer-row">
+                <span class="k">Figures</span>
+                <span class="v">
+                  <span class="figures">
+                    <span class="figure-dot"></span>
+                    <span class="figure-dot"></span>
+                    <span class="figure-dot"></span>
+                    <span class="figure-dot"></span>
+                    <span class="figure-dot dead"></span>
+                    <span class="figure-dot dead"></span>
+                    <span class="figure-dot dead"></span>
+                    <span class="figure-dot dead"></span>
+                    <span class="figure-dot dead"></span>
+                    <span class="figure-dot dead"></span>
+                  </span>
+                  <b>4 of 10</b>
+                </span>
+              </div>
+              <div class="drawer-row">
+                <span class="k">Ammo</span>
+                <span class="v">
+                  <span class="ammo-dots">
+                    <span class="ammo-dot spent"></span>
+                    <span class="ammo-dot spent"></span>
+                    <span class="ammo-dot spent"></span>
+                    <span class="ammo-dot spent"></span>
+                  </span>
+                  <b style="color:var(--danger)">Depleted</b> — needs resupply
+                </span>
+              </div>
+              <div class="drawer-row">
+                <span class="k">Range</span>
+                <span class="v"><span class="ruler-hint">1L</span> effective · <span class="ruler-hint">½L</span> optimal</span>
+              </div>
+            </div>
+
+            <!-- Position -->
+            <div class="drawer-section">
+              <div class="drawer-label">Position</div>
+              <div class="drawer-row">
+                <span class="k">Current</span>
+                <span class="v"><span class="sector-chip">Vanguard · Center</span></span>
+              </div>
+              <div class="drawer-row">
+                <span class="k">Terrain</span>
+                <span class="v">Open ground · no cover · <span class="pill warn">Exposed</span></span>
+              </div>
+              <div class="drawer-row">
+                <span class="k">Movement</span>
+                <span class="v"><span class="ruler-hint">1S</span> per move · <span class="unit-tag moved">Moved T4</span></span>
+              </div>
+            </div>
+
+            <!-- Command -->
+            <div class="drawer-section">
+              <div class="drawer-label">Command</div>
+              <div class="drawer-row">
+                <span class="k">Attached</span>
+                <span class="v">Col. Reynolds · <span class="range-toggle out"><span class="dot"></span>Out of Range</span></span>
+              </div>
+              <div class="drawer-row">
+                <span class="k">Morale</span>
+                <span class="v">
+                  <span class="pill hot">–10% cmdr OOR</span>
+                  <span class="pill hot">–5% under 50% strength</span>
+                </span>
+              </div>
+              <div class="drawer-row">
+                <span class="k">Net mod</span>
+                <span class="v"><span class="morale-mod penalty">–15%</span> lethality vs attacker (applies when targeted)</span>
+              </div>
+            </div>
+
+            <!-- Combat context -->
+            <div class="drawer-section">
+              <div class="drawer-label">Combat Context</div>
+
+              <div class="threat adj">
+                <div class="threat-badge">I</div>
+                <div>
+                  <b>15th Alabama</b> · CSA Infantry<br>
+                  <span class="threat-dist">Adjacent · Vanguard Center · 9 figs · melee-eligible</span>
+                </div>
+                <div class="pill hot">Adj</div>
+              </div>
+
+              <div class="threat visible">
+                <div class="threat-badge" style="background:#4a2018">C</div>
+                <div>
+                  <b>1st Virginia Cav.</b> · CSA Cavalry<br>
+                  <span class="threat-dist">Center · Left · <span class="ruler-hint">1L+1S</span> · LOS clear</span>
+                </div>
+                <div class="pill cold">LOS</div>
+              </div>
+            </div>
+
+            <!-- This turn -->
+            <div class="drawer-section">
+              <div class="drawer-label">This Turn</div>
+              <div class="pill-row">
+                <span class="pill warn">Moved <span class="ruler-hint" style="margin-left:3px">1S</span></span>
+                <span class="pill">Hasn't fired</span>
+                <span class="pill">Can still: attack, entrench</span>
+              </div>
+
+              <div class="order-label" style="margin-top:8px"></div>
+              <div class="drawer-label">Pending orders (from played cards)</div>
+              <div class="order-queue">
+                <div class="order-item">
+                  <span class="step-num">1</span>
+                  <span><b>Attack</b> 15th Alabama in melee</span>
+                  <span class="from-card">Press the Line</span>
+                </div>
+                <div class="order-item done">
+                  <span class="step-num">✓</span>
+                  <span>Advanced <span class="ruler-hint">1S</span> toward center</span>
+                  <span class="from-card">Press the Line</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card eligibility -->
+            <div class="drawer-section">
+              <div class="drawer-label">Cards in hand that can target</div>
+              <div class="pill-row">
+                <span class="pill gold">Rally the Colors</span>
+                <span class="pill gold">Fall Back</span>
+                <span class="pill gold">Reinforce Line</span>
+                <span class="pill">3 more · tap hand</span>
+              </div>
+            </div>
+
+            <!-- History -->
+            <div class="drawer-section">
+              <div class="drawer-label">Recent</div>
+              <div class="drawer-row">
+                <span class="k">T3 atk</span>
+                <span class="v">Fired on 15th AL · 4 hits, 1 kill · ammo depleted</span>
+              </div>
+              <div class="drawer-row">
+                <span class="k">T2 end</span>
+                <span class="v">Took 6 casualties from 1st VA volley</span>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="drawer-actions">
+              <button class="drawer-btn primary">Select</button>
+              <button class="drawer-btn">Target with card…</button>
+            </div>
+
+            <div class="drawer-close">▲ Collapse</div>
+          </div>
+        </div>
+
+        <div class="unit">
+          <div class="unit-badge cav">C</div>
+          <div class="unit-info">
+            <div class="unit-name">5th Pennsylvania</div>
+            <div class="unit-sub">
+              <span class="sector-chip pending">Center · Right — confirm</span>
+            </div>
+          </div>
+          <div class="unit-stats">
+            <div class="strength-bar"><div class="strength-bar-fill" style="width:100%"></div></div>
+            <div>6 / 6</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="actions">
+        <button class="action-btn primary">Play Card</button>
+        <button class="action-btn">Roll Dice</button>
+        <button class="action-btn">End Turn</button>
+      </div>
+    </div>
+
+    <div class="caption">
+      The drawer exposes everything a player (or chatbot) needs: figures, ammo, range, sector, terrain, morale breakdown, visible threats with distance, pending orders queued by cards played, and which cards in hand can still target this unit.
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- COLUMN 2: SECTOR PICKER MODAL                                -->
+  <!-- ============================================================ -->
+  <div class="stage-col">
+    <div class="stage-label">
+      Sector Picker
+      <span class="sub">Triggered when a unit ends a move. 3×3 grid mirrors the battlefield geometry.</span>
+    </div>
+
+    <div class="phone">
+      <!-- Dimmed dashboard behind scrim -->
+      <div class="dimmed" style="opacity:0.6">
+        <div class="topbar">
+          <div>
+            <div class="turn">Turn IV</div>
+            <div class="phase">Your Turn · Movement</div>
+          </div>
+          <div class="player">Maj. Gen. Pope</div>
+        </div>
+
+        <div class="section">
+          <div class="section-header">
+            <span class="section-title">Your Army</span>
+            <span class="section-meta">6 div</span>
+          </div>
+          <div class="unit">
+            <div class="unit-badge">I</div>
+            <div class="unit-info">
+              <div class="unit-name">1st Massachusetts</div>
+              <div class="unit-sub"><span class="sector-chip">Vanguard · Left</span></div>
+            </div>
+            <div class="unit-stats">10/10</div>
+          </div>
+          <div class="unit">
+            <div class="unit-badge cav">C</div>
+            <div class="unit-info">
+              <div class="unit-name">5th Pennsylvania</div>
+              <div class="unit-sub"><span class="sector-chip pending">Moving…</span></div>
+            </div>
+            <div class="unit-stats">6/6</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="action-btn primary">Play Card</button>
+          <button class="action-btn">Roll Dice</button>
+          <button class="action-btn">End Turn</button>
+        </div>
+      </div>
+
+      <!-- SCRIM + PICKER -->
+      <div class="scrim">
+        <div class="picker">
+          <div class="picker-header">
+            <div class="eyebrow">Confirm New Sector</div>
+            <div class="title">5th Pennsylvania</div>
+            <div class="sub">Cavalry · 6 figures · moved up to <span class="ruler-hint">1L+1S</span></div>
+          </div>
+
+          <div class="compass">
+            <span class="arrow">▲</span> FACING ENEMY
+          </div>
+
+          <div class="grid-wrap">
+            <!-- Headers row -->
+            <div></div>
+            <div class="grid-col-header">Left</div>
+            <div class="grid-col-header">Center</div>
+            <div class="grid-col-header">Right</div>
+
+            <!-- VANGUARD row -->
+            <div class="grid-row-header">Vanguard</div>
+
+            <div class="grid-cell enemy-zone">
+              <div class="cell-tokens">
+                <span class="token">I</span>
+                <span class="token foe">I</span>
+              </div>
+              <div class="cell-note">1st MA · 15th AL</div>
+            </div>
+
+            <div class="grid-cell enemy-zone">
+              <div class="cell-tokens">
+                <span class="token">I</span>
+                <span class="token foe">I</span>
+              </div>
+              <div class="cell-note">2nd MA · melee</div>
+            </div>
+
+            <div class="grid-cell enemy-zone">
+              <div class="cell-tokens">
+                <span class="token skr">S</span>
+                <span class="token foe">S</span>
+              </div>
+              <div class="cell-note">Sharpsh. · Hampton's</div>
+            </div>
+
+            <!-- CENTER row -->
+            <div class="grid-row-header">Center</div>
+
+            <div class="grid-cell enemy-zone">
+              <div class="cell-tokens">
+                <span class="token foe foe-cav">C</span>
+              </div>
+              <div class="cell-note">1st VA Cav.</div>
+            </div>
+
+            <div class="grid-cell">
+              <div class="cell-tokens">
+                <span class="token art">A</span>
+              </div>
+              <div class="cell-note">Battery B</div>
+            </div>
+
+            <div class="grid-cell selected">
+              <div class="cell-tokens">
+                <span class="token cav moving">C</span>
+                <span class="token cmd">★</span>
+              </div>
+              <div class="cell-note">5th PA · Stoneman</div>
+            </div>
+
+            <!-- RESERVE row -->
+            <div class="grid-row-header">Reserve</div>
+
+            <div class="grid-cell">
+              <div class="cell-tokens"></div>
+              <div class="cell-note" style="color:var(--ink-faint)">empty</div>
+            </div>
+
+            <div class="grid-cell current">
+              <div class="cell-tokens">
+                <span class="token sup">W</span>
+              </div>
+              <div class="cell-note">Supply Train A</div>
+            </div>
+
+            <div class="grid-cell">
+              <div class="cell-tokens"></div>
+              <div class="cell-note" style="color:var(--ink-faint)">empty</div>
+            </div>
+          </div>
+
+          <div class="picker-footer">
+            <div class="move-trace">
+              Reserve · Center &nbsp;→&nbsp; <b>Center · Right</b>
+              &nbsp;·&nbsp; measured <span class="ruler-hint">1L+1S</span> ≤ <span class="ruler-hint">1L+1S</span>
+            </div>
+
+            <div class="picker-actions">
+              <button class="picker-btn ghost">Cancel</button>
+              <button class="picker-btn primary">✦ Confirm Center · Right</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="caption">
+      Tap the pending sector chip on a unit row → this modal opens. Dashed outline = previous cell. Gold outline = new cell. Cells show who's there already (friendlies, enemies, commanders). Distance constraint displayed at the bottom. <b>Hatched cells would indicate an illegal move</b> (over-distance, enemy blocking).
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
