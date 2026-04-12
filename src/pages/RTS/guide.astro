@@ -1,0 +1,2015 @@
+---
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const FEEDBACK_EMAIL = 'seth.lazar@anu.edu.au';
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>RTS — Rules & Mechanics Guide</title>
+  <link rel="icon" type="image/x-icon" href={`${base}/favicon.ico`} />
+</head>
+<body>
+  <div class="guide">
+
+    <header class="hero">
+      <div class="banner">✦ RTS ✦</div>
+      <h1>Rules &amp; Mechanics</h1>
+      <p class="lede">A draft guide to how the game works. American Civil War miniatures, phones as companions, two players going head-to-head. Read with a pencil — comment boxes below every section.</p>
+      <div class="hero-meta">
+        <span class="meta-chip">Draft v0.1</span>
+        <span class="meta-chip">~10 min read</span>
+        <span class="meta-chip">Phone-friendly</span>
+      </div>
+    </header>
+
+    <!-- ================================================ -->
+    <!-- SECTION 1: AT A GLANCE                          -->
+    <!-- ================================================ -->
+    <section class="s">
+      <div class="s-tag">§1</div>
+      <h2>At a Glance</h2>
+
+      <div class="glance-grid">
+        <div class="glance-cell">
+          <div class="glance-num">2</div>
+          <div class="glance-lbl">Players</div>
+          <div class="glance-sub">Union vs. CSA, face-to-face with miniatures</div>
+        </div>
+        <div class="glance-cell">
+          <div class="glance-num">6–10</div>
+          <div class="glance-lbl">Units/side</div>
+          <div class="glance-sub">Infantry, cavalry, skirmishers, artillery, wagons, commanders</div>
+        </div>
+        <div class="glance-cell">
+          <div class="glance-num">10</div>
+          <div class="glance-lbl">Cards in hand</div>
+          <div class="glance-sub">Drawn from a ~250-card deck</div>
+        </div>
+        <div class="glance-cell">
+          <div class="glance-num">d10</div>
+          <div class="glance-lbl">Only dice</div>
+          <div class="glance-sub">Two rolls per attack: hit, then lethality</div>
+        </div>
+        <div class="glance-cell">
+          <div class="glance-num">3×3</div>
+          <div class="glance-lbl">Sectors</div>
+          <div class="glance-sub">Vanguard/Center/Reserve × Left/Center/Right</div>
+        </div>
+        <div class="glance-cell">
+          <div class="glance-num">6</div>
+          <div class="glance-lbl">Routs to win</div>
+          <div class="glance-sub">Rout 6 enemy units before they rout 6 of yours</div>
+        </div>
+      </div>
+
+      <div class="gist">
+        <b>The gist.</b> Each turn you play one or more cards. Cards <i>authorize</i> specific unit actions — like "move up to 3 Infantry, each may attack." You carry out those actions physically with your minis, using your phone as the ruler and dice roller. When a unit loses its last figure, it's routed and your opponent takes a banner.
+      </div>
+
+      <div class="comment-block" data-section="at-a-glance">
+        <label>Your thoughts, Amos?</label>
+        <textarea placeholder="First impressions. Does the gist sound right? Anything missing from the quick numbers?"></textarea>
+      </div>
+    </section>
+
+    <!-- ================================================ -->
+    <!-- SECTION 2: COMPONENTS                           -->
+    <!-- ================================================ -->
+    <section class="s">
+      <div class="s-tag">§2</div>
+      <h2>Components</h2>
+
+      <div class="components">
+
+        <div class="comp">
+          <div class="comp-icon">
+            <svg viewBox="0 0 60 60" width="48" height="48">
+              <rect x="6" y="10" width="48" height="40" rx="2" fill="#e8dfc9" stroke="#1a1612" stroke-width="2"/>
+              <rect x="10" y="14" width="40" height="8" fill="#1e3a5f"/>
+              <line x1="10" y1="28" x2="50" y2="28" stroke="#a09078" stroke-width="1"/>
+              <line x1="10" y1="34" x2="50" y2="34" stroke="#a09078" stroke-width="1"/>
+              <line x1="10" y1="40" x2="50" y2="40" stroke="#a09078" stroke-width="1"/>
+            </svg>
+          </div>
+          <div class="comp-body">
+            <h3>The phone</h3>
+            <p>Each player's phone shows their hand, their army's state, the battlefield log, and the dice. It is also the <b>physical ruler</b> — the short edge is one S, the long edge is one L.</p>
+          </div>
+        </div>
+
+        <div class="comp">
+          <div class="comp-icon">
+            <svg viewBox="0 0 60 60" width="48" height="48">
+              <rect x="8" y="8" width="44" height="44" rx="3" fill="#d4c9ae" stroke="#6b3a2b" stroke-width="2"/>
+              <line x1="8" y1="23" x2="52" y2="23" stroke="#8b5a4b" stroke-width="1"/>
+              <line x1="8" y1="38" x2="52" y2="38" stroke="#8b5a4b" stroke-width="1"/>
+              <line x1="23" y1="8" x2="23" y2="52" stroke="#8b5a4b" stroke-width="1"/>
+              <line x1="38" y1="8" x2="38" y2="52" stroke="#8b5a4b" stroke-width="1"/>
+            </svg>
+          </div>
+          <div class="comp-body">
+            <h3>The battlefield</h3>
+            <p>Any flat surface you can set minis on. The space is partitioned conceptually into a <b>3×3 grid</b> of sectors (rank × file) from each player's perspective. Minis move in real space; the app tracks which sector they're in.</p>
+          </div>
+        </div>
+
+        <div class="comp">
+          <div class="comp-icon">
+            <svg viewBox="0 0 60 60" width="48" height="48">
+              <rect x="14" y="6" width="32" height="48" rx="2" fill="#e8dfc9" stroke="#1a1612" stroke-width="1.5"/>
+              <rect x="18" y="10" width="24" height="4" fill="#1a1612"/>
+              <rect x="18" y="18" width="24" height="2" fill="#a09078"/>
+              <rect x="18" y="23" width="16" height="2" fill="#a09078"/>
+              <circle cx="22" cy="42" r="3" fill="#1e3a5f"/>
+              <circle cx="30" cy="42" r="3" fill="#1e3a5f"/>
+              <circle cx="38" cy="42" r="3" fill="#1e3a5f"/>
+            </svg>
+          </div>
+          <div class="comp-body">
+            <h3>The cards</h3>
+            <p>Each card names an action one or more units may take. Most cards are movement orders — "move up to N Infantry", "all Artillery fire without moving." Rarer cards rally morale, resupply ammo, reposition commanders, or plant spies.</p>
+          </div>
+        </div>
+
+        <div class="comp">
+          <div class="comp-icon">
+            <svg viewBox="0 0 60 60" width="48" height="48">
+              <polygon points="30,6 52,30 30,54 8,30" fill="#e8dfc9" stroke="#1a1612" stroke-width="2"/>
+              <text x="30" y="37" text-anchor="middle" font-family="Georgia" font-size="18" font-weight="700" fill="#1a1612">10</text>
+            </svg>
+          </div>
+          <div class="comp-body">
+            <h3>The dice</h3>
+            <p>Ten-sided only. Always digital, always seeded and logged so you can audit every roll. Two rolls per attack: one for hits, one for lethality (see <a href="#combat">§8</a>).</p>
+          </div>
+        </div>
+
+        <div class="comp">
+          <div class="comp-icon">
+            <svg viewBox="0 0 60 60" width="48" height="48">
+              <rect x="8" y="20" width="44" height="20" rx="2" fill="#a98636" stroke="#1a1612" stroke-width="2"/>
+              <rect x="8" y="26" width="44" height="2" fill="#1a1612" opacity="0.3"/>
+              <rect x="8" y="32" width="44" height="2" fill="#1a1612" opacity="0.3"/>
+              <text x="14" y="36" font-family="monospace" font-size="9" fill="#1a1612">½S</text>
+              <text x="26" y="36" font-family="monospace" font-size="9" fill="#1a1612">1S</text>
+              <text x="38" y="36" font-family="monospace" font-size="9" fill="#1a1612">1L</text>
+            </svg>
+          </div>
+          <div class="comp-body">
+            <h3>The ruler</h3>
+            <p>Your phone <em>is</em> the ruler. Short edge = <span class="ruler">S</span>. Long edge = <span class="ruler">L</span>. Every distance in the game is a combination: <span class="ruler">½S</span>, <span class="ruler">1S</span>, <span class="ruler">1L+1S</span>, <span class="ruler">2L</span>, etc. No measuring tape, no metric/imperial bickering.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="comment-block" data-section="components">
+        <label>Your thoughts, Amos?</label>
+        <textarea placeholder="Does the phone-as-ruler work? Anything obviously missing?"></textarea>
+      </div>
+    </section>
+
+    <!-- ================================================ -->
+    <!-- SECTION 3: UNIT TYPES                           -->
+    <!-- ================================================ -->
+    <section class="s">
+      <div class="s-tag">§3</div>
+      <h2>The Seven Unit Types</h2>
+      <p class="s-intro">Each unit is a <b>stand of figures</b> — infantry come in groups of 10, cavalry in 6, and so on. Losing figures is the main way units degrade. A unit routs when its last figure falls.</p>
+
+      <div class="units-grid">
+
+        <div class="utype union">
+          <div class="utype-badge">I</div>
+          <div class="utype-head">
+            <div class="utype-name">Infantry</div>
+            <div class="utype-role">Line of battle</div>
+          </div>
+          <div class="utype-stats">
+            <div><span class="k">Figures</span><span class="v">10</span></div>
+            <div><span class="k">Move</span><span class="v"><span class="ruler">1S</span></span></div>
+            <div><span class="k">Range</span><span class="v"><span class="ruler">1L</span></span></div>
+            <div><span class="k">Ammo</span><span class="v">3 volleys</span></div>
+          </div>
+          <div class="utype-note">Backbone of every army. Decent at everything, spectacular at nothing. Hold the line, advance in volley fire.</div>
+        </div>
+
+        <div class="utype csa">
+          <div class="utype-badge cav">C</div>
+          <div class="utype-head">
+            <div class="utype-name">Cavalry</div>
+            <div class="utype-role">Shock &amp; envelop</div>
+          </div>
+          <div class="utype-stats">
+            <div><span class="k">Figures</span><span class="v">6</span></div>
+            <div><span class="k">Move</span><span class="v"><span class="ruler">1L + 1S</span></span></div>
+            <div><span class="k">Range</span><span class="v"><span class="ruler">1L</span></span></div>
+            <div><span class="k">Melee</span><span class="v">Yes (hit 7)</span></div>
+          </div>
+          <div class="utype-note">Fast, deadly at the charge, fragile under fire. Use them to turn flanks and overrun isolated units.</div>
+        </div>
+
+        <div class="utype ok">
+          <div class="utype-badge skr">S</div>
+          <div class="utype-head">
+            <div class="utype-name">Skirmishers</div>
+            <div class="utype-role">Screen &amp; harass</div>
+          </div>
+          <div class="utype-stats">
+            <div><span class="k">Figures</span><span class="v">8</span></div>
+            <div><span class="k">Move</span><span class="v"><span class="ruler">1S</span></span></div>
+            <div><span class="k">Range</span><span class="v"><span class="ruler">2L</span></span></div>
+            <div><span class="k">Ammo</span><span class="v">6 shots</span></div>
+          </div>
+          <div class="utype-note">Best accuracy, longest range, but small and thin-skinned. Great for picking off commanders and wearing enemies down before the main line meets.</div>
+        </div>
+
+        <div class="utype danger">
+          <div class="utype-badge art">A</div>
+          <div class="utype-head">
+            <div class="utype-name">Artillery</div>
+            <div class="utype-role">Reach &amp; blast</div>
+          </div>
+          <div class="utype-stats">
+            <div><span class="k">Figures</span><span class="v">4</span></div>
+            <div><span class="k">Move</span><span class="v"><span class="ruler">½S</span> (limbered)</span></div>
+            <div><span class="k">Range</span><span class="v"><span class="ruler">2L</span></span></div>
+            <div><span class="k">Ammo</span><span class="v">3 shots</span></div>
+          </div>
+          <div class="utype-note">Longest reach, devastating at optimal range, nearly immobile once firing. Put them on high ground and pray they don't get flanked.</div>
+        </div>
+
+        <div class="utype gold">
+          <div class="utype-badge sup">W</div>
+          <div class="utype-head">
+            <div class="utype-name">Supply wagon</div>
+            <div class="utype-role">Logistics</div>
+          </div>
+          <div class="utype-stats">
+            <div><span class="k">Figures</span><span class="v">1 (wagon)</span></div>
+            <div><span class="k">Move</span><span class="v"><span class="ruler">1S</span></span></div>
+            <div><span class="k">Range</span><span class="v">—</span></div>
+            <div><span class="k">Function</span><span class="v">Resupply adj. units</span></div>
+          </div>
+          <div class="utype-note">No attack. Restores ammo to any friendly unit in the same sector when a resupply card is played. Lose one and your infantry goes dry.</div>
+        </div>
+
+        <div class="utype commander">
+          <div class="utype-badge cmd">★</div>
+          <div class="utype-head">
+            <div class="utype-name">Infantry commander</div>
+            <div class="utype-role">Leadership</div>
+          </div>
+          <div class="utype-stats">
+            <div><span class="k">Figures</span><span class="v">1 (officer)</span></div>
+            <div><span class="k">Move</span><span class="v"><span class="ruler">2S</span></span></div>
+            <div><span class="k">Attached</span><span class="v">1 infantry unit</span></div>
+            <div><span class="k">Effect</span><span class="v">Morale buff in range</span></div>
+          </div>
+          <div class="utype-note">Hovers near their regiment. In-range units fight at full morale; out-of-range suffer −10%. Can't attack alone. Killed commanders are a big deal (rules TBD).</div>
+        </div>
+
+        <div class="utype commander">
+          <div class="utype-badge cmd">★</div>
+          <div class="utype-head">
+            <div class="utype-name">Cavalry commander</div>
+            <div class="utype-role">Leadership</div>
+          </div>
+          <div class="utype-stats">
+            <div><span class="k">Figures</span><span class="v">1 (officer)</span></div>
+            <div><span class="k">Move</span><span class="v"><span class="ruler">1L + 1S</span></span></div>
+            <div><span class="k">Attached</span><span class="v">1 cavalry unit</span></div>
+            <div><span class="k">Effect</span><span class="v">Morale buff in range</span></div>
+          </div>
+          <div class="utype-note">Same idea, mounted. Keeps up with cavalry charges. Losing one wrecks the shock arm.</div>
+        </div>
+
+      </div>
+
+      <div class="comment-block" data-section="unit-types">
+        <label>Your thoughts, Amos?</label>
+        <textarea placeholder="Stats feel right? Missing a unit type (engineers, militia, mounted infantry)? Anything lopsided?"></textarea>
+      </div>
+    </section>
+
+    <!-- ================================================ -->
+    <!-- SECTION 4: BATTLEFIELD GEOMETRY                 -->
+    <!-- ================================================ -->
+    <section class="s">
+      <div class="s-tag">§4</div>
+      <h2>Battlefield Geometry</h2>
+
+      <p class="s-intro">The table is divided into <b>nine sectors</b> from your perspective. Ranks go forward (toward the enemy); files go across. Each unit is always in exactly one sector, and the app tracks this.</p>
+
+      <div class="sector-diagram">
+        <div class="sd-labels">
+          <div class="sd-facing">▲ FACING ENEMY</div>
+        </div>
+        <div class="sd-grid">
+          <div class="sd-cell">
+            <div class="sd-cell-name">Vanguard · Left</div>
+            <div class="sd-cell-note">Front-left engagement zone</div>
+          </div>
+          <div class="sd-cell">
+            <div class="sd-cell-name">Vanguard · Center</div>
+            <div class="sd-cell-note">Main point of contact</div>
+          </div>
+          <div class="sd-cell">
+            <div class="sd-cell-name">Vanguard · Right</div>
+            <div class="sd-cell-note">Front-right engagement zone</div>
+          </div>
+          <div class="sd-cell">
+            <div class="sd-cell-name">Center · Left</div>
+            <div class="sd-cell-note">Support left</div>
+          </div>
+          <div class="sd-cell sd-mid">
+            <div class="sd-cell-name">Center · Center</div>
+            <div class="sd-cell-note">Artillery &amp; reserves</div>
+          </div>
+          <div class="sd-cell">
+            <div class="sd-cell-name">Center · Right</div>
+            <div class="sd-cell-note">Support right</div>
+          </div>
+          <div class="sd-cell sd-back">
+            <div class="sd-cell-name">Reserve · Left</div>
+            <div class="sd-cell-note">Rear-left</div>
+          </div>
+          <div class="sd-cell sd-back">
+            <div class="sd-cell-name">Reserve · Center</div>
+            <div class="sd-cell-note">Wagons &amp; HQ</div>
+          </div>
+          <div class="sd-cell sd-back">
+            <div class="sd-cell-name">Reserve · Right</div>
+            <div class="sd-cell-note">Rear-right</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Adjacency and range bands</h3>
+      <p>A sector is <b>adjacent</b> to any sector that shares an edge or corner. The Chebyshev distance (max of rank-distance and file-distance) determines range band for attacks:</p>
+
+      <div class="range-table">
+        <div class="rt-row rt-head">
+          <div>Distance</div><div>Who can shoot?</div><div>Called</div>
+        </div>
+        <div class="rt-row">
+          <div><b>0</b> — same sector</div><div>Cavalry (charge), infantry (bayonet)</div><div class="band band-melee">MELEE</div>
+        </div>
+        <div class="rt-row">
+          <div><b>1</b> — adjacent</div><div>All combat units</div><div class="band band-opt">OPTIMAL</div>
+        </div>
+        <div class="rt-row">
+          <div><b>2</b> — skip one</div><div>Skirmishers, artillery only</div><div class="band band-ext">EXTENDED</div>
+        </div>
+        <div class="rt-row">
+          <div><b>3+</b></div><div>Nobody</div><div class="band band-none">OUT</div>
+        </div>
+      </div>
+
+      <h3>The phone as ruler</h3>
+      <div class="ruler-diagram">
+        <div class="ruler-row">
+          <div class="ruler-block" style="width:32px">S</div>
+          <div class="ruler-caption">Short edge = 1S ≈ half a sector</div>
+        </div>
+        <div class="ruler-row">
+          <div class="ruler-block" style="width:72px">L</div>
+          <div class="ruler-caption">Long edge = 1L ≈ one full sector</div>
+        </div>
+        <div class="ruler-row">
+          <div class="ruler-block" style="width:16px">½S</div>
+          <div class="ruler-caption">Half the short edge — close-in moves</div>
+        </div>
+      </div>
+
+      <div class="comment-block" data-section="geometry">
+        <label>Your thoughts, Amos?</label>
+        <textarea placeholder="Does 3×3 feel right for a typical tabletop, or should it be 4×4 or 3×4? Range bands too generous?"></textarea>
+      </div>
+    </section>
+
+    <!-- ================================================ -->
+    <!-- SECTION 5: TURN STRUCTURE                       -->
+    <!-- ================================================ -->
+    <section class="s">
+      <div class="s-tag">§5</div>
+      <h2>Turn Structure</h2>
+      <p class="s-intro">Players alternate full turns. On your turn you run through five phases. The app walks you through each one.</p>
+
+      <div class="phase-flow">
+        <div class="phase">
+          <div class="phase-num">1</div>
+          <div class="phase-body">
+            <div class="phase-name">Draw</div>
+            <p>If your hand is under 10, draw back up. Routing an enemy unit also grants an immediate bonus card.</p>
+          </div>
+        </div>
+        <div class="phase-arrow">▼</div>
+        <div class="phase">
+          <div class="phase-num">2</div>
+          <div class="phase-body">
+            <div class="phase-name">Play cards</div>
+            <p>Play one or more cards from your hand. Each card names which units are <i>authorized</i> to act this turn. You can play multiple cards to stack authorizations.</p>
+          </div>
+        </div>
+        <div class="phase-arrow">▼</div>
+        <div class="phase">
+          <div class="phase-num">3</div>
+          <div class="phase-body">
+            <div class="phase-name">Move</div>
+            <p>Authorized units move up to their allowance. The app asks which sector each ends in — tap to confirm. Units that didn't move may still fire.</p>
+          </div>
+        </div>
+        <div class="phase-arrow">▼</div>
+        <div class="phase">
+          <div class="phase-num">4</div>
+          <div class="phase-body">
+            <div class="phase-name">Attack</div>
+            <p>Authorized units that can see a valid target shoot or charge. Roll hit dice, then lethality dice. Apply casualties. Routed units are removed and score banners.</p>
+          </div>
+        </div>
+        <div class="phase-arrow">▼</div>
+        <div class="phase">
+          <div class="phase-num">5</div>
+          <div class="phase-body">
+            <div class="phase-name">End</div>
+            <p>Discard played cards. Clear activation flags. Hand turn over to opponent. The app syncs both players' state.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <div class="callout-label">Design note</div>
+        <p>Phases are loose — you can interleave movement and attacks if you played multiple cards. Think of them as "what the app currently expects next", not a strict sequence. The app guides, it doesn't police.</p>
+      </div>
+
+      <div class="comment-block" data-section="turn-structure">
+        <label>Your thoughts, Amos?</label>
+        <textarea placeholder="Alternating turns (Memoir '44 style) or simultaneous orders (Sharp Practice style)? Should reactions to enemy moves exist?"></textarea>
+      </div>
+    </section>
+
+    <!-- ================================================ -->
+    <!-- SECTION 6: CARDS                                -->
+    <!-- ================================================ -->
+    <section class="s">
+      <div class="s-tag">§6</div>
+      <h2>Cards &amp; Authorization</h2>
+      <p class="s-intro">The deck is ~250 cards. Each player starts with 10. Cards are the pacing mechanism — without a card, a unit doesn't act.</p>
+
+      <h3>Anatomy of a card</h3>
+      <div class="card-demo">
+        <div class="card-visual">
+          <div class="cv-type">Movement</div>
+          <div class="cv-title">Press the Line</div>
+          <div class="cv-body">Move up to <b>3 Infantry</b> units. Each may attack after moving.</div>
+          <div class="cv-icons">
+            <span class="cv-icon">I</span>
+            <span class="cv-icon">I</span>
+            <span class="cv-icon">I</span>
+          </div>
+          <div class="cv-footer">INF_MOVE_3 · 6 copies</div>
+        </div>
+        <div class="card-annotations">
+          <div class="ann"><span class="ann-dot"></span><div><b>Category.</b> Movement, Combined Arms, Attack-Only, Resupply, Morale, Commander, Spy, and others.</div></div>
+          <div class="ann"><span class="ann-dot"></span><div><b>Title.</b> Flavour. Amos, if you want to help name and describe these for specific battles, please do!</div></div>
+          <div class="ann"><span class="ann-dot"></span><div><b>Authorization.</b> The rules-clause: who may do what. This is what the app enforces.</div></div>
+          <div class="ann"><span class="ann-dot"></span><div><b>Icons.</b> Visual summary of who the card touches.</div></div>
+          <div class="ann"><span class="ann-dot"></span><div><b>Frequency.</b> Common flow cards (move Infantry) print in 6+ copies. Rare cards print in 1–2.</div></div>
+        </div>
+      </div>
+
+      <h3>Kinds of authorization</h3>
+      <div class="auth-list">
+        <div class="auth"><b>Move</b> — authorize N units of a given type to move and (usually) attack.</div>
+        <div class="auth"><b>Combined arms</b> — authorize a mix, e.g. "2 Cavalry + 1 Skirmisher."</div>
+        <div class="auth"><b>Sector order</b> — authorize every one of your units in a specific sector to move.</div>
+        <div class="auth"><b>Attack-only</b> — fire without moving, often at a lethality bonus.</div>
+        <div class="auth"><b>Resupply</b> — refill ammo on a friendly unit adjacent to a wagon.</div>
+        <div class="auth"><b>Morale</b> — rally your own troops (+% defense) or shake enemy resolve (−% morale).</div>
+        <div class="auth"><b>Commander</b> — reposition an officer, sometimes with an extra <span class="ruler">1S</span>.</div>
+        <div class="auth"><b>Forced march</b> — extra movement but no attack.</div>
+        <div class="auth"><b>Entrench</b> — one unit becomes "in cover," harder to hit.</div>
+        <div class="auth"><b>Spy</b> — peek opponent's hand, steal cards, swap orders (rare).</div>
+      </div>
+
+      <h3>The hand economy</h3>
+      <div class="hand-econ">
+        <div class="econ-stat"><div class="econ-big">10</div><div>cards at turn start</div></div>
+        <div class="econ-arrow">→</div>
+        <div class="econ-stat"><div class="econ-big">−N</div><div>you play this turn</div></div>
+        <div class="econ-arrow">→</div>
+        <div class="econ-stat"><div class="econ-big">+1</div><div>per enemy routed</div></div>
+        <div class="econ-arrow">→</div>
+        <div class="econ-stat"><div class="econ-big">↻</div><div>draw back to 10 next turn</div></div>
+      </div>
+
+      <div class="comment-block" data-section="cards">
+        <label>Your thoughts, Amos?</label>
+        <textarea placeholder="Hand size feel right? Card categories missing anything important? How do you feel about spy cards?"></textarea>
+      </div>
+    </section>
+
+    <!-- ================================================ -->
+    <!-- SECTION 7: MOVEMENT                             -->
+    <!-- ================================================ -->
+    <section class="s">
+      <div class="s-tag">§7</div>
+      <h2>Movement</h2>
+      <p class="s-intro">Once a card authorizes a unit, you physically move its minis on the table, up to the unit's move allowance. Then the app asks which sector they ended in.</p>
+
+      <h3>Move allowances</h3>
+      <div class="move-table">
+        <div class="mt-row"><div class="mt-unit"><span class="badge inf">I</span> Infantry</div><div class="mt-v"><span class="ruler">1S</span></div></div>
+        <div class="mt-row"><div class="mt-unit"><span class="badge cav">C</span> Cavalry</div><div class="mt-v"><span class="ruler">1L + 1S</span></div></div>
+        <div class="mt-row"><div class="mt-unit"><span class="badge skr">S</span> Skirmishers</div><div class="mt-v"><span class="ruler">1S</span></div></div>
+        <div class="mt-row"><div class="mt-unit"><span class="badge art">A</span> Artillery (limbered)</div><div class="mt-v"><span class="ruler">½S</span></div></div>
+        <div class="mt-row"><div class="mt-unit"><span class="badge sup">W</span> Wagon</div><div class="mt-v"><span class="ruler">1S</span></div></div>
+        <div class="mt-row"><div class="mt-unit"><span class="badge cmd">★</span> Inf. commander</div><div class="mt-v"><span class="ruler">2S</span></div></div>
+        <div class="mt-row"><div class="mt-unit"><span class="badge cmd">★</span> Cav. commander</div><div class="mt-v"><span class="ruler">1L + 1S</span></div></div>
+      </div>
+
+      <h3>Sector confirmation</h3>
+      <p>After each move, tap the unit's pending chip to open the 3×3 picker. The picker shows who's already in each cell (friendly, enemy, commander) and highlights where you were. Tap your new cell → confirm. The app records the state; the minis stay where you put them on the table.</p>
+
+      <h3>Terrain</h3>
+      <p>A sector can be marked <b>open</b>, <b>cover</b> (light terrain: woods, fences), or <b>building</b>. Cover gives −1 to enemy hit rolls; buildings −2. You place terrain during setup by dropping tokens into sectors. We haven't nailed down scenario setup yet — your call, Amos.</p>
+
+      <div class="comment-block" data-section="movement">
+        <label>Your thoughts, Amos?</label>
+        <textarea placeholder="Are sector allowances right? Should cavalry have to commit to a path, not just teleport to any sector within range?"></textarea>
+      </div>
+    </section>
+
+    <!-- ================================================ -->
+    <!-- SECTION 8: COMBAT — RANGED                      -->
+    <!-- ================================================ -->
+    <section class="s" id="combat">
+      <div class="s-tag">§8</div>
+      <h2>Combat — Ranged</h2>
+      <p class="s-intro">Two rolls: <b>hit</b> tells you how many shots landed, <b>lethality</b> tells you how many landed shots killed a figure. All d10.</p>
+
+      <h3>The hit roll</h3>
+      <p>Each figure in the attacking unit rolls one d10. If the result is ≤ the unit's hit target, that figure hit. Targets depend on unit type and range band:</p>
+
+      <div class="hit-table">
+        <div class="ht-row ht-head">
+          <div></div>
+          <div>Optimal</div>
+          <div>Extended</div>
+          <div>Melee</div>
+        </div>
+        <div class="ht-row"><div><span class="badge inf">I</span> Infantry</div><div>6</div><div>4</div><div>5</div></div>
+        <div class="ht-row"><div><span class="badge cav">C</span> Cavalry</div><div>4</div><div>3</div><div>7</div></div>
+        <div class="ht-row"><div><span class="badge skr">S</span> Skirmisher</div><div>7</div><div>5</div><div>3</div></div>
+        <div class="ht-row"><div><span class="badge art">A</span> Artillery</div><div>7</div><div>5</div><div>—</div></div>
+      </div>
+
+      <p class="cover-note">Target in cover: <b>−1</b> to attacker's hit target. Target in building: <b>−2</b>.</p>
+
+      <h3>The lethality roll</h3>
+      <p>For each hit, roll another d10. If ≤ the target's lethality threshold, remove one figure. Base threshold is <b>5</b>. Morale modifies it:</p>
+
+      <div class="leth-mods">
+        <div class="lm"><span class="lm-sign plus">+15%</span><span>morale buff → threshold <b>3</b></span></div>
+        <div class="lm"><span class="lm-sign plus">+10%</span><span>in cover/rally → threshold <b>4</b></span></div>
+        <div class="lm"><span class="lm-sign">0</span><span>neutral → threshold <b>5</b></span></div>
+        <div class="lm"><span class="lm-sign minus">−10%</span><span>commander out of range → threshold <b>6</b></span></div>
+        <div class="lm"><span class="lm-sign minus">−20%</span><span>shaken / routing → threshold <b>7</b></span></div>
+      </div>
+
+      <h3>Example attack</h3>
+      <div class="example">
+        <p><b>2nd Massachusetts (10 Infantry, no commander) fires on 15th Alabama (adjacent sector, open ground).</b></p>
+        <div class="ex-roll">
+          <div class="ex-label">Hit roll (10 × d10 ≤ 6)</div>
+          <div class="dice-row">
+            <span class="die hit">2</span><span class="die hit">5</span><span class="die">9</span><span class="die hit">3</span><span class="die hit">6</span>
+            <span class="die">8</span><span class="die hit">4</span><span class="die">7</span><span class="die hit">1</span><span class="die">10</span>
+          </div>
+          <div class="ex-result">6 hits</div>
+        </div>
+        <div class="ex-roll">
+          <div class="ex-label">Lethality roll (6 × d10 ≤ 5)</div>
+          <div class="dice-row">
+            <span class="die hit">3</span><span class="die">8</span><span class="die hit">1</span><span class="die hit">5</span><span class="die">7</span><span class="die hit">2</span>
+          </div>
+          <div class="ex-result">4 figures killed</div>
+        </div>
+        <p class="ex-out"><b>Result:</b> 15th Alabama drops from 10 to 6 figures. No rout yet. The Mass. regiment spends 1 ammo.</p>
+      </div>
+
+      <h3>Ammo</h3>
+      <p>Every ranged attack spends one ammo. When a unit hits zero, it can't fire until a wagon + Resupply card restores it. A dry regiment is a paperweight.</p>
+
+      <div class="comment-block" data-section="combat-ranged">
+        <label>Your thoughts, Amos?</label>
+        <textarea placeholder="Hit targets feel right? Should infantry hit on 6 or 5? Should lethality be tuned so battles resolve faster / slower?"></textarea>
+      </div>
+    </section>
+
+    <!-- ================================================ -->
+    <!-- SECTION 9: COMBAT — MELEE                       -->
+    <!-- ================================================ -->
+    <section class="s">
+      <div class="s-tag">§9</div>
+      <h2>Combat — Melee</h2>
+      <p class="s-intro">When two opposing units end up in the same sector, they can fight in melee. Cavalry charges are the classic case.</p>
+
+      <h3>Figure pairing</h3>
+      <p>Figures from both sides pair up one-for-one. Unpaired figures on the larger side roll as deserters — each one is removed on a d10 ≤ 3 (they broke and ran rather than stand unsupported).</p>
+
+      <div class="melee-diagram">
+        <div class="md-side union">
+          <div class="md-head">Union (6 fig)</div>
+          <div class="md-figs">
+            <span class="md-f u"></span><span class="md-f u"></span>
+            <span class="md-f u"></span><span class="md-f u"></span>
+            <span class="md-f u"></span><span class="md-f u"></span>
+          </div>
+        </div>
+        <div class="md-vs">VS</div>
+        <div class="md-side csa">
+          <div class="md-head">CSA (4 fig)</div>
+          <div class="md-figs">
+            <span class="md-f c"></span><span class="md-f c"></span>
+            <span class="md-f c"></span><span class="md-f c"></span>
+          </div>
+        </div>
+      </div>
+      <p class="md-note">4 pairs fight head-to-head. 2 extra Union figures are <b>deserters</b> — each tested on d10 ≤ 3. Paired figures roll hit/lethality as normal at melee target numbers.</p>
+
+      <h3>Cavalry charge bonus</h3>
+      <p>A cavalry unit that ends its move in the enemy's sector (i.e. entered from outside) fights with hit target <b>7</b> in the first round of melee — the shock bonus. In subsequent rounds (if melee continues), drop to the normal cavalry melee target.</p>
+
+      <h3>Resolving melee</h3>
+      <p>The losing side (more casualties) must retreat one sector back, or fight again next turn if they stand. The attacker can pursue with a follow-up move card if they have one.</p>
+
+      <div class="comment-block" data-section="combat-melee">
+        <label>Your thoughts, Amos?</label>
+        <textarea placeholder="Does the deserter mechanic feel right? Cavalry shock bonus too strong? Should infantry squares / rally defenses exist?"></textarea>
+      </div>
+    </section>
+
+    <!-- ================================================ -->
+    <!-- SECTION 10: MORALE                              -->
+    <!-- ================================================ -->
+    <section class="s">
+      <div class="s-tag">§10</div>
+      <h2>Morale</h2>
+      <p class="s-intro">Morale is a <b>lethality modifier</b>, not a separate check. Scared units die easier. Rallied units die harder.</p>
+
+      <div class="morale-viz">
+        <div class="mv-rail">
+          <div class="mv-label">−20%</div>
+          <div class="mv-bar"><div class="mv-fill" style="left:0; width:10%; background:#8b2f2f"></div></div>
+        </div>
+        <div class="mv-rail">
+          <div class="mv-label">−10%</div>
+          <div class="mv-bar"><div class="mv-fill" style="left:15%; width:10%; background:#b77a1e"></div></div>
+        </div>
+        <div class="mv-rail">
+          <div class="mv-label">0</div>
+          <div class="mv-bar"><div class="mv-fill" style="left:45%; width:10%; background:#7b6e62"></div></div>
+        </div>
+        <div class="mv-rail">
+          <div class="mv-label">+10%</div>
+          <div class="mv-bar"><div class="mv-fill" style="left:75%; width:10%; background:#3f5d3d"></div></div>
+        </div>
+        <div class="mv-rail">
+          <div class="mv-label">+20%</div>
+          <div class="mv-bar"><div class="mv-fill" style="left:90%; width:10%; background:#3f5d3d"></div></div>
+        </div>
+      </div>
+
+      <h3>What gives modifiers</h3>
+      <ul class="morale-list">
+        <li><b>Commander in range:</b> no change (baseline).</li>
+        <li><b>Commander out of range:</b> −10%.</li>
+        <li><b>Under 50% strength:</b> additional −5%.</li>
+        <li><b>In cover / entrenched:</b> +10%.</li>
+        <li><b>Rally card played on unit:</b> +15% (one turn, stacks).</li>
+        <li><b>Morale-break card from enemy:</b> −10% or −20% (one turn).</li>
+      </ul>
+
+      <p>Modifiers sum. A unit with commander out of range <i>and</i> under 50% strength sits at −15% lethality defense — much easier to wipe.</p>
+
+      <div class="callout">
+        <div class="callout-label">Open question</div>
+        <p>Current rule: unit routs <b>only when it hits 0 figures</b>. We discussed but deferred "break-rout" checks (e.g. take ≥40% casualties in one attack → roll d10 vs morale; fail = rout). Do we want to add this, Amos?</p>
+      </div>
+
+      <div class="comment-block" data-section="morale">
+        <label>Your thoughts, Amos?</label>
+        <textarea placeholder="Break-rout checks yes or no? Morale as lethality mod only, or should it also reduce hit rolls? Any other sources of morale change?"></textarea>
+      </div>
+    </section>
+
+    <!-- ================================================ -->
+    <!-- SECTION 11: COMMANDERS                          -->
+    <!-- ================================================ -->
+    <section class="s">
+      <div class="s-tag">§11</div>
+      <h2>Commanders</h2>
+      <p class="s-intro">Commanders are separate units with their own rules. They can't attack alone and they don't hold territory, but their <b>presence</b> keeps your army fighting.</p>
+
+      <h3>Attachment</h3>
+      <p>Each commander is attached to exactly one unit at setup. They physically move near that unit, matched sector by default.</p>
+
+      <div class="cmdr-diagram">
+        <div class="cmdr-unit">
+          <div class="cmdr-badge">★</div>
+          <div class="cmdr-text"><b>Col. Reynolds</b><br><span>Inf. commander · attached to 2nd Mass.</span></div>
+        </div>
+        <div class="cmdr-arrow">↔</div>
+        <div class="cmdr-unit">
+          <div class="cmdr-badge inf">I</div>
+          <div class="cmdr-text"><b>2nd Massachusetts</b><br><span>Infantry · Vanguard Center</span></div>
+        </div>
+      </div>
+
+      <h3>Range</h3>
+      <p>A commander is <b>in range</b> of their attached unit if they're in the same sector, or in an adjacent sector. Out of range, the attached unit suffers −10% morale until reunited.</p>
+
+      <h3>Reposition</h3>
+      <p>Use a Commander card to move a commander on their own — sometimes with bonus distance. Useful when their unit is pinned but you want to rally a different part of the line (detaching to support another unit is TBD).</p>
+
+      <h3>Killing commanders</h3>
+      <p><b>Rules TBD.</b> Can skirmishers target them specifically? Do they roll to avoid hits like a normal figure? Do spy cards include a "decapitation" option? Seth and Amos to decide.</p>
+
+      <div class="comment-block" data-section="commanders">
+        <label>Your thoughts, Amos?</label>
+        <textarea placeholder="Commander-kill rules — skirmisher sniper shot? Extra dice? Or only via specific cards? What happens to the attached unit after?"></textarea>
+      </div>
+    </section>
+
+    <!-- ================================================ -->
+    <!-- SECTION 12: VICTORY                             -->
+    <!-- ================================================ -->
+    <section class="s">
+      <div class="s-tag">§12</div>
+      <h2>Victory</h2>
+      <p class="s-intro">Rout enemy units, collect banners. First to the goal wins the battle.</p>
+
+      <div class="victory-viz">
+        <div class="vv-side">
+          <div class="vv-label">Your banners</div>
+          <div class="vv-banners">
+            <span class="vv-b taken"></span>
+            <span class="vv-b taken"></span>
+            <span class="vv-b taken"></span>
+            <span class="vv-b"></span>
+            <span class="vv-b"></span>
+            <span class="vv-b"></span>
+          </div>
+          <div class="vv-count">3 / 6</div>
+        </div>
+        <div class="vv-mid">VS</div>
+        <div class="vv-side">
+          <div class="vv-label">Enemy banners</div>
+          <div class="vv-banners">
+            <span class="vv-b taken csa"></span>
+            <span class="vv-b"></span>
+            <span class="vv-b"></span>
+            <span class="vv-b"></span>
+            <span class="vv-b"></span>
+            <span class="vv-b"></span>
+          </div>
+          <div class="vv-count">1 / 6</div>
+        </div>
+      </div>
+
+      <ul class="victory-list">
+        <li><b>Standard win:</b> 6 banners.</li>
+        <li><b>Asymmetric scenarios:</b> sides may have different goals (attacker 8, defender 4) to reflect historical stakes.</li>
+        <li><b>Commander rout:</b> TBD — likely worth 2 banners.</li>
+        <li><b>Objectives:</b> Some scenarios have geographic objectives (hold the bridge for 3 turns = 1 banner). TBD.</li>
+      </ul>
+
+      <div class="comment-block" data-section="victory">
+        <label>Your thoughts, Amos?</label>
+        <textarea placeholder="Symmetric 6-6 or asymmetric per scenario? Any other victory conditions you'd add?"></textarea>
+      </div>
+    </section>
+
+    <!-- ================================================ -->
+    <!-- SECTION 13: OPEN QUESTIONS                      -->
+    <!-- ================================================ -->
+    <section class="s">
+      <div class="s-tag">§13</div>
+      <h2>Open Questions</h2>
+      <p class="s-intro">Things we've explicitly deferred. Amos, these are the most valuable places to weigh in.</p>
+
+      <div class="oq-list">
+        <div class="oq">
+          <div class="oq-num">1</div>
+          <div class="oq-body"><b>Facing and flank attacks.</b> Do units have a front, or are they faceless? A flank attack bonus (extra hit or +1 to hit target) would reward maneuver but adds complexity.</div>
+        </div>
+        <div class="oq">
+          <div class="oq-num">2</div>
+          <div class="oq-body"><b>Formations.</b> Infantry in line vs. column — more front-face figures when firing, fewer when moving. Realistic but fiddly.</div>
+        </div>
+        <div class="oq">
+          <div class="oq-num">3</div>
+          <div class="oq-body"><b>Reaction fire / opportunity attacks.</b> If enemy cavalry dashes past your infantry, do you get a free volley? Adds back-and-forth.</div>
+        </div>
+        <div class="oq">
+          <div class="oq-num">4</div>
+          <div class="oq-body"><b>Commander casualties.</b> How do they die? How much do they cost when they do?</div>
+        </div>
+        <div class="oq">
+          <div class="oq-num">5</div>
+          <div class="oq-body"><b>Morale break-routs.</b> Should units rout on heavy casualties in one attack, not just at 0 figures?</div>
+        </div>
+        <div class="oq">
+          <div class="oq-num">6</div>
+          <div class="oq-body"><b>Scenarios.</b> Are we doing fixed scenarios (Antietam, Gettysburg day one), or procedurally generated? How is terrain placed at setup?</div>
+        </div>
+        <div class="oq">
+          <div class="oq-num">7</div>
+          <div class="oq-body"><b>Narrative flavor.</b> You'll be filling in the battle-specific story for cards. Want me to leave slots for that in the app, or is that purely a printed-cards thing?</div>
+        </div>
+      </div>
+
+      <div class="comment-block" data-section="open-questions">
+        <label>Your thoughts, Amos?</label>
+        <textarea placeholder="Rank these. Which are must-solve before we play? Which are post-MVP? Any questions I haven't thought of?"></textarea>
+      </div>
+    </section>
+
+    <!-- ================================================ -->
+    <!-- FEEDBACK SUBMIT                                  -->
+    <!-- ================================================ -->
+    <section class="s submit-section">
+      <h2>Send it all to Dad</h2>
+      <p class="s-intro">All your notes are saved on this phone. Tap below to bundle them into an email. Dad will read every line and we'll tune the rules together.</p>
+
+      <div class="submit-row">
+        <button class="submit-btn" id="sendBtn">✉ Email feedback to Seth</button>
+        <button class="clear-btn" id="clearBtn">Clear all notes</button>
+      </div>
+
+      <div class="save-indicator" id="saveIndicator">Notes auto-save as you type ✓</div>
+    </section>
+
+    <footer class="foot">
+      <div>MINT Lab · Seth Lazar</div>
+      <div><a href={`${base}/RTS/`}>← Back to RTS home</a></div>
+    </footer>
+
+  </div>
+
+  <script is:inline define:vars={{ FEEDBACK_EMAIL }}>
+    const STORAGE_PREFIX = 'rts-guide-feedback-';
+
+    function save(section, value) {
+      try {
+        if (value && value.trim()) {
+          localStorage.setItem(STORAGE_PREFIX + section, value);
+        } else {
+          localStorage.removeItem(STORAGE_PREFIX + section);
+        }
+      } catch (_) {}
+    }
+
+    function load(section) {
+      try { return localStorage.getItem(STORAGE_PREFIX + section) || ''; } catch (_) { return ''; }
+    }
+
+    function collectAll() {
+      const sections = document.querySelectorAll('.comment-block');
+      const entries = [];
+      sections.forEach(block => {
+        const key = block.getAttribute('data-section');
+        const ta = block.querySelector('textarea');
+        const heading = block.closest('.s')?.querySelector('h2')?.textContent || key;
+        if (ta && ta.value.trim()) {
+          entries.push({ key, heading, text: ta.value.trim() });
+        }
+      });
+      return entries;
+    }
+
+    function flash(msg) {
+      const ind = document.getElementById('saveIndicator');
+      if (!ind) return;
+      const old = ind.textContent;
+      ind.textContent = msg;
+      ind.classList.add('flash');
+      setTimeout(() => { ind.textContent = old; ind.classList.remove('flash'); }, 1800);
+    }
+
+    document.querySelectorAll('.comment-block').forEach(block => {
+      const key = block.getAttribute('data-section');
+      const ta = block.querySelector('textarea');
+      if (!ta || !key) return;
+      ta.value = load(key);
+      let t;
+      ta.addEventListener('input', () => {
+        clearTimeout(t);
+        t = setTimeout(() => { save(key, ta.value); flash('Saved ✓'); }, 350);
+      });
+    });
+
+    document.getElementById('sendBtn')?.addEventListener('click', () => {
+      const entries = collectAll();
+      if (entries.length === 0) {
+        flash('No notes yet — jot some first!');
+        return;
+      }
+      const body = entries.map(e =>
+        `### ${e.heading}\n\n${e.text}`
+      ).join('\n\n---\n\n');
+      const subject = 'RTS guide feedback from Amos';
+      const href = `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = href;
+    });
+
+    document.getElementById('clearBtn')?.addEventListener('click', () => {
+      if (!confirm('Clear all notes on this phone?')) return;
+      document.querySelectorAll('.comment-block').forEach(block => {
+        const key = block.getAttribute('data-section');
+        const ta = block.querySelector('textarea');
+        if (ta && key) { ta.value = ''; save(key, ''); }
+      });
+      flash('Notes cleared');
+    });
+  </script>
+
+  <style is:global>
+    :root {
+      --paper: #efe7d1;
+      --paper-dark: #d4c9ae;
+      --paper-deeper: #c4b795;
+      --ink: #1a1612;
+      --ink-soft: #4a413a;
+      --ink-faint: #7b6e62;
+      --union: #1e3a5f;
+      --union-soft: #2d4a6f;
+      --csa: #6b3a2b;
+      --csa-soft: #8b5a4b;
+      --gold: #a98636;
+      --gold-soft: #c6a858;
+      --danger: #8b2f2f;
+      --ok: #3f5d3d;
+      --warn: #b77a1e;
+      --rule: #a09078;
+      --serif: "Hoefler Text", "Baskerville", Georgia, serif;
+      --sans: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+      --mono: "SF Mono", "Menlo", monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: #2a2520;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+
+    .guide {
+      max-width: 560px;
+      margin: 0 auto;
+      background: var(--paper);
+      background-image:
+        radial-gradient(circle at 15% 10%, rgba(139,115,80,0.08) 0%, transparent 50%),
+        radial-gradient(circle at 85% 60%, rgba(139,115,80,0.06) 0%, transparent 50%);
+      min-height: 100vh;
+      padding: 24px 20px 60px;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      text-align: center;
+      padding: 20px 0 32px;
+      border-bottom: 2px solid var(--gold);
+      margin-bottom: 32px;
+    }
+    .hero .banner {
+      font-family: var(--serif);
+      color: var(--gold);
+      letter-spacing: 8px;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: 36px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      color: var(--union);
+    }
+    .hero .lede {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 15px;
+      color: var(--ink-soft);
+      line-height: 1.5;
+      max-width: 440px;
+      margin: 0 auto 18px;
+    }
+    .hero-meta {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .meta-chip {
+      padding: 4px 10px;
+      background: var(--paper-dark);
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      color: var(--ink-soft);
+    }
+
+    /* ===== SECTION ===== */
+    .s {
+      position: relative;
+      padding: 28px 0 20px;
+      border-bottom: 1px solid rgba(160, 144, 120, 0.35);
+    }
+    .s:last-of-type { border-bottom: none; }
+    .s-tag {
+      position: absolute;
+      top: 30px;
+      right: 0;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--ink-faint);
+    }
+    .s h2 {
+      font-family: var(--serif);
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--union);
+      margin-bottom: 8px;
+      letter-spacing: 0.3px;
+    }
+    .s h3 {
+      font-family: var(--serif);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink);
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+    .s p { margin-bottom: 10px; font-size: 14px; }
+    .s-intro {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 15px !important;
+      color: var(--ink-soft);
+      line-height: 1.55;
+      margin-bottom: 18px !important;
+    }
+
+    .ruler {
+      display: inline-flex;
+      align-items: center;
+      padding: 1px 5px;
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: 2px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      vertical-align: middle;
+    }
+
+    /* ===== AT A GLANCE ===== */
+    .glance-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .glance-cell {
+      padding: 12px;
+      background: var(--paper-dark);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      text-align: center;
+    }
+    .glance-num {
+      font-family: var(--serif);
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--union);
+      line-height: 1;
+    }
+    .glance-lbl {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin: 4px 0 6px;
+    }
+    .glance-sub {
+      font-size: 11px;
+      color: var(--ink-soft);
+      line-height: 1.35;
+    }
+    .gist {
+      padding: 14px;
+      background: rgba(30, 58, 95, 0.08);
+      border-left: 3px solid var(--union);
+      border-radius: 2px;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    /* ===== COMPONENTS ===== */
+    .components {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 18px 0;
+    }
+    .comp {
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      gap: 12px;
+      padding: 10px 0;
+      align-items: flex-start;
+    }
+    .comp-icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-top: 2px;
+    }
+    .comp-body h3 { margin: 0 0 4px !important; font-size: 15px !important; }
+    .comp-body p { font-size: 13px; margin-bottom: 0; line-height: 1.5; }
+
+    /* ===== UNIT TYPES ===== */
+    .units-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 18px 0;
+    }
+    .utype {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 10px;
+      padding: 12px;
+      background: var(--paper-dark);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      border-left-width: 4px;
+    }
+    .utype.union { border-left-color: var(--union); }
+    .utype.csa { border-left-color: var(--csa); }
+    .utype.ok { border-left-color: var(--ok); }
+    .utype.danger { border-left-color: var(--danger); }
+    .utype.gold { border-left-color: var(--gold); }
+    .utype.commander { border-left-color: var(--gold); background: rgba(169,134,54,0.06); }
+
+    .utype-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 4px;
+      background: var(--union);
+      color: var(--paper);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 700;
+      align-self: flex-start;
+    }
+    .utype-badge.cav { background: var(--csa); }
+    .utype-badge.skr { background: var(--ok); }
+    .utype-badge.art { background: var(--danger); }
+    .utype-badge.sup { background: var(--gold); color: var(--ink); }
+    .utype-badge.cmd {
+      background: var(--paper);
+      color: var(--gold);
+      border: 1.5px solid var(--gold);
+      font-size: 22px;
+    }
+    .utype-head { grid-column: 2; }
+    .utype-name {
+      font-family: var(--serif);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .utype-role {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+    .utype-stats {
+      grid-column: 1 / 3;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 14px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--rule);
+    }
+    .utype-stats > div {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+    .utype-stats .k { color: var(--ink-faint); font-family: var(--mono); font-size: 10px; }
+    .utype-stats .v { font-weight: 600; }
+    .utype-note {
+      grid-column: 1 / 3;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--ink-soft);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    /* ===== SECTOR DIAGRAM ===== */
+    .sector-diagram { margin: 18px 0; }
+    .sd-labels { text-align: center; margin-bottom: 6px; }
+    .sd-facing {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--union);
+      font-weight: 700;
+    }
+    .sd-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 4px;
+      background: var(--paper-dark);
+      padding: 4px;
+      border-radius: 4px;
+      border: 1px solid var(--rule);
+    }
+    .sd-cell {
+      background: var(--paper);
+      padding: 10px 6px;
+      border-radius: 2px;
+      min-height: 70px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .sd-cell-name {
+      font-family: var(--serif);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--union);
+      margin-bottom: 2px;
+    }
+    .sd-cell-note {
+      font-size: 9px;
+      color: var(--ink-faint);
+      line-height: 1.3;
+    }
+    .sd-mid { background: rgba(169,134,54,0.15); }
+    .sd-back { background: rgba(107,58,43,0.06); }
+
+    /* ===== RANGE TABLE ===== */
+    .range-table {
+      margin: 10px 0 18px;
+      background: var(--paper-dark);
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--rule);
+    }
+    .rt-row {
+      display: grid;
+      grid-template-columns: 1.2fr 2fr auto;
+      gap: 8px;
+      padding: 8px 10px;
+      font-size: 12px;
+      align-items: center;
+    }
+    .rt-row:nth-child(odd) { background: rgba(232,223,201,0.5); }
+    .rt-head {
+      background: var(--union) !important;
+      color: var(--paper);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .band {
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .band-melee { background: var(--danger); color: var(--paper); }
+    .band-opt { background: var(--ok); color: var(--paper); }
+    .band-ext { background: var(--gold); color: var(--ink); }
+    .band-none { background: var(--ink-faint); color: var(--paper); }
+
+    /* ===== RULER DIAGRAM ===== */
+    .ruler-diagram { margin: 12px 0; }
+    .ruler-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+    .ruler-block {
+      height: 24px;
+      background: var(--gold);
+      border: 1.5px solid var(--ink);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .ruler-caption {
+      font-size: 12px;
+      color: var(--ink-soft);
+    }
+
+    /* ===== PHASE FLOW ===== */
+    .phase-flow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 18px 0;
+    }
+    .phase {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 12px;
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--paper-dark);
+      border: 1px solid var(--rule);
+      border-left: 4px solid var(--union);
+      border-radius: 4px;
+    }
+    .phase-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--union);
+      color: var(--paper);
+      font-family: var(--serif);
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .phase-name {
+      font-family: var(--serif);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--union);
+      margin-bottom: 4px;
+    }
+    .phase p { font-size: 12px; margin-bottom: 0; line-height: 1.5; }
+    .phase-arrow {
+      color: var(--gold);
+      font-size: 14px;
+      margin: 4px 0;
+    }
+    .callout {
+      margin-top: 16px;
+      padding: 12px 14px;
+      background: rgba(169,134,54,0.08);
+      border-left: 3px solid var(--gold);
+      border-radius: 2px;
+    }
+    .callout-label {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 11px;
+      color: var(--gold);
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+    .callout p { font-size: 12px; margin-bottom: 0; line-height: 1.5; }
+
+    /* ===== CARD DEMO ===== */
+    .card-demo {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 16px;
+      margin: 16px 0;
+      align-items: flex-start;
+    }
+    .card-visual {
+      background: var(--paper);
+      border: 2px solid var(--ink);
+      border-radius: 6px;
+      padding: 10px;
+      height: 180px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.15);
+    }
+    .cv-type {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 4px;
+    }
+    .cv-title {
+      font-family: var(--serif);
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .cv-body { font-size: 10px; color: var(--ink-soft); flex-grow: 1; line-height: 1.4; }
+    .cv-icons { display: flex; gap: 3px; margin-top: 4px; }
+    .cv-icon {
+      width: 18px;
+      height: 18px;
+      background: var(--union);
+      color: var(--paper);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+    }
+    .cv-footer {
+      font-family: var(--mono);
+      font-size: 8px;
+      color: var(--ink-faint);
+      text-align: right;
+      margin-top: 4px;
+    }
+    .card-annotations {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .ann { display: flex; gap: 6px; }
+    .ann-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+
+    /* ===== AUTH LIST ===== */
+    .auth-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin: 10px 0 18px;
+    }
+    .auth {
+      padding: 8px 12px;
+      background: var(--paper-dark);
+      border-left: 3px solid var(--gold);
+      border-radius: 2px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    /* ===== HAND ECONOMY ===== */
+    .hand-econ {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+      gap: 4px;
+      align-items: center;
+      margin: 14px 0;
+    }
+    .econ-stat { text-align: center; padding: 8px 4px; }
+    .econ-big {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--union);
+    }
+    .econ-stat > div:last-child {
+      font-size: 10px;
+      color: var(--ink-faint);
+      line-height: 1.3;
+      margin-top: 2px;
+    }
+    .econ-arrow { color: var(--gold); font-size: 16px; }
+
+    /* ===== MOVE TABLE ===== */
+    .move-table {
+      margin: 12px 0 18px;
+      background: var(--paper-dark);
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--rule);
+    }
+    .mt-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      padding: 8px 12px;
+      align-items: center;
+      font-size: 13px;
+    }
+    .mt-row:nth-child(odd) { background: rgba(232,223,201,0.5); }
+    .mt-unit { display: flex; align-items: center; gap: 8px; }
+    .badge {
+      display: inline-flex;
+      width: 22px;
+      height: 22px;
+      background: var(--union);
+      color: var(--paper);
+      border-radius: 3px;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--serif);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .badge.inf { background: var(--union); }
+    .badge.cav { background: var(--csa); }
+    .badge.skr { background: var(--ok); }
+    .badge.art { background: var(--danger); }
+    .badge.sup { background: var(--gold); color: var(--ink); }
+    .badge.cmd {
+      background: var(--paper);
+      color: var(--gold);
+      border: 1px solid var(--gold);
+    }
+
+    /* ===== HIT TABLE ===== */
+    .hit-table {
+      margin: 10px 0 14px;
+      background: var(--paper-dark);
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--rule);
+    }
+    .ht-row {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      padding: 8px 12px;
+      font-size: 13px;
+      text-align: center;
+      align-items: center;
+    }
+    .ht-row > div:first-child { text-align: left; display: flex; align-items: center; gap: 8px; }
+    .ht-row:nth-child(odd) { background: rgba(232,223,201,0.5); }
+    .ht-head {
+      background: var(--union) !important;
+      color: var(--paper);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .cover-note { font-size: 12px; color: var(--ink-soft); font-style: italic; }
+
+    /* ===== LETHALITY MODS ===== */
+    .leth-mods {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin: 10px 0 16px;
+    }
+    .lm {
+      display: grid;
+      grid-template-columns: 70px 1fr;
+      gap: 10px;
+      padding: 6px 10px;
+      background: var(--paper-dark);
+      border-radius: 3px;
+      font-size: 12px;
+      align-items: center;
+    }
+    .lm-sign {
+      font-family: var(--mono);
+      font-weight: 700;
+      text-align: center;
+      padding: 3px 6px;
+      border-radius: 3px;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      font-size: 11px;
+    }
+    .lm-sign.plus { background: var(--ok); color: var(--paper); border-color: var(--ok); }
+    .lm-sign.minus { background: var(--danger); color: var(--paper); border-color: var(--danger); }
+
+    /* ===== EXAMPLE ATTACK ===== */
+    .example {
+      margin: 14px 0 18px;
+      padding: 14px;
+      background: rgba(30,58,95,0.05);
+      border: 1px solid var(--rule);
+      border-left: 3px solid var(--union);
+      border-radius: 3px;
+    }
+    .example > p { font-size: 13px; line-height: 1.5; }
+    .ex-roll { margin: 10px 0; }
+    .ex-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--ink-faint);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+    .dice-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+    .die {
+      width: 24px;
+      height: 24px;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--serif);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-faint);
+    }
+    .die.hit {
+      background: var(--ok);
+      color: var(--paper);
+      border-color: var(--ok);
+    }
+    .ex-result {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--ok);
+      font-weight: 700;
+      margin-top: 4px;
+    }
+    .ex-out {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--rule);
+      font-size: 13px !important;
+    }
+
+    /* ===== MELEE DIAGRAM ===== */
+    .melee-diagram {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 14px;
+      margin: 16px 0;
+      align-items: center;
+    }
+    .md-side { text-align: center; }
+    .md-head {
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+    .md-side.union .md-head { color: var(--union); }
+    .md-side.csa .md-head { color: var(--csa); }
+    .md-figs {
+      display: flex;
+      gap: 3px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .md-f {
+      width: 14px;
+      height: 20px;
+      border-radius: 2px;
+    }
+    .md-f.u { background: var(--union); }
+    .md-f.c { background: var(--csa); }
+    .md-vs {
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--gold);
+    }
+    .md-note {
+      font-size: 12px !important;
+      color: var(--ink-soft);
+      font-style: italic;
+      margin-bottom: 14px !important;
+    }
+
+    /* ===== MORALE VIZ ===== */
+    .morale-viz {
+      margin: 16px 0;
+      padding: 14px;
+      background: var(--paper-dark);
+      border-radius: 4px;
+      border: 1px solid var(--rule);
+    }
+    .mv-rail {
+      display: grid;
+      grid-template-columns: 50px 1fr;
+      gap: 10px;
+      margin-bottom: 6px;
+      align-items: center;
+    }
+    .mv-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      text-align: right;
+      color: var(--ink-soft);
+    }
+    .mv-bar {
+      height: 10px;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      position: relative;
+    }
+    .mv-fill {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-radius: 2px;
+    }
+    .morale-list {
+      margin: 12px 0 14px;
+      padding-left: 20px;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    /* ===== COMMANDER DIAGRAM ===== */
+    .cmdr-diagram {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 8px;
+      margin: 12px 0;
+      align-items: center;
+    }
+    .cmdr-unit {
+      padding: 10px;
+      background: var(--paper-dark);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-align: center;
+    }
+    .cmdr-badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 4px;
+      background: var(--paper);
+      color: var(--gold);
+      border: 1.5px solid var(--gold);
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cmdr-badge.inf {
+      background: var(--union);
+      color: var(--paper);
+      border: none;
+    }
+    .cmdr-text {
+      font-size: 11px;
+      line-height: 1.4;
+    }
+    .cmdr-text span {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--ink-faint);
+    }
+    .cmdr-arrow {
+      color: var(--gold);
+      font-size: 18px;
+    }
+
+    /* ===== VICTORY VIZ ===== */
+    .victory-viz {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      margin: 16px 0;
+      align-items: center;
+      padding: 14px;
+      background: #15283f;
+      border-radius: 4px;
+    }
+    .vv-side { text-align: center; color: var(--paper); }
+    .vv-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-bottom: 6px;
+    }
+    .vv-banners { display: flex; gap: 3px; justify-content: center; }
+    .vv-b {
+      width: 11px;
+      height: 14px;
+      background: transparent;
+      border: 1px solid var(--paper);
+      opacity: 0.35;
+    }
+    .vv-b.taken {
+      background: var(--gold);
+      border-color: var(--gold);
+      opacity: 1;
+    }
+    .vv-b.taken.csa {
+      background: var(--csa-soft);
+      border-color: var(--csa-soft);
+    }
+    .vv-count {
+      margin-top: 6px;
+      font-family: var(--mono);
+      font-size: 11px;
+    }
+    .vv-mid {
+      font-family: var(--serif);
+      font-size: 16px;
+      color: var(--gold);
+    }
+    .victory-list {
+      padding-left: 20px;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    /* ===== OPEN QUESTIONS ===== */
+    .oq-list { margin: 14px 0; display: flex; flex-direction: column; gap: 10px; }
+    .oq {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 10px;
+      padding: 10px 12px;
+      background: rgba(169,134,54,0.08);
+      border-left: 3px solid var(--gold);
+      border-radius: 3px;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .oq-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--gold);
+      color: var(--ink);
+      font-family: var(--serif);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+
+    /* ===== COMMENT BLOCK ===== */
+    .comment-block {
+      margin-top: 18px;
+      padding: 14px;
+      background: rgba(30,58,95,0.05);
+      border: 1px dashed var(--rule);
+      border-left: 3px solid var(--gold);
+      border-radius: 3px;
+    }
+    .comment-block label {
+      display: block;
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 12px;
+      color: var(--gold);
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+    }
+    .comment-block textarea {
+      width: 100%;
+      min-height: 64px;
+      padding: 10px;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--ink);
+      resize: vertical;
+      line-height: 1.5;
+    }
+    .comment-block textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(169,134,54,0.2);
+    }
+
+    /* ===== SUBMIT ===== */
+    .submit-section {
+      margin-top: 36px;
+      padding: 24px 20px;
+      background: var(--union);
+      color: var(--paper);
+      border-radius: 6px;
+      text-align: center;
+    }
+    .submit-section h2 {
+      color: var(--paper) !important;
+      font-size: 22px !important;
+    }
+    .submit-section .s-intro {
+      color: rgba(232,223,201,0.85) !important;
+      font-size: 14px !important;
+    }
+    .submit-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 18px 0 10px;
+    }
+    .submit-btn {
+      padding: 14px;
+      background: var(--gold);
+      color: var(--ink);
+      border: none;
+      border-radius: 4px;
+      font-family: var(--serif);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+    }
+    .submit-btn:hover { background: var(--gold-soft); }
+    .clear-btn {
+      padding: 8px;
+      background: transparent;
+      color: rgba(232,223,201,0.6);
+      border: 1px solid rgba(232,223,201,0.3);
+      border-radius: 4px;
+      font-family: var(--sans);
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .clear-btn:hover { color: var(--paper); border-color: var(--paper); }
+    .save-indicator {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: rgba(232,223,201,0.5);
+      letter-spacing: 1px;
+      margin-top: 6px;
+    }
+    .save-indicator.flash {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .foot {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid var(--rule);
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--ink-faint);
+      font-style: italic;
+    }
+    .foot a { color: var(--ink-faint); text-decoration: underline; }
+    .foot a:hover { color: var(--gold); }
+
+    /* ===== RESPONSIVE TIGHTENING ===== */
+    @media (max-width: 400px) {
+      .card-demo { grid-template-columns: 1fr; }
+      .card-visual { margin: 0 auto; }
+      .hand-econ { grid-template-columns: 1fr; gap: 2px; }
+      .econ-arrow { display: none; }
+      .glance-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</body>
+</html>
