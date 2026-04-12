@@ -75,6 +75,18 @@ body {
   text-transform: uppercase;
   opacity: 0.85;
   margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.your-turn-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 6px var(--gold);
 }
 
 .topbar-right {
@@ -93,6 +105,41 @@ body {
   text-transform: uppercase;
   opacity: 0.8;
 }
+
+/* ===== VICTORY TRACKER ===== */
+.victory {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 18px;
+  background: #15283f;
+  color: var(--paper);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(169,134,54,0.3);
+}
+
+.victory-side {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.victory-label { opacity: 0.7; }
+
+.banner-row { display: inline-flex; gap: 3px; }
+
+.banner {
+  width: 10px;
+  height: 12px;
+  background: transparent;
+  border: 1px solid var(--paper);
+  opacity: 0.35;
+}
+
+.banner.taken { background: var(--gold); border-color: var(--gold); opacity: 1; }
+.banner.taken.csa { background: var(--csa-soft); border-color: var(--csa-soft); }
 
 /* ===== TURN PROMPT ===== */
 .prompt {
@@ -302,6 +349,13 @@ body {
 
 .unit:last-child { border-bottom: none; }
 
+.unit.commander {
+  background: rgba(169,134,54,0.06);
+  margin: 0 -18px;
+  padding: 10px 18px;
+  border-left: 2px solid var(--gold);
+}
+
 .unit-badge {
   width: 36px;
   height: 36px;
@@ -322,13 +376,11 @@ body {
 .unit-badge.art { background: var(--danger); }
 .unit-badge.skr { background: var(--ok); }
 .unit-badge.sup { background: var(--gold); }
-.unit-badge.cmd::after {
-  content: "★";
-  position: absolute;
-  top: -4px;
-  right: -3px;
-  font-size: 10px;
+.unit-badge.cmd {
+  background: var(--paper);
   color: var(--gold);
+  border: 1.5px solid var(--gold);
+  font-size: 18px;
 }
 
 .unit-info .unit-name {
@@ -393,6 +445,19 @@ body {
 
 .ammo-dot.spent { background: transparent; border: 1px solid var(--ink-faint); width: 3px; height: 3px; }
 
+.morale-mod {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.morale-mod.penalty { background: var(--danger); color: var(--paper); }
+.morale-mod.buff { background: var(--ok); color: var(--paper); }
+
 .unit-tag {
   padding: 1px 5px;
   background: var(--ink);
@@ -404,12 +469,49 @@ body {
 }
 
 .unit-tag.building { background: var(--ok); }
-.unit-tag.wounded { background: var(--danger); }
 .unit-tag.moved { background: var(--gold); color: var(--ink); }
+.unit-tag.dry { background: var(--danger); }
+
+/* ===== RANGE TOGGLE ===== */
+.range-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 1px solid;
+  cursor: pointer;
+  user-select: none;
+}
+
+.range-toggle.in {
+  background: rgba(63,93,61,0.15);
+  color: var(--ok);
+  border-color: var(--ok);
+}
+
+.range-toggle.out {
+  background: rgba(139,47,47,0.12);
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.range-toggle .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.range-toggle.in .dot { background: var(--ok); }
+.range-toggle.out .dot { background: var(--danger); }
 
 /* ===== ENEMY ===== */
-.enemy .unit-badge { background: var(--csa); opacity: 0.8; }
+.enemy .unit-badge { background: var(--csa); opacity: 0.85; }
 .enemy .unit-badge.cav { background: #4a2018; }
+.enemy .unit-badge.cmd { background: var(--paper); border-color: var(--gold); color: var(--gold); opacity: 1; }
 .enemy-note {
   font-size: 10px;
   font-style: italic;
@@ -433,9 +535,16 @@ body {
   font-family: var(--mono);
   color: var(--ink-faint);
   flex-shrink: 0;
+  min-width: 46px;
 }
 
 .log-entry b { color: var(--ink); }
+
+.log-dice {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-faint);
+}
 
 /* ===== ACTION BAR ===== */
 .actions {
@@ -516,7 +625,10 @@ body {
   <div class="topbar">
     <div class="topbar-left">
       <div class="turn">Turn IV</div>
-      <div class="phase">Command Phase</div>
+      <div class="phase">
+        <span class="your-turn-dot"></span>
+        Your Turn · Command Phase
+      </div>
     </div>
     <div class="topbar-right">
       <div class="player">Maj. Gen. Pope</div>
@@ -524,17 +636,47 @@ body {
     </div>
   </div>
 
+  <!-- VICTORY TRACKER -->
+  <div class="victory">
+    <div class="victory-side">
+      <span class="victory-label">You routed</span>
+      <span class="banner-row">
+        <span class="banner taken"></span>
+        <span class="banner taken"></span>
+        <span class="banner"></span>
+        <span class="banner"></span>
+        <span class="banner"></span>
+        <span class="banner"></span>
+      </span>
+      <span>2 / 6</span>
+    </div>
+    <div class="victory-side">
+      <span>1 / 8</span>
+      <span class="banner-row">
+        <span class="banner taken csa"></span>
+        <span class="banner"></span>
+        <span class="banner"></span>
+        <span class="banner"></span>
+        <span class="banner"></span>
+        <span class="banner"></span>
+        <span class="banner"></span>
+        <span class="banner"></span>
+      </span>
+      <span class="victory-label">CSA routed</span>
+    </div>
+  </div>
+
   <!-- ALERT -->
   <div class="alert">
     <span class="alert-icon">✦</span>
-    <span><b>2nd Massachusetts</b> below half strength — morale vulnerable</span>
+    <span><b>Col. Reynolds</b> out of range of 2nd Mass. — <b>–10%</b> morale</span>
   </div>
 
   <!-- TURN PROMPT -->
   <div class="prompt">
     <div class="prompt-header">Your orders this turn</div>
     <div class="prompt-text">
-      Play one to three cards, move authorized units, then resolve any attacks. Artillery and skirmishers have line of sight to the Confederate center.
+      Play one to three cards, move authorized units, then resolve any attacks. Artillery and skirmishers have line of sight to the Confederate center; 2nd Massachusetts is out of ammunition.
     </div>
     <div class="prompt-steps">
       <span class="step-chip active">Play Cards</span>
@@ -548,7 +690,7 @@ body {
   <div class="hand">
     <div class="hand-header">
       <span class="section-title">Hand</span>
-      <span class="section-meta">5 / 5 · Deck: 7 · Discard: 3</span>
+      <span class="section-meta">5 / 5 · Deck: 2 · Discard: 3</span>
     </div>
     <div class="card-scroll">
 
@@ -584,7 +726,7 @@ body {
         <div class="card-type">Morale · Rally</div>
         <div class="card-title">Rally the Colors</div>
         <div class="card-authorization">
-          <b>–20% lethality</b> against one of your units this turn. Drummer boy raises the flag — the line steadies.
+          <b>–20%</b> lethality against one of your units this turn. The drummer boy raises the flag — the line steadies.
         </div>
         <div class="card-icons">
           <span class="unit-icon any">★</span>
@@ -608,7 +750,7 @@ body {
         <div class="card-type">Field Order</div>
         <div class="card-title">Sweep the Right</div>
         <div class="card-authorization">
-          Move <b>all units</b> on your right flank. Each may attack.
+          Move <b>all units</b> in your right third. Each may attack after moving.
         </div>
         <div class="card-icons">
           <span class="unit-icon any">→</span>
@@ -623,7 +765,7 @@ body {
   <div class="section">
     <div class="section-header">
       <span class="section-title">Your Army</span>
-      <span class="section-meta">8 units · 4 engageable</span>
+      <span class="section-meta">6 divisions · 2 commanders</span>
     </div>
 
     <div class="unit">
@@ -632,7 +774,7 @@ body {
         <div class="unit-name">1st Massachusetts</div>
         <div class="unit-sub">
           <span>Infantry</span>
-          <span>Front-Left</span>
+          <span>Vanguard · Left</span>
           <span>Range <span class="ruler-hint">1L</span></span>
         </div>
       </div>
@@ -643,34 +785,70 @@ body {
     </div>
 
     <div class="unit">
-      <div class="unit-badge cmd">I</div>
+      <div class="unit-badge">I</div>
       <div class="unit-info">
-        <div class="unit-name">2nd Massachusetts · Col. Reynolds</div>
+        <div class="unit-name">2nd Massachusetts</div>
         <div class="unit-sub">
-          <span>Infantry + Cmdr</span>
-          <span>Center</span>
-          <span class="unit-tag wounded">Wounded</span>
+          <span>Infantry</span>
+          <span>Vanguard · Center</span>
+          <span class="unit-tag dry">No ammo</span>
+          <span class="morale-mod penalty">–10%</span>
         </div>
       </div>
       <div class="unit-stats">
         <div class="strength-bar"><div class="strength-bar-fill danger" style="width:40%"></div></div>
-        <div>4/10 · <span class="ammo-dots"><span class="ammo-dot"></span><span class="ammo-dot"></span><span class="ammo-dot spent"></span><span class="ammo-dot spent"></span></span></div>
+        <div>4/10 · <span class="ammo-dots"><span class="ammo-dot spent"></span><span class="ammo-dot spent"></span><span class="ammo-dot spent"></span><span class="ammo-dot spent"></span></span></div>
+      </div>
+    </div>
+
+    <div class="unit commander">
+      <div class="unit-badge cmd">★</div>
+      <div class="unit-info">
+        <div class="unit-name">Col. Reynolds</div>
+        <div class="unit-sub">
+          <span>Infantry Commander · attached to 2nd Mass.</span>
+        </div>
+        <div class="unit-sub" style="margin-top:4px">
+          <span class="range-toggle out"><span class="dot"></span>Out of Range</span>
+          <span>Move <span class="ruler-hint">2S</span></span>
+        </div>
+      </div>
+      <div class="unit-stats">
+        <div>1/1</div>
       </div>
     </div>
 
     <div class="unit">
-      <div class="unit-badge cav cmd">C</div>
+      <div class="unit-badge cav">C</div>
       <div class="unit-info">
-        <div class="unit-name">5th Pennsylvania · Col. Stoneman</div>
+        <div class="unit-name">5th Pennsylvania</div>
         <div class="unit-sub">
-          <span>Cavalry + Cmdr</span>
-          <span>Right Flank</span>
+          <span>Cavalry</span>
+          <span>Center · Right</span>
           <span>Move <span class="ruler-hint">1L + 1S</span></span>
+          <span>Range <span class="ruler-hint">1L</span></span>
         </div>
       </div>
       <div class="unit-stats">
         <div class="strength-bar"><div class="strength-bar-fill" style="width:100%"></div></div>
         <div>6/6 · <span class="ammo-dots"><span class="ammo-dot"></span><span class="ammo-dot"></span><span class="ammo-dot"></span></span></div>
+      </div>
+    </div>
+
+    <div class="unit commander">
+      <div class="unit-badge cmd">★</div>
+      <div class="unit-info">
+        <div class="unit-name">Col. Stoneman</div>
+        <div class="unit-sub">
+          <span>Cavalry Commander · attached to 5th Penn.</span>
+        </div>
+        <div class="unit-sub" style="margin-top:4px">
+          <span class="range-toggle in"><span class="dot"></span>In Range</span>
+          <span>Move <span class="ruler-hint">1L + 1S</span></span>
+        </div>
+      </div>
+      <div class="unit-stats">
+        <div>1/1</div>
       </div>
     </div>
 
@@ -680,7 +858,7 @@ body {
         <div class="unit-name">1st U.S. Sharpshooters</div>
         <div class="unit-sub">
           <span>Skirmishers</span>
-          <span>Right Flank</span>
+          <span>Vanguard · Right</span>
           <span>Range <span class="ruler-hint">2L</span></span>
         </div>
       </div>
@@ -696,7 +874,7 @@ body {
         <div class="unit-name">Battery B, 4th U.S.</div>
         <div class="unit-sub">
           <span>Artillery</span>
-          <span>Center</span>
+          <span>Center · Center</span>
           <span class="unit-tag building">In Building</span>
         </div>
       </div>
@@ -712,7 +890,7 @@ body {
         <div class="unit-name">Supply Train A</div>
         <div class="unit-sub">
           <span>Wagon</span>
-          <span>Rear Center</span>
+          <span>Reserve · Center</span>
           <span>Move <span class="ruler-hint">1S</span></span>
         </div>
       </div>
@@ -727,7 +905,7 @@ body {
   <div class="section enemy">
     <div class="section-header">
       <span class="section-title">Enemy Dispositions</span>
-      <span class="section-meta">visible · 5 units</span>
+      <span class="section-meta">visible · 5 divisions</span>
     </div>
 
     <div class="unit">
@@ -736,7 +914,7 @@ body {
         <div class="unit-name">15th Alabama</div>
         <div class="unit-sub">
           <span>CSA Infantry</span>
-          <span>Front</span>
+          <span>Vanguard · Center</span>
           <span>in range of 1st MA</span>
         </div>
       </div>
@@ -752,8 +930,9 @@ body {
         <div class="unit-name">1st Virginia Cavalry</div>
         <div class="unit-sub">
           <span>CSA Cavalry</span>
-          <span>Left Flank</span>
+          <span>Center · Left</span>
           <span class="unit-tag moved">Moved T3</span>
+          <span class="morale-mod penalty">–20%</span>
         </div>
       </div>
       <div class="unit-stats">
@@ -768,7 +947,7 @@ body {
         <div class="unit-name">Hampton's Legion</div>
         <div class="unit-sub">
           <span>CSA Skirmishers</span>
-          <span>Front-Right</span>
+          <span>Vanguard · Right</span>
         </div>
       </div>
       <div class="unit-stats">
@@ -776,15 +955,16 @@ body {
         <div>8/8</div>
       </div>
     </div>
-    <div class="enemy-note">Cards in opponent's hand: 4 · Deck: 6</div>
+    <div class="enemy-note">Cards in opponent's hand: 4 · Deck: 1</div>
   </div>
 
   <!-- LOG -->
   <div class="log">
-    <div class="log-entry"><span class="log-time">T3 end</span><span>Drew <b>Sweep the Right</b></span></div>
-    <div class="log-entry"><span class="log-time">T3 attack</span><span>1st MA volley → 15th AL: <b>4 hits, 1 kill</b> (d10: 7,9,3,8,4,2,6,5,1,3)</span></div>
-    <div class="log-entry"><span class="log-time">T3 move</span><span>Played <b>Advance</b> — 1st MA, 2nd MA forward <span class="ruler-hint">2S</span></span></div>
-    <div class="log-entry"><span class="log-time">T2 end</span><span>2nd MA took <b>6 casualties</b>, Col. Reynolds wounded</span></div>
+    <div class="log-entry"><span class="log-time">T3 end</span><span>Drew <b>Sweep the Right</b> · 2nd Mass. fired final round — ammo depleted</span></div>
+    <div class="log-entry"><span class="log-time">T3 atk</span><span>1st MA → 15th AL: <b>5 hits, 3 kills</b> <span class="log-dice">hit d10 [2,7,9,5,3,8,4,1,6,3]=5 · leth d10 [3,9,5,7,2]=3</span></span></div>
+    <div class="log-entry"><span class="log-time">T3 atk</span><span>2nd MA → 15th AL: <b>4 hits, 1 kill</b> <span class="log-dice">hit [6,2,3,1,8,9,4,7,5,2]=5 → last round penalty</span></span></div>
+    <div class="log-entry"><span class="log-time">T3 mov</span><span>Played <b>Advance</b> — 1st MA, 2nd MA forward <span class="ruler-hint">2S</span></span></div>
+    <div class="log-entry"><span class="log-time">T2 end</span><span>2nd MA took <b>6 casualties</b> from 1st VA volley</span></div>
   </div>
 
   <!-- ACTION BAR -->
