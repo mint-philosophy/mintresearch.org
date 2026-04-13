@@ -39,7 +39,10 @@ type Modal =
   | { kind: "sector_picker"; unitId: string }
   | { kind: "attack_target"; attackerId: string }
   | { kind: "detail"; unitId: string }
-  | { kind: "dice_result"; text: string };
+  | { kind: "dice_result"; text: string }
+  | { kind: "spy_reveal" }
+  | { kind: "rout_discard" }
+  | { kind: "defeat" };
 
 let modal: Modal = { kind: "none" };
 function setModal(m: Modal) {
@@ -212,12 +215,17 @@ function renderHand(): string {
       `;
     })
     .join("");
+  const strained = state.hand.length < 3;
+  const strainBanner = strained
+    ? `<div class="strain-banner">⚠ Command strain — hand below 3. Every unit is at −20% until a Dispatch Rider refills your hand.</div>`
+    : "";
   return `
     <div class="hand">
       <div class="hand-header">
         <span class="section-title">Hand</span>
-        <span class="section-meta">${state.hand.length} / ${state.handCap} · Deck ${state.deck.length} · Discard ${state.discard.length}</span>
+        <span class="section-meta">${state.hand.length} card${state.hand.length === 1 ? "" : "s"} · Deck ${state.deck.length} · Discard ${state.discard.length}</span>
       </div>
+      ${strainBanner}
       <div class="card-scroll">${cards}</div>
     </div>
   `;
@@ -359,11 +367,87 @@ function renderActions(): string {
 // ---------- Modals ----------
 
 function renderModal(): string {
+  // State-driven modals take priority — they reflect engine state, not UI intent.
+  if (state.defeated) return renderDefeat();
+  if (state.enemyHandReveal) return renderSpyReveal();
+  if (state.pendingDiscardOnRout) return renderRoutDiscard();
   if (modal.kind === "sector_picker") return renderSectorPicker(modal.unitId);
   if (modal.kind === "attack_target") return renderAttackTarget(modal.attackerId);
   if (modal.kind === "detail") return renderDetailDrawer(modal.unitId);
   if (modal.kind === "dice_result") return `<div class="scrim"><div class="dice-card">${modal.text}<button class="picker-btn primary" data-action="close-modal">OK</button></div></div>`;
   return "";
+}
+
+function renderDefeat(): string {
+  const you = state.defeated === "union";
+  return `
+    <div class="scrim">
+      <div class="picker">
+        <div class="picker-header">
+          <div class="eyebrow">End of Engagement</div>
+          <div class="title">${you ? "Defeat" : "The Field is Yours"}</div>
+          <div class="sub">${you ? "Your command has collapsed. The army disperses into the woods." : "Banner threshold reached. The Confederates withdraw."}</div>
+        </div>
+        <div class="picker-footer">
+          <div class="picker-actions">
+            <button class="picker-btn primary" data-action="restart">Play Again</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSpyReveal(): string {
+  const reveal = state.enemyHandReveal ?? [];
+  const items = reveal.map(r => `
+    <div class="spy-row">
+      <span class="spy-cat">${esc(r.category.replace(/_/g, " "))}</span>
+      <span class="spy-title">${esc(r.title)}</span>
+    </div>
+  `).join("");
+  return `
+    <div class="scrim">
+      <div class="picker">
+        <div class="picker-header">
+          <div class="eyebrow">Partisan Intelligence</div>
+          <div class="title">Enemy Hand Revealed</div>
+          <div class="sub">${reveal.length} card${reveal.length === 1 ? "" : "s"} — scout's report</div>
+        </div>
+        <div class="spy-list">${items}</div>
+        <div class="picker-footer">
+          <div class="picker-actions">
+            <button class="picker-btn primary" data-action="dismiss-spy">Got it</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderRoutDiscard(): string {
+  const cards = state.hand.map(c => `
+    <div class="target-row" data-action="discard-rout" data-discard-card="${c.instanceId}">
+      <div class="unit-badge">${esc(c.category.charAt(0).toUpperCase())}</div>
+      <div class="target-info">
+        <div class="target-name">${esc(c.title)}</div>
+        <div class="target-sub">${esc(c.category.replace(/_/g, " "))}</div>
+      </div>
+      <div class="target-go">DISCARD ▸</div>
+    </div>
+  `).join("");
+  return `
+    <div class="scrim">
+      <div class="picker">
+        <div class="picker-header">
+          <div class="eyebrow">A unit has routed</div>
+          <div class="title">Command capacity lost</div>
+          <div class="sub">Choose a card to discard from your hand.</div>
+        </div>
+        <div class="target-list">${cards}</div>
+      </div>
+    </div>
+  `;
 }
 
 function renderSectorPicker(unitId: string): string {
@@ -635,15 +719,30 @@ function bindEvents(root: HTMLElement) {
       setModal({ kind: "none" });
       return;
     }
+    if (action === "dismiss-spy") {
+      dispatch({ type: "dismiss_spy_reveal" });
+      return;
+    }
+    if (action === "discard-rout") {
+      const instanceId = el.getAttribute("data-discard-card")!;
+      dispatch({ type: "discard_for_rout", instanceId });
+      return;
+    }
   });
 }
 
 function onCardClick(instanceId: string) {
   if (state.selection.cardInstanceId === instanceId) {
     dispatch({ type: "deselect_card" });
-  } else {
-    dispatch({ type: "select_card", instanceId });
+    return;
   }
+  // Cards that take no unit targets resolve immediately on tap.
+  const card = state.hand.find(c => c.instanceId === instanceId);
+  if (card && (card.authorization.kind === "spy" || card.authorization.kind === "draw")) {
+    dispatch({ type: "play_card", instanceId, targetUnitIds: [] });
+    return;
+  }
+  dispatch({ type: "select_card", instanceId });
 }
 
 function onUnitSelect(unitId: string) {

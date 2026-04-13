@@ -50,7 +50,7 @@ export interface Unit {
 export interface MoraleMod {
   label: string;
   pct: number;
-  source: "commander_oor" | "casualties" | "rally" | "break" | "cover" | "other";
+  source: "commander_oor" | "casualties" | "rally" | "break" | "cover" | "command_strain" | "flanked" | "other";
 }
 
 export interface Card {
@@ -91,6 +91,7 @@ export type Authorization =
   | { kind: "entrench"; count: number }
   | { kind: "feigned_retreat"; count: number }
   | { kind: "counter_battery"; count: number }
+  | { kind: "spy" }
   | { kind: "composite"; steps: Authorization[] };
 
 export type TurnPhase = "draw" | "play" | "move" | "attack" | "end";
@@ -119,7 +120,7 @@ export interface GameState {
   turn: number;
   phase: TurnPhase;
   active: Side;
-  handCap: number;
+  handStart: number;
   hand: Card[];
   deck: Card[];
   discard: Card[];
@@ -127,6 +128,7 @@ export interface GameState {
   unitOrder: string[];
   enemyUnits: Record<string, Unit>;
   enemyUnitOrder: string[];
+  enemyHand: Card[];
   victory: { union: number; csa: number; goal: number };
   log: LogEntry[];
   selection: {
@@ -135,6 +137,9 @@ export interface GameState {
   };
   pendingOrders: PendingOrder[];
   rngSeed: number;
+  defeated: Side | null;
+  enemyHandReveal: { title: string; category: CardCategory }[] | null;
+  pendingDiscardOnRout: boolean;
 }
 
 export type Action =
@@ -146,4 +151,6 @@ export type Action =
   | { type: "confirm_sector"; unitId: string }
   | { type: "cancel_sector"; unitId: string }
   | { type: "attack"; attackerId: string; targetId: string; rangeBand: RangeBand }
+  | { type: "discard_for_rout"; instanceId: string }
+  | { type: "dismiss_spy_reveal" }
   | { type: "end_turn" };

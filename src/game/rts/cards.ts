@@ -165,4 +165,32 @@ export const CARD_CATALOG: Card[] = [
     { kind: "counter_battery", count: 1 },
     2
   ),
+
+  // Dispatch — rebuild command capacity.
+  ...makeInstances(
+    "dispatch_2",
+    "Dispatch Rider",
+    "draw",
+    "A courier cuts through the smoke. Draw 2 cards.",
+    { kind: "draw", count: 2 },
+    2
+  ),
+  ...makeInstances(
+    "dispatch_1",
+    "Courier",
+    "draw",
+    "A runner arrives with orders. Draw 1 card.",
+    { kind: "draw", count: 1 },
+    3
+  ),
+
+  // Spy — reveal enemy hand.
+  ...makeInstances(
+    "spy_reveal",
+    "Partisan Intelligence",
+    "spy",
+    "A local sympathizer shows you every card in the enemy's hand.",
+    { kind: "spy" },
+    2
+  ),
 ];
