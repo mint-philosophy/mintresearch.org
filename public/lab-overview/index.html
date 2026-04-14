@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Can Machines Reason Morally? — MINT Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════
+   MINT Lab Presentation — Terminal Aesthetic
+   Adapted from mintresearch.org design system
+   ═══════════════════════════════════════════════════ */
+
+:root {
+  --bg-0: #0a0a0a;
+  --bg-1: #111111;
+  --bg-2: #1a1a1a;
+  --bg-3: #222222;
+  --bg-4: #2a2a2a;
+  --accent: #2ec4b6;
+  --accent-soft: rgba(46, 196, 182, 0.12);
+  --accent-dim: rgba(46, 196, 182, 0.5);
+  --accent-bright: #5de8da;
+  --amber: #f5a623;
+  --red: #e06c75;
+  --cyan: #56b6c2;
+  --green: #98c379;
+  --purple: #c678dd;
+  --pink: #e06c96;
+  --yellow: #e5c07b;
+  --blue: #61afef;
+  --indigo: #818cf8;
+  --teal: #2dd4bf;
+  --text-1: #abb2bf;
+  --text-2: #7f848e;
+  --text-3: #5c6370;
+  --text-bright: #d4d4d4;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(46, 196, 182, 0.4);
+  --font: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --nav-h: 40px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: #000; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg-1);
+  color: var(--text-1);
+  line-height: 1.6;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* CRT scanlines */
+body::after {
+  content: '';
+  position: fixed; top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 3px,
+    rgba(0, 0, 0, 0.03) 3px, rgba(0, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ===== Slides ===== */
+.slides {
+  position: relative;
+  width: 100vw;
+  height: calc(100vh - var(--nav-h));
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 32px 64px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.slide.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+.slide-inner {
+  max-width: 1100px;
+  width: 100%;
+}
+
+/* ===== Typography ===== */
+h1 { font-size: 42px; font-weight: 600; color: var(--text-bright); line-height: 1.25; margin-bottom: 12px; }
+h2 { font-size: 24px; font-weight: 600; color: var(--text-bright); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px dashed var(--border); }
+h2::before { content: '# '; color: var(--text-3); }
+h3 { font-size: 17px; font-weight: 500; color: var(--yellow); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+h3::before { content: '## '; color: var(--text-3); }
+
+p { font-size: 16px; line-height: 1.7; margin-bottom: 10px; }
+p.lead { font-size: 19px; line-height: 1.6; color: var(--text-bright); }
+p.dim { color: var(--text-2); font-size: 14px; }
+
+.accent { color: var(--accent); }
+.amber { color: var(--amber); }
+.cyan { color: var(--cyan); }
+.green { color: var(--green); }
+.purple { color: var(--purple); }
+.yellow { color: var(--yellow); }
+.bright { color: var(--text-bright); }
+.red { color: var(--red); }
+em { color: var(--yellow); font-style: normal; }
+strong { color: var(--text-bright); font-weight: 600; }
+
+.section-num { font-size: 13px; color: var(--text-3); margin-bottom: 10px; }
+
+/* ===== Cards (compact, no inline expand) ===== */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.card {
+  background: var(--bg-2);
+  border: 1px dashed var(--border);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.card:hover {
+  border-color: var(--border-hover);
+  background: rgba(46, 196, 182, 0.03);
+}
+
+.card::before {
+  content: '● ● ●';
+  display: block;
+  padding: 4px 10px;
+  font-size: 8px;
+  letter-spacing: 3px;
+  color: var(--text-3);
+  background: var(--bg-3);
+  border-bottom: 1px dashed var(--border);
+}
+
+.card-head {
+  padding: 12px 14px;
+}
+
+.card-head .title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.card-head .subtitle {
+  font-size: 13px;
+  color: var(--text-2);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* Card accent variants */
+.card.accent-mint { border-left: 3px solid var(--accent); }
+.card.accent-amber { border-left: 3px solid var(--amber); }
+.card.accent-cyan { border-left: 3px solid var(--cyan); }
+.card.accent-purple { border-left: 3px solid var(--purple); }
+.card.accent-green { border-left: 3px solid var(--green); }
+
+/* ===== Modal Overlay ===== */
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.modal-backdrop.visible {
+  display: flex;
+}
+
+.modal-card {
+  background: var(--bg-2);
+  border: 1px dashed var(--accent-dim);
+  max-width: 640px;
+  width: 90%;
+  max-height: 75vh;
+  overflow-y: auto;
+  cursor: default;
+  position: relative;
+}
+
+.modal-card::before {
+  content: '● ● ●';
+  display: block;
+  padding: 6px 14px;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--text-3);
+  background: var(--bg-3);
+  border-bottom: 1px dashed var(--border);
+}
+
+.modal-header {
+  padding: 16px 20px 12px;
+  border-bottom: 1px dashed var(--border);
+}
+
+.modal-header .modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.modal-header .modal-lead {
+  font-size: 13px;
+  color: var(--cyan);
+  margin-top: 2px;
+}
+
+.modal-body {
+  padding: 16px 20px 20px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-1);
+}
+
+.modal-body p { font-size: 15px; margin-bottom: 10px; }
+.modal-body p:last-child { margin-bottom: 0; }
+
+.modal-close {
+  position: absolute;
+  top: 6px; right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-3);
+  font-family: var(--font);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.modal-close:hover { color: var(--text-1); }
+
+.tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 7px;
+  border: 1px dashed var(--border);
+  color: var(--accent);
+}
+.tag.amber { border-color: rgba(245,166,35,0.3); color: var(--amber); }
+.tag.cyan { border-color: rgba(86,182,194,0.3); color: var(--cyan); }
+.tag.purple { border-color: rgba(198,120,221,0.3); color: var(--purple); }
+.tag.green { border-color: rgba(152,195,121,0.3); color: var(--green); }
+
+/* ===== Pipeline ===== */
+.pipeline {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin: 16px 0;
+}
+
+.pipeline-step {
+  flex: 1;
+  background: var(--bg-2);
+  border: 1px dashed var(--border);
+  padding: 18px 16px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.pipeline-step:hover {
+  border-color: var(--border-hover);
+  background: rgba(46, 196, 182, 0.03);
+}
+
+.pipeline-arrow {
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  color: var(--accent);
+  font-size: 20px;
+}
+
+.pipeline-step .step-num { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.pipeline-step .step-title { font-size: 22px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+.pipeline-step .step-question { font-size: 14px; color: var(--text-bright); font-style: italic; line-height: 1.45; }
+
+/* ===== Project Grid (compact) ===== */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.project-card {
+  background: var(--bg-2);
+  border: 1px dashed var(--border);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.project-card:hover {
+  border-color: var(--border-hover);
+  background: rgba(46, 196, 182, 0.03);
+}
+
+.project-card .pc-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-bright);
+  margin-bottom: 2px;
+}
+
+.project-card .pc-lead {
+  font-size: 12px;
+  color: var(--cyan);
+  margin-bottom: 6px;
+}
+
+.project-card .pc-question {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+
+/* Group color bars */
+.project-card.group-sense { border-left: 3px solid var(--accent); }
+.project-card.group-reason { border-left: 3px solid var(--amber); }
+.project-card.group-apply { border-left: 3px solid var(--cyan); }
+.project-card.group-cohere { border-left: 3px solid var(--purple); }
+
+/* Group legend */
+.group-legend {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.group-legend span::before {
+  content: '▍';
+  margin-right: 4px;
+}
+
+.gl-sense::before { color: var(--accent) !important; }
+.gl-reason::before { color: var(--amber) !important; }
+.gl-apply::before { color: var(--cyan) !important; }
+.gl-cohere::before { color: var(--purple) !important; }
+
+/* ===== Matrix ===== */
+.matrix {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 12px 0;
+}
+
+.matrix th {
+  text-align: center;
+  padding: 8px 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+  background: var(--bg-3);
+  border: 1px dashed var(--border);
+  font-weight: 500;
+}
+
+.matrix th:first-child {
+  text-align: left;
+  color: var(--text-bright);
+  min-width: 140px;
+}
+
+.matrix td {
+  text-align: center;
+  padding: 6px;
+  border: 1px dashed var(--border);
+  font-size: 14px;
+}
+
+.matrix td:first-child {
+  text-align: left;
+  color: var(--cyan);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.matrix tr:hover td { background: rgba(46, 196, 182, 0.03); }
+.matrix .filled { color: var(--accent); }
+.matrix .partial { color: var(--text-3); }
+
+/* ===== Callout ===== */
+.callout {
+  border-left: 3px solid var(--accent);
+  border-top: 1px dashed var(--border);
+  border-right: 1px dashed var(--border);
+  border-bottom: 1px dashed var(--border);
+  background: var(--bg-2);
+  padding: 12px 16px;
+  margin: 12px 0;
+}
+.callout p { margin-bottom: 6px; }
+.callout p:last-child { margin-bottom: 0; }
+
+/* ===== Gap Visual ===== */
+.gap-visual {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0;
+  margin: 16px 0;
+  align-items: center;
+}
+
+.gap-side {
+  background: var(--bg-2);
+  border: 1px dashed var(--border);
+  padding: 20px;
+  text-align: center;
+}
+
+.gap-middle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 14px;
+  color: var(--red);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.gap-middle .gap-arrow { font-size: 22px; color: var(--text-3); margin: 2px 0; }
+.gap-side .gap-label { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.gap-side .gap-desc { font-size: 14px; color: var(--text-2); line-height: 1.5; }
+
+.approach-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.approach-item {
+  background: var(--bg-2);
+  border: 1px dashed var(--border);
+  padding: 14px 16px;
+}
+
+.approach-item .approach-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-3); margin-bottom: 4px; }
+.approach-item .approach-text { font-size: 15px; color: var(--text-bright); line-height: 1.45; }
+
+/* ===== Pillar Bar ===== */
+.pillar-bar {
+  display: flex;
+  height: 32px;
+  margin: 14px 0;
+  border: 1px dashed var(--border);
+  overflow: hidden;
+}
+
+.pillar-bar .segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.pillar-bar .seg-nc { background: rgba(46,196,182,0.15); color: var(--accent); flex: 7; border-right: 1px dashed var(--border); }
+.pillar-bar .seg-ga { background: rgba(245,166,35,0.12); color: var(--amber); flex: 2; border-right: 1px dashed var(--border); }
+.pillar-bar .seg-pp { background: rgba(198,120,221,0.12); color: var(--purple); flex: 1; }
+
+/* ===== Pillars ===== */
+.pillars {
+  display: grid;
+  grid-template-columns: 7fr 2fr 1fr;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.pillar {
+  background: var(--bg-2);
+  border: 1px dashed var(--border);
+  padding: 16px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.pillar:hover { border-color: var(--border-hover); }
+.pillar .pillar-pct { font-size: 24px; font-weight: 700; margin-bottom: 2px; }
+.pillar .pillar-title { font-size: 14px; font-weight: 600; color: var(--text-bright); margin-bottom: 4px; }
+.pillar .pillar-disc { font-size: 12px; color: var(--text-2); }
+
+/* ===== Timeline Slider ===== */
+.timeline-control {
+  margin: 10px 0 6px;
+}
+
+.timeline-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.timeline-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 2px;
+  padding: 0 2px;
+}
+
+/* Terminal-styled range slider */
+.terminal-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: var(--bg-3);
+  border: 1px dashed var(--border);
+  outline: none;
+  cursor: pointer;
+}
+
+.terminal-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 20px;
+  background: var(--accent);
+  border: 1px solid var(--accent-bright);
+  cursor: pointer;
+}
+
+.terminal-slider::-moz-range-thumb {
+  width: 14px;
+  height: 20px;
+  background: var(--accent);
+  border: 1px solid var(--accent-bright);
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.terminal-slider::-webkit-slider-runnable-track {
+  height: 6px;
+}
+
+/* ===== Play Button ===== */
+.play-btn {
+  font-family: var(--font);
+  font-size: 12px;
+  color: var(--accent);
+  background: var(--bg-3);
+  border: 1px dashed var(--border);
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+.play-btn:hover {
+  background: var(--bg-4);
+  border-color: var(--accent-dim);
+}
+
+/* ===== Bleed ===== */
+.bleed { text-align: center; color: var(--text-3); font-size: 14px; margin: 14px 0; opacity: 0.5; }
+
+/* ===== Navigation Bar ===== */
+.nav-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: var(--bg-0);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 100;
+  font-size: 12px;
+}
+
+.nav-progress { display: flex; align-items: center; gap: 6px; color: var(--text-3); }
+.nav-progress .bar { display: flex; gap: 1px; }
+.nav-progress .bar-seg {
+  width: 18px; height: 8px;
+  background: var(--text-3); opacity: 0.3;
+  transition: opacity 0.3s, background 0.3s;
+  cursor: pointer;
+}
+.nav-progress .bar-seg:hover { opacity: 0.6; }
+.nav-progress .bar-seg.filled { background: var(--accent); opacity: 1; }
+
+.nav-dots { display: flex; gap: 7px; align-items: center; }
+.nav-dot {
+  width: 7px; height: 7px;
+  border: 1px solid var(--text-3);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.nav-dot:hover { border-color: var(--accent-dim); }
+.nav-dot.active { background: var(--accent); border-color: var(--accent); }
+
+.nav-section { color: var(--text-2); font-size: 12px; }
+.nav-section .section-name { color: var(--accent); }
+
+.nav-controls { display: flex; gap: 10px; align-items: center; color: var(--text-2); }
+.nav-controls kbd {
+  display: inline-block; padding: 1px 6px;
+  background: var(--bg-3); border: 1px solid var(--border);
+  font-family: var(--font); font-size: 11px; color: var(--text-2);
+}
+
+/* ===== Hero ===== */
+.hero-slide { text-align: center; }
+.hero-slide h1 { font-size: 48px; margin-bottom: 20px; }
+.hero-slide .subtitle { font-size: 20px; color: var(--text-2); margin-bottom: 28px; line-height: 1.55; }
+.hero-slide .lab-id { font-size: 14px; color: var(--text-3); letter-spacing: 1px; }
+.hero-slide .lab-id .lab-name { color: var(--accent); font-weight: 600; }
+
+.typing-cursor {
+  display: inline-block; width: 3px; height: 1em;
+  background: var(--accent); margin-left: 4px;
+  animation: blink 1s step-end infinite;
+  vertical-align: text-bottom;
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* ===== Fade-in ===== */
+.fade-in { opacity: 0; transform: translateY(6px); transition: opacity 0.45s ease, transform 0.45s ease; }
+.slide.active .fade-in { opacity: 1; transform: translateY(0); }
+.slide.active .fade-in.d1 { transition-delay: 0.12s; }
+.slide.active .fade-in.d2 { transition-delay: 0.24s; }
+.slide.active .fade-in.d3 { transition-delay: 0.36s; }
+.slide.active .fade-in.d4 { transition-delay: 0.48s; }
+.slide.active .fade-in.d5 { transition-delay: 0.6s; }
+
+/* ===== Next prompt ===== */
+.next-prompt {
+  position: absolute; bottom: 52px; right: 32px;
+  color: var(--text-3); font-size: 13px;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.7; } }
+
+/* ===== Responsive ===== */
+@media (max-width: 1000px) {
+  .slide { padding: 24px 32px; }
+  h1 { font-size: 34px; }
+  .hero-slide h1 { font-size: 38px; }
+  .cards { grid-template-columns: repeat(2, 1fr); }
+  .project-grid { grid-template-columns: repeat(2, 1fr); }
+  .pipeline { flex-direction: column; }
+  .pipeline-arrow { transform: rotate(90deg); padding: 6px 0; }
+  .pillars { grid-template-columns: 1fr; }
+  .gap-visual { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="slides">
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 1: Hook
+       ═══════════════════════════════════════════ -->
+  <div class="slide active hero-slide" id="slide-1" data-name="title">
+    <div class="slide-inner" style="text-align: center;">
+      <div class="section-num fade-in">[01]</div>
+      <h1 class="fade-in d1">
+        <span id="typed-title"></span><span class="typing-cursor"></span>
+      </h1>
+      <p class="subtitle fade-in d2">
+        Alignment is normative competence in action.
+      </p>
+      <div class="bleed fade-in d3">──────── │ ────────</div>
+      <p class="lab-id fade-in d4">
+        <span class="lab-name">MINT Research Lab</span> · Johns Hopkins University
+      </p>
+      <p class="dim fade-in d5" style="margin-top: 6px;">
+        Machine Intelligence and Normative Theory
+      </p>
+    </div>
+    <div class="next-prompt">→</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 2: Dimensions of Moral Competence
+       ═══════════════════════════════════════════ -->
+  <div class="slide" id="slide-2" data-name="competence">
+    <div class="slide-inner">
+      <div class="section-num fade-in">[02]</div>
+      <h2 class="fade-in d1">What Normative Competence Actually Means</h2>
+      <p class="lead fade-in d2" style="max-width: 900px;">
+        We don't primarily test whether models reach the <em>right verdict</em> — reasonable people disagree on those. We focus on <strong>intrinsic and extrinsic properties</strong> of good reasoning (still disputed, but plausibly less so). Normative competence in general is the target; we focus most on moral competence in practice.
+      </p>
+
+      <div class="cards fade-in d3">
+        <div class="card accent-mint" data-modal="sensitivity">
+          <div class="card-head">
+            <div class="title">Sensitivity</div>
+            <div class="subtitle">Can the model notice what matters?</div>
+          </div>
+        </div>
+        <div class="card accent-amber" data-modal="grounding">
+          <div class="card-head">
+            <div class="title">Grounding</div>
+            <div class="subtitle">Can it connect reasons to features?</div>
+          </div>
+        </div>
+        <div class="card accent-cyan" data-modal="justification">
+          <div class="card-head">
+            <div class="title">Justification</div>
+            <div class="subtitle">Can it turn reasons into verdicts?</div>
+          </div>
+        </div>
+        <div class="card accent-purple" data-modal="coherence">
+          <div class="card-head">
+            <div class="title">Coherence</div>
+            <div class="subtitle">Do its judgments fit together?</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout fade-in d4">
+        <p class="dim" style="margin: 0;">These are <strong>intrinsic</strong> (sensitivity, grounding, justification) and <strong>extrinsic</strong> (coherence) properties of good reasoning — independent of which verdict is reached. These aren't the only properties of good reasoning, just the most promising ones to focus on.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 3: The Three-Step Program
+       ═══════════════════════════════════════════ -->
+  <div class="slide" id="slide-3" data-name="program">
+    <div class="slide-inner">
+      <div class="section-num fade-in">[03]</div>
+      <h2 class="fade-in d1">The Research Program</h2>
+      <p class="fade-in d2" style="max-width: 880px;">
+        Our normative competence work follows a three-step logic. Each step builds on the last — and each of our research projects contributes to multiple steps.
+      </p>
+
+      <div class="pipeline fade-in d3">
+        <div class="pipeline-step" data-modal="step-measure">
+          <div class="step-num">Step I</div>
+          <div class="step-title">Measure</div>
+          <div class="step-question">"Can we show LLMs are normatively incompetent?"</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step" data-modal="step-explain">
+          <div class="step-num">Step II</div>
+          <div class="step-title">Explain</div>
+          <div class="step-question">"Why do they perform as they do?"</div>
+        </div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step" data-modal="step-improve">
+          <div class="step-num">Step III</div>
+          <div class="step-title">Improve</div>
+          <div class="step-question">"Can we make models more morally competent?"</div>
+        </div>
+      </div>
+
+      <div class="callout fade-in d4">
+        <p class="dim" style="margin: 0;">It's easier to show incompetence than prove competence. We are also going to do a philosophy paper on what would be needed to do so.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 4: Research Landscape
+       ═══════════════════════════════════════════ -->
+  <div class="slide" id="slide-4" data-name="projects">
+    <div class="slide-inner">
+      <div class="section-num fade-in">[04]</div>
+      <h2 class="fade-in d1">Eight Windows Into Moral Competence</h2>
+
+      <div class="group-legend fade-in d2">
+        <span class="gl-sense" style="color: var(--text-2);">Can models notice?</span>
+        <span class="gl-reason" style="color: var(--text-2);">Can models reason?</span>
+        <span class="gl-apply" style="color: var(--text-2);">Real-world complexity</span>
+        <span class="gl-cohere" style="color: var(--text-2);">Coherence</span>
+      </div>
+
+      <div class="project-grid fade-in d3">
+        <div class="project-card group-sense" data-modal="proj-sensitivity">
+          <div class="pc-name">Moral Sensitivity</div>
+          <div class="pc-lead">Daniel</div>
+          <div class="pc-question">Identifying MRFs amid textual noise</div>
+        </div>
+        <div class="project-card group-sense" data-modal="proj-egonormous">
+          <div class="pc-name">Egonormous</div>
+          <div class="pc-lead">Sichao</div>
+          <div class="pc-question">Moral sensitivity in video — the hardest modality</div>
+        </div>
+        <div class="project-card group-reason" data-modal="proj-emb">
+          <div class="pc-name">Even-More-Bench</div>
+          <div class="pc-lead">ChunYan</div>
+          <div class="pc-question">Can LLM rubrics match philosophers'?</div>
+        </div>
+        <div class="project-card group-reason" data-modal="proj-compliance">
+          <div class="pc-name">Compliance Overspill</div>
+          <div class="pc-lead">Cameron</div>
+          <div class="pc-question">Does alignment damage moral reasoning?</div>
+        </div>
+        <div class="project-card group-reason" data-modal="proj-blame">
+          <div class="pc-name">Blame</div>
+          <div class="pc-lead">Theo</div>
+          <div class="pc-question">Blame judgments &amp; sycophancy effects</div>
+        </div>
+        <div class="project-card group-apply" data-modal="proj-targeting">
+          <div class="pc-name">Targeting</div>
+          <div class="pc-lead">Tim</div>
+          <div class="pc-question">High-stakes military moral reasoning</div>
+        </div>
+        <div class="project-card group-apply" data-modal="proj-claims">
+          <div class="pc-name">Claims</div>
+          <div class="pc-lead">Secil</div>
+          <div class="pc-question">Many subtle judgments in insurance</div>
+        </div>
+        <div class="project-card group-cohere" data-modal="proj-reengineering">
+          <div class="pc-name">Re-Engineering</div>
+          <div class="pc-lead">Elena</div>
+          <div class="pc-question">Forced-choice coherence testing</div>
+        </div>
+      </div>
+
+      <p class="dim fade-in d4" style="margin-top: 6px;">Click any project for detail. Each tests a different facet — and each builds tools the others can use.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 5: Shared Infrastructure
+       ═══════════════════════════════════════════ -->
+  <div class="slide" id="slide-5" data-name="infrastructure">
+    <div class="slide-inner">
+      <div class="section-num fade-in">[05]</div>
+      <h2 class="fade-in d1">Building Shared Infrastructure</h2>
+      <p class="fade-in d2">Each study builds capabilities the others can use — and it gets easier as we go.</p>
+
+      <table class="matrix fade-in d3">
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Hypothesis</th>
+            <th>Construct</th>
+            <th>Ecological</th>
+            <th>LLM Judge</th>
+            <th>Case Gen</th>
+            <th>Ablations</th>
+            <th>MechInterp</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Moral Sensitivity</td><td class="partial">░░</td><td class="filled">██</td><td class="partial">░░</td><td class="filled">██</td><td class="filled">██</td><td class="partial">░░</td><td class="partial">░░</td></tr>
+          <tr><td>Egonormous</td><td class="filled">██</td><td class="partial">░░</td><td class="partial">░░</td><td class="filled">██</td><td class="partial">░░</td><td class="partial">░░</td><td class="partial">░░</td></tr>
+          <tr><td>Even-More-Bench</td><td class="partial">░░</td><td class="filled">██</td><td class="partial">░░</td><td class="filled">██</td><td class="partial">░░</td><td class="partial">░░</td><td class="partial">░░</td></tr>
+          <tr><td>Compliance Overspill</td><td class="filled">██</td><td class="partial">░░</td><td class="filled">██</td><td class="partial">░░</td><td class="filled">██</td><td class="partial">░░</td><td class="partial">░░</td></tr>
+          <tr><td>Targeting</td><td class="partial">░░</td><td class="partial">░░</td><td class="filled">██</td><td class="partial">░░</td><td class="filled">██</td><td class="partial">░░</td><td class="partial">░░</td></tr>
+          <tr><td>Claims</td><td class="partial">░░</td><td class="partial">░░</td><td class="filled">██</td><td class="partial">░░</td><td class="partial">░░</td><td class="partial">░░</td><td class="partial">░░</td></tr>
+          <tr><td>Blame</td><td class="filled">██</td><td class="partial">░░</td><td class="filled">██</td><td class="partial">░░</td><td class="filled">██</td><td class="partial">░░</td><td class="partial">░░</td></tr>
+          <tr><td>Re-Engineering</td><td class="partial">░░</td><td class="filled">██</td><td class="partial">░░</td><td class="filled">██</td><td class="filled">██</td><td class="partial">░░</td><td class="partial">░░</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout fade-in d4">
+        <p style="margin: 0; font-size: 13px;"><span class="accent">██</span> <span class="dim">mostly done</span> &nbsp; <span style="color: var(--text-3);">░░</span> <span class="dim">potential extension</span> &nbsp;·&nbsp; <span class="dim">Every project builds methods + competence metrics. The commonality of these functions means it gets easier to do each as we go along.</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 6: Next Frontier
+       ═══════════════════════════════════════════ -->
+  <div class="slide" id="slide-6" data-name="next">
+    <div class="slide-inner">
+      <div class="section-num fade-in">[06]</div>
+      <h2 class="fade-in d1">The Next Frontier</h2>
+      <p class="lead fade-in d2" style="max-width: 880px;">Models may "know" morality propositionally — but can they <em>apply</em> it as agents in the real world?</p>
+
+      <div class="gap-visual fade-in d3">
+        <div class="gap-side" style="border-color: var(--accent-dim);">
+          <div class="gap-label accent">Knowing</div>
+          <div class="gap-desc">Deep propositional moral understanding.<br>Passes evals. Reasons well <em>when asked.</em></div>
+        </div>
+        <div class="gap-middle">
+          <div class="gap-arrow">╱╱╱</div>
+          <div style="writing-mode: vertical-rl; text-orientation: mixed; color: var(--red); font-size: 12px; font-weight: 600; letter-spacing: 2px;">THE GAP</div>
+          <div class="gap-arrow">╱╱╱</div>
+        </div>
+        <div class="gap-side" style="border-color: rgba(224,108,117,0.4);">
+          <div class="gap-label red">Doing</div>
+          <div class="gap-desc">Noticing MRFs in novel domains unprompted.<br>Generalising moral sensitivity to new situations.</div>
+        </div>
+      </div>
+
+      <div class="approach-grid fade-in d4">
+        <div class="approach-item">
+          <div class="approach-label">Approach A</div>
+          <div class="approach-text">Build from <span class="accent">privacy-lens / privacy-checker</span> — domain-specific moral sensitivity for agents</div>
+        </div>
+        <div class="approach-item">
+          <div class="approach-label">Approach B</div>
+          <div class="approach-text">Deploy agents (likely OpenClaw) in <span class="accent">multi-agent simulations</span> where coherence is a necessary condition for being a viable participant in a cooperative scheme</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 7: Full Architecture
+       ═══════════════════════════════════════════ -->
+  <div class="slide" id="slide-7" data-name="architecture">
+    <div class="slide-inner">
+      <div class="section-num fade-in">[07]</div>
+      <h2 class="fade-in d1">The Full Architecture</h2>
+      <p class="fade-in d2">Normative competence is the foundation — part of a broader programme spanning philosophy, law, CS, and political science.</p>
+
+      <!-- Timeline slider -->
+      <div class="timeline-control fade-in d3">
+        <div class="timeline-label">
+          <span class="dim">now</span>
+          <span id="timeline-date" style="color: var(--text-bright); font-weight: 600;"></span>
+          <span class="dim">+24 months</span>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <input type="range" id="timeline-slider" min="0" max="24" value="0" step="1" class="terminal-slider" style="flex: 1;">
+          <button id="timeline-play" class="play-btn">▶ play</button>
+        </div>
+        <div class="timeline-ticks">
+          <span>2026</span><span>│</span><span>2027</span><span>│</span><span>2028</span>
+        </div>
+      </div>
+
+      <!-- Dynamic allocation bar -->
+      <div class="pillar-bar fade-in d3" id="alloc-bar">
+        <div class="segment seg-nc" id="bar-nc" style="flex: 70;">Normative Competence · <span id="pct-nc-bar">70</span>%</div>
+        <div class="segment seg-ga" id="bar-ga" style="flex: 20;">Agents · <span id="pct-ga-bar">20</span>%</div>
+        <div class="segment seg-pp" id="bar-pp" style="flex: 10;">Post-AGI · <span id="pct-pp-bar">10</span>%</div>
+      </div>
+
+      <div class="pillars fade-in d4" id="pillar-grid">
+        <div class="pillar" data-modal="pillar-nc">
+          <div class="pillar-pct accent" id="pct-nc">70%</div>
+          <div class="pillar-title">Normative Competence</div>
+          <div class="pillar-disc">Philosophy-inspired CS · Measure → Explain → Improve</div>
+        </div>
+        <div class="pillar" data-modal="pillar-ga">
+          <div class="pillar-pct amber" id="pct-ga">20%</div>
+          <div class="pillar-title">Governing Agents</div>
+          <div class="pillar-disc">Philosophy · Law · CS</div>
+        </div>
+        <div class="pillar" data-modal="pillar-pp">
+          <div class="pillar-pct purple" id="pct-pp">10%</div>
+          <div class="pillar-title">Post-AGI Philosophy</div>
+          <div class="pillar-disc">Philosophy · PoliSci</div>
+        </div>
+      </div>
+
+      <div class="bleed fade-in d5">══════════ ║ ══════════</div>
+
+      <div style="text-align: center;" class="fade-in d5">
+        <p class="dim" style="max-width: 700px; margin: 0 auto;">
+          Moral agents are a throughline: from <span class="accent">a mechanism of alignment</span> to <span class="amber">the foundations of cooperation</span>, to <span class="purple">the prospect of agent moral status</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 8: Intellectual Infrastructure
+       ═══════════════════════════════════════════ -->
+  <div class="slide" id="slide-8" data-name="infrastructure-intellectual">
+    <div class="slide-inner">
+      <div class="section-num fade-in">[08]</div>
+      <h2 class="fade-in d1">Intellectual Infrastructure</h2>
+      <p class="lead fade-in d2">Institutions that advance the collective epistemic project of AI governance.</p>
+
+      <div class="cards fade-in d3" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="card accent-mint" data-modal="infra-arxiv">
+          <div class="card-head">
+            <div class="title">ArXiv Subcodes</div>
+            <div class="subtitle">cs.pfai + AI Governance</div>
+          </div>
+        </div>
+        <div class="card accent-amber" data-modal="infra-oxford">
+          <div class="card-head">
+            <div class="title">Oxford Studies</div>
+            <div class="subtitle">Philosophy of AI and Computing</div>
+          </div>
+        </div>
+        <div class="card accent-cyan" data-modal="infra-journal">
+          <div class="card-head">
+            <div class="title">Journal of AI Governance</div>
+            <div class="subtitle">Separating evaluations of rigour from narrow disciplinary judgments of importance</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cards fade-in d4" style="grid-template-columns: repeat(2, 1fr); margin-top: 0;">
+        <div class="card accent-purple" data-modal="infra-sgp">
+          <div class="card-head">
+            <div class="title">JHU SGP</div>
+            <div class="subtitle">AI governance at scale, outside the labs</div>
+          </div>
+        </div>
+        <div class="card accent-green" style="border-left: 3px solid var(--green); cursor: default;">
+          <div class="card-head">
+            <div class="title" style="color: var(--green);">Full Stack</div>
+            <div class="subtitle">If AI will change everything then a full stack approach to AI governance is necessary. Can't rely on AI expertise alone.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════
+     Modal Overlay
+     ═══════════════════════════════════════════ -->
+<div class="modal-backdrop" id="modal-backdrop" onclick="closeModal(event)">
+  <div class="modal-card" id="modal-card">
+    <button class="modal-close" onclick="closeModal(event, true)">[×]</button>
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title"></div>
+      <div class="modal-lead" id="modal-lead"></div>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     Navigation Bar
+     ═══════════════════════════════════════════ -->
+<nav class="nav-bar">
+  <div class="nav-progress">
+    <span style="color: var(--text-3);">scroll</span>
+    <div class="bar" id="progress-bar"></div>
+  </div>
+  <div class="nav-dots" id="nav-dots"></div>
+  <div class="nav-section"><span class="section-name" id="section-name">title</span></div>
+  <div class="nav-controls"><kbd>←</kbd> <kbd>→</kbd> <span style="color: var(--text-3); margin-left: 3px;">navigate</span></div>
+</nav>
+
+<script>
+// ═══════════════════════════════════════════
+// Modal Content Database
+// ═══════════════════════════════════════════
+const MODALS = {
+  // Slide 2: Dimensions
+  sensitivity: {
+    title: 'Sensitivity',
+    lead: 'Intrinsic property of moral reasoning',
+    body: `<p><strong class="accent">Can the model notice what matters?</strong></p>
+<p>Whether LLMs can identify morally relevant features from an unfiltered data stream — noticing what is morally salient in a situation, as distinct from reasoning about features once identified.</p>`
+  },
+  grounding: {
+    title: 'Grounding',
+    lead: 'Intrinsic property of moral reasoning',
+    body: `<p><strong class="amber">Can it connect reasons to features?</strong></p>
+<p>"This is wrong" is a verdict. Competent moral reasoning requires grounding reasons in the morally relevant features of the situation — identifying which specific facts carry moral weight and why.</p>`
+  },
+  justification: {
+    title: 'Justification',
+    lead: 'Intrinsic property of moral reasoning',
+    body: `<p><strong class="cyan">Can it explain its reasoning?</strong></p>
+<p>Sound justification means producing reasoning that actually supports the conclusion — grounding reasons in morally relevant features to arrive at reasonable verdicts. There needs to be a clear chain from features to judgment.</p>`
+  },
+  coherence: {
+    title: 'Coherence',
+    lead: 'Extrinsic property of moral reasoning',
+    body: `<p><strong class="purple">Do its judgments fit together?</strong></p>
+<p>We measure coherence both quantitatively (do judgments vary in proportion to the strength of reasons?) and qualitatively (do their justifications in related cases vary and persist in sensible ways?).</p>`
+  },
+
+  // Slide 3: Pipeline steps
+  'step-measure': {
+    title: 'Step I: Measure',
+    lead: 'Can we show LLMs are normatively incompetent?',
+    body: `<p>Demonstrating incompetence is easier than proving competence. Our approach:</p>
+<p>├── Build evals across <em>many</em> domains to find where models trip up<br>
+├── If they don't trip up, broaden evals until passing all of them makes competence hard to deny<br>
+└── Test across sensitivity, grounding, justification, and coherence</p>
+<p>The first step for each project is: does the model reach some minimum standard of competence in this domain? If not, that's a clear result.</p>`
+  },
+  'step-explain': {
+    title: 'Step II: Explain',
+    lead: 'Why do they perform as they do?',
+    body: `<p>Understanding the mechanism behind performance or failure:</p>
+<p>├── <strong>Ablations</strong> — separating the influence of post-training vs. pre-training vs. raw capability/model size<br>
+├── <strong>Mechanistic interpretability</strong> — what happens inside the model during moral reasoning?<br>
+└── <strong>Influence studies</strong> — which training data drives which reasoning patterns?</p>
+<p>This is something we haven't done yet, but it could involve all of these approaches.</p>`
+  },
+  'step-improve': {
+    title: 'Step III: Improve',
+    lead: 'Can we make models more morally competent?',
+    body: `<p>Use knowledge from Steps I and II to actually improve model reasoning. Requires:</p>
+<p>├── <strong>Good evals</strong> — ideally full RL environments, not just benchmarks<br>
+├── <strong>Validated LLM judges</strong> — to provide reliable reward signal<br>
+└── <strong>Procedural case generation</strong> — to produce training data at scale</p>
+<p>We are quite far from doing this at present, but we are building the crucial ingredients — good evals, validated judges, and procedural case generation — across our current projects.</p>`
+  },
+
+  // Slide 4: Projects
+  'proj-sensitivity': {
+    title: 'Moral Sensitivity',
+    lead: 'Led by Daniel',
+    body: `<p>Building on "Discerning What Matters", this project asks whether LLMs can identify morally relevant features amid textual noise.</p>
+<p>It also develops a <strong>procedural case generation pipeline</strong> for a comprehensive approach to analytical moral knowledge, and provides the resources with which to <strong>build and validate an LLM judge</strong> for moral reasoning.</p>
+<div class="tags"><span class="tag">LLM judge</span><span class="tag">case generation</span><span class="tag">sensitivity eval</span></div>`
+  },
+  'proj-egonormous': {
+    title: 'Egonormous',
+    lead: 'Led by Sichao',
+    body: `<p>Takes the moral sensitivity agenda into <strong>multimodal territory</strong>. Video is exceptionally dense and provides excellent ecological validity for the "moral frame problem".</p>
+<p>How do you decide what's morally salient when the information stream is continuous and unstructured? Video is very dense, and it's taken a lot of work to get the dataset ready, but this should be an important contribution.</p>
+<div class="tags"><span class="tag">multimodal</span><span class="tag amber">ecological validity</span><span class="tag">moral frame problem</span></div>`
+  },
+  'proj-emb': {
+    title: 'Even-More-Bench',
+    lead: 'Led by ChunYan',
+    body: `<p>Can LLMs produce moral rubrics as comprehensive and compelling as those by professional philosophers? Aims to show MoReBench understates LLM competence.</p>
+<p>The more lasting contribution: using MoReBench to <strong>bootstrap and validate an LLM judge</strong> for moral reasoning, then extending that judge to the other projects' datasets.</p>
+<div class="tags"><span class="tag">LLM judge</span><span class="tag cyan">benchmarking</span><span class="tag">rubric quality</span></div>`
+  },
+  'proj-compliance': {
+    title: 'Compliance Overspill',
+    lead: 'Led by Cameron',
+    body: `<p><strong>Hypothesis-driven:</strong> alignment training makes models worse at reasoning about unjust rules and illegitimate authorities.</p>
+<p>If confirmed, this would show an unintended side-effect of alignment training, as well as a clear way in which LLM moral learning is different from and worse than human moral learning. Also a nice procedural case generation one, with eval exchange designed as a plausible customer interaction.</p>
+<div class="tags"><span class="tag purple">hypothesis-driven</span><span class="tag">alignment side-effects</span><span class="tag amber">ecological validity</span><span class="tag">mechinterp</span></div>`
+  },
+  'proj-blame': {
+    title: 'Blame',
+    lead: 'Led by Theo',
+    body: `<p>Extends beyond verdicts to <strong>blame attribution</strong> — a distinct and underexplored dimension of normative judgment.</p>
+<p>Also identifies <strong>sycophancy as a systematic shortcoming</strong> with direct implications: a model that adjusts its moral judgments to please the user isn't morally competent. Another example of identifying a feature of LLM training that supports a hypothesis about moral incompetence.</p>
+<div class="tags"><span class="tag">blame attribution</span><span class="tag purple">sycophancy</span><span class="tag">normative judgment</span></div>`
+  },
+  'proj-targeting': {
+    title: 'Targeting',
+    lead: 'Led by Tim',
+    body: `<p>Military targeting — a domain where model competence would be <strong>genuinely valuable</strong>. Strong expert verification signal available.</p>
+<p>Tests whether models' reasoning breaks in identifiable ways due to the specific mechanism by which LLMs "reason," and provides strong verification signal from domain experts.</p>
+<div class="tags"><span class="tag amber">high-stakes</span><span class="tag green">expert verification</span><span class="tag amber">ecological validity</span></div>`
+  },
+  'proj-claims': {
+    title: 'Claims',
+    lead: 'Led by Secil',
+    body: `<p>Insurance claims require <em>many</em> normative judgments — contributory fault, negligence, fairness — not captured by typical eval framings.</p>
+<p>Includes a <strong>bias dimension</strong>. Has the greatest potential to develop a <strong>full RL environment</strong> for a commercially relevant normative competence task.</p>
+<div class="tags"><span class="tag green">RL environment</span><span class="tag">subtle judgments</span><span class="tag">bias</span><span class="tag cyan">commercial</span></div>`
+  },
+  'proj-reengineering': {
+    title: 'Re-Engineering',
+    lead: 'Led by Elena',
+    body: `<p>Expands the evaluative toolkit using <strong>forced-choice between pairs</strong> rather than permissibility judgments. Validates and extends the "emergent values" work.</p>
+<p>The coherence test: do models' preferences shift <em>predictably</em> when the strength of reasons changes, or unpredictably?</p>
+<div class="tags"><span class="tag purple">coherence</span><span class="tag">forced-choice</span><span class="tag">emergent values</span></div>`
+  },
+
+  // Slide 7: Pillars
+  'pillar-nc': {
+    title: 'Normative Competence — 70%',
+    lead: 'Philosophy-inspired computer science',
+    body: `<p>The core programme: <strong>Measure → Explain → Improve.</strong> Eight active projects testing sensitivity, grounding, justification, and coherence across domains from insurance to military targeting.</p>
+<p><strong>Next phase:</strong> the knowing-doing gap — testing whether agents can apply moral understanding in simulated environments. Multi-agent simulations where coherence is a necessary condition for being a viable participant in a cooperative scheme.</p>
+<p style="margin-top: 10px;"><strong>Outputs:</strong> CS conference papers (NeurIPS, ICLR); philosophy paper on what ethics evals get wrong and how to do it right.</p>`
+  },
+  'pillar-ga': {
+    title: 'Governing AI Agents — 20%',
+    lead: 'Philosophy · Law · Computer Science',
+    body: `<p>├── Unhobbling agents — removing constraints thoughtfully<br>
+├── Agent infrastructure — governance frameworks for autonomous systems<br>
+└── Near-term window via CAISI interest in the theme</p>
+<p>Both have tremendous potential for societal impact, but need more manpower to move forward in the near term.</p>
+<p style="margin-top: 10px;"><strong>Outputs:</strong> Empirical and policy whitepapers, CS position papers, FAccT/AIES AI Governance papers, philosophy papers on agent-relative morality.</p>`
+  },
+  'pillar-pp': {
+    title: 'Post-AGI Political Philosophy — 10%',
+    lead: 'Philosophy · Political Science',
+    body: `<p>├── AGI and the foundations of voluntary social order<br>
+├── AGI, mega-corporations, and democracy<br>
+├── How AGI breaks hidden tenets of political and social theories<br>
+└── Societal adaptation — mobilising the SGP</p>
+<p style="margin-top: 10px;"><strong>Outputs:</strong> Philosophy papers, weird cross-disciplinary papers, public writing.</p>`
+  },
+
+  // Slide 8: Intellectual Infrastructure
+  'infra-arxiv': {
+    title: 'ArXiv Subcodes',
+    lead: 'Getting the right people into the conversation',
+    body: `<p><strong>cs.pfai</strong> — a philosophy arXiv subcode to get philosophers into the CS conversation, where their work can be found by the people who need it.</p>
+<p><strong>AI Governance subcode</strong> — no more orphaned policy position papers. A home for governance research that is currently scattered across disciplines.</p>`
+  },
+  'infra-oxford': {
+    title: 'Oxford Studies in Philosophy of AI and Computing',
+    lead: 'Building disciplinary credibility',
+    body: `<p>A prestigious series to build credibility for philosophy of AI within the discipline.</p>`
+  },
+  'infra-journal': {
+    title: 'Journal of AI Governance',
+    lead: 'Rigour oriented towards what actually matters',
+    body: `<p>Apply disciplinary standards of rigour but oriented towards what actually matters. An overlay journal separately serving both "this is good science that you can build on" and "this deserves a prize" functions.</p>`
+  },
+  'infra-sgp': {
+    title: 'JHU School of Government and Policy',
+    lead: 'AI governance at institutional scale',
+    body: `<p>The biggest AI governance group outside the labs, with a mandate to engage in public-interest "governance futurism." An institutional home for the kind of interdisciplinary work that doesn't fit neatly into existing departments.</p>`
+  }
+};
+
+// ═══════════════════════════════════════════
+// Modal System
+// ═══════════════════════════════════════════
+const backdrop = document.getElementById('modal-backdrop');
+const modalTitle = document.getElementById('modal-title');
+const modalLead = document.getElementById('modal-lead');
+const modalBody = document.getElementById('modal-body');
+
+function openModal(key) {
+  const data = MODALS[key];
+  if (!data) return;
+  modalTitle.textContent = data.title;
+  modalLead.textContent = data.lead || '';
+  modalBody.innerHTML = data.body;
+  backdrop.classList.add('visible');
+}
+
+function closeModal(e, force) {
+  if (force || e.target === backdrop) {
+    backdrop.classList.remove('visible');
+  }
+}
+
+// Attach modal triggers to all [data-modal] elements
+document.querySelectorAll('[data-modal]').forEach(el => {
+  el.addEventListener('click', () => openModal(el.dataset.modal));
+});
+
+// ═══════════════════════════════════════════
+// Slide Engine
+// ═══════════════════════════════════════════
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+
+const dotsContainer = document.getElementById('nav-dots');
+const progressBar = document.getElementById('progress-bar');
+
+for (let i = 0; i < totalSlides; i++) {
+  const dot = document.createElement('div');
+  dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  dot.onclick = () => goToSlide(i);
+  dotsContainer.appendChild(dot);
+
+  const seg = document.createElement('div');
+  seg.className = 'bar-seg' + (i === 0 ? ' filled' : '');
+  seg.onclick = () => goToSlide(i);
+  progressBar.appendChild(seg);
+}
+
+function goToSlide(n) {
+  if (n < 0 || n >= totalSlides || n === currentSlide) return;
+  slides[currentSlide].classList.remove('active');
+  currentSlide = n;
+  slides[currentSlide].classList.add('active');
+
+  document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === n));
+  document.querySelectorAll('.bar-seg').forEach((s, i) => s.classList.toggle('filled', i <= n));
+  document.getElementById('section-name').textContent = slides[n].dataset.name || '';
+}
+
+document.addEventListener('keydown', (e) => {
+  // Close modal on Escape
+  if (e.key === 'Escape') {
+    backdrop.classList.remove('visible');
+    return;
+  }
+  // Don't navigate if modal is open
+  if (backdrop.classList.contains('visible')) return;
+
+  if (e.key === 'ArrowRight' || e.key === ' ') {
+    e.preventDefault();
+    goToSlide(currentSlide + 1);
+  } else if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    goToSlide(currentSlide - 1);
+  } else if (e.key === 'Home') {
+    e.preventDefault();
+    goToSlide(0);
+  } else if (e.key === 'End') {
+    e.preventDefault();
+    goToSlide(totalSlides - 1);
+  }
+});
+
+// ═══════════════════════════════════════════
+// Typing Animation
+// ═══════════════════════════════════════════
+const titleText = 'Reasons-Responsive Machines';
+const typedEl = document.getElementById('typed-title');
+let charIndex = 0;
+
+function typeTitle() {
+  if (charIndex < titleText.length) {
+    typedEl.textContent += titleText[charIndex];
+    charIndex++;
+    setTimeout(typeTitle, 40 + Math.random() * 60);
+  }
+}
+
+setTimeout(typeTitle, 500);
+
+// ═══════════════════════════════════════════
+// Timeline Slider — Effort Allocation
+// ═══════════════════════════════════════════
+const slider = document.getElementById('timeline-slider');
+const dateLabel = document.getElementById('timeline-date');
+
+// Start/end allocations
+const ALLOC_START = { nc: 70, ga: 20, pp: 10 };
+const ALLOC_END   = { nc: 20, ga: 30, pp: 50 };
+const TRANSITION_MONTHS = 23; // linear transition reaching final distribution early 2028
+
+function lerp(a, b, t) {
+  return Math.round(a + (b - a) * t);
+}
+
+function getMonthLabel(monthOffset) {
+  const base = new Date(2026, 2); // March 2026 (month 0)
+  base.setMonth(base.getMonth() + monthOffset);
+  const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return names[base.getMonth()] + ' ' + base.getFullYear();
+}
+
+function updateAllocation(month) {
+  const t = Math.min(month / TRANSITION_MONTHS, 1);
+  const nc = lerp(ALLOC_START.nc, ALLOC_END.nc, t);
+  const ga = lerp(ALLOC_START.ga, ALLOC_END.ga, t);
+  const pp = lerp(ALLOC_START.pp, ALLOC_END.pp, t);
+
+  // Update bar segments (flex values)
+  document.getElementById('bar-nc').style.flex = nc;
+  document.getElementById('bar-ga').style.flex = ga;
+  document.getElementById('bar-pp').style.flex = pp;
+
+  // Update bar labels
+  document.getElementById('pct-nc-bar').textContent = nc;
+  document.getElementById('pct-ga-bar').textContent = ga;
+  document.getElementById('pct-pp-bar').textContent = pp;
+
+  // Update pillar cards
+  document.getElementById('pct-nc').textContent = nc + '%';
+  document.getElementById('pct-ga').textContent = ga + '%';
+  document.getElementById('pct-pp').textContent = pp + '%';
+
+  // Update pillar grid proportions
+  document.getElementById('pillar-grid').style.gridTemplateColumns = nc + 'fr ' + ga + 'fr ' + pp + 'fr';
+
+  // Update date label
+  dateLabel.textContent = getMonthLabel(month);
+
+  // Hide segment text if too narrow
+  document.getElementById('bar-nc').querySelector('span').parentElement.style.fontSize = nc < 15 ? '0' : '';
+  document.getElementById('bar-ga').querySelector('span').parentElement.style.fontSize = ga < 15 ? '0' : '';
+  document.getElementById('bar-pp').querySelector('span').parentElement.style.fontSize = pp < 15 ? '0' : '';
+}
+
+slider.addEventListener('input', () => {
+  stopPlayback();
+  updateAllocation(parseInt(slider.value));
+});
+updateAllocation(0);
+
+// ═══════════════════════════════════════════
+// Play/Pause Animation
+// ═══════════════════════════════════════════
+const playBtn = document.getElementById('timeline-play');
+let playInterval = null;
+let isPlaying = false;
+
+function startPlayback() {
+  isPlaying = true;
+  playBtn.textContent = '■ stop';
+  // If at end, reset to start
+  if (parseInt(slider.value) >= 24) slider.value = 0;
+  playInterval = setInterval(() => {
+    const v = parseInt(slider.value) + 1;
+    if (v > 24) {
+      stopPlayback();
+      return;
+    }
+    slider.value = v;
+    updateAllocation(v);
+  }, 200); // step every 200ms = ~5 seconds total
+}
+
+function stopPlayback() {
+  isPlaying = false;
+  if (playBtn) playBtn.textContent = '▶ play';
+  if (playInterval) {
+    clearInterval(playInterval);
+    playInterval = null;
+  }
+}
+
+playBtn.addEventListener('click', () => {
+  if (isPlaying) {
+    stopPlayback();
+  } else {
+    startPlayback();
+  }
+});
+</script>
+
+</body>
+</html>
