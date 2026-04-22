@@ -1,0 +1,2289 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapping the MPP Core Pitches — Seth Lazar, FDC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,400..700&amp;family=IBM+Plex+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #F3EDDC;
+  --paper-bright: #FAF4E3;
+  --paper-deep: #E8E0CA;
+  --ink: #1A1915;
+  --ink-dim: #3E3B32;
+  --mid: #6F6A5E;
+  --light: #A8A296;
+  --hair: #D9D1BA;
+  --rust: #9A3412;
+  --rust-bright: #C2410C;
+  --amber: #D97706;
+  --amber-soft: #FCD34D;
+  --teal: #0F766E;
+  --teal-deep: #0B4A44;
+  --teal-soft: #CBE3DF;
+  --rose: #F7D7C1;
+  --red: #B91C1C;
+
+  --serif: 'Fraunces', 'Newsreader', Georgia, serif;
+  --mono: 'IBM Plex Mono', 'Space Mono', monospace;
+
+  --border: 2px dashed var(--ink);
+  --border-thin: 1px solid var(--ink);
+  --border-dot: 2px dotted var(--ink);
+  --border-hair: 1px solid var(--hair);
+
+  --chrome-top: 28px;
+  --chrome-bot: 44px;
+  --gutter-x: clamp(16px, 3.5vw, 48px);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--paper); }
+body {
+  font-family: var(--serif);
+  font-variation-settings: "opsz" 14, "SOFT" 30;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.45;
+  font-size: clamp(13px, 1.05vw, 17px);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  height: 100vh; width: 100vw;
+  overflow: hidden;
+}
+
+/* ─── Slide deck ─── */
+.deck {
+  position: fixed; inset: 0;
+  top: var(--chrome-top); bottom: var(--chrome-bot);
+  overflow: hidden;
+}
+.slide {
+  position: absolute; inset: 0;
+  padding: clamp(18px, 3.2vh, 40px) var(--gutter-x);
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  pointer-events: none;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.slide.active { opacity: 1; transform: none; pointer-events: auto; }
+.slide.prev { transform: translateY(-10px); }
+
+/* ─── Typography ─── */
+h1, h2, h3, h4 { font-family: var(--serif); color: var(--ink); }
+h1 {
+  font-size: clamp(42px, 5.8vw, 92px);
+  font-variation-settings: "opsz" 144, "wght" 600, "SOFT" 30;
+  line-height: 1.02; letter-spacing: -1.5px;
+}
+h1.mega {
+  font-size: clamp(56px, 8.5vw, 140px);
+  font-variation-settings: "opsz" 144, "wght" 700, "SOFT" 30;
+  letter-spacing: -2.5px; line-height: 0.94;
+}
+h2 {
+  font-size: clamp(26px, 3vw, 44px);
+  font-variation-settings: "opsz" 96, "wght" 600, "SOFT" 30;
+  line-height: 1.1; letter-spacing: -0.4px; margin-bottom: 6px;
+}
+h3 {
+  font-size: clamp(18px, 1.9vw, 26px);
+  font-variation-settings: "opsz" 36, "wght" 600, "SOFT" 30;
+  line-height: 1.2;
+}
+p { font-size: clamp(13px, 1.05vw, 17px); line-height: 1.5; }
+p.lede { font-size: clamp(16px, 1.35vw, 22px); line-height: 1.4; font-variation-settings: "opsz" 36, "wght" 400; }
+p.dim { color: var(--mid); }
+strong { font-variation-settings: "opsz" 14, "wght" 600, "SOFT" 30; }
+em { font-style: italic; }
+
+.eyebrow {
+  font-family: var(--mono); font-size: clamp(10px, 0.82vw, 12px); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 2.2px;
+  color: var(--rust); display: inline-block;
+}
+.eyebrow::before { content: "§ "; color: var(--light); }
+
+.rule { height: 3px; width: 56px; background: var(--rust); margin: 10px 0 14px; }
+
+.highlight {
+  background: linear-gradient(180deg, transparent 55%, var(--amber-soft) 55%);
+  padding: 0 3px;
+}
+
+code, .mono { font-family: var(--mono); font-size: 0.88em; font-weight: 500; }
+
+/* ═══ Shared section head ═══ */
+.slide-head { flex-shrink: 0; display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; margin-bottom: 10px; }
+.tag {
+  font-family: var(--mono); font-size: clamp(10px, 0.78vw, 11.5px); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.8px;
+  padding: 4px 9px; border: 1.5px solid var(--ink); border-radius: 2px;
+  background: var(--paper-bright); color: var(--ink); white-space: nowrap;
+}
+.tag.rust { background: var(--rust); color: var(--paper-bright); border-color: var(--rust); }
+.tag.teal { background: var(--teal); color: var(--paper-bright); border-color: var(--teal); }
+.tag.ink { background: var(--ink); color: var(--paper-bright); border-color: var(--ink); }
+
+/* ═══════════ COVER ═══════════ */
+.slide.cover {
+  background:
+    radial-gradient(circle at 78% 14%, rgba(154,52,18,0.08) 0, transparent 45%),
+    radial-gradient(circle at 8% 92%, rgba(15,118,110,0.10) 0, transparent 42%),
+    var(--paper);
+  justify-content: space-between;
+}
+.cover-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px; }
+.cover-meta { font-family: var(--mono); font-size: clamp(10px, 0.82vw, 12px); letter-spacing: 1.8px; text-transform: uppercase; color: var(--ink-dim); }
+.cover-meta strong { color: var(--rust); font-weight: 700; }
+.cover-date { font-family: var(--mono); font-size: clamp(10px, 0.82vw, 12px); letter-spacing: 1.8px; text-transform: uppercase; color: var(--mid); text-align: right; }
+
+.cover-mid { flex: 1; display: flex; flex-direction: column; justify-content: center; max-width: 1200px; }
+.cover-title {
+  font-family: var(--serif);
+  font-size: clamp(60px, 10vw, 180px);
+  font-variation-settings: "opsz" 144, "wght" 700, "SOFT" 30;
+  line-height: 0.9; letter-spacing: -3px;
+}
+.cover-title .stroke {
+  -webkit-text-stroke: 2px var(--ink); color: var(--paper);
+  font-variation-settings: "opsz" 144, "wght" 500;
+}
+.cover-sub {
+  font-size: clamp(18px, 2vw, 32px);
+  max-width: 900px; margin-top: clamp(10px, 1.8vh, 22px);
+  font-variation-settings: "opsz" 72, "wght" 400, "SOFT" 30;
+  color: var(--ink-dim); line-height: 1.25;
+}
+.cover-bottom { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding-top: 16px; border-top: var(--border); }
+.cover-stat .k { font-family: var(--mono); font-size: clamp(9px, 0.75vw, 11px); letter-spacing: 1.6px; text-transform: uppercase; color: var(--mid); margin-bottom: 3px; }
+.cover-stat .v { font-family: var(--serif); font-size: clamp(14px, 1.4vw, 22px); font-variation-settings: "opsz" 48, "wght" 500; line-height: 1.2; }
+.cover-stat .v em { color: var(--rust); font-style: normal; font-variation-settings: "opsz" 48, "wght" 700; }
+
+/* ═══════════ FRAMING ═══════════ */
+.macro-grid {
+  flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr);
+  gap: clamp(10px, 1.4vh, 18px); margin-top: clamp(8px, 1.2vh, 16px);
+  min-height: 0;
+}
+.macro-card {
+  padding: clamp(12px, 1.8vh, 22px);
+  background: var(--paper-bright); border: var(--border); position: relative;
+  display: flex; flex-direction: column; justify-content: flex-start;
+  min-height: 0;
+}
+.macro-card .n {
+  position: absolute; top: -11px; left: 14px;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  background: var(--paper); padding: 2px 9px;
+  color: var(--rust); letter-spacing: 2px;
+}
+.macro-card h4 {
+  font-size: clamp(14px, 1.35vw, 19px);
+  font-variation-settings: "opsz" 18, "wght" 600, "SOFT" 30;
+  margin-bottom: 5px; line-height: 1.2;
+}
+.macro-card p { font-size: clamp(12px, 1vw, 15px); line-height: 1.45; color: var(--ink-dim); }
+
+/* ═══════════ RUBRIC ═══════════ */
+.rubric {
+  flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+  border: var(--border); margin-top: clamp(14px, 2vh, 24px); min-height: 0;
+}
+.rubric-cell {
+  padding: clamp(20px, 3vh, 40px);
+  border-right: 1.5px solid var(--ink); display: flex; flex-direction: column; justify-content: center;
+  min-height: 0;
+}
+.rubric-cell:last-child { border-right: none; }
+.rubric-cell h3 {
+  font-size: clamp(42px, 5.5vw, 88px);
+  font-variation-settings: "opsz" 144, "wght" 700;
+  line-height: 0.95; margin-bottom: 10px; color: var(--rust);
+  letter-spacing: -2px;
+}
+.rubric-cell .sub { font-family: var(--mono); font-size: clamp(10px, 0.82vw, 12px); letter-spacing: 1.6px; text-transform: uppercase; color: var(--mid); margin-bottom: 14px; }
+.rubric-cell p { font-size: clamp(13px, 1.1vw, 17px); line-height: 1.5; color: var(--ink-dim); }
+
+/* ═══════════ ROW PAGE ═══════════ */
+.row-label {
+  flex-shrink: 0;
+  padding: clamp(10px, 1.4vh, 16px) clamp(14px, 2vw, 22px);
+  background: var(--ink); color: var(--paper-bright);
+  display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
+  margin-top: clamp(6px, 1vh, 12px);
+}
+.row-label .code {
+  font-family: var(--mono); font-size: clamp(11px, 0.95vw, 14px); font-weight: 700;
+  letter-spacing: 1.8px; text-transform: uppercase; color: var(--amber-soft);
+  white-space: nowrap;
+}
+.row-label .name {
+  font-family: var(--serif); font-size: clamp(16px, 1.6vw, 24px);
+  font-variation-settings: "opsz" 36, "wght" 500; line-height: 1.2;
+}
+.row-label .qualifier {
+  font-family: var(--serif); font-style: italic; color: rgba(250,244,227,0.72);
+  font-size: clamp(12px, 1vw, 15px); line-height: 1.3;
+  margin-left: auto; max-width: 42%; text-align: right;
+}
+
+.pitch-grid {
+  flex: 1 1 auto; min-height: 0;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border: var(--border); border-top: none;
+}
+.pitch-col {
+  border-right: 1.5px solid var(--ink);
+  display: flex; flex-direction: column; min-width: 0; min-height: 0;
+}
+.pitch-col:last-child { border-right: none; }
+
+.pitch-head {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  background: var(--paper-deep); border-bottom: 1.5px solid var(--ink);
+  font-family: var(--mono); font-size: clamp(9px, 0.78vw, 11px); font-weight: 700;
+  letter-spacing: 1.8px; text-transform: uppercase; color: var(--ink-dim);
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 4px;
+}
+.pitch-head .author { color: var(--light); font-weight: 400; font-size: clamp(8px, 0.68vw, 10px); }
+
+.pitch-body {
+  flex: 1 1 auto; min-height: 0; padding: 8px 9px;
+  display: flex; flex-direction: column; gap: 6px;
+  overflow: hidden;
+}
+
+.card {
+  background: var(--paper-bright);
+  border: 1px solid var(--hair);
+  padding: 7px 10px;
+  cursor: pointer;
+  font-family: var(--serif);
+  font-variation-settings: "opsz" 18, "wght" 500;
+  font-size: clamp(11px, 0.98vw, 14px);
+  line-height: 1.28;
+  color: var(--ink);
+  position: relative;
+  transition: background 0.12s, border-color 0.12s, transform 0.12s;
+  display: flex; align-items: flex-start; gap: 6px;
+  user-select: none;
+}
+.card:hover { background: var(--amber-soft); border-color: var(--rust); transform: translateX(1px); }
+.card.active { background: var(--rust); color: var(--paper-bright); border-color: var(--rust); }
+.card .chev {
+  font-family: var(--mono); font-size: 0.9em; color: var(--rust);
+  margin-left: auto; flex-shrink: 0; padding-left: 4px;
+}
+.card.active .chev { color: var(--amber-soft); }
+.card .tag-pill {
+  font-family: var(--mono); font-size: clamp(8px, 0.62vw, 9.5px); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  padding: 1px 5px; background: var(--paper-deep); color: var(--ink-dim);
+  border-radius: 2px; margin-left: 4px; vertical-align: 1px;
+}
+.card.active .tag-pill { background: var(--paper-bright); color: var(--rust); }
+
+/* Compact inline-chip variant of .card — reuses overlay click handler */
+.card.chip {
+  display: inline-flex; align-items: center;
+  padding: 3px 10px 3px 10px;
+  font-family: var(--mono); font-size: clamp(10px, 0.78vw, 11.5px);
+  font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase;
+  background: var(--teal-soft); border: 1.5px solid var(--teal);
+  color: var(--teal-deep); border-radius: 2px;
+  margin: 0 2px; vertical-align: middle;
+}
+.card.chip .chev { color: var(--teal); margin-left: 5px; }
+.card.chip:hover { background: var(--teal); color: var(--paper-bright); border-color: var(--teal-deep); transform: translateX(1px); }
+.card.chip:hover .chev { color: var(--paper-bright); }
+.card.chip.active { background: var(--teal); color: var(--paper-bright); border-color: var(--teal-deep); }
+.card.chip.active .chev { color: var(--paper-bright); }
+
+/* Gillian's card in the proposal grid: add an inviting 'open' hint */
+.prop-item.is-card { cursor: pointer; position: relative; transition: background 0.14s ease; }
+.prop-item.is-card::after {
+  content: "↗"; position: absolute; top: 10px; right: 12px;
+  font-family: var(--mono); color: var(--amber-soft); font-size: 15px; font-weight: 700;
+  opacity: 0.65; transition: opacity 0.15s;
+}
+.prop-item.is-card:hover { background: rgba(252,211,77,0.12); }
+.prop-item.is-card:hover::after { opacity: 1; }
+.prop-item.is-card.active { background: rgba(252,211,77,0.2); }
+
+.empty-cell {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 12px 8px; font-family: var(--mono); font-size: clamp(9px, 0.78vw, 11px);
+  letter-spacing: 1.4px; text-transform: uppercase; color: var(--light);
+  background:
+    repeating-linear-gradient(45deg, transparent 0, transparent 7px,
+      rgba(154,52,18,0.04) 7px, rgba(154,52,18,0.04) 8px);
+  text-align: center; line-height: 1.4;
+}
+
+/* Tooltip overlay */
+#overlay {
+  position: fixed; z-index: 500;
+  width: clamp(300px, 38vw, 560px);
+  padding: 18px 20px 16px;
+  background: var(--paper-bright);
+  border: 2px solid var(--ink);
+  box-shadow: 6px 6px 0 0 var(--ink);
+  font-family: var(--serif); font-size: clamp(13px, 1.05vw, 16px);
+  line-height: 1.5; color: var(--ink-dim);
+  display: none;
+}
+#overlay.visible { display: block; }
+#overlay .ov-head {
+  font-variation-settings: "opsz" 24, "wght" 600, "SOFT" 30;
+  font-size: clamp(14px, 1.2vw, 18px);
+  color: var(--ink); margin-bottom: 8px; padding-bottom: 8px;
+  border-bottom: 1px dashed var(--mid); line-height: 1.25;
+}
+#overlay .ov-body strong { color: var(--ink); }
+#overlay .ov-meta {
+  margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--hair);
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--mid);
+  display: flex; gap: 10px; flex-wrap: wrap;
+}
+#overlay .ov-meta .xref { color: var(--teal); font-weight: 600; }
+#overlay .ov-close {
+  position: absolute; top: 8px; right: 10px;
+  font-family: var(--mono); font-size: 16px; font-weight: 700;
+  color: var(--mid); cursor: pointer; background: none; border: none;
+  padding: 4px 8px;
+}
+#overlay .ov-close:hover { color: var(--rust-bright); }
+
+/* Synthesis block */
+.synth {
+  flex-shrink: 0;
+  margin-top: clamp(10px, 1.4vh, 16px);
+  border: 2px solid var(--teal);
+  background: var(--teal-soft);
+  padding: clamp(10px, 1.4vh, 16px) clamp(14px, 2vw, 22px);
+  position: relative;
+}
+.synth::before {
+  content: "Synthesis — Seth";
+  position: absolute; top: -10px; left: 14px;
+  background: var(--teal); color: var(--paper-bright);
+  padding: 2px 9px;
+  font-family: var(--mono); font-size: clamp(9px, 0.75vw, 11px); font-weight: 700;
+  letter-spacing: 1.6px; text-transform: uppercase;
+}
+.synth p { font-size: clamp(12px, 1.05vw, 15.5px); line-height: 1.45; color: var(--teal-deep); margin-bottom: 4px; }
+.synth p:last-of-type { margin-bottom: 0; }
+.synth .ai-hook {
+  display: inline-block; margin-top: 6px;
+  font-family: var(--mono); font-size: clamp(9px, 0.72vw, 10.5px); font-weight: 600;
+  letter-spacing: 1.4px; text-transform: uppercase;
+  padding: 2px 7px; background: var(--teal); color: var(--paper-bright);
+}
+.synth .ai-hook.missing { background: var(--mid); }
+
+/* Row-level gap flag */
+.gap-flag {
+  flex-shrink: 0;
+  margin-top: clamp(8px, 1vh, 12px);
+  padding: 6px 12px; background: var(--paper-deep); border-left: 4px solid var(--rust);
+  font-family: var(--mono); font-size: clamp(10px, 0.82vw, 12px); font-weight: 600;
+  letter-spacing: 1.2px; text-transform: uppercase; color: var(--rust);
+}
+
+/* ═══════════ MISFIT ═══════════ */
+.misfit-wrap { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; margin-top: clamp(10px, 1.6vh, 18px); }
+.misfit-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.misfit-table th, .misfit-table td {
+  padding: clamp(8px, 1.1vh, 14px) clamp(10px, 1.3vw, 16px);
+  border: 1.5px solid var(--ink);
+  text-align: left; vertical-align: top;
+  font-size: clamp(11px, 0.95vw, 14px); line-height: 1.4;
+}
+.misfit-table th {
+  background: var(--ink); color: var(--paper-bright);
+  font-family: var(--mono); font-size: clamp(10px, 0.78vw, 11.5px); font-weight: 700;
+  letter-spacing: 1.6px; text-transform: uppercase;
+}
+.misfit-table tr:nth-child(even) td { background: var(--paper-bright); }
+.misfit-table .pitch-tag {
+  display: inline-block; padding: 2px 7px;
+  font-family: var(--mono); font-size: clamp(9px, 0.75vw, 11px); font-weight: 700;
+  letter-spacing: 1.2px; text-transform: uppercase; background: var(--paper-deep);
+}
+.misfit-table .call { color: var(--rust); font-style: italic; }
+.misfit-table td strong { display: block; margin-bottom: 3px; font-size: clamp(12px, 1.02vw, 14.5px); }
+.misfit-table td .course-desc { color: var(--ink-dim); font-size: clamp(10px, 0.85vw, 12.5px); line-height: 1.4; }
+
+/* ═══════════ COVERAGE ═══════════ */
+.cov-wrap { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; margin-top: clamp(6px, 1vh, 12px); }
+.cov-table { width: 100%; border-collapse: collapse; font-family: var(--serif); table-layout: fixed; }
+.cov-table th, .cov-table td {
+  padding: clamp(2px, 0.4vh, 5px) clamp(5px, 0.8vw, 10px);
+  border: 1.25px solid var(--ink);
+  text-align: center; vertical-align: middle;
+}
+.cov-table th {
+  background: var(--ink); color: var(--paper-bright);
+  font-family: var(--mono); font-size: clamp(9px, 0.72vw, 11px); font-weight: 700;
+  letter-spacing: 1.4px; text-transform: uppercase;
+}
+.cov-table th.row-h { text-align: left; }
+.cov-table td.row-h {
+  text-align: left; background: var(--paper-bright);
+  font-variation-settings: "opsz" 18, "wght" 600;
+  font-size: clamp(10px, 0.82vw, 12.5px); line-height: 1.2;
+  width: 22%;
+}
+.cov-table td.row-h .row-code {
+  font-family: var(--mono); font-size: clamp(8px, 0.64vw, 9.5px); color: var(--rust);
+  text-transform: uppercase; letter-spacing: 1.2px; font-weight: 700;
+  margin-right: 6px;
+}
+.cov-cell {
+  font-variation-settings: "opsz" 36, "wght" 700;
+  font-size: clamp(12px, 1.15vw, 17px); position: relative; line-height: 1.1;
+}
+.cov-cell .note {
+  display: block; font-family: var(--mono); font-size: clamp(7px, 0.55vw, 8.5px);
+  font-weight: 500; color: var(--mid); letter-spacing: 0.5px;
+  text-transform: uppercase; margin-top: 0; font-variation-settings: normal;
+}
+.cov-0 { background: rgba(185,28,28,0.16); color: var(--red); }
+.cov-0 .note { color: var(--red); opacity: 0.7; }
+.cov-low { background: rgba(217,119,6,0.12); color: var(--amber); }
+.cov-mid { background: rgba(15,118,110,0.12); color: var(--teal); }
+.cov-high { background: rgba(15,118,110,0.26); color: var(--teal-deep); }
+.cov-seth { background: var(--ink); color: var(--amber-soft); }
+.cov-seth .note { color: var(--amber-soft); opacity: 0.75; }
+
+/* ═══════════ PROPOSAL ═══════════ */
+.slide.prop { background: var(--ink); color: var(--paper-bright); }
+.slide.prop h2, .slide.prop h3 { color: var(--paper-bright); }
+.slide.prop .eyebrow { color: var(--amber-soft); }
+.slide.prop .eyebrow::before { color: var(--amber); }
+.slide.prop .rule { background: var(--amber-soft); }
+.slide.prop p { color: rgba(250,244,227,0.88); }
+.slide.prop .tag.ink { background: var(--amber-soft); color: var(--ink); border-color: var(--amber-soft); }
+
+.prop-grid {
+  flex: 1; min-height: 0;
+  display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr);
+  gap: 0; margin-top: clamp(10px, 1.6vh, 18px);
+  border: 1.5px dashed var(--amber-soft);
+}
+.prop-item {
+  padding: clamp(10px, 1.6vh, 20px) clamp(12px, 1.6vw, 20px);
+  border-right: 1.5px dashed var(--amber-soft);
+  border-bottom: 1.5px dashed var(--amber-soft);
+  display: flex; flex-direction: column; min-height: 0;
+}
+.prop-item:nth-child(4n) { border-right: none; }
+.prop-item:nth-child(n+5) { border-bottom: none; }
+.prop-item .bucket {
+  font-family: var(--mono); font-size: clamp(9px, 0.78vw, 11px); font-weight: 700;
+  letter-spacing: 1.6px; text-transform: uppercase;
+  color: var(--teal-soft); margin-bottom: 6px;
+}
+.prop-item h4 { color: var(--amber-soft); margin-bottom: 6px; font-size: clamp(13px, 1.2vw, 17px); font-variation-settings: "opsz" 18, "wght" 600; line-height: 1.25; }
+.prop-item p { font-size: clamp(11px, 0.92vw, 13.5px); line-height: 1.45; }
+.prop-item.obs { background: rgba(252,211,77,0.08); }
+
+/* ═══════════ SUMMARY (final slide — four moves) ═══════════ */
+.summary-grid {
+  flex: 1; min-height: 0;
+  display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+  gap: 0; margin-top: clamp(6px, 1vh, 12px);
+  border: 1.5px dashed var(--amber-soft);
+}
+.sq {
+  padding: clamp(10px, 1.4vh, 16px) clamp(12px, 1.5vw, 20px);
+  border-right: 1.5px dashed var(--amber-soft);
+  border-bottom: 1.5px dashed var(--amber-soft);
+  display: flex; flex-direction: column; min-height: 0; position: relative;
+  overflow: hidden;
+}
+.sq:nth-child(2n)    { border-right: none; }
+.sq:nth-child(n+3)   { border-bottom: none; }
+.sq .q-label {
+  position: absolute; top: clamp(6px, 0.9vh, 10px); right: clamp(10px, 1vw, 14px);
+  font-family: var(--mono); font-size: clamp(11px, 1vw, 15px);
+  font-weight: 700; letter-spacing: 1.8px;
+  color: var(--amber-soft); opacity: 0.45;
+}
+.sq h4 {
+  color: var(--amber-soft); margin-bottom: clamp(4px, 0.7vh, 8px);
+  font-size: clamp(14px, 1.35vw, 20px);
+  font-variation-settings: "opsz" 24, "wght" 600;
+  line-height: 1.15; padding-right: 28px;
+}
+.sq .q-sub {
+  font-family: var(--mono); font-size: clamp(8px, 0.68vw, 10px); font-weight: 700;
+  color: var(--amber); letter-spacing: 1.2px; text-transform: uppercase;
+  margin-top: clamp(4px, 0.8vh, 10px); margin-bottom: 3px;
+}
+.sq .q-sub:first-of-type { margin-top: 0; }
+.sq ul {
+  list-style: none; padding: 0; margin: 0;
+  font-size: clamp(10px, 0.86vw, 12.5px); line-height: 1.35;
+}
+.sq li {
+  padding: 3px 0;
+  color: rgba(250,244,227,0.9);
+  border-bottom: 1px dotted rgba(252,211,77,0.14);
+}
+.sq li:last-child { border-bottom: none; }
+.sq li strong { color: var(--paper-bright); font-variation-settings: "opsz" 18, "wght" 600; }
+.sq li .code {
+  font-family: var(--mono); font-size: 0.85em; font-weight: 700;
+  color: var(--teal-soft); letter-spacing: 1px; margin-right: 5px;
+}
+.sq li.is-card {
+  cursor: pointer; position: relative; padding-right: 18px;
+  transition: background 0.14s ease;
+}
+.sq li.is-card::after {
+  content: "↗"; position: absolute; right: 4px; top: 3px;
+  color: var(--amber-soft); opacity: 0.6; font-family: var(--mono); font-size: 12px;
+}
+.sq li.is-card:hover { background: rgba(252,211,77,0.08); }
+.sq li.is-card:hover::after { opacity: 1; }
+.sq li.is-card.active { background: rgba(252,211,77,0.16); }
+
+/* ═══════════ CHROME ═══════════ */
+.top-chrome {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--chrome-top);
+  background: var(--paper-deep); border-bottom: 1.5px solid var(--ink);
+  z-index: 100; display: flex; align-items: center; padding: 0 16px;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 1.6px; text-transform: uppercase;
+  gap: 16px;
+}
+.brand-mini { color: var(--rust); font-weight: 700; }
+.brand-mini::after { content: " · "; color: var(--light); margin: 0 4px; }
+.brand-sub { color: var(--ink-dim); font-weight: 400; font-family: var(--serif); text-transform: none; letter-spacing: 0; font-style: italic; font-size: 13px; }
+.top-progress { flex: 1; height: 4px; background: var(--hair); position: relative; margin: 0 16px; }
+.top-progress-fill { position: absolute; inset: 0; width: 0; background: var(--rust); transition: width 0.35s ease; }
+.top-date { color: var(--mid); }
+
+/* Pretext status badge (quiet indicator) */
+#pretext-badge {
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.3px;
+  color: var(--mid); opacity: 0; transition: opacity 0.5s ease;
+  white-space: nowrap; margin-right: 8px;
+}
+#pretext-badge.active { opacity: 0.55; }
+#pretext-badge.ready  { opacity: 0.85; color: var(--teal); }
+#pretext-badge.error  { opacity: 0.8;  color: var(--red); }
+
+.bot-chrome {
+  position: fixed; bottom: 0; left: 0; right: 0; height: var(--chrome-bot);
+  background: var(--paper); border-top: 2px dashed var(--ink);
+  z-index: 100; display: flex; align-items: center;
+  justify-content: space-between; padding: 0 18px;
+  font-family: var(--mono); font-size: 11.5px; font-weight: 600;
+  letter-spacing: 1.6px; text-transform: uppercase;
+}
+.nav-left { display: flex; align-items: center; gap: 12px; }
+.nav-btn {
+  width: 28px; height: 28px; border: 1.5px solid var(--ink); background: var(--paper-bright);
+  font-family: var(--mono); font-weight: 700; font-size: 15px;
+  cursor: pointer; color: var(--ink); transition: background 0.12s;
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-btn:hover { background: var(--amber-soft); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.counter { color: var(--ink); }
+.counter .cur { color: var(--rust); font-size: 15px; }
+.counter .sep { color: var(--light); margin: 0 3px; }
+
+.nav-mid { display: flex; align-items: center; gap: 10px; color: var(--ink-dim); font-weight: 500; }
+.nav-section { color: var(--ink); font-weight: 700; font-family: var(--serif); text-transform: none; letter-spacing: 0; font-size: 14px; font-style: italic; }
+
+.nav-right { display: flex; gap: 10px; align-items: center; color: var(--mid); }
+.nav-right kbd {
+  border: 1px solid var(--mid); padding: 1px 5px;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+  background: var(--paper-bright);
+}
+.overview-btn {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+  letter-spacing: 1.4px; text-transform: uppercase;
+  padding: 4px 10px; border: 1.5px solid var(--ink);
+  background: var(--paper-bright); color: var(--ink); cursor: pointer;
+}
+.overview-btn:hover { background: var(--amber-soft); }
+
+.edit-btn {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+  letter-spacing: 1.4px; text-transform: uppercase;
+  padding: 4px 10px; border: 1.5px solid var(--ink);
+  background: var(--paper-bright); color: var(--ink); cursor: pointer;
+  margin-right: 6px;
+}
+.edit-btn:hover { background: var(--amber-soft); }
+.edit-btn.on { background: var(--rust); color: var(--paper-bright); border-color: var(--rust); }
+
+.save-status {
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 1.1px; text-transform: uppercase;
+  color: var(--teal); margin-right: 2px;
+  opacity: 0; transition: opacity 0.25s;
+}
+.save-status.visible { opacity: 1; }
+.save-status.saved { color: var(--teal); }
+.save-status.unsaved { color: var(--rust); }
+
+body.editing .deck { outline: 2px dashed var(--rust); outline-offset: -4px; }
+body.editing .slide.active [contenteditable="true"]:hover { background: rgba(252, 211, 77, 0.35); }
+body.editing .slide.active [contenteditable="true"]:focus {
+  background: var(--paper-bright);
+  outline: 1.5px solid var(--rust); outline-offset: 2px;
+}
+body.editing .card { cursor: text; }
+body.editing .card .chev { display: none; }
+
+/* ═══════════ OVERVIEW ═══════════ */
+#overview {
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(26,25,21,0.88);
+  display: none; align-items: center; justify-content: center;
+  padding: 40px;
+}
+#overview.visible { display: flex; }
+.overview-inner {
+  background: var(--paper);
+  border: var(--border); padding: 24px;
+  max-width: min(1100px, 94vw);
+  max-height: 88vh; overflow-y: auto;
+  box-shadow: 8px 8px 0 0 var(--amber-soft);
+}
+.overview-title {
+  font-family: var(--serif); font-size: 26px;
+  font-variation-settings: "opsz" 48, "wght" 700;
+  margin-bottom: 4px; letter-spacing: -0.5px;
+}
+.overview-sub { font-family: var(--mono); font-size: 11px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--mid); margin-bottom: 18px; }
+.overview-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 8px;
+}
+.ov-card {
+  background: var(--paper-bright); border: 1.5px solid var(--ink);
+  padding: 10px 12px; cursor: pointer;
+  font-family: var(--serif); font-size: 13px; line-height: 1.3;
+  position: relative; display: flex; flex-direction: column; gap: 4px;
+  min-height: 72px;
+  transition: background 0.12s, transform 0.12s;
+}
+.ov-card:hover { background: var(--amber-soft); transform: translate(-1px, -1px); box-shadow: 2px 2px 0 0 var(--ink); }
+.ov-card.active { background: var(--ink); color: var(--paper-bright); }
+.ov-card .ov-num { font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 1.4px; color: var(--rust); }
+.ov-card.active .ov-num { color: var(--amber-soft); }
+.ov-card .ov-name { font-variation-settings: "opsz" 18, "wght" 500; }
+.ov-card .ov-code { font-family: var(--mono); font-size: 10px; font-weight: 700; color: var(--mid); letter-spacing: 1.2px; }
+.ov-card.active .ov-code { color: var(--teal-soft); }
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media (max-width: 1080px) {
+  .pitch-grid { grid-template-columns: repeat(2, 1fr); }
+  .pitch-col:nth-child(2) { border-right: none; }
+  .pitch-col:nth-child(3), .pitch-col:nth-child(4) {
+    border-top: 1.5px solid var(--ink);
+  }
+  .prop-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(4, 1fr); }
+  .prop-item:nth-child(2n) { border-right: none; }
+  .prop-item:nth-child(n+7) { border-bottom: none; }
+  .macro-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); }
+}
+@media (max-width: 640px) {
+  .pitch-grid { grid-template-columns: 1fr; }
+  .pitch-col { border-right: none !important; border-bottom: 1.5px solid var(--ink); }
+  .pitch-col:last-child { border-bottom: none; }
+  .rubric { grid-template-columns: 1fr; }
+  .rubric-cell { border-right: none; border-bottom: 1.5px solid var(--ink); }
+  .macro-grid { grid-template-columns: 1fr; grid-template-rows: auto; overflow-y: auto; }
+  .cover-bottom { grid-template-columns: repeat(2, 1fr); }
+  .row-label .qualifier { margin-left: 0; text-align: left; max-width: 100%; }
+  .nav-right kbd { display: none; }
+  .nav-mid { display: none; }
+}
+</style>
+</head>
+<body class="">
+
+<div class="top-chrome">
+  <span><span class="brand-mini">JHU SGP · FDC</span><span class="brand-sub">mapping the pitches for a new MPP core</span></span>
+  <div class="top-progress"><div class="top-progress-fill" id="progress-fill" style="width: 100%;"></div></div>
+  <span id="pretext-badge" aria-hidden="true" class="">◆ pretext</span>
+  <span class="top-date">22 Apr 2026 · v1.0</span>
+</div>
+
+<div class="deck" id="deck">
+
+<!-- ══════════════ 1. COVER ══════════════ -->
+<div class="slide cover active" data-name="Cover" data-section="Title">
+  <div class="cover-top">
+    <div class="cover-meta"><strong>First Degree Committee</strong><br>MPP Core — Pitch Synthesis</div>
+    <div class="cover-date">Seth Lazar<br>JHU SGP · MINT Lab</div>
+  </div>
+  <div class="cover-mid">
+    <h1 class="cover-title">
+      The <span class="stroke">AGI-Ready</span><br>
+      MPP.
+    </h1>
+    <p class="cover-sub">Infusing powerful AI into the core curriculum.</p>
+  </div>
+  <div class="cover-bottom">
+    <div class="cover-stat"><div class="k">Pitches mapped</div><div class="v"><em>4</em> · C&amp;A, T&amp;B, S, H</div></div>
+    <div class="cover-stat"><div class="k">Core courses clustered</div><div class="v"><em>~46</em> across the four</div></div>
+    <div class="cover-stat"><div class="k">Biggest shared gap</div><div class="v">K-S2 · <em>exogenous macro-risks</em></div></div>
+    <div class="cover-stat"><div class="k">Format</div><div class="v">one row per page · click for detail</div></div>
+  </div>
+</div>
+
+<!-- ══════════════ 2. FRAMING ══════════════ -->
+<div class="slide" data-name="Framing" data-section="Framing">
+  <div class="slide-head">
+    <span class="tag">01</span>
+    <span class="eyebrow">Framing</span>
+  </div>
+  <h2>Where I'm coming in from.</h2>
+  <div class="rule"></div>
+  <p class="lede" style="max-width: 1000px;">Six overall takeaways from my read of the proposals.</p>
+
+  <div class="macro-grid">
+    <div class="macro-card" style=""><div class="n">01</div>
+      <h4>Implementation should live in tracks.</h4>
+      <p>Granular implementation-specific content has limited application across tracks; also very different across sectors (public/private). I think each track should have its own approach.</p>
+    </div>
+    <div class="macro-card" style=""><div class="n">02</div>
+      <h4>Room for the bigger picture.</h4>
+      <p>We should free up more room for a bigger-picture perspective. Hands-on is great, but we want to be training generals as well as foot-soldiers—people who will be redesigning institutions as well as operating effectively within existing ones.</p>
+    </div>
+    <div class="macro-card" style=""><div class="n">03</div>
+      <h4>Courses ≠ learning outcomes.</h4>
+      <p>Distinguish between what should be the explicit object of a course and what is best infused and realised through the other courses. Some practical skills (leadership, negotiation, communication) sit more naturally as learning outcomes of the practicums (and in general are best taught through experience).</p>
+    </div>
+    <div class="macro-card" style=""><div class="n">04</div>
+      <h4>AI deeply infused.</h4>
+      <p>There is probably some strong signalling effect of having discrete AI courses but I think it is better just to make sure that ~each course is co-taught by one of the AI cluster who can infuse AI relevance.</p>
+    </div>
+    <div class="macro-card" style=""><div class="n">05</div>
+      <h4>Private sector counts.</h4>
+      <p>Graduates will work across contractors, NGOs, AI companies, and platforms as well as the public service. The "professional ethos" framing and a lot of the implementation focus skews public-servant.</p>
+    </div>
+    <div class="macro-card" style=""><div class="n">06</div>
+      <h4>Endogenous + exogenous crises.</h4>
+      <p>The pitches lean heavily on intrinsic failures of governing institutions. We also need the exogenous crises — populism, AI risks, demographic decline — that test low-capacity states.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ 3. RUBRIC ══════════════ -->
+<div class="slide" data-name="The rubric" data-section="Rubric">
+  <div class="slide-head">
+    <span class="tag">02</span>
+    <span class="eyebrow">A light rubric</span>
+  </div>
+  <h2>Be / Know / Do.</h2>
+  <div class="rule"></div>
+  <p class="lede" style="max-width: 1000px;">Clemens &amp; Arcidiacono — this approach speaks to me (maybe because there's an AI Alignment parallel).</p>
+
+  <div class="rubric">
+    <div class="rubric-cell" style="">
+      <h3>Be</h3>
+      <div class="sub">Values &amp; normative foundations</div>
+      <p>Political theory, constitutional grounding, substantive axiology and priority-setting, deliberation across difference.</p>
+    </div>
+    <div class="rubric-cell" style="">
+      <h3>Know</h3>
+      <div class="sub">Substance &amp; methodology</div>
+      <p>Endogenous and exogenous crises; how governance works in theory and practice; quantitative, qualitative, and AI-inflected methods.</p>
+    </div>
+    <div class="rubric-cell" style="">
+      <h3>Do</h3>
+      <div class="sub">Strategic action</div>
+      <p>Bigger-picture capacity-building and governance futurism; leadership virtues (mostly learned through practice); hands-on practicums devolved to tracks.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ 4. B1 ══════════════ -->
+<div class="slide" data-name="B1 — Political philosophy" data-section="Be · Values">
+  <div class="slide-head">
+    <span class="tag rust">Be</span>
+    <span class="eyebrow">03 · Values &amp; foundations</span>
+  </div>
+  <div class="row-label">
+    <span class="code">B1</span>
+    <span class="name">Political theoretical / constitutional foundations</span>
+    <span class="qualifier">democratic theory; classical-liberal premises; diverse substantive conclusions</span>
+  </div>
+  <div class="pitch-grid">
+    <div class="pitch-col">
+      <div class="pitch-head">C&amp;A</div>
+      <div class="pitch-body">
+        <div class="card" data-title="Course 10 — Constitutional Governance &amp; Democratic Accountability" data-body="Separation of powers, federalism, rule of law, and democratic accountability as &quot;the operating system within which all other skills must function.&quot; Federalist Papers, landmark opinions, crisis cases, contemporary democratic-erosion scholarship. Framed as &quot;the policy professional's Hippocratic oath.&quot;">Course 10 — Constitutional Governance &amp; Democratic Accountability<span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">T&amp;B</div>
+      <div class="pitch-body"><div class="empty-cell">No core course<br>(MPP-G only)</div></div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">Sampat <span class="author">S</span></div>
+      <div class="pitch-body">
+        <div class="card" data-title="C008 — E Pluribus Unum: Pluralism &amp; Democratic Accountability" data-meta="1.5cr · Case method · New" data-body="Pluralism, democratic accountability, and the ethics of governing across difference. New course (no MHEC equivalent).">C008 — E Pluribus Unum<span class="tag-pill">1.5cr</span><span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">Hawken <span class="author">H</span></div>
+      <div class="pitch-body">
+        <div class="card" data-title="Great Books and Great Papers" data-meta="Y1 · S1" data-body="Roots of American order — founding principles; great books.">Great Books &amp; Great Papers<span class="tag-pill">Y1·S1</span><span class="chev">↗</span></div>
+        <div class="card" data-title="Bootcamp W1 — Governance" data-meta="Bootcamp" data-body="Read the Constitution, think about institutions, rethink institutions.">Bootcamp W1 — Governance<span class="tag-pill">Boot</span><span class="chev">↗</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="synth">
+    <p>AI could provide excellent case studies here — e.g. Anthropic / DoW, among many others.</p>
+    <p>Also give people a broader palette of normative and conceptual resources: rethinking institutions demands more than the Constitution alone.</p>
+    <span class="ai-hook">AI hook · case studies &amp; normative palette</span>
+  </div>
+</div>
+
+<!-- ══════════════ 5. B2 ══════════════ -->
+<div class="slide" data-name="B2 — Priority-setting &amp; ethics" data-section="Be · Values">
+  <div class="slide-head">
+    <span class="tag rust">Be</span>
+    <span class="eyebrow">04 · Values &amp; foundations</span>
+  </div>
+  <div class="row-label">
+    <span class="code">B2</span>
+    <span class="name">Priority-setting, ethics, values</span>
+  </div>
+  <div class="pitch-grid">
+    <div class="pitch-col">
+      <div class="pitch-head">C&amp;A</div>
+      <div class="pitch-body">
+        <div class="card" data-title="Course 2 — Dialogue, Deliberation &amp; Coalition-Building Across Difference" data-body="Rogerian argumentation, moral reframing (same policy in different moral languages), dual-narrative cross-partisan team assignments producing both conservative and progressive versions of a policy proposal. Reference: Pepperdine's viewpoint-diversity program and the JHU-AEI partnership.">Course 2 — Dialogue, Deliberation &amp; Coalition-Building<span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">T&amp;B</div>
+      <div class="pitch-body"><div class="empty-cell">No core course</div></div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">Sampat <span class="author">S</span></div>
+      <div class="pitch-body">
+        <div class="card" data-title="C002 — Priority Setting, Tradeoffs &amp; the Public Interest" data-meta="Case method" data-body="How public problems are defined, how issues reach the agenda, priority-setting. Frameworks from economics, ethics, moral philosophy, policy analysis, decision science.">C002 — Priority Setting, Tradeoffs &amp; Public Interest<span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">Hawken <span class="author">H</span></div>
+      <div class="pitch-body">
+        <div class="card" data-title="Bootcamp W1 — Ethics, Legitimacy &amp; Public Decision-Making" data-meta="Bootcamp" data-body="Pre-program module on ethics, legitimacy, and public decision-making.">Bootcamp W1 — Ethics &amp; Legitimacy<span class="tag-pill">Boot</span><span class="chev">↗</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="synth">
+    <p>I can see how these could be blended — AI could be an excellent illustration, e.g. using alignment as a case.</p>
+    <p>Alongside dialogue across disagreement, emphasise pluralism grounded in shared foundations.</p>
+    <p>Character-forming goals could be pursued here: ideological Turing tests, showing the range of substantive policy positions consistent with shared normative commitments, eliciting those commitments from the Constitution, etc.</p>
+    <span class="ai-hook">AI hook · alignment as illustration</span>
+  </div>
+</div>
+
+<!-- ══════════════ 6. K-S1 ══════════════ -->
+<div class="slide" data-name="K-S1 — Endogenous crises" data-section="Know · Substantive">
+  <div class="slide-head">
+    <span class="tag rust">Know</span>
+    <span class="eyebrow">05 · Substantive</span>
+  </div>
+  <div class="row-label">
+    <span class="code">K-S1</span>
+    <span class="name">Endogenous crises — intrinsic failures of governing institutions</span>
+  </div>
+  <div class="pitch-grid">
+    <div class="pitch-col">
+      <div class="pitch-head">C&amp;A</div>
+      <div class="pitch-body">
+        <div class="card" data-title="Course 1 — Governance in Crisis: Why Institutions Fail &amp; How to Rebuild Them" data-body="Structural dysfunctions of the administrative state — procedural overload, cascading rigidity, adversarial legalism — through primary sources and practitioner testimony. Institutional history married to contemporary state-capacity evidence.">Course 1 — Governance in Crisis<span class="chev">↗</span></div>
+        <div class="card" data-title="Course 7 — The Politics of Reform: How Change Actually Happens" data-body="Legislative strategy, interest-group dynamics, agenda setting, veto players, coalition mathematics, federalism ↔ implementation. Historical cases (civil rights, welfare reform, congressional modernization) plus real reform campaigns.">Course 7 — The Politics of Reform<span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">T&amp;B</div>
+      <div class="pitch-body">
+        <div class="card" data-title="Progress and Decline" data-meta="→ also K-S3" data-body="Where human progress comes from, how institutions solve collective problems, cities / agglomeration, sources of regression. Economic growth, urbanism, science of science, political development. Closing module on what the history of human progress might tell us about AI's contribution.">Progress and Decline<span class="tag-pill">→K-S3</span><span class="chev">↗</span></div>
+        <div class="card" data-title="The Administrative State and its Discontents" data-body="Historical development of the administrative state and its pathologies: civil service, public-sector unions, intergovernmental relations, contracting out, NIMBYism, agency capture, administrative law. Substantial time on historical creation of new high-performance state capacity: Post Office, TVA, NASA, FBI, FDA.">The Administrative State &amp; its Discontents<span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">Sampat <span class="author">S</span></div>
+      <div class="pitch-body">
+        <div class="card" data-title="C001 — Statecraft: How Problems Get Solved (and Why They Often Don't)" data-meta="Case method" data-body="Analyses government problem-solving historically (successes and failures). State capacity, public innovation, implementation, coalitions, navigating political/bureaucratic constraints, learning from failure.">C001 — Statecraft<span class="tag-pill">Case</span><span class="chev">↗</span></div>
+        <div class="card" data-title="C005 — American Institutions: Past, Present, Future" data-meta="New course" data-body="New course (no MHEC equivalent) on American governing institutions past, present, and future.">C005 — American Institutions<span class="tag-pill">New</span><span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">Hawken <span class="author">H</span></div>
+      <div class="pitch-body">
+        <div class="card" data-title="Governing in the Real World" data-meta="Y1 · S1" data-body="How public institutions function in practice (not theory); recognise how AI will transform these institutions; diagnose state capacity, bureaucratic constraints, political realities; distinguish intent from implementation; analyse why reforms fail or succeed.">Governing in the Real World<span class="tag-pill">Y1·S1</span><span class="chev">↗</span></div>
+        <div class="card" data-title="Bootcamp W2 — Policy Mistakes" data-meta="Bootcamp" data-body="Pre-program module on policy failures.">Bootcamp W2 — Policy Mistakes<span class="tag-pill">Boot</span><span class="chev">↗</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="synth">
+    <p>Distinguish between diagnosing failures of state capacity (n.b. private-sector failures too) and identifying the crises that will put low-capacity states under particular pressure in the coming decades.</p>
+    <p>The pitches do cover some exogenous territory already — some AI, some on polarization, and an implicit lens on how delivery failures erode support for democratic values.</p>
+    <p>Plenty of room for AI-related examples in this endogenous section — e.g. failures to regulate social media, paralysis in response to general purpose AI.</p>
+    <span class="ai-hook">AI hook · social-media regulation as a worked failure</span>
+  </div>
+</div>
+
+<!-- ══════════════ 7. K-S2 ══════════════ -->
+<div class="slide" data-name="K-S2 — Exogenous macro-risks" data-section="Know · Substantive">
+  <div class="slide-head">
+    <span class="tag rust">Know</span>
+    <span class="eyebrow">06 · Substantive</span>
+  </div>
+  <div class="row-label">
+    <span class="code">K-S2</span>
+    <span class="name">Exogenous crises — macro-risks</span>
+    <span class="qualifier">populism, AI risks, demographic decline, macro-governance challenges</span>
+  </div>
+  <div class="pitch-grid">
+    <div class="pitch-col"><div class="pitch-head">C&amp;A</div><div class="pitch-body"><div class="empty-cell">No course</div></div></div>
+    <div class="pitch-col"><div class="pitch-head">T&amp;B</div><div class="pitch-body"><div class="empty-cell">No course</div></div></div>
+    <div class="pitch-col"><div class="pitch-head">Sampat</div><div class="pitch-body"><div class="empty-cell">No course</div></div></div>
+    <div class="pitch-col"><div class="pitch-head">Hawken</div><div class="pitch-body"><div class="empty-cell">No course</div></div></div>
+  </div>
+  <div class="gap-flag">The big shared gap — no pitch houses exogenous macro-risks as a standalone category.</div>
+  <div class="synth">
+    <p>Not all crises are a function of depleted state capacity. Some are causing it. Others run independently of it. Maybe it's ok to just fold this into the endogenous crisis courses, but I think it should be drawn out on its own.</p>
+    <p>Opportunity to discuss risks from powerful AI alongside demographic decline and affective polarization. For AI: the existential-risk literature, alongside systemic risk and vulnerability scanning.</p>
+    <p>Two ways to house it: a dedicated macro-risks course (AI risks + democratic decline + demographic crisis), or folded into Governance in Crisis.</p>
+    <span class="ai-hook">AI hook · x-risk, systemic risk, vulnerability scanning</span>
+  </div>
+</div>
+
+<!-- ══════════════ 8. K-S3 ══════════════ -->
+<div class="slide" data-name="K-S3 — Foundations of governance" data-section="Know · Substantive">
+  <div class="slide-head">
+    <span class="tag rust">Know</span>
+    <span class="eyebrow">07 · Substantive</span>
+  </div>
+  <div class="row-label">
+    <span class="code">K-S3</span>
+    <span class="name">Foundations of governance</span>
+    <span class="qualifier">emergence &amp; persistence of normative social orders; how institutions shape behaviour</span>
+  </div>
+  <div class="pitch-grid">
+    <div class="pitch-col"><div class="pitch-head">C&amp;A</div><div class="pitch-body"><div class="empty-cell">No dedicated course</div></div></div>
+    <div class="pitch-col">
+      <div class="pitch-head">T&amp;B</div>
+      <div class="pitch-body">
+        <div class="card" data-title="Systems Thinking — markets, firms, governments, society, AI" data-body="Theories of complex systems: macroeconomics, network theory, rational-choice institutional theory, principal-agent, and comparison of AI to democracy, markets, professions and other systems for processing information.">Systems Thinking<span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">Sampat <span class="author">S</span></div>
+      <div class="pitch-body">
+        <div class="card" data-title="C005 — American Institutions: Past, Present, Future" data-meta="→ also K-S1" data-body="Historical evolution of American governing institutions — Congress, Presidency, Courts, federalism, civil service.">C005 — American Institutions<span class="tag-pill">→K-S1</span><span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col"><div class="pitch-head">Hawken</div><div class="pitch-body"><div class="empty-cell">No dedicated course</div></div></div>
+  </div>
+  <div class="synth">
+    <p>Plug-and-play Gillian's proposed Governance Foundations course here See Gillian's pitch. Could bring in specific American institutions and perhaps it chimes with C005.</p>
+    <p>AI case studies also possible here — e.g. normative social orders for AI agents.</p>
+    <span class="ai-hook">AI hook · normative social orders for AI agents</span>
+  </div>
+</div>
+
+<!-- ══════════════ 9. K-M1 ══════════════ -->
+<div class="slide" data-name="K-M1 — Quantitative methods" data-section="Know · Methodology">
+  <div class="slide-head">
+    <span class="tag rust">Know</span>
+    <span class="eyebrow">08 · Methodology</span>
+  </div>
+  <div class="row-label">
+    <span class="code">K-M1</span>
+    <span class="name">Quantitative methods</span>
+  </div>
+  <div class="pitch-grid">
+    <div class="pitch-col">
+      <div class="pitch-head">C&amp;A</div>
+      <div class="pitch-body">
+        <div class="card" data-title="Course 4 — Economics of Policy Design &amp; Delivery" data-body="Microeconomic toolkit (market failures, externalities, CBA, behavioural econ) reweighted toward delivery: procurement, budgetary mechanics (scoring, pay-fors, triggers), civil-service hiring, converting legislative intent into agency action. Cases: CHIPS Act, Healthcare.gov, Universal Credit.">Course 4 — Economics of Policy Design<span class="chev">↗</span></div>
+        <div class="card" data-title="Course 6 — Evidence &amp; Inference for Policy Leaders" data-body="Research design, causal inference (DiD, RD, IV), program evaluation, data visualisation; emphasis on judgement about evidence — when a finding is robust enough to act on. Not a standard statistics sequence; students produce analyst-ready briefs, not problem sets.">Course 6 — Evidence &amp; Inference<span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">T&amp;B</div>
+      <div class="pitch-body">
+        <div class="card" data-title="Interpreting &amp; Applying Research — Econometrics for Non-Econometricians" data-body="Research methods for consumers rather than producers. Distinguishing good from bad empirical research, identification, external validity, counterfactuals.">Econometrics for Non-Econometricians<span class="chev">↗</span></div>
+        <div class="card" data-title="Designing Data for Decisions &amp; Management" data-body="Selecting and organising data, appropriate metrics, managing around Goodhart's Law, directing researchers, A/B testing, utilising AI tools to produce and manage data and assist in managing complex organisations and projects, politics of data use.">Designing Data for Decisions<span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">Sampat <span class="author">S</span></div>
+      <div class="pitch-body">
+        <div class="card" data-title="C003 — Data &amp; Decisions I: Data, Evidence &amp; Causal Inference" data-meta="Bolded: AI for empirical work" data-body="Discerning users of empirical evidence. Research design, measurement, causal inference, effect sizes, statistical significance, internal and external validity. Applied to observational, experimental, quasi-experimental, and AI/ML-based analyses. Bolded addition: &quot;AI for empirical work.&quot;">C003 — Data &amp; Decisions I<span class="chev">↗</span></div>
+        <div class="card" data-title="C006 — Experimentation &amp; Learning for Effective Government" data-meta="Bolded: AI and policy experimentation" data-body="Designing and running policy experiments: pilots, phased rollouts, A/B tests, RCTs. Evaluability, outcomes, sampling, data-collection mechanics. Bolded addition: &quot;AI and policy experimentation.&quot;">C006 — Experimentation &amp; Learning<span class="chev">↗</span></div>
+        <div class="card" data-title="C009 — Data &amp; Decisions III: Decision-Making Under Uncertainty" data-meta="1.5cr · Case method" data-body="Decision-making when evidence is incomplete, messy, conflicting. Risk vs uncertainty, signal vs noise, triangulation, expert judgment. Forecasting, predictive analytics, reasoning about tradeoffs in complex systems.">C009 — Data &amp; Decisions III<span class="tag-pill">1.5cr</span><span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">Hawken <span class="author">H</span></div>
+      <div class="pitch-body">
+        <div class="card" data-title="Data, Evidence &amp; Decision-Making" data-meta="Y1 · S1 · BOTECs hardline" data-body="Make students good at BOTECs (Hawken is a hard-liner). Interpret data for decision-making (not just inference); causal reasoning in messy environments; build and critique performance metrics; determine what evidence is &quot;good enough&quot;; decide in crisis simulations; AI integration.">Data, Evidence &amp; Decision-Making<span class="tag-pill">Y1·S1</span><span class="chev">↗</span></div>
+        <div class="card" data-title="Economic Principles for Policy &amp; Governance" data-meta="Y1 · S2" data-body="Opportunity cost, marginal analysis, incentives, selection vs causation, cost-benefit, constraints, market vs government failure, behavioural realities, distributional impact, risk; a little game theory (reaction functions).">Economic Principles<span class="tag-pill">Y1·S2</span><span class="chev">↗</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="synth">
+    <p>A lot of agreement here. I don't have strong views except that it is very standard MPP fare. We can augment it so students learn to deploy agents for verifiable data analysis, beyond the underlying techniques. On this picture, good consumers of empirical research are also good users of AI agents.</p>
+    <span class="ai-hook">AI hook · deploying agents for verifiable data analysis</span>
+  </div>
+</div>
+
+<!-- ══════════════ 10. K-M2 ══════════════ -->
+<div class="slide" data-name="K-M2 — Qualitative methods" data-section="Know · Methodology">
+  <div class="slide-head">
+    <span class="tag rust">Know</span>
+    <span class="eyebrow">09 · Methodology</span>
+  </div>
+  <div class="row-label">
+    <span class="code">K-M2</span>
+    <span class="name">Qualitative methods</span>
+  </div>
+  <div class="pitch-grid">
+    <div class="pitch-col"><div class="pitch-head">C&amp;A</div><div class="pitch-body"><div class="empty-cell">No dedicated course</div></div></div>
+    <div class="pitch-col">
+      <div class="pitch-head">T&amp;B</div>
+      <div class="pitch-body">
+        <div class="card" data-title="Talking to People" data-meta="½ sem" data-body="Qualitative research and organisational communication for acquiring actionable info from non-quantitative sources: clients, end users, subordinates, negotiations.">Talking to People<span class="tag-pill">½sem</span><span class="chev">↗</span></div>
+        <div class="card" data-title="Learning from Other Places" data-meta="½ sem" data-body="Policy innovations globally; critical transfer from one context to another.">Learning from Other Places<span class="tag-pill">½sem</span><span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col"><div class="pitch-head">Sampat</div><div class="pitch-body"><div class="empty-cell">No dedicated course</div></div></div>
+    <div class="pitch-col"><div class="pitch-head">Hawken</div><div class="pitch-body"><div class="empty-cell">No dedicated course</div></div></div>
+  </div>
+  <div class="synth">
+    <p>I think this is a really valuable addition and also allows us to make the most of our faculty. I especially like the comparativist element, but more broadly it's good to include qualitative methods. Could also fit some history into there.</p>
+    <p>Plenty of room for using AI agents to support qualitative analysis.</p>
+    <span class="ai-hook">AI hook · AI agents supporting qualitative analysis</span>
+  </div>
+</div>
+
+<!-- ══════════════ 11. K-M3 ══════════════ -->
+<div class="slide" data-name="K-M3 — AI–methods interface" data-section="Know · Methodology">
+  <div class="slide-head">
+    <span class="tag rust">Know</span>
+    <span class="eyebrow">10 · Methodology</span>
+  </div>
+  <div class="row-label">
+    <span class="code">K-M3</span>
+    <span class="name">AI as interface with methods</span>
+  </div>
+  <div class="pitch-grid">
+    <div class="pitch-col">
+      <div class="pitch-head">C&amp;A</div>
+      <div class="pitch-body">
+        <div class="card" data-title="Course 3 — AI Foundations for Governance" data-body="Working AI literacy: technical foundations (enough to evaluate claims and talk to engineers), political economy of AI deployment, algorithmic bias and accountability, hands-on AI tools. Leverages JHU CS through guest lectures and joint modules.">Course 3 — AI Foundations for Governance<span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col"><div class="pitch-head">T&amp;B</div><div class="pitch-body"><div class="empty-cell">No dedicated course</div></div></div>
+    <div class="pitch-col">
+      <div class="pitch-head">Sampat <span class="author">S</span></div>
+      <div class="pitch-body">
+        <div class="card" data-title="C003 — Data &amp; Decisions I" data-meta="→ also K-M1 · Bolded: AI for empirical work" data-body="Bolded addition: &quot;AI for empirical work&quot;; AI/ML-based data and analyses.">C003 — Data &amp; Decisions I<span class="tag-pill">→K-M1</span><span class="chev">↗</span></div>
+        <div class="card" data-title="C006 — Experimentation &amp; Learning" data-meta="→ also K-M1 · Bolded: AI and policy experimentation" data-body="Bolded addition: &quot;AI and policy experimentation.&quot;">C006 — Experimentation &amp; Learning<span class="tag-pill">→K-M1</span><span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">Hawken <span class="author">H</span></div>
+      <div class="pitch-body">
+        <div class="card" data-title="AI for Governance I: Foundations" data-meta="Y1 · S1" data-body="Make students AI-literate for public-sector use; core AI capabilities; automation vs augmentation; high-value use cases in government; risks (bias, hallucination, drift).">AI for Governance I: Foundations<span class="tag-pill">Y1·S1</span><span class="chev">↗</span></div>
+        <div class="card" data-title="Bootcamp W1 — Data &amp; AI for Public Leaders" data-meta="Bootcamp" data-body="&quot;Make them set up agents to show we mean it.&quot;">Bootcamp W1 — Data &amp; AI<span class="tag-pill">Boot</span><span class="chev">↗</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="synth">
+    <p>A lot of the value of teaching students about AI in other courses depends on their having a solid enough technical grounding — so we do need a course just on this. Everyone working on policy needs to understand how AI works. I think it fits quite nicely as a methods course; the key focus is to get students familiar enough with using AI that they can talk sensibly about its societal impacts, so we can build around using AI for policy analysis and research.</p>
+    <span class="ai-hook">AI hook · the dedicated AI course</span>
+  </div>
+</div>
+
+<!-- ══════════════ 12. D-BP1 ══════════════ -->
+<div class="slide" data-name="D-BP1 — State capacity + AI" data-section="Do · Bigger picture">
+  <div class="slide-head">
+    <span class="tag rust">Do</span>
+    <span class="eyebrow">11 · Bigger picture</span>
+  </div>
+  <div class="row-label">
+    <span class="code">D-BP1</span>
+    <span class="name">State capacity / obstacle-mapping / capacity-building through AI</span>
+    <span class="qualifier">AGI-forward Recoding America</span>
+  </div>
+  <div class="pitch-grid">
+    <div class="pitch-col">
+      <div class="pitch-head">C&amp;A</div>
+      <div class="pitch-body">
+        <div class="card" data-title="Course 7 — The Politics of Reform" data-body="Legislative strategy, interest-group dynamics, agenda setting, veto players, coalition mathematics, federalism ↔ implementation. Historical cases (civil rights, welfare reform, congressional modernization) plus real reform campaigns.">Course 7 — The Politics of Reform<span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col"><div class="pitch-head">T&amp;B</div><div class="pitch-body"><div class="empty-cell">No course</div></div></div>
+    <div class="pitch-col">
+      <div class="pitch-head">Sampat <span class="author">S</span></div>
+      <div class="pitch-body">
+        <div class="card" data-title="C007 — Recoding America / Public Innovation" data-meta="→ also D-I" data-body="Public-innovation capacity-building with bolded additions on implementation, procurement reform, tech in government.">C007 — Recoding America<span class="tag-pill">→D-I</span><span class="chev">↗</span></div>
+        <div class="card" data-title="C001 — Statecraft" data-meta="→ also K-S1" data-body="Government problem-solving historically — state capacity, public innovation, implementation, coalitions, political/bureaucratic constraints.">C001 — Statecraft<span class="tag-pill">→K-S1</span><span class="chev">↗</span></div>
+        <div class="card" data-title="C013 — Governing in a Fast Moving World" data-meta="1.5cr · Case method" data-body="Governing in contexts of rapid technological change; regulatory tools; assessing regulatory outcomes. Bolded additions: Regulation and innovation, Adaptive regulatory design, Public-private sector interaction, Information and expertise.">C013 — Governing in a Fast Moving World<span class="tag-pill">1.5cr</span><span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">Hawken <span class="author">H</span></div>
+      <div class="pitch-body">
+        <div class="card" data-title="AI for Governance II: Applied Systems" data-meta="Y1 · S2" data-body="Design AI-supported public workflows (triage, case management); build or design simple AI-assisted systems; risk and governance planning; transparency and fairness; efficiency/legitimacy tradeoffs; &quot;design accountable AI systems in public settings&quot;; anticipate public trust and backlash dynamics.">AI for Governance II: Applied Systems<span class="tag-pill">Y1·S2</span><span class="chev">↗</span></div>
+        <div class="card" data-title="Law, Administration &amp; the Architecture of the State (partial)" data-meta="Y2 · S3 · Partial fit" data-body="Administrative law basics; mapping the wiggle spaces; distinguishing legal from managerial change; rulemaking and compliance; legal reasoning in implementation.">Law &amp; Architecture of the State<span class="tag-pill">Partial</span><span class="chev">↗</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="synth">
+    <p>Obstacle-mapping and capacity-building are central topics for governing with AI.</p>
+    <p>D-BP1 has distributed coverage across the pitches but no synthesis course. Candidate: a State Capacity in the AI Era course pulling together Recoding-America-style capacity building with frontier-AI governance. I think maybe this is the one where we'd need to have two courses, one on the politics of reform stuff and another that was a mixture of recoding America and AI for Governance.</p>
+    <span class="ai-hook">AI hook · capacity-building through AI (core)</span>
+  </div>
+</div>
+
+<!-- ══════════════ 13. D-BP2 ══════════════ -->
+<div class="slide" data-name="D-BP2 — Governance futurism" data-section="Do · Bigger picture">
+  <div class="slide-head">
+    <span class="tag rust">Do</span>
+    <span class="eyebrow">12 · Bigger picture</span>
+  </div>
+  <div class="row-label">
+    <span class="code">D-BP2</span>
+    <span class="name">Governance futurism</span>
+    <span class="qualifier">designing new institutions for new technological epochs</span>
+  </div>
+  <div class="pitch-grid">
+    <div class="pitch-col">
+      <div class="pitch-head">C&amp;A</div>
+      <div class="pitch-body">
+        <div class="card" data-title="Course 9 — Governing the AI Transition" data-body="Advanced course building on Course 3. Regulatory frameworks for frontier AI, political economy of standard-setting across jurisdictions, managing AI inside public organisations, algorithmic decision-making and due process, designing oversight institutions &quot;for technologies that evolve faster than legislation.&quot;">Course 9 — Governing the AI Transition<span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col"><div class="pitch-head">T&amp;B</div><div class="pitch-body"><div class="empty-cell">Gap — no course</div></div></div>
+    <div class="pitch-col">
+      <div class="pitch-head">Sampat <span class="author">S</span></div>
+      <div class="pitch-body">
+        <div class="card" data-title="C013 — Governing in a Fast Moving World (partly)" data-meta="Partial fit" data-body="Regulatory tools; adaptive regulatory design; public-private sector interaction. Treats rapid technological change, but within existing institutions.">C013 — Fast Moving World<span class="tag-pill">Partial</span><span class="chev">↗</span></div>
+        <div class="card" data-title="C004 — Steering the AI Transition" data-body="How societies can steer innovations in &quot;frontier&quot; AI systems toward public benefit while managing risks; applications of AI in policy and governance; challenges to AI adoption and diffusion. Bolded additions: Introduction to technical frontier; AI innovation ecosystem.">C004 — Steering the AI Transition<span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">Hawken <span class="author">H</span></div>
+      <div class="pitch-body">
+        <div class="card" data-title="Bootcamp W2 — Governance Futurism" data-meta="Bootcamp" data-body="Pre-program module on rebuilding existing institutions or building new ones for the AI era.">Bootcamp W2 — Governance Futurism<span class="tag-pill">Boot</span><span class="chev">↗</span></div>
+        <div class="card" data-title="Law, Administration &amp; the Architecture of the State (partly)" data-meta="Partial fit" data-body="&quot;Teach them to not take regulatory structures as givens. They should have the guts and knowledge to challenge existing regulatory structures and recommend better ones (with specific plans for what that would entail).&quot;">Law &amp; Architecture<span class="tag-pill">Partial</span><span class="chev">↗</span></div>
+        <div class="card" data-title="Slide 12 — self-flagged gap" data-meta="Missing" data-body="Hawken's Slide 12 explicitly flags &quot;a course on Governance Futurism&quot; as missing.">Slide 12 — self-flagged gap<span class="tag-pill">Missing</span><span class="chev">↗</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="gap-flag">Biggest shared gap. Only Hawken acknowledges it — bootcamp + self-flagged missing course. No pitch has a full governance-futurism course.</div>
+  <div class="synth">
+    <p>Big question here is whether to separate out the AI transition course from the governance futurism one. I think either would work, but again I like treating it as an integrated whole rather than a specific sidequest.</p>
+    <span class="ai-hook">AI hook · AI as the clearest case study</span>
+  </div>
+</div>
+
+<!-- ══════════════ 14. D-V ══════════════ -->
+<div class="slide" data-name="D-V — Leadership virtues" data-section="Do · Virtues">
+  <div class="slide-head">
+    <span class="tag rust">Do</span>
+    <span class="eyebrow">13 · Virtues</span>
+  </div>
+  <div class="row-label">
+    <span class="code">D-V</span>
+    <span class="name">Leadership virtues</span>
+    <span class="qualifier">mostly to be learned through practice, maybe some sage advice from execs in residence</span>
+  </div>
+  <div class="pitch-grid">
+    <div class="pitch-col">
+      <div class="pitch-head">C&amp;A</div>
+      <div class="pitch-body">
+        <div class="card" data-title="Course 5 — Leading Organizational Change in the Public Sector" data-body="&quot;The signature SGP course&quot;: project-based, co-taught with active change leaders. Power mapping, influence without authority, managing political appointees vs career staff, organisational culture, psychology of institutional change. Live practitioner challenges.">Course 5 — Leading Org Change<span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">T&amp;B</div>
+      <div class="pitch-body">
+        <div class="card" data-title="Thinking Strategically" data-meta="½ sem" data-body="Game theory, military strategy and history, business strategy; organisational change, policy entrepreneurship, negotiation, project management.">Thinking Strategically<span class="tag-pill">½sem</span><span class="chev">↗</span></div>
+        <div class="card" data-title="Writing &amp; Communicating Strategically" data-meta="½ sem" data-body="Rhetoric and persuasion as action-driving. Memos, presentations, speeches, op-eds, grant proposals, social media, white papers.">Writing &amp; Communicating<span class="tag-pill">½sem</span><span class="chev">↗</span></div>
+        <div class="card" data-title="Leadership Under Stress" data-meta="½ sem" data-body="Motivating teams under political/operational pressure. Cases: healthcare.gov, IRS FreeFile, DOGE, 1990s NYC crime reductions.">Leadership Under Stress<span class="tag-pill">½sem</span><span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">Sampat <span class="author">S</span></div>
+      <div class="pitch-body">
+        <div class="card" data-title="C010 — Managing Teams, AI and Other Agents" data-meta="Bolded: Managing AI agents" data-body="Human-resource management, staffing, personnel decisions, conflict, performance. Bolded addition: &quot;Managing AI agents.&quot;">C010 — Managing Teams, AI &amp; Agents<span class="chev">↗</span></div>
+        <div class="card" data-title="C014 — Negotiation &amp; Coalition-Building" data-meta="1.5cr · Case method" data-body="Negotiation theory, practical bargaining, diagnosing disagreement.">C014 — Negotiation &amp; Coalition-Building<span class="tag-pill">1.5cr</span><span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">Hawken <span class="author">H</span></div>
+      <div class="pitch-body">
+        <div class="card" data-title="Leading Change in Public Institutions" data-meta="Y2 · S3" data-body="Lead change without formal authority; build stakeholder coalitions; participatory decision-making; manage bureaucratic resistance; communicate under political pressure; writing for action.">Leading Change in Public Institutions<span class="tag-pill">Y2·S3</span><span class="chev">↗</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="synth">
+    <p>Treating these virtues as objects of direct instruction feels too much like an MBA, instead I'd prefer to see them as learning outcomes we can aim for from our practicums.</p>
+    <p>Theory is pretty irrelevant here, scholarship too. Practical wisdom is the only source of truth. Obviously there's also some scope for doing something fun with virtues and AI…</p>
+    <p>But that's all consistent with having one core course focused on lessons from the frontlines delivered by executives in residence. I'd just suggest limiting it to that, and having anything further of this nature woven into the practicums.</p>
+    <span class="ai-hook">AI hook · something fun with virtues &amp; AI (TBD)</span>
+  </div>
+</div>
+
+<!-- ══════════════ 15. D-I ══════════════ -->
+<div class="slide" data-name="D-I — Practicums" data-section="Do · Practicums">
+  <div class="slide-head">
+    <span class="tag rust">Do</span>
+    <span class="eyebrow">14 · Practicums</span>
+  </div>
+  <div class="row-label">
+    <span class="code">D-I</span>
+    <span class="name">Track-specific practicums, studios, capstones</span>
+    <span class="qualifier">devolve to tracks</span>
+  </div>
+  <div class="pitch-grid">
+    <div class="pitch-col">
+      <div class="pitch-head">C&amp;A</div>
+      <div class="pitch-body">
+        <div class="card" data-title="Course 8 — Policy Design Studio I: From Statute to Service" data-body="Real implementation challenges for real clients. Deliverables: option-set memoranda with amendment trees and pay-fors, organisational diagnostics, procurement-reform proposals, service-delivery redesigns. Distributional-consequences analysis.">Course 8 — Design Studio I<span class="chev">↗</span></div>
+        <div class="card" data-title="Course 11 — Policy Design Studio II: Crisis, Complexity, Judgment" data-body="High-fidelity crisis simulations (debt ceiling, shutdowns, pandemic response, agency turnarounds) demanding rapid decisions under incomplete information. Dual-narrative cross-partisan proposals. &quot;Defensible decisions when data are ambiguous, timelines short, and reasonable people disagree.&quot;">Course 11 — Design Studio II<span class="chev">↗</span></div>
+        <div class="card" data-title="Course 12 — Applied Capstone Practicum" data-body="Placement with a partner (federal agency, state/local government, legislative office, nonprofit, AI-governance entity, contractor, private-sector policy team). Professional-portfolio piece evaluated jointly by faculty and partner.">Course 12 — Applied Capstone<span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">T&amp;B</div>
+      <div class="pitch-body"><div class="empty-cell">Practicums are MPP-G / MPP-C by design</div></div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">Sampat <span class="author">S</span></div>
+      <div class="pitch-body">
+        <div class="card" data-title="C007 — Recoding America / Public Innovation" data-meta="Case method" data-body="How public orgs build capacity to innovate. Problem definition, user research, prototyping, scaling. Bolded additions: Implementation, Gaps between design and delivery, Procurement reform, Course-correction, Tech in government, Design thinking.">C007 — Recoding America<span class="tag-pill">Case</span><span class="chev">↗</span></div>
+        <div class="card" data-title="C012 — Capstone: Policy Lab Part I" data-meta="1.5cr · Project" data-body="Teams apply curriculum tools to specific problems for government, firm, or other partners. Mapped to all eight PLOs.">C012 — Policy Lab I<span class="tag-pill">1.5cr</span><span class="chev">↗</span></div>
+        <div class="card" data-title="C015 — Capstone: Policy Lab Part II" data-meta="1.5cr · Project" data-body="Culminates in client presentation of analyses and recommendations; lessons shared with faculty and other teams. Mapped to all eight PLOs.">C015 — Policy Lab II<span class="tag-pill">1.5cr</span><span class="chev">↗</span></div>
+      </div>
+    </div>
+    <div class="pitch-col">
+      <div class="pitch-head">Hawken <span class="author">H</span></div>
+      <div class="pitch-body">
+        <div class="card" data-title="Implementation Lab" data-meta="Y1 · S2" data-body="Translate policy goals into operational plans; build implementation roadmaps (staffing, timeline, budget, tech); de-implementation; risks and mitigation; HR and talent (&quot;hella important&quot;); team-based on real cases, ideally with a government client.">Implementation Lab<span class="tag-pill">Y1·S2</span><span class="chev">↗</span></div>
+        <div class="card" data-title="Implementation Lab II — Scaling &amp; Sustaining Reform" data-meta="Y2 · S4" data-body="Why even successful pilots rarely scale; scale reforms across jurisdictions / systems; monitoring and learning systems; long-term change management; institutionalise improvements.">Implementation Lab II<span class="tag-pill">Y2·S4</span><span class="chev">↗</span></div>
+        <div class="card" data-title="Capstone" data-meta="Y2 · S4" data-body="Planning for government transformation with an actual government client. Deliverables: system diagnosis, implementation and operations plan, AI integration strategy, metrics and evaluation framework, governance and risk plan.">Capstone<span class="tag-pill">Y2·S4</span><span class="chev">↗</span></div>
+        <div class="card" data-title="Summer Public Impact Residency" data-meta="Summer" data-body="Field placement. Deliverables: system diagnosis, implementation memo, AI opportunity assessment, reflection on institutional constraints.">Summer Residency<span class="tag-pill">Sum</span><span class="chev">↗</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="synth">
+    <p>Practicums need to be devolved to the different tracks. This frees up a lot of space in the core. It's worth noting that on the whole our faculty are more disciplinary-oriented as opposed to "of the practice", so perhaps emphasising this side of things isn't playing to our greatest strength.</p>
+    <p>Capstone for AI should involve some engineering / building dimension — e.g. a civic agent.</p>
+    <span class="ai-hook">AI hook · civic agent as capstone artefact</span>
+  </div>
+</div>
+
+<!-- ══════════════ 16. MISFIT ══════════════ -->
+<div class="slide" data-name="Doesn't fit" data-section="Appendix">
+  <div class="slide-head">
+    <span class="tag ink">Appendix</span>
+    <span class="eyebrow">15 · Doesn't fit the taxonomy cleanly</span>
+  </div>
+  <h2>Courses that resist the rubric.</h2>
+  <div class="rule"></div>
+  <p class="lede" style="max-width: 1000px;">A short list — mostly sector-specific finance / budgeting content, plus one too-granular management course. My take: these belong in the tracks.</p>
+
+  <div class="misfit-wrap">
+    <table class="misfit-table">
+      <colgroup>
+        <col style="width: 44%;"><col style="width: 9%;"><col style="width: 21%;"><col style="width: 26%;">
+      </colgroup>
+      <thead>
+        <tr><th>Course</th><th>Pitch</th><th>Why it resists placement</th><th>My call</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <strong>Finance for Government</strong>
+            <div class="course-desc">Accounting and finance for government: budgets, unfunded mandates, intergovernmental fiscal flows, pensions, contracts and procurement, private-sector investment logic. Second half on state / local finance.</div>
+          </td>
+          <td><span class="pitch-tag">T&amp;B</span></td>
+          <td>Sector-specific skill, not a Know/Do bucket</td>
+          <td class="call">Too narrow — track-specific, same spirit as Bhaven's finance course.</td>
+        </tr>
+        <tr>
+          <td>
+            <strong>C011 — Finance, Accounting &amp; Budgeting (1.5cr)</strong>
+            <div class="course-desc">Accounting concepts plus budgeting principles: reading financial statements, public-sector budget processes, budgets as management tools.</div>
+          </td>
+          <td><span class="pitch-tag">S</span></td>
+          <td>Same</td>
+          <td class="call">Cities / governance, not AI — too applied for core.</td>
+        </tr>
+        <tr>
+          <td>
+            <strong>Public Finance, Budgeting &amp; Resource Strategy</strong>
+            <div class="course-desc">Where the money comes from and how it flows; all students should know how to read budgets; use budgets to drive policy / operations; procurement and contracting; align funding with implementation.</div>
+          </td>
+          <td><span class="pitch-tag">H</span></td>
+          <td>Same</td>
+          <td class="call">Track-specific thing; AI could do AI-supply-chain instead.</td>
+        </tr>
+        <tr>
+          <td>
+            <strong>C010 — Managing Teams, AI and Other Agents</strong>
+            <div class="course-desc">Human-resource management, staffing, personnel decisions, conflict, performance. Bolded addition: "Managing AI agents."</div>
+          </td>
+          <td><span class="pitch-tag">S</span></td>
+          <td>Too granular</td>
+          <td class="call">Belongs in the tracks.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════ 17. COVERAGE ══════════════ -->
+<div class="slide" data-name="Coverage summary" data-section="Overview">
+  <div class="slide-head">
+    <span class="tag teal">Overview</span>
+    <span class="eyebrow">16 · Coverage summary</span>
+  </div>
+  <h2>Coverage by bucket.</h2>
+  <div class="rule"></div>
+  <p class="lede" style="max-width: 1000px;">Counts of core courses per pitch per bucket. Red = clear empty lanes. Last column: rough count of how many courses I'd want in each bucket.</p>
+
+  <div class="cov-wrap">
+    <table class="cov-table">
+      <thead>
+        <tr>
+          <th class="row-h">Bucket</th>
+          <th>C&amp;A</th>
+          <th>T&amp;B</th>
+          <th>Sampat</th>
+          <th>Hawken</th>
+          <th style="background: var(--teal);">Seth</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="row-h"><span class="row-code">B1</span>Political philosophy</td><td class="cov-cell cov-low">1</td><td class="cov-cell cov-0">0</td><td class="cov-cell cov-low">1</td><td class="cov-cell cov-low">1<span class="note">+ boot</span></td><td class="cov-cell cov-seth">1</td></tr>
+        <tr><td class="row-h"><span class="row-code">B2</span>Priority-setting / ethics</td><td class="cov-cell cov-low">1</td><td class="cov-cell cov-0">0</td><td class="cov-cell cov-low">1</td><td class="cov-cell cov-low">0<span class="note">boot only</span></td><td class="cov-cell cov-seth">1</td></tr>
+        <tr><td class="row-h"><span class="row-code">K-S1</span>Endogenous crises</td><td class="cov-cell cov-mid">2</td><td class="cov-cell cov-mid">2</td><td class="cov-cell cov-mid">2</td><td class="cov-cell cov-low">1<span class="note">+ boot</span></td><td class="cov-cell cov-seth">1</td></tr>
+        <tr><td class="row-h"><span class="row-code">K-S2</span>Exogenous macro-risks</td><td class="cov-cell cov-0">0</td><td class="cov-cell cov-0">0</td><td class="cov-cell cov-0">0</td><td class="cov-cell cov-0">0</td><td class="cov-cell cov-seth">1</td></tr>
+        <tr><td class="row-h"><span class="row-code">K-S3</span>Foundations of governance</td><td class="cov-cell cov-0">0</td><td class="cov-cell cov-high">3</td><td class="cov-cell cov-mid">2</td><td class="cov-cell cov-low">1<span class="note">partial</span></td><td class="cov-cell cov-seth">1</td></tr>
+        <tr><td class="row-h"><span class="row-code">K-M1</span>Quantitative methods</td><td class="cov-cell cov-mid">2</td><td class="cov-cell cov-mid">2</td><td class="cov-cell cov-high">3</td><td class="cov-cell cov-mid">2</td><td class="cov-cell cov-seth">1</td></tr>
+        <tr><td class="row-h"><span class="row-code">K-M2</span>Qualitative methods</td><td class="cov-cell cov-0">0</td><td class="cov-cell cov-low">1</td><td class="cov-cell cov-0">0</td><td class="cov-cell cov-0">0</td><td class="cov-cell cov-seth">1</td></tr>
+        <tr><td class="row-h"><span class="row-code">K-M3</span>AI–methods interface</td><td class="cov-cell cov-low">1</td><td class="cov-cell cov-0">0</td><td class="cov-cell cov-high">3</td><td class="cov-cell cov-low">1<span class="note">+ boot</span></td><td class="cov-cell cov-seth">1</td></tr>
+        <tr><td class="row-h"><span class="row-code">D-BP1</span>State capacity + AI</td><td class="cov-cell cov-low">1</td><td class="cov-cell cov-0">0</td><td class="cov-cell cov-high">2–3</td><td class="cov-cell cov-mid">2<span class="note">partial</span></td><td class="cov-cell cov-seth">2</td></tr>
+        <tr><td class="row-h"><span class="row-code">D-BP2</span>Governance futurism</td><td class="cov-cell cov-0">0</td><td class="cov-cell cov-0">0</td><td class="cov-cell cov-low">0<span class="note">partial</span></td><td class="cov-cell cov-low">0.5<span class="note">boot + gap</span></td><td class="cov-cell cov-seth">1</td></tr>
+        <tr><td class="row-h"><span class="row-code">D-V</span>Leadership virtues</td><td class="cov-cell cov-low">1</td><td class="cov-cell cov-high">3</td><td class="cov-cell cov-mid">2</td><td class="cov-cell cov-low">1</td><td class="cov-cell cov-seth">1</td></tr>
+        <tr><td class="row-h"><span class="row-code">D-I</span>Core practicums</td><td class="cov-cell cov-high">3</td><td class="cov-cell cov-0">0</td><td class="cov-cell cov-high">3</td><td class="cov-cell cov-high">3<span class="note">+ res</span></td><td class="cov-cell cov-seth">0<span class="note">to tracks</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════ 18. RECAP ══════════════ -->
+<div class="slide prop" data-name="Recap" data-section="Recap">
+  <div class="slide-head">
+    <span class="tag ink">Recap</span>
+    <span class="eyebrow">17 · Recap</span>
+  </div>
+  <h2>Recap.</h2>
+  <div class="rule"></div>
+  <p class="lede">Where I vote, where I add, where I devolve, and how I infuse AI across the core.</p>
+
+  <div class="summary-grid">
+    <!-- A — existing proposals to keep -->
+    <div class="sq">
+      <span class="q-label">A</span>
+      <h4>Co-signed.</h4>
+      <ul>
+        <li><span class="code">B1</span> Constitutional Governance (C&amp;A); E Pluribus Unum (S); Great Books (H)</li>
+        <li><span class="code">B2</span> Dialogue &amp; Coalition-Building (C&amp;A); Priority Setting (S)</li>
+        <li><span class="code">K-S1</span> Governance in Crisis (C&amp;A); Progress &amp; Decline (T&amp;B); Governing in the Real World (H)</li>
+        <li><span class="code">K-S3</span> Systems Thinking (T&amp;B); American Institutions (S)</li>
+        <li><span class="code">K-M1</span> Economics of Policy Design / Evidence &amp; Inference (C&amp;A); C003/C006 (S); BOTEC (H)</li>
+        <li><span class="code">K-M3</span> AI Foundations (C&amp;A); AI for Governance I (H)</li>
+        <li><span class="code">D-BP1</span> Recoding America (S); AI for Governance II (H)</li>
+        <li><span class="code">D-BP2</span> Governing the AI Transition (C&amp;A); Steering the AI Transition (S)</li>
+      </ul>
+    </div>
+
+    <!-- B — discrete additions -->
+    <div class="sq">
+      <span class="q-label">B</span>
+      <h4>Discrete additions.</h4>
+      <ul>
+        <li class="is-card" data-title="Gillian Hadfield — Governance Foundations" data-meta="Proposed course · plug-and-play from sibling program" data-body="In this course we will go back to the foundations of collective governing across the evolutionary history of humans to lay the groundwork for thinking about how the next phases of governance might be built to effectively ensure human flourishing. We will explore the theory of normative social order, markets, democracy, capitalism, socialism, and other methods of governance through human history. We revisit today's tools including legal systems, legal infrastructure, legislative bodies, courts, local communities, civic organizations, lobbyists/corporate government strategy, self-governance, market/industry organizations and standard-setting, and the role of epistemic communities."><span class="code">K-S3</span> <strong>Governance Foundations</strong> — plug-and-play from a sibling program</li>
+        <li><span class="code">D-BP2</span> <strong>Governance Futurism</strong> — new institutions for new technological epochs; AI as the clearest case study</li>
+        <li><span class="code">K-S2</span> <strong>Macro-risks</strong> — AI risks, democratic decline, demographic crisis; x-risk, systemic risk, vulnerability scanning</li>
+        <li><span class="code">D-BP1</span> <strong>State Capacity in the AI Era</strong> — synthesis course pulling Recoding-America capacity-building together with frontier-AI governance</li>
+      </ul>
+    </div>
+
+    <!-- C — push to tracks -->
+    <div class="sq">
+      <span class="q-label">C</span>
+      <h4>Devolve to tracks.</h4>
+      <ul>
+        <li><strong>Practicums</strong> — Policy Design Studios, Capstones, Implementation Labs, Residencies. Implementation is track-specific and frees up space in the core.</li>
+        <li><strong>Sector finance</strong> — Finance for Government (T&amp;B) / Finance &amp; Accounting (S) / Public Finance (H). Not general-purpose for core.</li>
+        <li><strong>Managing Teams</strong> (S) — too granular for the core.</li>
+        <li><strong>Leadership virtues</strong> — leadership, negotiation, and communication emerge through practice, not as standalone courses. At most one instruction-oriented course taught by execs-in-residence.</li>
+      </ul>
+    </div>
+
+    <!-- D — AI infusion -->
+    <div class="sq">
+      <span class="q-label">D</span>
+      <h4>AI deeply infused (illustrations).</h4>
+      <div class="q-sub">Worked into the existing buckets</div>
+      <ul>
+        <li><span class="code">B1</span> Anthropic / DoW as constitutional-governance case studies</li>
+        <li><span class="code">B2</span> Alignment as a priority-setting illustration</li>
+        <li><span class="code">K-S1</span> Social-media regulation as a worked failure</li>
+        <li><span class="code">K-S3</span> Normative social orders for AI agents</li>
+        <li><span class="code">K-M1 / K-M2</span> Agents for verifiable data analysis &amp; qualitative work</li>
+        <li><span class="code">D-I</span> Civic agent as capstone artefact</li>
+      </ul>
+      <div class="q-sub">Four dedicated AI courses across four buckets</div>
+      <ul>
+        <li><span class="code">K-M3</span> <strong>AI 1</strong> · Understanding &amp; using AI</li>
+        <li><span class="code">K-S2 (+B1)</span> <strong>AI 2</strong> · Risks &amp; mitigations</li>
+        <li><span class="code">D-BP1</span> <strong>AI 3</strong> · Obstacle-mapping &amp; capacity-building</li>
+        <li><span class="code">D-BP2 (+B1)</span> <strong>AI 4</strong> · Institutional design</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ─── Tooltip overlay ─── -->
+<div id="overlay" role="dialog" aria-live="polite" class="" style="left: 802px; top: 434px;">
+  <button class="ov-close" aria-label="Close">×</button>
+  <div class="ov-head" id="ov-head">Gillian Hadfield — Governance Foundations</div>
+  <div class="ov-body" id="ov-body"><p>In this course we will go back to the foundations of collective governing across the evolutionary history of humans to lay the groundwork for thinking about how the next phases of governance might be built to effectively ensure human flourishing through the AI transition. We will explore the theory of normative social order, markets, democracy, capitalism, socialism, and other methods of governance through human history. We revisit today's tools including legal systems, legal infrastructure, legislative bodies, courts, local communities, civic organizations, lobbyists/corporate government strategy, self-governance, market/industry organizations and standard-setting, and the role of epistemic communities.</p></div>
+  <div class="ov-meta" id="ov-meta" style="display: flex;"><span>Proposed course</span><span>sibling program</span></div>
+</div>
+
+<!-- ─── Overview ─── -->
+<div id="overview" aria-hidden="true" class="">
+  <div class="overview-inner">
+    <div class="overview-title">Jump to a page</div>
+    <div class="overview-sub">Keys · O to toggle · 1–9 for first pages · Esc to close</div>
+    <div class="overview-grid" id="overview-grid"></div>
+  </div>
+</div>
+
+
+  
+
+
+<!-- ─── Bottom chrome ─── -->
+<div class="bot-chrome">
+  <div class="nav-left">
+    <button class="nav-btn" id="prev-btn" aria-label="Previous">←</button>
+    <button class="nav-btn" id="next-btn" aria-label="Next" disabled="">→</button>
+    <div class="counter"><span class="cur" id="cur-num">18</span><span class="sep">/</span><span id="total-num">18</span></div>
+  </div>
+  <div class="nav-mid">
+    <span id="nav-section" class="nav-section">Recap</span>
+    <span style="color: var(--light);">·</span>
+    <span id="nav-slide" style="color: var(--ink-dim); font-family: var(--serif); text-transform: none; letter-spacing: 0; font-size: 13px;">Recap</span>
+  </div>
+  <div class="nav-right">
+    <span id="save-status" class="save-status saved" aria-live="polite"></span>
+    <button class="edit-btn on" id="edit-btn" title="Toggle edit mode (E)">✓ Done</button>
+    <button class="edit-btn" id="download-btn" title="Save edits back to the source file on disk. First use prompts for the file (pick FDC-Mapping-Microsite.html to overwrite). Shift-click or right-click for Save As.">💾 Save</button>
+    <button class="edit-btn" id="revert-btn" title="Clear saved edits and reload original">↺ Revert</button>
+    <button class="overview-btn" id="overview-btn">☰ Overview</button>
+    <kbd>←</kbd><kbd>→</kbd>
+  </div>
+</div>
+
+<script>
+// ═══ Slide engine ═══
+const deck = document.getElementById('deck');
+const slides = Array.from(deck.querySelectorAll('.slide'));
+const total = slides.length;
+let cur = 0;
+
+const progressFill = document.getElementById('progress-fill');
+const curNum = document.getElementById('cur-num');
+const totalNum = document.getElementById('total-num');
+const navSection = document.getElementById('nav-section');
+const navSlide = document.getElementById('nav-slide');
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+
+totalNum.textContent = total;
+
+function go(n) {
+  n = Math.max(0, Math.min(total - 1, n));
+  if (n === cur) return;
+  closeOverlay();
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('prev');
+  setTimeout(() => slides[cur].classList.remove('prev'), 400);
+  cur = n;
+  slides[cur].classList.add('active');
+  update();
+}
+function update() {
+  curNum.textContent = cur + 1;
+  progressFill.style.width = ((cur) / (total - 1) * 100) + '%';
+  navSection.textContent = slides[cur].dataset.section || '';
+  navSlide.textContent = slides[cur].dataset.name || '';
+  prevBtn.disabled = cur === 0;
+  nextBtn.disabled = cur === total - 1;
+  document.querySelectorAll('.ov-card').forEach((c, i) => c.classList.toggle('active', i === cur));
+  // Persist to hash for shareable position
+  history.replaceState(null, '', '#p' + (cur + 1));
+}
+prevBtn.addEventListener('click', () => go(cur - 1));
+nextBtn.addEventListener('click', () => go(cur + 1));
+
+// ═══ Keyboard ═══
+document.addEventListener('keydown', (e) => {
+  if (e.target.matches('input, textarea, [contenteditable="true"]')) return;
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+  if (document.getElementById('overview').classList.contains('visible')) {
+    if (e.key === 'Escape' || e.key === 'o' || e.key === 'O') { e.preventDefault(); toggleOverview(); }
+    return;
+  }
+
+  if (overlayOpen() && e.key === 'Escape') { e.preventDefault(); closeOverlay(); return; }
+
+  switch (e.key) {
+    case 'ArrowRight': case 'PageDown': case ' ': case 'j': case 'n':
+      e.preventDefault(); go(cur + 1); break;
+    case 'ArrowLeft': case 'PageUp': case 'k': case 'p':
+      e.preventDefault(); go(cur - 1); break;
+    case 'Home': e.preventDefault(); go(0); break;
+    case 'End': e.preventDefault(); go(total - 1); break;
+    case 'o': case 'O': e.preventDefault(); toggleOverview(); break;
+    case 'e': case 'E': e.preventDefault(); toggleEdit(); break;
+    case 'Escape': e.preventDefault(); closeOverlay(); break;
+  }
+  // Number keys 1-9 jump
+  if (/^[1-9]$/.test(e.key)) {
+    const n = parseInt(e.key, 10) - 1;
+    if (n < total) { e.preventDefault(); go(n); }
+  }
+});
+
+// ═══ Touch / swipe ═══
+let tx = 0, ty = 0;
+document.addEventListener('touchstart', e => { tx = e.changedTouches[0].screenX; ty = e.changedTouches[0].screenY; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].screenX - tx;
+  const dy = e.changedTouches[0].screenY - ty;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx < 0) go(cur + 1); else go(cur - 1);
+  }
+}, { passive: true });
+
+// ═══ Card overlay ═══
+const overlay = document.getElementById('overlay');
+const ovHead = document.getElementById('ov-head');
+const ovBody = document.getElementById('ov-body');
+const ovMeta = document.getElementById('ov-meta');
+const ovClose = overlay.querySelector('.ov-close');
+
+function overlayOpen() { return overlay.classList.contains('visible'); }
+function closeOverlay() {
+  overlay.classList.remove('visible');
+  document.querySelectorAll('.card.active').forEach(c => c.classList.remove('active'));
+}
+function openOverlay(card) {
+  document.querySelectorAll('.card.active').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+  ovHead.innerHTML = card.dataset.title || '';
+  ovBody.innerHTML = '<p>' + (card.dataset.body || '') + '</p>';
+  const metaText = card.dataset.meta || '';
+  if (metaText) {
+    ovMeta.innerHTML = metaText.split(' · ').map(m => {
+      if (/^→/.test(m)) return '<span class="xref">' + m + '</span>';
+      return '<span>' + m + '</span>';
+    }).join('');
+    ovMeta.style.display = 'flex';
+  } else {
+    ovMeta.style.display = 'none';
+  }
+  // Park off-screen, reveal, measure, position — avoids zero-dim reads and flash
+  overlay.style.left = '-9999px';
+  overlay.style.top = '-9999px';
+  overlay.classList.add('visible');
+  void overlay.offsetWidth;       // force layout
+  // Run pretext on the dynamic overlay paragraph (TeX-style optimal breaks)
+  if (typeof window.pretextLayoutElement === 'function') {
+    const p = ovBody.querySelector('p');
+    if (p) window.pretextLayoutElement(p);
+  }
+  positionOverlay(card);          // place based on real dimensions
+}
+function positionOverlay(card) {
+  const r = card.getBoundingClientRect();
+  const ow = overlay.offsetWidth || 420;
+  const oh = overlay.offsetHeight || 200;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const chromeBot = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--chrome-bot'), 10) || 44;
+  const chromeTop = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--chrome-top'), 10) || 28;
+  const gap = 14;
+  const pad = 16;
+
+  // Horizontal: prefer right of card, else left, else centered in the gutter that fits
+  let left;
+  const rightSpace = vw - r.right - gap - pad;
+  const leftSpace  = r.left - gap - pad;
+  if (rightSpace >= ow)       left = r.right + gap;
+  else if (leftSpace >= ow)   left = r.left - ow - gap;
+  else                        left = Math.max(pad, Math.min(vw - ow - pad, (vw - ow) / 2));
+
+  // Vertical: align with card top, clamp to viewport (account for chrome)
+  let top = r.top - 6;
+  const maxTop = vh - chromeBot - oh - 10;
+  const minTop = chromeTop + 10;
+  top = Math.max(minTop, Math.min(maxTop, top));
+
+  overlay.style.left = Math.round(left) + 'px';
+  overlay.style.top = Math.round(top) + 'px';
+}
+ovClose.addEventListener('click', closeOverlay);
+document.addEventListener('click', (e) => {
+  if (document.body.classList.contains('editing')) return; // don't open overlays while editing
+  const card = e.target.closest('.card, .is-card');
+  if (card) {
+    if (card.classList.contains('active')) closeOverlay();
+    else openOverlay(card);
+    e.stopPropagation();
+    return;
+  }
+  if (!e.target.closest('#overlay')) closeOverlay();
+});
+window.addEventListener('resize', () => {
+  if (overlayOpen()) {
+    const active = document.querySelector('.card.active');
+    if (active) positionOverlay(active);
+  }
+});
+
+// ═══ Edit mode + autosave ═══
+const EDIT_SELECTOR = 'h1, h2, h3, h4, h5, h6, p, li, td, th, span, blockquote, figcaption, .card';
+const STORAGE_KEY = 'fdc-microsite-edits-v2';
+// Clean up any old-key caches so they don't resurface on downgrade paths.
+try { localStorage.removeItem('fdc-microsite-edits-v1'); } catch (_) {}
+const editBtn = document.getElementById('edit-btn');
+const downloadBtn = document.getElementById('download-btn');
+const revertBtn = document.getElementById('revert-btn');
+const saveStatus = document.getElementById('save-status');
+let editing = false;
+let saveTimer = null;
+
+function applyEditable(on) {
+  document.querySelectorAll(EDIT_SELECTOR).forEach(el => {
+    if (on) el.setAttribute('contenteditable', 'true');
+    else el.removeAttribute('contenteditable');
+  });
+}
+function toggleEdit(force) {
+  editing = (typeof force === 'boolean') ? force : !editing;
+  document.body.classList.toggle('editing', editing);
+  editBtn.classList.toggle('on', editing);
+  editBtn.textContent = editing ? '✓ Done' : '✎ Edit';
+  applyEditable(editing);
+  if (editing) {
+    closeOverlay();
+    // Restore pristine prose in pretext-prepared blocks so edits touch real text,
+    // not pretext's \n-laden layout. Also clear equalised heights.
+    document.querySelectorAll('[data-ptx-src]').forEach(el => {
+      el.textContent = el.dataset.ptxSrc;
+      el.style.whiteSpace = '';
+    });
+    document.querySelectorAll('.macro-card, .rubric-cell, .prop-item').forEach(el => {
+      if (el.style && el.style.minHeight) el.style.minHeight = '';
+    });
+  } else {
+    // Coming out of edit — refresh pretext source from whatever the user typed,
+    // and relayout.
+    if (window.__pretextResyncAndRelayout) window.__pretextResyncAndRelayout();
+  }
+}
+editBtn.addEventListener('click', () => toggleEdit());
+
+// ── Autosave: store the full deck HTML in localStorage on every input, debounced
+function flashStatus(text, cls) {
+  saveStatus.textContent = text;
+  saveStatus.className = 'save-status visible ' + (cls || '');
+  clearTimeout(flashStatus._t);
+  flashStatus._t = setTimeout(() => { saveStatus.classList.remove('visible'); }, 1800);
+}
+function persistEdits() {
+  try {
+    const clone = deck.cloneNode(true);
+    // Strip contenteditable so the restored DOM isn't editable on load
+    clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    // Strip transient slide-state classes so we never persist mid-transition
+    clone.querySelectorAll('.slide').forEach(el => el.classList.remove('active', 'prev'));
+    const firstSlide = clone.querySelector('.slide');
+    if (firstSlide) firstSlide.classList.add('active');
+    // Restore pristine prose — don't autosave pretext's \n-laden layout
+    clone.querySelectorAll('[data-ptx-src]').forEach(el => {
+      el.textContent = el.dataset.ptxSrc;
+      el.style.whiteSpace = '';
+      el.removeAttribute('data-ptx-src');
+    });
+    // Strip pretext-injected heights
+    clone.querySelectorAll('.macro-card, .rubric-cell, .prop-item').forEach(el => {
+      if (el.style && el.style.minHeight) el.style.minHeight = '';
+    });
+    const html = clone.innerHTML;
+    const payload = { html, savedAt: new Date().toISOString() };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    flashStatus('Autosaved ' + new Date().toLocaleTimeString().replace(/:\d+ /, ' '), 'saved');
+  } catch (err) {
+    flashStatus('Save failed', 'unsaved');
+    console.error('Autosave error:', err);
+  }
+}
+function queueSave() {
+  saveStatus.textContent = 'Saving…';
+  saveStatus.classList.add('visible');
+  saveStatus.classList.remove('saved');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(persistEdits, 450);
+}
+document.addEventListener('input', (e) => {
+  if (editing && e.target.closest(EDIT_SELECTOR)) queueSave();
+});
+
+// ── Restore on load
+(function restoreEdits() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const { html, savedAt } = JSON.parse(raw);
+    if (!html) return;
+    deck.innerHTML = html;
+
+    // Belt-and-braces: strip any contenteditable attrs that older caches may have left behind
+    deck.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+
+    // Dedupe slides by data-name — an earlier bug was saving a doubled deck into
+    // localStorage, which then got restored and doubled again, etc. Self-heal by
+    // keeping only the first occurrence of each slide name.
+    const seenNames = new Set();
+    deck.querySelectorAll('.slide').forEach(s => {
+      const name = s.dataset.name || '';
+      if (seenNames.has(name)) s.remove();
+      else seenNames.add(name);
+    });
+
+    // Strip pretext layout artefacts that might have leaked into older caches
+    deck.querySelectorAll('[data-ptx-src]').forEach(el => {
+      el.textContent = el.dataset.ptxSrc;
+      el.style.whiteSpace = '';
+      el.removeAttribute('data-ptx-src');
+    });
+
+    // Rebuild slides reference after all the DOM surgery
+    const newSlides = Array.from(deck.querySelectorAll('.slide'));
+    slides.length = 0;
+    newSlides.forEach(s => slides.push(s));
+
+    // Sanity check — if slide count is wildly off, the cache is broken; bail out
+    // and wipe it so the next load comes straight from disk.
+    if (slides.length < 12 || slides.length > 25) {
+      console.warn('[restore] Unexpected slide count (' + slides.length + '); wiping cache.');
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
+      return;
+    }
+
+    // Reset which slide is .active so it matches the (always-zero) initial `cur`.
+    slides.forEach(s => { s.classList.remove('active', 'prev'); });
+    if (slides[0]) slides[0].classList.add('active');
+    flashStatus('Restored edits from ' + new Date(savedAt).toLocaleString(), 'saved');
+  } catch (err) {
+    console.error('Restore error:', err);
+  }
+})();
+
+// ── Save: write edits directly back to the source file on disk.
+//    Uses File System Access API (Chrome/Edge). On first use, prompts for the
+//    file; the handle is persisted in IndexedDB so subsequent saves are silent.
+//    Falls back to download if the API is unavailable or permission denied.
+const IDB_DB = 'fdc-microsite';
+const IDB_STORE = 'handles';
+const IDB_KEY = 'source-file';
+
+function idbOpen() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(IDB_DB, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore(IDB_STORE);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function idbGet(key) {
+  const db = await idbOpen();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(IDB_STORE, 'readonly');
+    const req = tx.objectStore(IDB_STORE).get(key);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function idbSet(key, val) {
+  const db = await idbOpen();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(IDB_STORE, 'readwrite');
+    tx.objectStore(IDB_STORE).put(val, key);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function idbDel(key) {
+  const db = await idbOpen();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(IDB_STORE, 'readwrite');
+    tx.objectStore(IDB_STORE).delete(key);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function buildCleanHtml() {
+  const clone = document.documentElement.cloneNode(true);
+  clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+  clone.querySelectorAll('.editing').forEach(el => el.classList.remove('editing'));
+  // Strip all transient slide-state classes so we never persist mid-transition
+  clone.querySelectorAll('.slide').forEach(el => el.classList.remove('active', 'prev'));
+  const firstSlide = clone.querySelector('.slide');
+  if (firstSlide) firstSlide.classList.add('active');
+  // Reset transient overview-card active marker
+  clone.querySelectorAll('.ov-card.active').forEach(el => el.classList.remove('active'));
+  // Empty the overview grid — JS rebuilds it from the slide list on every load,
+  // so persisting its children would double the overview entries next time.
+  const og = clone.querySelector('#overview-grid'); if (og) og.innerHTML = '';
+  // Restore pristine prose — pretext rewrites textContent with \n between lines
+  // and sets white-space: pre-wrap. Save the source text, not the laid-out version.
+  clone.querySelectorAll('[data-ptx-src]').forEach(el => {
+    el.textContent = el.dataset.ptxSrc;
+    el.style.whiteSpace = '';
+    el.removeAttribute('data-ptx-src');
+  });
+  // Also clear any pretext-injected min-height on cards
+  clone.querySelectorAll('.macro-card, .rubric-cell, .prop-item').forEach(el => {
+    if (el.style && el.style.minHeight) el.style.minHeight = '';
+  });
+  // Drop save-status text so it doesn't persist
+  const s = clone.querySelector('#save-status'); if (s) s.textContent = '';
+  // Drop pretext-badge text (it'll be repopulated on load)
+  const b = clone.querySelector('#pretext-badge'); if (b) { b.textContent = '◆ pretext'; b.className = ''; }
+  return '<!DOCTYPE html>\n' + clone.outerHTML;
+}
+
+function downloadFallback(html) {
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-');
+  a.href = url;
+  a.download = 'FDC-Mapping-Microsite_' + stamp + '.html';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+let fileHandle = null;
+async function verifyPermission(handle, readWrite) {
+  const opts = { mode: readWrite ? 'readwrite' : 'read' };
+  if ((await handle.queryPermission(opts)) === 'granted') return true;
+  if ((await handle.requestPermission(opts)) === 'granted') return true;
+  return false;
+}
+
+(async function restoreHandle() {
+  try {
+    const handle = await idbGet(IDB_KEY);
+    if (handle && handle.kind === 'file') {
+      fileHandle = handle;
+      // Don't verify permission yet — defer until first save to avoid surprise prompt
+      flashStatus('Linked to ' + handle.name, 'saved');
+    }
+  } catch (err) { /* IDB unavailable – quietly skip */ }
+})();
+
+async function saveToDisk() {
+  const html = buildCleanHtml();
+
+  // No File System Access API? Download as fallback.
+  if (!window.showSaveFilePicker) {
+    downloadFallback(html);
+    flashStatus('Downloaded (browser lacks FS API)', 'unsaved');
+    return;
+  }
+
+  try {
+    if (!fileHandle) {
+      // First save — prompt for destination. Default suggestion: overwrite source file.
+      fileHandle = await window.showSaveFilePicker({
+        suggestedName: 'FDC-Mapping-Microsite.html',
+        types: [{ description: 'HTML', accept: { 'text/html': ['.html', '.htm'] } }],
+      });
+      try { await idbSet(IDB_KEY, fileHandle); } catch (_) {}
+    }
+    if (!(await verifyPermission(fileHandle, true))) {
+      flashStatus('Permission denied', 'unsaved');
+      return;
+    }
+    const writable = await fileHandle.createWritable();
+    await writable.write(html);
+    await writable.close();
+    flashStatus('Saved to ' + fileHandle.name, 'saved');
+  } catch (err) {
+    if (err && err.name === 'AbortError') {
+      flashStatus('Save cancelled', 'unsaved');
+    } else {
+      console.error('Save error:', err);
+      flashStatus('Save failed — see console', 'unsaved');
+      // Offer download as a fallback
+      downloadFallback(html);
+    }
+  }
+}
+
+// "Save As" forces a fresh picker (useful to pick a different file, or re-link if moved)
+async function saveAsToDisk() {
+  fileHandle = null;
+  try { await idbDel(IDB_KEY); } catch (_) {}
+  await saveToDisk();
+}
+
+downloadBtn.addEventListener('click', (e) => {
+  if (e.shiftKey) saveAsToDisk();
+  else saveToDisk();
+});
+// Right-click on Save = Save As (pick a different file)
+downloadBtn.addEventListener('contextmenu', (e) => {
+  e.preventDefault();
+  saveAsToDisk();
+});
+
+// ── Revert: clear localStorage and reload the original file
+revertBtn.addEventListener('click', () => {
+  if (!confirm('Clear all saved edits and reload the original file?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+});
+
+// Warn on accidental reload / close while editing (only if unsaved)
+window.addEventListener('beforeunload', (e) => {
+  if (saveTimer) { e.preventDefault(); e.returnValue = ''; }
+});
+
+// ═══ Overview ═══
+const overviewEl = document.getElementById('overview');
+const overviewGrid = document.getElementById('overview-grid');
+// Clear any ov-cards that may have been persisted into the static HTML (older saves
+// accidentally included the JS-populated grid, which the next load would then double).
+overviewGrid.innerHTML = '';
+slides.forEach((s, i) => {
+  const c = document.createElement('div');
+  c.className = 'ov-card' + (i === 0 ? ' active' : '');
+  c.innerHTML = '<div class="ov-num">' + String(i + 1).padStart(2, '0') + '</div>' +
+                '<div class="ov-code">' + (s.dataset.section || '') + '</div>' +
+                '<div class="ov-name">' + (s.dataset.name || '') + '</div>';
+  c.addEventListener('click', () => { go(i); toggleOverview(); });
+  overviewGrid.appendChild(c);
+});
+function toggleOverview() {
+  overviewEl.classList.toggle('visible');
+  overviewEl.setAttribute('aria-hidden', overviewEl.classList.contains('visible') ? 'false' : 'true');
+}
+document.getElementById('overview-btn').addEventListener('click', toggleOverview);
+overviewEl.addEventListener('click', (e) => { if (e.target === overviewEl) toggleOverview(); });
+
+// ═══ Initial hash nav ═══
+if (/^#p\d+$/.test(location.hash)) {
+  const n = parseInt(location.hash.slice(2), 10) - 1;
+  if (n > 0 && n < total) {
+    slides[0].classList.remove('active');
+    slides[n].classList.add('active');
+    cur = n;
+  }
+}
+update();
+</script>
+
+
+<!-- ═══ PRETEXT TEXT LAYOUT ENGINE ═══
+  @chenglou/pretext — canvas-based text measurement + TeX-style optimal line breaking.
+  - Phase 1 (prepare): measure each segment once per block via canvas (~19ms/500 blocks)
+  - Phase 2 (layout):  pure arithmetic to compute breaks at any container width (~0.09ms)
+  - Resize: only Phase 2 runs (no DOM remeasurement)
+  - Also equalises heights of sibling cards using pretext-computed block heights.
+  Pattern borrowed from FDC-v2 on mintresearch.org.
+-->
+<script type="module">
+
+const CDN_URLS = [
+  'https://esm.sh/@chenglou/pretext',
+  'https://cdn.jsdelivr.net/npm/@chenglou/pretext/+esm',
+  'https://unpkg.com/@chenglou/pretext/dist/layout.js',
+];
+
+async function loadPretext() {
+  for (const url of CDN_URLS) {
+    try {
+      const mod = await import(url);
+      if (typeof mod.prepare === 'function') {
+        console.log(`[pretext] Loaded from ${url}`);
+        return mod;
+      }
+    } catch (e) {
+      console.warn(`[pretext] Failed to load from ${url}:`, e.message);
+    }
+  }
+  return null;
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function buildFontSpec(el) {
+  const s = getComputedStyle(el);
+  const style = s.fontStyle !== 'normal' ? s.fontStyle + ' ' : '';
+  return `${style}${s.fontWeight} ${s.fontSize} ${s.fontFamily}`;
+}
+
+function getLineHeightPx(el) {
+  const s = getComputedStyle(el);
+  if (s.lineHeight === 'normal') return parseFloat(s.fontSize) * 1.45;
+  return parseFloat(s.lineHeight);
+}
+
+// Pure text = no child elements. Safe to rewrite textContent.
+// Mixed-content elements still get measured (for height equalisation) but their
+// DOM isn't rewritten — we can't preserve inline <strong>/<em>/<span> layout.
+function isPureText(el) {
+  return el.children.length === 0;
+}
+
+// ── State ─────────────────────────────────────────────────────────────────────
+
+const state = {
+  texts: new Map(),    // element → { prepared, lineHeight, pureText }
+  cardGroups: [],      // arrays of sibling cards for height equalisation
+  ptx: null,
+};
+
+const badge = document.getElementById('pretext-badge');
+
+// Selectors for prose-ish text blocks — cards with inline chevrons/tag-pills are
+// excluded because rewriting textContent would strip those elements.
+const TEXT_SELECTORS = [
+  'p.lede',
+  '.cover-sub',
+  '.macro-card p',
+  '.rubric-cell p',
+  '.synth p',
+  '.prop-item p',
+  '.course-desc',
+  '.gap-flag',
+].join(', ');
+
+async function init() {
+  badge.classList.add('active');
+
+  state.ptx = await loadPretext();
+  if (!state.ptx) {
+    badge.textContent = '✗ pretext unavailable';
+    badge.classList.add('error');
+    return;
+  }
+
+  const { prepare } = state.ptx;
+  await document.fonts.ready;
+
+  // Phase 1 — measure
+  const t0 = performance.now();
+  let preparedCount = 0;
+  for (const el of document.querySelectorAll(TEXT_SELECTORS)) {
+    // Stash the pristine text so subsequent layouts always start from a clean source,
+    // and so save/edit flows can restore the original (unbroken) prose.
+    const source = (el.dataset.ptxSrc || el.textContent || '').replace(/\s+/g, ' ').trim();
+    if (source.length < 12) continue;
+    el.dataset.ptxSrc = source;
+    try {
+      const prepared = prepare(source, buildFontSpec(el));
+      state.texts.set(el, {
+        prepared,
+        lineHeight: getLineHeightPx(el),
+        pureText: isPureText(el),
+      });
+      preparedCount++;
+    } catch (_) { /* font not in canvas cache; skip */ }
+  }
+  const prepMs = (performance.now() - t0).toFixed(1);
+  console.log(`[pretext] Phase 1: ${preparedCount} blocks measured in ${prepMs}ms`);
+
+  discoverCardGroups();
+  relayout();
+
+  // Resize: rAF-throttled Phase 2 only
+  let rafId = null;
+  window.addEventListener('resize', () => {
+    if (rafId !== null) return;
+    rafId = requestAnimationFrame(() => { relayout(); rafId = null; });
+  }, { passive: true });
+
+  badge.textContent = `◆ pretext · ${preparedCount} blocks`;
+  badge.classList.add('ready');
+
+  // Expose helper so the overlay can measure + lay out its dynamic <p> content
+  window.pretextLayoutElement = (el) => {
+    if (!state.ptx || !el) return;
+    const text = el.textContent.trim();
+    if (text.length < 12 || !isPureText(el)) return;
+    try {
+      const prepared = state.ptx.prepare(text, buildFontSpec(el));
+      const w = el.getBoundingClientRect().width || el.offsetWidth;
+      if (!w) return;
+      const result = state.ptx.layoutWithLines(prepared, w, getLineHeightPx(el));
+      if (!result || !result.lines || result.lines.length === 0) return;
+      el.textContent = result.lines.map(l => l.text).join('\n');
+      el.style.whiteSpace = 'pre-wrap';
+    } catch (_) {}
+  };
+
+  // Called by toggleEdit when leaving edit mode — re-prepare with whatever text
+  // the user typed, then relayout.
+  window.__pretextResyncAndRelayout = () => {
+    state.texts.clear();
+    for (const el of document.querySelectorAll(TEXT_SELECTORS)) {
+      const latest = (el.textContent || '').replace(/\s+/g, ' ').trim();
+      if (latest.length < 12) { delete el.dataset.ptxSrc; continue; }
+      el.dataset.ptxSrc = latest;
+      try {
+        const prepared = state.ptx.prepare(latest, buildFontSpec(el));
+        state.texts.set(el, {
+          prepared,
+          lineHeight: getLineHeightPx(el),
+          pureText: isPureText(el),
+        });
+      } catch (_) {}
+    }
+    relayout();
+  };
+}
+
+// ── Card group discovery (for height equalisation) ───────────────────────────
+
+function discoverCardGroups() {
+  // Framing: 6 macro-cards in 3-column × 2-row grid → equalise each row of 3
+  const macroCards = Array.from(document.querySelectorAll('.macro-card'));
+  for (let i = 0; i < macroCards.length; i += 3) {
+    const row = macroCards.slice(i, i + 3);
+    if (row.length > 1) state.cardGroups.push(row);
+  }
+
+  // Rubric: 3 cells in a row → equalise all three
+  const rubricCells = Array.from(document.querySelectorAll('.rubric-cell'));
+  if (rubricCells.length > 1) state.cardGroups.push(rubricCells);
+
+  // Proposal grid: 8 items in 4-column × 2-row grid → equalise each row of 4
+  const propItems = Array.from(document.querySelectorAll('.prop-item'));
+  for (let i = 0; i < propItems.length; i += 4) {
+    const row = propItems.slice(i, i + 4);
+    if (row.length > 1) state.cardGroups.push(row);
+  }
+}
+
+// ── Phase 2: layout ───────────────────────────────────────────────────────────
+
+function relayout() {
+  if (!state.ptx) return;
+  const { layoutWithLines } = state.ptx;
+
+  // Pass 1 — batch reads
+  const widths = new Map();
+  for (const [el] of state.texts) {
+    widths.set(el, el.getBoundingClientRect().width || el.offsetWidth);
+  }
+
+  // Pass 2 — arithmetic
+  const lineResults = new Map();
+  for (const [el, info] of state.texts) {
+    const w = widths.get(el);
+    if (!w) continue;
+    try {
+      lineResults.set(el, layoutWithLines(info.prepared, w, info.lineHeight));
+    } catch (_) {}
+  }
+
+  // Pass 3 — writes (pure-text only)
+  for (const [el, result] of lineResults) {
+    const info = state.texts.get(el);
+    if (!info.pureText) continue;
+    if (!result || !result.lines || result.lines.length === 0) continue;
+    el.textContent = result.lines.map(l => l.text).join('\n');
+    el.style.whiteSpace = 'pre-wrap';
+  }
+
+  // Pass 4 — height equalisation
+  equalizeCardGroups(lineResults);
+}
+
+function equalizeCardGroups(lineResults) {
+  for (const group of state.cardGroups) {
+    for (const card of group) card.style.minHeight = '';
+  }
+  for (const group of state.cardGroups) {
+    const heights = group.map(card => {
+      let ptxH = 0, used = false;
+      for (const [el, result] of lineResults) {
+        if (card.contains(el) && result) { ptxH += result.height || 0; used = true; }
+      }
+      return used ? ptxH : card.offsetHeight;
+    });
+    // Don't crush with pretext-only height (prose height); pad by card's non-text chrome
+    const maxH = Math.max(...heights);
+    for (const card of group) {
+      // Use offsetHeight baseline if our pure-arithmetic maxH is shorter than actual
+      const actual = card.offsetHeight;
+      card.style.minHeight = Math.max(maxH, actual) + 'px';
+    }
+  }
+}
+
+init();
+</script>
+
+
+</body></html>
