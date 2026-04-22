@@ -778,7 +778,29 @@ body.editing .card .chev { display: none; }
   .cov-wrap { overflow-x: auto; }
   .misfit-wrap { overflow-x: auto; }
 
-  .cover-bottom { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  /* Cover slide: restore flex column + vertical distribution overridden by .slide { display: block } */
+  .slide.cover {
+    display: flex !important;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: calc(100dvh - var(--chrome-top) - var(--chrome-bot));
+    padding: 18px 18px 22px;
+    gap: 16px;
+  }
+  .cover-top { flex-wrap: nowrap; gap: 10px; align-items: flex-start; }
+  .cover-meta, .cover-date { font-size: 10px; letter-spacing: 1.3px; line-height: 1.35; }
+  .cover-mid { flex: 1 1 auto; justify-content: center; padding: 10px 0; display: flex; flex-direction: column; }
+  .cover-title { font-size: clamp(54px, 14.5vw, 96px) !important; letter-spacing: -1.4px; line-height: 0.94; }
+  .cover-title .stroke { -webkit-text-stroke-width: 1.5px; }
+  .cover-sub { font-size: 17px; margin-top: 12px; line-height: 1.28; }
+  .cover-bottom {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 16px;
+    padding-top: 14px;
+  }
+  .cover-stat .k { font-size: 9px; letter-spacing: 1.3px; margin-bottom: 2px; }
+  .cover-stat .v { font-size: 14px; line-height: 1.25; }
+
   .row-label .qualifier { margin-left: 0; text-align: left; max-width: 100%; }
 
   /* Header clean-up */
@@ -804,9 +826,11 @@ body.editing .card .chev { display: none; }
   h1.mega { font-size: 52px; }
   h2 { font-size: 24px; }
   h3 { font-size: 19px; }
-  .cover-title { font-size: 64px; }
-  .cover-meta, .cover-date, .cover-stat .k { font-size: 11px; }
-  .cover-stat .v { font-size: 16px; }
+  /* Cover-title handled by clamp() in the 900px block — don't override here */
+  .cover-meta, .cover-date { font-size: 10px; letter-spacing: 1.3px; }
+  .cover-stat .k { font-size: 9px; letter-spacing: 1.3px; }
+  .cover-stat .v { font-size: 13.5px; line-height: 1.25; }
+  .cover-sub { font-size: 16px; }
   .macro-card h4 { font-size: 18px; }
   .macro-card p { font-size: 15px; }
   .rubric-cell h3 { font-size: 40px; }
@@ -885,7 +909,7 @@ body.editing .card .chev { display: none; }
       <p>There is probably some strong signalling effect of having discrete AI courses but I think it is better just to make sure that ~each course is co-taught by one of the AI cluster who can infuse AI relevance.</p>
     </div>
     <div class="macro-card" style=""><div class="n">05</div>
-      <h4>Private sector counts.</h4>
+      <h4>More emphasis on private sector.</h4>
       <p>Graduates will work across contractors, NGOs, AI companies, and platforms as well as the public service. The "professional ethos" framing and a lot of the implementation focus skews public-servant.</p>
     </div>
     <div class="macro-card" style=""><div class="n">06</div>
