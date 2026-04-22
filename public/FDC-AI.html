@@ -641,6 +641,12 @@ code, .mono { font-family: var(--mono); font-size: 0.88em; font-weight: 500; }
 .save-status.saved { color: var(--teal); }
 .save-status.unsaved { color: var(--rust); }
 
+/* On the public host, hide editing controls entirely */
+body.live #edit-btn,
+body.live #download-btn,
+body.live #revert-btn,
+body.live #save-status { display: none !important; }
+
 body.editing .deck { outline: 2px dashed var(--rust); outline-offset: -4px; }
 body.editing .slide.active [contenteditable="true"]:hover { background: rgba(252, 211, 77, 0.35); }
 body.editing .slide.active [contenteditable="true"]:focus {
@@ -1712,7 +1718,12 @@ function applyEditable(on) {
     else el.removeAttribute('contenteditable');
   });
 }
+// Lock down editing on the public host
+const IS_LIVE = /mintresearch\.org/i.test(location.hostname);
+if (IS_LIVE) document.body.classList.add('live');
+
 function toggleEdit(force) {
+  if (IS_LIVE) return;    // editing disabled on the published site
   editing = (typeof force === 'boolean') ? force : !editing;
   document.body.classList.toggle('editing', editing);
   editBtn.classList.toggle('on', editing);
