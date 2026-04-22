@@ -732,74 +732,56 @@ body.editing .card .chev { display: none; }
   .sq ul, .sq li { font-size: 14px; }
 }
 
-/* Mobile: abandon the fixed-viewport slide deck — switch to a stacked scrollable document */
+/* Mobile: keep discrete pages, make each one internally scrollable */
 @media (max-width: 900px) {
-  html, body {
-    height: auto; width: 100%;
-    overflow-x: hidden; overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  body {
-    padding-top: 40px;      /* clear fixed top chrome */
-    padding-bottom: 56px;   /* clear fixed bottom chrome */
-    font-size: 16px;
-  }
-  .deck {
-    position: static;
-    top: auto; bottom: auto; inset: auto;
-    height: auto;
-    overflow: visible;
-  }
-  .slide {
-    position: static;
-    opacity: 1 !important;
-    transform: none !important;
-    pointer-events: auto !important;
-    height: auto;
-    min-height: auto;
-    overflow: visible;
-    padding: 28px 18px 36px;
-    border-top: 2px dashed var(--ink);
-    page-break-before: always;
-    display: block;   /* stop the flex-column that was forcing children to flex: 1 */
-  }
-  .slide:first-of-type { border-top: none; }
+  :root { --chrome-top: 40px; --chrome-bot: 56px; }
+  html, body { height: 100vh; overflow: hidden; }
+  body { font-size: 16px; }
 
-  /* Stop child elements trying to flex-fill the (no-longer-bounded) slide */
+  .deck { position: fixed; inset: 0; top: var(--chrome-top); bottom: var(--chrome-bot); overflow: hidden; }
+
+  .slide {
+    /* stay absolute/one-at-a-time — but allow the slide body to scroll when tall */
+    padding: 20px 18px 28px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: block;   /* stop flex column forcing children to flex-fill */
+  }
+
+  /* Stop child elements trying to flex-fill within the slide */
   .macro-grid, .rubric, .pitch-grid, .prop-grid, .summary-grid, .cov-wrap, .misfit-wrap {
     flex: 0 0 auto; min-height: 0;
   }
 
-  /* All multi-column grids collapse to single column */
-  .macro-grid { grid-template-columns: 1fr; grid-template-rows: none; overflow: visible; }
-  .macro-card { min-height: auto; border: var(--border); margin-bottom: 16px; }
-  .macro-card:last-child { margin-bottom: 0; }
+  /* All multi-column grids collapse to single column so cards grow to fit their text */
+  .macro-grid { grid-template-columns: 1fr; grid-template-rows: none; overflow: visible; gap: 12px; }
+  .macro-card { min-height: auto; border: var(--border); }
 
   .rubric { grid-template-columns: 1fr; grid-template-rows: none; }
-  .rubric-cell { border-right: none; border-bottom: 1.5px solid var(--ink); }
+  .rubric-cell { border-right: none; border-bottom: 1.5px solid var(--ink); min-height: auto; }
   .rubric-cell:last-child { border-bottom: none; }
 
   .pitch-grid { grid-template-columns: 1fr; grid-template-rows: none; }
-  .pitch-col { border-right: none !important; border-bottom: 1.5px solid var(--ink); }
+  .pitch-col { border-right: none !important; border-bottom: 1.5px solid var(--ink); min-height: auto; }
   .pitch-col:last-child { border-bottom: none; }
   .pitch-col:nth-child(3), .pitch-col:nth-child(4) { border-top: none; }
   .pitch-body { overflow: visible; }
 
   .prop-grid { grid-template-columns: 1fr; grid-template-rows: none; }
-  .prop-item { border-right: none; border-bottom: 1.5px dashed var(--amber-soft); }
+  .prop-item { border-right: none; border-bottom: 1.5px dashed var(--amber-soft); min-height: auto; }
   .prop-item:last-child { border-bottom: none; }
 
   .summary-grid { grid-template-columns: 1fr; grid-template-rows: none; }
-  .sq { border-right: none; border-bottom: 1.5px dashed var(--amber-soft); }
+  .sq { border-right: none; border-bottom: 1.5px dashed var(--amber-soft); min-height: auto; }
   .sq:last-child { border-bottom: none; }
 
-  .cov-wrap { overflow-x: auto; }    /* coverage table can scroll horizontally */
+  .cov-wrap { overflow-x: auto; }
   .misfit-wrap { overflow-x: auto; }
 
-  .cover-bottom { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .cover-bottom { grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .row-label .qualifier { margin-left: 0; text-align: left; max-width: 100%; }
 
-  /* Header clean-up — on phones, the long brand subtitle and progress bar crowd the chrome */
+  /* Header clean-up */
   .top-chrome { height: 40px; padding: 0 14px; gap: 10px; }
   .top-chrome .brand-sub { display: none; }
   .top-progress { display: none; }
@@ -1129,7 +1111,7 @@ body.editing .card .chev { display: none; }
     <div class="pitch-col"><div class="pitch-head">Hawken</div><div class="pitch-body"><div class="empty-cell">No dedicated course</div></div></div>
   </div>
   <div class="synth">
-    <p>Plug-and-play Gillian's proposed Governance Foundations course here See Gillian's pitch. Could bring in specific American institutions and perhaps it chimes with C005.</p>
+    <p>Plug-and-play Gillian's proposed Governance Foundations course here — <span class="card chip" data-title="Gillian Hadfield — Governance Foundations" data-meta="Proposed course · sibling program" data-body="In this course we will go back to the foundations of collective governing across the evolutionary history of humans to lay the groundwork for thinking about how the next phases of governance might be built to effectively ensure human flourishing through the AI transition. We will explore the theory of normative social order, markets, democracy, capitalism, socialism, and other methods of governance through human history. We revisit today's tools including legal systems, legal infrastructure, legislative bodies, courts, local communities, civic organizations, lobbyists/corporate government strategy, self-governance, market/industry organizations and standard-setting, and the role of epistemic communities.">See Gillian's pitch<span class="chev">↗</span></span>. Could bring in specific American institutions and perhaps it chimes with C005.</p>
     <p>AI case studies also possible here — e.g. normative social orders for AI agents.</p>
     <span class="ai-hook">AI hook · normative social orders for AI agents</span>
   </div>
@@ -1668,9 +1650,6 @@ const nextBtn = document.getElementById('next-btn');
 
 totalNum.textContent = total;
 
-// Mobile: stacked scrollable layout — nav should scroll rather than swap slides
-const isMobile = () => window.matchMedia('(max-width: 900px)').matches;
-
 function go(n) {
   n = Math.max(0, Math.min(total - 1, n));
   if (n === cur) return;
@@ -1680,7 +1659,8 @@ function go(n) {
   setTimeout(() => slides[cur].classList.remove('prev'), 400);
   cur = n;
   slides[cur].classList.add('active');
-  if (isMobile()) slides[cur].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Mobile: reset internal scroll so each page opens at the top
+  slides[cur].scrollTop = 0;
   update();
 }
 function update() {
@@ -1826,7 +1806,7 @@ window.addEventListener('resize', () => {
 
 // ═══ Edit mode + autosave ═══
 const EDIT_SELECTOR = 'h1, h2, h3, h4, h5, h6, p, li, td, th, span, blockquote, figcaption, .card';
-const STORAGE_KEY = 'fdc-microsite-edits-v2';
+const STORAGE_KEY = 'fdc-microsite-edits-v3';
 // Clean up any old-key caches so they don't resurface on downgrade paths.
 try { localStorage.removeItem('fdc-microsite-edits-v1'); } catch (_) {}
 const editBtn = document.getElementById('edit-btn');
@@ -1857,8 +1837,10 @@ function toggleEdit(force) {
     closeOverlay();
     // Restore pristine prose in pretext-prepared blocks so edits touch real text,
     // not pretext's \n-laden layout. Also clear equalised heights.
+    // Only for pure-text elements — mixed-content blocks (e.g. p containing a chip)
+    // have inline children whose markup we must not destroy.
     document.querySelectorAll('[data-ptx-src]').forEach(el => {
-      el.textContent = el.dataset.ptxSrc;
+      if (el.children.length === 0) el.textContent = el.dataset.ptxSrc;
       el.style.whiteSpace = '';
     });
     document.querySelectorAll('.macro-card, .rubric-cell, .prop-item').forEach(el => {
@@ -1888,9 +1870,10 @@ function persistEdits() {
     clone.querySelectorAll('.slide').forEach(el => el.classList.remove('active', 'prev'));
     const firstSlide = clone.querySelector('.slide');
     if (firstSlide) firstSlide.classList.add('active');
-    // Restore pristine prose — don't autosave pretext's \n-laden layout
+    // Restore pristine prose — don't autosave pretext's \n-laden layout.
+    // Only rewrite text for pure-text elements; preserve inline children elsewhere.
     clone.querySelectorAll('[data-ptx-src]').forEach(el => {
-      el.textContent = el.dataset.ptxSrc;
+      if (el.children.length === 0) el.textContent = el.dataset.ptxSrc;
       el.style.whiteSpace = '';
       el.removeAttribute('data-ptx-src');
     });
@@ -1940,9 +1923,11 @@ document.addEventListener('input', (e) => {
       else seenNames.add(name);
     });
 
-    // Strip pretext layout artefacts that might have leaked into older caches
+    // Strip pretext layout artefacts that might have leaked into older caches.
+    // Only safe to rewrite textContent for pure-text elements — mixed-content
+    // blocks (e.g. synth p with a chip) need their inline markup preserved.
     deck.querySelectorAll('[data-ptx-src]').forEach(el => {
-      el.textContent = el.dataset.ptxSrc;
+      if (el.children.length === 0) el.textContent = el.dataset.ptxSrc;
       el.style.whiteSpace = '';
       el.removeAttribute('data-ptx-src');
     });
@@ -2029,8 +2014,9 @@ function buildCleanHtml() {
   const og = clone.querySelector('#overview-grid'); if (og) og.innerHTML = '';
   // Restore pristine prose — pretext rewrites textContent with \n between lines
   // and sets white-space: pre-wrap. Save the source text, not the laid-out version.
+  // Only for pure-text elements; mixed-content blocks keep their inline markup.
   clone.querySelectorAll('[data-ptx-src]').forEach(el => {
-    el.textContent = el.dataset.ptxSrc;
+    if (el.children.length === 0) el.textContent = el.dataset.ptxSrc;
     el.style.whiteSpace = '';
     el.removeAttribute('data-ptx-src');
   });
@@ -2172,31 +2158,9 @@ if (/^#p\d+$/.test(location.hash)) {
     slides[0].classList.remove('active');
     slides[n].classList.add('active');
     cur = n;
-    if (isMobile()) {
-      // Wait for layout to settle (fonts, pretext) then scroll to the hash target
-      setTimeout(() => slides[n].scrollIntoView({ behavior: 'instant', block: 'start' }), 0);
-    }
   }
 }
 update();
-
-// ═══ Mobile: track which slide is in view and update counter via IntersectionObserver ═══
-if (isMobile() && 'IntersectionObserver' in window) {
-  const io = new IntersectionObserver((entries) => {
-    let best = null, bestRatio = 0;
-    entries.forEach(e => { if (e.intersectionRatio > bestRatio) { bestRatio = e.intersectionRatio; best = e.target; } });
-    if (best) {
-      const i = slides.indexOf(best);
-      if (i >= 0 && i !== cur) {
-        slides[cur].classList.remove('active');
-        cur = i;
-        slides[cur].classList.add('active');
-        update();
-      }
-    }
-  }, { threshold: [0.25, 0.5, 0.75] });
-  slides.forEach(s => io.observe(s));
-}
 </script>
 
 
