@@ -728,7 +728,6 @@ body.editing .card .chev { display: none; }
 <div class="top-chrome">
   <span><span class="brand-mini">JHU SGP · FDC</span><span class="brand-sub">mapping the pitches for a new MPP core</span></span>
   <div class="top-progress"><div class="top-progress-fill" id="progress-fill" style="width: 100%;"></div></div>
-  <span id="pretext-badge" aria-hidden="true" class="">◆ pretext</span>
   <span class="top-date">22 Apr 2026 · v1.0</span>
 </div>
 
@@ -1125,7 +1124,7 @@ body.editing .card .chev { display: none; }
     </div>
   </div>
   <div class="synth">
-    <p>A lot of the value of teaching students about AI in other courses depends on their having a solid enough technical grounding — so we do need a course just on this. Everyone working on policy needs to understand how AI works. I think it fits quite nicely as a methods course; the key focus is to get students familiar enough with using AI that they can talk sensibly about its societal impacts, so we can build around using AI for policy analysis and research.</p>
+    <p>A lot of the value of teaching students about AI in other courses depends on their having a solid enough technical grounding — so we do need a course just on this. Everyone working on policy needs to understand how AI works. I think it fits quite nicely as a methods course; the key focus is to get students familiar enough with using AI that they can talk sensibly about its societal impacts, so we can build around using AI for policy analysis and research. Obviously, the focus would be on the frontier of AI capabilities, which are best understood by using AI systems extensively in research and practice.</p>
     <span class="ai-hook">AI hook · the dedicated AI course</span>
   </div>
 </div>
@@ -2114,7 +2113,13 @@ const state = {
   ptx: null,
 };
 
-const badge = document.getElementById('pretext-badge');
+// Null-safe no-op badge shim (badge element has been removed from the header;
+// this keeps the rest of the init flow simple without littering null checks)
+const badge = document.getElementById('pretext-badge') || {
+  classList: { add() {}, remove() {}, toggle() {} },
+  set textContent(_) {},
+  style: {},
+};
 
 // Selectors for prose-ish text blocks — cards with inline chevrons/tag-pills are
 // excluded because rewriting textContent would strip those elements.
