@@ -698,73 +698,149 @@ body.editing .card .chev { display: none; }
 .ov-card.active .ov-code { color: var(--teal-soft); }
 
 /* ═══════════ RESPONSIVE ═══════════ */
+
+/* Tablet: narrower grids, rows grow to fit (no more fixed-height rows that cause overflow) */
 @media (max-width: 1080px) {
   .pitch-grid { grid-template-columns: repeat(2, 1fr); }
   .pitch-col:nth-child(2) { border-right: none; }
-  .pitch-col:nth-child(3), .pitch-col:nth-child(4) {
-    border-top: 1.5px solid var(--ink);
-  }
-  .prop-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(4, 1fr); }
+  .pitch-col:nth-child(3), .pitch-col:nth-child(4) { border-top: 1.5px solid var(--ink); }
+  .prop-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; }
   .prop-item:nth-child(2n) { border-right: none; }
-  .prop-item:nth-child(n+7) { border-bottom: none; }
-  .macro-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); }
+  .prop-item:nth-child(n+7) { border-bottom: 1.5px dashed var(--amber-soft); }
+  .macro-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; }
 
-  body { font-size: 16px; }
-  p { font-size: 16px; }
-  p.lede, .cover-sub { font-size: 19px; }
-  h1 { font-size: 60px; }
-  h1.mega { font-size: 80px; }
-  h2 { font-size: 30px; }
+  body { font-size: 17px; }
+  p { font-size: 17px; }
+  p.lede, .cover-sub { font-size: 20px; }
+  h1 { font-size: 64px; }
+  h1.mega { font-size: 82px; }
+  h2 { font-size: 32px; }
   h3 { font-size: 22px; }
-  .macro-card h4 { font-size: 18px; }
-  .macro-card p { font-size: 14px; }
-  .rubric-cell h3 { font-size: 42px; }
-  .rubric-cell p { font-size: 17px; }
+  .macro-card h4 { font-size: 19px; }
+  .macro-card p { font-size: 15px; }
+  .rubric-cell h3 { font-size: 44px; }
+  .rubric-cell p { font-size: 18px; }
   .row-label .name { font-size: 22px; }
   .row-label .qualifier { font-size: 15px; }
-  .card { font-size: 14px; }
-  .synth p { font-size: 16px; }
+  .card { font-size: 15px; }
+  .synth p { font-size: 17px; }
   .cov-cell { font-size: 18px; }
   .cov-table td.row-h { font-size: 14px; }
-  .prop-item h4 { font-size: 17px; }
-  .prop-item p { font-size: 14px; }
-  .sq h4 { font-size: 19px; }
-  .sq ul, .sq li { font-size: 13px; }
+  .prop-item h4 { font-size: 18px; }
+  .prop-item p { font-size: 15px; }
+  .sq h4 { font-size: 20px; }
+  .sq ul, .sq li { font-size: 14px; }
 }
-@media (max-width: 640px) {
-  .pitch-grid { grid-template-columns: 1fr; }
+
+/* Mobile: abandon the fixed-viewport slide deck — switch to a stacked scrollable document */
+@media (max-width: 900px) {
+  html, body {
+    height: auto; width: 100%;
+    overflow-x: hidden; overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  body {
+    padding-top: 40px;      /* clear fixed top chrome */
+    padding-bottom: 56px;   /* clear fixed bottom chrome */
+    font-size: 16px;
+  }
+  .deck {
+    position: static;
+    top: auto; bottom: auto; inset: auto;
+    height: auto;
+    overflow: visible;
+  }
+  .slide {
+    position: static;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    height: auto;
+    min-height: auto;
+    overflow: visible;
+    padding: 28px 18px 36px;
+    border-top: 2px dashed var(--ink);
+    page-break-before: always;
+    display: block;   /* stop the flex-column that was forcing children to flex: 1 */
+  }
+  .slide:first-of-type { border-top: none; }
+
+  /* Stop child elements trying to flex-fill the (no-longer-bounded) slide */
+  .macro-grid, .rubric, .pitch-grid, .prop-grid, .summary-grid, .cov-wrap, .misfit-wrap {
+    flex: 0 0 auto; min-height: 0;
+  }
+
+  /* All multi-column grids collapse to single column */
+  .macro-grid { grid-template-columns: 1fr; grid-template-rows: none; overflow: visible; }
+  .macro-card { min-height: auto; border: var(--border); margin-bottom: 16px; }
+  .macro-card:last-child { margin-bottom: 0; }
+
+  .rubric { grid-template-columns: 1fr; grid-template-rows: none; }
+  .rubric-cell { border-right: none; border-bottom: 1.5px solid var(--ink); }
+  .rubric-cell:last-child { border-bottom: none; }
+
+  .pitch-grid { grid-template-columns: 1fr; grid-template-rows: none; }
   .pitch-col { border-right: none !important; border-bottom: 1.5px solid var(--ink); }
   .pitch-col:last-child { border-bottom: none; }
-  .rubric { grid-template-columns: 1fr; }
-  .rubric-cell { border-right: none; border-bottom: 1.5px solid var(--ink); }
-  .macro-grid { grid-template-columns: 1fr; grid-template-rows: auto; overflow-y: auto; }
-  .cover-bottom { grid-template-columns: repeat(2, 1fr); }
-  .row-label .qualifier { margin-left: 0; text-align: left; max-width: 100%; }
-  .nav-right kbd { display: none; }
-  .nav-mid { display: none; }
+  .pitch-col:nth-child(3), .pitch-col:nth-child(4) { border-top: none; }
+  .pitch-body { overflow: visible; }
 
+  .prop-grid { grid-template-columns: 1fr; grid-template-rows: none; }
+  .prop-item { border-right: none; border-bottom: 1.5px dashed var(--amber-soft); }
+  .prop-item:last-child { border-bottom: none; }
+
+  .summary-grid { grid-template-columns: 1fr; grid-template-rows: none; }
+  .sq { border-right: none; border-bottom: 1.5px dashed var(--amber-soft); }
+  .sq:last-child { border-bottom: none; }
+
+  .cov-wrap { overflow-x: auto; }    /* coverage table can scroll horizontally */
+  .misfit-wrap { overflow-x: auto; }
+
+  .cover-bottom { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .row-label .qualifier { margin-left: 0; text-align: left; max-width: 100%; }
+
+  /* Header clean-up — on phones, the long brand subtitle and progress bar crowd the chrome */
+  .top-chrome { height: 40px; padding: 0 14px; gap: 10px; }
+  .top-chrome .brand-sub { display: none; }
+  .top-progress { display: none; }
+  .top-date { font-size: 10px; letter-spacing: 1.2px; }
+
+  .bot-chrome { height: 56px; padding: 0 14px; }
+  .nav-mid { display: none; }
+  .nav-right kbd { display: none; }
+  .counter { font-size: 12px; }
+  .counter .cur { font-size: 16px; }
+  .edit-btn, .overview-btn { font-size: 11px; padding: 6px 9px; }
+}
+
+/* Phone: type step-down */
+@media (max-width: 640px) {
   body { font-size: 15px; }
   p { font-size: 15px; }
   p.lede, .cover-sub { font-size: 17px; }
-  h1 { font-size: 38px; }
-  h1.mega { font-size: 48px; }
-  h2 { font-size: 22px; }
-  h3 { font-size: 18px; }
-  .cover-title { font-size: 60px; }
-  .macro-card h4 { font-size: 16px; }
-  .macro-card p { font-size: 13px; }
-  .rubric-cell h3 { font-size: 28px; }
-  .rubric-cell p { font-size: 15px; }
-  .row-label .name { font-size: 18px; }
-  .card { font-size: 13px; }
-  .synth p { font-size: 14px; }
-  .cov-cell { font-size: 14px; }
-  .cov-table td.row-h { font-size: 12px; }
+  h1 { font-size: 40px; }
+  h1.mega { font-size: 52px; }
+  h2 { font-size: 24px; }
+  h3 { font-size: 19px; }
+  .cover-title { font-size: 64px; }
+  .cover-meta, .cover-date, .cover-stat .k { font-size: 11px; }
+  .cover-stat .v { font-size: 16px; }
+  .macro-card h4 { font-size: 18px; }
+  .macro-card p { font-size: 15px; }
+  .rubric-cell h3 { font-size: 40px; }
+  .rubric-cell p { font-size: 16px; }
+  .row-label .name { font-size: 20px; }
+  .row-label .qualifier { font-size: 14px; }
+  .card { font-size: 15px; }
+  .synth p { font-size: 16px; }
+  .cov-cell { font-size: 15px; }
+  .cov-table td.row-h { font-size: 13px; }
   .cov-table th { font-size: 10px; }
-  .prop-item h4 { font-size: 15px; }
-  .prop-item p { font-size: 12px; }
-  .sq h4 { font-size: 17px; }
-  .sq ul, .sq li { font-size: 12px; }
+  .prop-item h4 { font-size: 17px; }
+  .prop-item p { font-size: 14px; }
+  .sq h4 { font-size: 19px; }
+  .sq ul, .sq li { font-size: 14px; }
+  .pitch-head { font-size: 12px; }
 }
 </style>
 </head>
@@ -1592,6 +1668,9 @@ const nextBtn = document.getElementById('next-btn');
 
 totalNum.textContent = total;
 
+// Mobile: stacked scrollable layout — nav should scroll rather than swap slides
+const isMobile = () => window.matchMedia('(max-width: 900px)').matches;
+
 function go(n) {
   n = Math.max(0, Math.min(total - 1, n));
   if (n === cur) return;
@@ -1601,6 +1680,7 @@ function go(n) {
   setTimeout(() => slides[cur].classList.remove('prev'), 400);
   cur = n;
   slides[cur].classList.add('active');
+  if (isMobile()) slides[cur].scrollIntoView({ behavior: 'smooth', block: 'start' });
   update();
 }
 function update() {
@@ -2092,9 +2172,31 @@ if (/^#p\d+$/.test(location.hash)) {
     slides[0].classList.remove('active');
     slides[n].classList.add('active');
     cur = n;
+    if (isMobile()) {
+      // Wait for layout to settle (fonts, pretext) then scroll to the hash target
+      setTimeout(() => slides[n].scrollIntoView({ behavior: 'instant', block: 'start' }), 0);
+    }
   }
 }
 update();
+
+// ═══ Mobile: track which slide is in view and update counter via IntersectionObserver ═══
+if (isMobile() && 'IntersectionObserver' in window) {
+  const io = new IntersectionObserver((entries) => {
+    let best = null, bestRatio = 0;
+    entries.forEach(e => { if (e.intersectionRatio > bestRatio) { bestRatio = e.intersectionRatio; best = e.target; } });
+    if (best) {
+      const i = slides.indexOf(best);
+      if (i >= 0 && i !== cur) {
+        slides[cur].classList.remove('active');
+        cur = i;
+        slides[cur].classList.add('active');
+        update();
+      }
+    }
+  }, { threshold: [0.25, 0.5, 0.75] });
+  slides.forEach(s => io.observe(s));
+}
 </script>
 
 
