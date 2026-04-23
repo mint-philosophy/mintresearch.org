@@ -1923,6 +1923,17 @@ document.addEventListener('input', (e) => {
 // ── Restore on load
 (function restoreEdits() {
   try {
+    // On the published site, editing is disabled and we never want to override
+    // the shipped HTML with a stale browser-local snapshot. Proactively wipe
+    // any cached edits so the live version is always authoritative.
+    if (IS_LIVE) {
+      localStorage.removeItem(STORAGE_KEY);
+      // Also clean up older key versions that might linger on visitor browsers
+      localStorage.removeItem('fdc-microsite-edits-v2');
+      localStorage.removeItem('fdc-microsite-edits-v1');
+      localStorage.removeItem('fdc-microsite-edits');
+      return;
+    }
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return;
     const { html, savedAt } = JSON.parse(raw);
