@@ -14,6 +14,7 @@ It started as an Astro project, but in commit `c35aea3` (2026-03-30, "Deploy flo
 - `npm run build` will *not* regenerate the homepage — `src/pages/` no longer contains it.
 - Edits go directly into the served HTML. To re-apply the Minty overlay after edits, run `python3 scripts/inject_minty.py`.
 - The team data array is embedded in `public/index.html` as `<script id="personData" type="application/json">[...]</script>`. Edit that JSON to add/change people.
+- The homepage Papers/Publications list is loaded at runtime from `public/assets/papers/latest-paper-deliverables.csv`.
 - The `chatbot-worker/` and `paper-map/` subprojects retain their own build steps (see their READMEs).
 
 ## Asset directories — do not delete without checking the rendered HTML
@@ -52,3 +53,23 @@ chatbot-worker/        # Cloudflare Worker for the Minty chatbot
    ```
    Set `"headshot":null` if no photo is available — the panel will fall back to initials.
 3. Verify locally by serving `public/` (`python3 -m http.server -d public 8090`) and clicking the person in the team grid.
+
+## Updating homepage Papers
+
+The homepage Papers/Publications section is generated in the browser from:
+
+```text
+public/assets/papers/latest-paper-deliverables.csv
+```
+
+This CSV should be exported from the Notion papers-only database view. The website filters rows where `Site: in Papers Section?` is `Yes`, requires `Site: codename`, and sorts by `Date (D/M/Y)` newest-to-oldest.
+
+Update flow:
+
+1. Export the papers-only Notion view as CSV.
+2. Import the export with `npm run import:papers -- <path-to-notion-export.csv>`.
+   - In Windows PowerShell, use `npm.cmd run import:papers -- <path-to-notion-export.csv>` if script execution policy blocks `npm`.
+3. Confirm visible rows have a `Site: codename`. Codenames are maintained in Notion and should use short kebab-case, e.g. `blind-refusal`. If future duplicates occur, use `paper-name`, then `paper-name-2`.
+4. Verify locally by serving `public/` (`python3 -m http.server -d public 8090`) and checking the homepage Papers/Publications section.
+
+The import script blocks visible rows with missing codenames, duplicate codenames, or changed codenames for papers already known to the current site CSV. The loader ignores placeholder links such as `no github` and `no post yet`. Create `public/assets/papers/<codename>/` folders only when a paper has artefacts that need to be served from the site.
