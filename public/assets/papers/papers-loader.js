@@ -85,13 +85,14 @@ function escapeHtml(value) {
 function visiblePapers(rows) {
   return rows
     .filter((row) => row["Site: in Papers Section?"].trim().toLowerCase() === "yes")
-    .filter((row) => row["Site: codename"].trim())
+    .filter((row) => row["Site: Public?"].trim().toLowerCase() === "yes")
     .sort((a, b) => parseDate(b["Date (D/M/Y)"]) - parseDate(a["Date (D/M/Y)"]));
 }
 
 function linkHtml(row) {
   const links = [
     ["View paper", row["Site: Link to Paper"] || row.Link],
+    ["Alt source", row["Site: Alt Source"]],
     ["GitHub", row["Site: Link to Github"]],
     ["Blog", row["Site: Link to Blog Post"]],
   ].filter(([, href]) => isValidLink(href || ""));
