@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<title>Evaluating LLM Normative Competence</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23FFD054'/%3E%3Crect x='10' y='10' width='44' height='44' fill='none' stroke='%23161300' stroke-width='4' stroke-dasharray='8 5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════════════════════════════
+   FDC HOUSE STYLE — cream, yellow, dashed black, Newsreader + Space Mono
+   (Lowry's town keeps the foot of the page)
+   ════════════════════════════════════════════════════════════════════ */
+:root {
+  --cream: #FFFAED;
+  --cream-panel: rgba(255, 250, 237, 0.97);
+  --yellow: #FFD054;
+  --orange: #ee7a44;
+  --black: #161300;
+  --ink: #1a1a1a;
+  --mid: #555;
+  --light: #999;
+  --border: 2px dashed var(--black);
+  --border-dot: 2px dotted var(--black);
+  --mono: 'Space Mono', monospace;
+  --serif: 'Newsreader', Georgia, serif;
+  --rail-w: clamp(240px, 18vw, 320px);
+  --pad: clamp(10px, 1.6vw, 26px);
+  --ticker-h: 34px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+}
+body {
+  font-family: var(--serif);
+  color: var(--black);
+  background: var(--cream);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+/* ── Page-turn cue (FDC slide fade) ─────────────────────────────────── */
+.stage.page-turn { animation: page-in 0.35s ease both; }
+body.no-motion .stage.page-turn { animation: none; }
+@keyframes page-in {
+  from { opacity: 0.15; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ── Ticker ─────────────────────────────────────────────────────────── */
+.ticker {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: var(--ticker-h);
+  background: var(--yellow);
+  border-bottom: var(--border);
+  overflow: hidden;
+  z-index: 20;
+  display: flex; align-items: center;
+}
+.ticker-track {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 13px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  animation: scroll-ticker 60s linear infinite;
+}
+.ticker-track span { opacity: 0.6; padding: 2px 10px; }
+.ticker-track span.current {
+  opacity: 1;
+  background: var(--black);
+  color: var(--yellow);
+}
+.ticker-track i { font-style: normal; opacity: 0.35; margin: 0 14px; }
+@keyframes scroll-ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+body.no-motion .ticker-track { animation: none; }
+
+/* ── Deck grid ──────────────────────────────────────────────────────── */
+.deck {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: var(--rail-w) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: var(--pad);
+  height: calc(100vh - var(--ticker-h));
+  margin-top: var(--ticker-h);
+  min-height: 0;
+  padding: var(--pad);
+}
+.deck > * { min-width: 0; min-height: 0; }
+
+/* ── Rail ───────────────────────────────────────────────────────────── */
+.rail {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  background: var(--cream-panel);
+  border: var(--border);
+}
+.brand {
+  background: var(--yellow);
+  border-bottom: var(--border);
+  padding: 14px 16px 13px;
+}
+.brand-kicker {
+  font-family: var(--mono);
+  font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.brand-title {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(17px, 1.4vw, 23px);
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+}
+.reveal-panel {
+  padding: 10px 14px 12px;
+  border-bottom: var(--border-dot);
+}
+.panel-label {
+  font-family: var(--mono);
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--mid);
+  margin-bottom: 7px;
+}
+.reveal-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.reveal-btn, .nav-btn {
+  font-family: var(--mono);
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+  min-height: 30px;
+  border: 2px solid var(--black);
+  background: var(--cream);
+  transition: background 0.15s;
+}
+.reveal-btn:hover, .nav-btn:hover { background: var(--yellow); }
+.reveal-btn.active { background: var(--black); color: var(--cream); }
+
+.page-list {
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(22, 19, 0, 0.3) transparent;
+}
+.page-jump {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 9px;
+  align-items: baseline;
+  padding: 7px 14px;
+  text-align: left;
+  border-bottom: 1px dotted rgba(22, 19, 0, 0.35);
+  transition: background 0.15s;
+}
+.page-jump:hover { background: var(--yellow); }
+.page-jump .num {
+  font-family: var(--mono);
+  font-size: 10px; font-weight: 700;
+  color: var(--mid);
+}
+.page-jump .label {
+  font-family: var(--serif);
+  font-size: 13px;
+  line-height: 1.25;
+  color: var(--ink);
+}
+.page-jump.active { background: var(--yellow); box-shadow: inset 4px 0 0 var(--black); }
+.page-jump.active .num { color: var(--black); }
+.page-jump.active .label { font-weight: 600; }
+
+.rail-footer {
+  display: grid;
+  gap: 7px;
+  padding: 10px 14px 12px;
+  border-top: var(--border);
+  background: var(--cream);
+}
+.progress { height: 4px; border: 1px solid var(--black); background: var(--cream); }
+.progress-fill { height: 100%; width: 0; background: var(--black); transition: width 0.25s ease; }
+.footer-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.counter, .beatline, .keys, .pretext-status {
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--mid);
+}
+.beatline { font-weight: 700; color: var(--black); }
+.keys kbd {
+  border: 1px solid var(--mid);
+  padding: 1px 5px;
+  font-family: var(--mono);
+  font-size: 9px;
+}
+.pretext-status { color: var(--light); font-size: 9px; }
+.nav-btn { flex: 1; }
+
+/* ── Stage ──────────────────────────────────────────────────────────── */
+.stage {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 100%;
+  overflow: hidden;
+  background: var(--cream-panel);
+  border: var(--border);
+  cursor: pointer;
+}
+.vlabel {
+  position: absolute;
+  left: 13px; top: 50%;
+  transform: rotate(-90deg) translateX(-50%);
+  transform-origin: left center;
+  font-family: var(--mono);
+  font-size: clamp(10px, 0.85vw, 14px); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 3px;
+  color: var(--light);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 2;
+}
+.stage-head {
+  padding: clamp(14px, 2.2vh, 26px) clamp(22px, 3.2vw, 52px) 12px clamp(34px, 3.6vw, 56px);
+  border-bottom: var(--border);
+  background: var(--cream);
+}
+.head-row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.page-no {
+  font-family: var(--mono);
+  font-size: clamp(11px, 0.9vw, 14px); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--mid);
+  white-space: nowrap;
+}
+.chip {
+  font-family: var(--mono);
+  font-size: clamp(10px, 0.8vw, 12px); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--black);
+  background: var(--yellow);
+  border: 2px solid var(--black);
+  padding: 3px 10px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+a.chip:hover { background: var(--black); color: var(--yellow); }
+.chip--ghost { background: var(--cream); color: var(--mid); border-style: dashed; }
+.page-title {
+  margin-top: 6px;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(26px, 3.4vw, 54px);
+  line-height: 1.05;
+  letter-spacing: -1px;
+}
+
+.content-scroll {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: clamp(12px, 2vh, 22px) clamp(22px, 3.2vw, 52px) 24px clamp(34px, 3.6vw, 56px);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(22, 19, 0, 0.3) transparent;
+}
+
+/* ── Beats ──────────────────────────────────────────────────────────── */
+.beat {
+  display: grid;
+  grid-template-columns: clamp(34px, 3vw, 52px) minmax(0, 1fr);
+  gap: clamp(10px, 1.2vw, 18px);
+  padding: clamp(10px, 1.4vh, 16px) 10px;
+  border-bottom: var(--border-dot);
+  transition: background 0.15s;
+}
+.beat:last-of-type { border-bottom: none; }
+.beat.hidden { display: none; }
+.beat.revealed { animation: beat-in 0.4s ease both; }
+body.no-motion .beat.revealed { animation: none; }
+@keyframes beat-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.beat-num {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(26px, 2.6vw, 44px);
+  line-height: 1;
+  color: var(--black);
+  padding-top: 2px;
+}
+.beat.active { background: var(--yellow); }
+.beat.dimmed .beat-lead { color: var(--mid); }
+.beat.dimmed .beat-num { color: var(--light); }
+.beat-lead {
+  display: block;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(17px, 1.55vw, 27px);
+  line-height: 1.4;
+  cursor: pointer;
+}
+.annotation {
+  margin-top: 10px;
+  padding: clamp(10px, 1.4vw, 18px) clamp(12px, 1.6vw, 22px);
+  background: var(--black);
+  color: var(--cream);
+  border: 3px solid var(--yellow);
+  box-shadow: 6px 6px 0 rgba(22, 19, 0, 0.18);
+}
+.annotation.collapsed { display: none; }
+.annotation p {
+  font-family: var(--serif);
+  font-size: clamp(14px, 1.1vw, 18px);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.annotation p:last-child { margin-bottom: 0; }
+.annotation p.sub { padding-left: 18px; color: rgba(255, 250, 237, 0.75); }
+.annotation p.sub::before { content: '→ '; font-family: var(--mono); color: var(--yellow); }
+.pt-line { display: block; white-space: nowrap; }
+
+/* ── Cover ──────────────────────────────────────────────────────────── */
+.cover-mast {
+  background: var(--yellow);
+  border: var(--border);
+  padding: clamp(16px, 2.6vh, 32px) clamp(18px, 2.6vw, 36px);
+  margin-bottom: clamp(10px, 1.6vh, 18px);
+}
+.cover-kicker {
+  font-family: var(--mono);
+  font-size: clamp(12px, 1vw, 16px); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 3px;
+  margin-bottom: 8px;
+}
+.cover-title {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(34px, 4.6vw, 74px);
+  line-height: 1.02;
+  letter-spacing: -1.5px;
+  max-width: 18ch;
+}
+.cover-bar { width: 80px; height: 4px; background: var(--black); margin: 14px 0 10px; }
+.cover-byline {
+  font-family: var(--mono);
+  font-size: clamp(11px, 0.95vw, 15px);
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--ink);
+}
+
+/* ── Gallery ────────────────────────────────────────────────────────── */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0;
+  padding-top: 4px;
+}
+.credit {
+  border: var(--border);
+  margin: -1px;
+  padding: 12px 12px 12px;
+  text-align: left;
+  transition: background 0.15s;
+  animation: beat-in 0.4s ease both;
+}
+.credit:hover { background: var(--yellow); }
+body.no-motion .credit { animation: none; }
+.credit:nth-child(2) { animation-delay: 0.05s; } .credit:nth-child(3) { animation-delay: 0.1s; }
+.credit:nth-child(4) { animation-delay: 0.15s; } .credit:nth-child(5) { animation-delay: 0.2s; }
+.credit:nth-child(6) { animation-delay: 0.25s; } .credit:nth-child(7) { animation-delay: 0.3s; }
+.credit:nth-child(8) { animation-delay: 0.35s; } .credit:nth-child(9) { animation-delay: 0.4s; }
+.credit:nth-child(10) { animation-delay: 0.45s; }
+.credit-arch {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  margin-bottom: 10px;
+  border: 2px solid var(--black);
+  overflow: hidden;
+  background: var(--cream);
+}
+.credit-arch img, .credit-arch .monogram {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(0.15) contrast(1.02);
+}
+.credit-arch .monogram {
+  display: grid;
+  place-items: center;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(30px, 3vw, 44px);
+  background: var(--yellow);
+}
+.credit-name {
+  font-family: var(--mono);
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+  line-height: 1.35;
+}
+.credit-papers {
+  margin-top: 3px;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 12.5px;
+  color: var(--mid);
+  line-height: 1.4;
+}
+
+/* ── Library ────────────────────────────────────────────────────────── */
+.lib-section { border: var(--border); margin-bottom: 12px; }
+.lib-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 9px 14px;
+  border-bottom: var(--border-dot);
+  background: var(--yellow);
+}
+.lib-title {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(16px, 1.4vw, 22px);
+  letter-spacing: -0.3px;
+}
+.lib-people {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink);
+}
+.lib-plates { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 14px; }
+.pending-note {
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 10px;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--mid);
+}
+.pending-note::before { content: '◌ pending — '; }
+
+/* ── Exhibits strip ─────────────────────────────────────────────────── */
+.exhibits {
+  border-top: var(--border);
+  padding: 8px clamp(22px, 3.2vw, 52px) 10px clamp(34px, 3.6vw, 56px);
+  background: var(--cream);
+}
+.exhibits.empty { display: none; }
+.exhibits-label {
+  font-family: var(--mono);
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 3px;
+  color: var(--mid);
+  margin-bottom: 6px;
+}
+.plate-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.plate {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 5px 10px 5px 6px;
+  border: 2px solid var(--black);
+  background: var(--cream);
+  transition: background 0.15s;
+  text-align: left;
+}
+.plate:hover { background: var(--yellow); }
+.plate-tag {
+  font-family: var(--mono);
+  font-size: 9px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--cream);
+  background: var(--black);
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+.plate-name {
+  font-family: var(--serif);
+  font-size: clamp(12px, 0.95vw, 14px);
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+/* ── Lightbox ───────────────────────────────────────────────────────── */
+.lightbox {
+  position: fixed; inset: 0;
+  z-index: 40;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(10px, 3vh, 36px);
+  background: rgba(22, 19, 0, 0.55);
+}
+.lightbox.open { display: flex; }
+.lb-frame {
+  position: relative;
+  max-width: min(1080px, 95vw);
+  max-height: 93vh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  background: var(--cream);
+  border: 3px solid var(--black);
+  box-shadow: 10px 10px 0 var(--yellow);
+  animation: lb-in 0.22s ease both;
+}
+body.no-motion .lb-frame { animation: none; }
+@keyframes lb-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.lb-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 8px 12px;
+  border-bottom: var(--border);
+  background: var(--yellow);
+}
+.lb-tag {
+  font-family: var(--mono);
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+}
+.lb-close {
+  font-family: var(--mono);
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+  border: 2px solid var(--black);
+  background: var(--cream);
+  padding: 3px 12px;
+  transition: background 0.15s;
+}
+.lb-close:hover { background: var(--black); color: var(--cream); }
+.lb-body {
+  min-height: 0;
+  overflow: auto;
+  display: grid;
+  place-items: center;
+  background: var(--cream);
+  scrollbar-width: thin;
+}
+.lb-body img {
+  display: block;
+  max-width: 100%;
+  max-height: calc(93vh - 100px);
+  background: #fff;
+}
+.lb-html { padding: clamp(12px, 2.4vw, 28px); max-width: 860px; }
+.lb-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 12px;
+  border-top: var(--border);
+}
+.lb-name {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(12px, 1vw, 14px);
+  color: var(--ink);
+}
+.lb-nav { display: flex; gap: 6px; align-items: center; }
+.lb-nav button {
+  font-family: var(--mono);
+  font-size: 13px; font-weight: 700;
+  border: 2px solid var(--black);
+  background: var(--cream);
+  padding: 1px 12px;
+}
+.lb-nav button:hover { background: var(--yellow); }
+.lb-nav .lb-count { font-family: var(--mono); font-size: 10px; color: var(--mid); padding: 0 4px; }
+
+/* case cards inside lightbox */
+.case-card { border: 2px solid var(--black); margin-bottom: 12px; background: var(--cream); }
+.case-card h4 {
+  font-family: var(--mono);
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--black);
+  background: var(--yellow);
+  border-bottom: 2px solid var(--black);
+  padding: 6px 12px;
+}
+.case-card .cc-body {
+  padding: 11px 14px;
+  font-family: var(--serif);
+  font-size: clamp(14px, 1.05vw, 16px);
+  line-height: 1.55;
+}
+.case-card .cc-field { margin-bottom: 8px; }
+.case-card .cc-field b {
+  font-family: var(--mono);
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--mid);
+  display: block;
+  margin-bottom: 1px;
+}
+.cc-transcript {
+  font-size: 13px;
+  color: var(--mid);
+  border-left: 3px solid var(--yellow);
+  padding-left: 12px;
+  white-space: pre-wrap;
+}
+
+/* ── Mobile / small screens ─────────────────────────────────────────── */
+.mobile-bar {
+  display: none;
+  position: fixed;
+  z-index: 30;
+  left: 8px; right: 8px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 6px;
+}
+.mobile-bar button {
+  min-height: 40px;
+  font-family: var(--mono);
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--black);
+  background: var(--cream);
+  border: 2px solid var(--black);
+}
+.mobile-bar button:active { background: var(--yellow); }
+.page-sheet {
+  position: fixed; inset: var(--ticker-h) 0 0 0;
+  z-index: 35;
+  display: none;
+  background: var(--cream);
+  overflow: auto;
+  padding: 14px 12px 76px;
+}
+.page-sheet.open { display: block; }
+.page-sheet .page-jump { border: 1px dotted rgba(22, 19, 0, 0.4); margin-bottom: 3px; }
+
+@media (max-width: 1000px) {
+  :root { --rail-w: 0px; }
+  .deck { grid-template-columns: 1fr; padding: 10px; }
+  .rail { display: none; }
+  .vlabel { display: none; }
+  .stage-head { padding: 14px 16px 10px; }
+  .content-scroll { padding: 12px 16px calc(env(safe-area-inset-bottom, 0px) + 58px); }
+  .exhibits { padding: 8px 12px 10px; }
+  .page-title { font-size: clamp(24px, 7.4vw, 38px); }
+  .beat-lead { font-size: clamp(16px, 4.4vw, 20px); }
+  .beat-num { font-size: clamp(22px, 6vw, 30px); }
+  .annotation p { font-size: clamp(13.5px, 3.8vw, 16px); }
+  .cover-title { font-size: clamp(30px, 9vw, 46px); }
+  .plate-row { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+  .plate { flex: 0 0 auto; max-width: 80vw; }
+  .mobile-bar { display: grid; }
+  .gallery { grid-template-columns: repeat(2, 1fr); }
+  .lb-frame { max-width: 96vw; box-shadow: 6px 6px 0 var(--yellow); }
+}
+@media (max-width: 480px) {
+  .gallery { grid-template-columns: repeat(2, 1fr); }
+  .head-row { gap: 8px; }
+  .ticker-track { font-size: 11px; }
+}
+@media (max-height: 700px) {
+  :root { --ticker-h: 28px; }
+  .stage-head { padding-top: 10px; padding-bottom: 8px; }
+  .page-title { font-size: clamp(22px, 2.8vw, 40px); }
+}
+@media (min-width: 1900px) {
+  .deck { max-width: 1900px; margin-left: auto; margin-right: auto; }
+}
+</style>
+</head>
+<body>
+<div class="ticker" aria-hidden="true" data-noadvance>
+  <div class="ticker-track" id="ticker-track"></div>
+</div>
+
+<main class="deck">
+  <aside class="rail" data-noadvance>
+    <div class="brand">
+      <div class="brand-kicker">Seth Lazar · MINT Lab</div>
+      <h1 class="brand-title">Evaluating LLM Normative Competence</h1>
+    </div>
+    <div class="reveal-panel">
+      <div class="panel-label">Reveal</div>
+      <div class="reveal-controls">
+        <button class="reveal-btn" data-reveal="talk" title="Progressive beats (1)">Talk</button>
+        <button class="reveal-btn" data-reveal="all" title="All paragraphs, notes closed (2)">All</button>
+        <button class="reveal-btn" data-reveal="full" title="Everything open (3)">Open</button>
+      </div>
+    </div>
+    <div class="page-list" id="page-list" aria-label="Pages"></div>
+    <div class="rail-footer">
+      <div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="footer-row">
+        <div class="counter" id="counter">&mdash;</div>
+        <div class="beatline" id="beatline"></div>
+      </div>
+      <div class="footer-row">
+        <button class="nav-btn" id="prev-btn">Prev</button>
+        <button class="nav-btn" id="motion-btn" title="Toggle the page-turn animation (M)">Motion</button>
+        <button class="nav-btn" id="next-btn">Next</button>
+      </div>
+      <div class="footer-row">
+        <div class="keys"><kbd>click</kbd> reveal &nbsp;<kbd>&larr;</kbd><kbd>&rarr;</kbd>&nbsp;<kbd>1-3</kbd>&nbsp;<kbd>M</kbd></div>
+      </div>
+      <div class="pretext-status" id="pretext-status">pretext pending</div>
+    </div>
+  </aside>
+
+  <section class="stage" id="stage" aria-live="polite">
+    <div class="vlabel" id="vlabel"></div>
+    <header class="stage-head">
+      <div class="head-row">
+        <div class="page-no" id="page-no">&mdash;</div>
+        <div id="head-chips" data-noadvance></div>
+      </div>
+      <h2 class="page-title ptx" id="page-title">Evaluating LLM Normative Competence</h2>
+    </header>
+    <div class="content-scroll" id="content-scroll">
+      <div style="padding:24px; font-family:var(--mono); font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--mid)">Loading&hellip;</div>
+    </div>
+    <div class="exhibits empty" id="exhibits" data-noadvance>
+      <div class="exhibits-label">Exhibits — click to view</div>
+      <div class="plate-row" id="plate-row"></div>
+    </div>
+  </section>
+</main>
+
+<div class="mobile-bar" data-noadvance>
+  <button id="prev-mobile">&larr; Prev</button>
+  <button id="reveal-mobile">Reveal</button>
+  <button id="pages-mobile">Pages</button>
+  <button id="next-mobile">Next &rarr;</button>
+</div>
+<div class="page-sheet" id="page-sheet" data-noadvance></div>
+
+<div class="lightbox" id="lightbox" data-noadvance>
+  <div class="lb-frame">
+    <div class="lb-bar">
+      <div class="lb-tag" id="lb-tag">Exhibit</div>
+      <button class="lb-close" id="lb-close" title="Close (Esc)">Close &times;</button>
+    </div>
+    <div class="lb-body" id="lb-body"></div>
+    <div class="lb-caption">
+      <div class="lb-name" id="lb-name"></div>
+      <div class="lb-nav" id="lb-nav"></div>
+    </div>
+  </div>
+</div>
+
+<script src="web-assets/page-content-cache.js"></script>
+<script src="web-assets/case-card-data.js"></script>
+<script type="module">
+const CONTENT_PATH = 'Page-Content-Draft-Normative-Competence-2026-06-10.md';
+const FIG = 'web-assets/figures/';
+const PRETEXT_URLS = [
+  'https://esm.sh/@chenglou/pretext',
+  'https://cdn.jsdelivr.net/npm/@chenglou/pretext/+esm'
+];
+
+/* ── Paper registry (authors from title pages / Seth's draft attributions) ── */
+const PAPERS = {
+  'beyond-verdicts': { title: 'Beyond Verdicts', people: 'Aaron J. Snoswell · Daniel Kilov · Seth Lazar',
+    link: { label: 'AAAI 2026', url: 'https://ojs.aaai.org/index.php/AAAI/article/view/41131' } },
+  'discerning': { title: 'Discerning What Matters', people: 'Daniel Kilov · Caroline Hendy · Secil Yanik Guyot · Aaron J. Snoswell · Seth Lazar',
+    link: { label: 'arXiv:2506.13082', url: 'https://arxiv.org/abs/2506.13082' } },
+  'sensitivity-redux': { title: 'Sensitivity Redux', people: 'led by Secil Yanik Guyot & Daniel Kilov', link: null },
+  'even-morebench': { title: 'Even MoReBench', people: 'with Menghang Zhu (CY)',
+    link: { label: 'arXiv:2606.11635', url: 'https://arxiv.org/abs/2606.11635' } },
+  'nora': { title: 'NoRa', people: 'led by Sichao Li',
+    link: { label: 'arXiv:2606.04806', url: 'https://arxiv.org/abs/2606.04806' } },
+  'blind-refusal': { title: 'Blind Refusal', people: 'with Cameron Pattison & Lorenzo Manuali', link: null }
+};
+const PAPER_PAGE = { 15: 'discerning', 16: 'sensitivity-redux', 17: 'even-morebench', 18: 'incoherent-values', 20: 'nora', 21: 'blind-refusal' };
+PAPERS['incoherent-values'] = { title: 'Incoherent Values', people: 'with Elena Ajayi & Angelica Chowdhury', link: null };
+
+const GALLERY = [
+  { name: 'Daniel Kilov', img: 'daniel-kilov.jpg', papers: 'Beyond Verdicts · Discerning · Sensitivity' },
+  { name: 'Aaron J. Snoswell', img: null, papers: 'Beyond Verdicts · Discerning' },
+  { name: 'Caroline Hendy', img: 'caroline-hendy.jpg', papers: 'Discerning What Matters' },
+  { name: 'Secil Yanik Guyot', img: 'secil-yanik-guyot.jpg', papers: 'Discerning · Sensitivity' },
+  { name: 'Menghang Zhu (CY)', img: null, papers: 'Even MoReBench' },
+  { name: 'Elena Ajayi', img: 'elena-ajayi.jpg', papers: 'Incoherent Values' },
+  { name: 'Angelica Chowdhury', img: null, papers: 'Incoherent Values' },
+  { name: 'Sichao Li', img: 'sichao-li.jpg', papers: 'NoRa' },
+  { name: 'Cameron Pattison', img: 'cameron-pattison.jpg', papers: 'Blind Refusal' },
+  { name: 'Lorenzo Manuali', img: 'lorenzo-manuali.jpg', papers: 'Blind Refusal' }
+];
+
+function chapterFor(page) {
+  if (page.kind === 'gallery') return 'Collaborators';
+  const n = Number(page.number);
+  if (n <= 3) return 'Opening';
+  if (n <= 10) return 'Why It Matters';
+  if (n <= 14) return 'Measurement & Construct';
+  if (n <= 22) return 'The Experiments';
+  if (n === 23) return 'Next Steps';
+  return 'Evidence Library';
+}
+
+/* ── Chyron sections: page → ticker entry ── */
+const SECTIONS = [
+  'Normative Competence', 'Why It Matters', 'Measurement',
+  'Local & Global Reasonableness', 'Knowing / Doing', 'Our Evals',
+  'Moral Sensitivity', 'Even MoReBench', 'Incoherent Values',
+  'NoRa', 'Blind Refusal', 'Next Steps', 'Evidence Library'
+];
+function tickerKeyFor(page) {
+  if (page.kind === 'gallery') return 'Normative Competence';
+  const n = Number(page.number);
+  if (n <= 3) return 'Normative Competence';
+  if (n <= 10) return 'Why It Matters';
+  if (n === 11) return 'Measurement';
+  if (n === 12) return 'Local & Global Reasonableness';
+  if (n === 13) return 'Knowing / Doing';
+  if (n === 14) return 'Our Evals';
+  if (n <= 16) return 'Moral Sensitivity';
+  if (n === 17) return 'Even MoReBench';
+  if (n <= 19) return 'Incoherent Values';
+  if (n === 20) return 'NoRa';
+  if (n <= 22) return 'Blind Refusal';
+  if (n === 23) return 'Next Steps';
+  return 'Evidence Library';
+}
+function buildTicker() {
+  const track = document.getElementById('ticker-track');
+  if (!track) return;
+  const run = SECTIONS.map(name =>
+    `<span data-sec="${escapeHtml(name)}">${escapeHtml(name)}</span><i>&middot;</i>`).join('');
+  track.innerHTML = run + run;  // doubled for the seamless loop
+}
+function updateTicker(page) {
+  const track = document.getElementById('ticker-track');
+  if (!track) return;
+  const key = tickerKeyFor(page);
+  let first = null;
+  track.querySelectorAll('span').forEach(span => {
+    const isCurrent = span.dataset.sec === key;
+    span.classList.toggle('current', isCurrent);
+    if (isCurrent && !first) first = span;
+  });
+  // Static ticker (motion off): slide the track so the current section shows.
+  if (document.body.classList.contains('no-motion') && first) {
+    track.style.transform = 'translateX(' + (-first.offsetLeft + 10) + 'px)';
+  } else {
+    track.style.transform = '';
+  }
+}
+
+/* ── Asset rules: most-specific first ── */
+const pg = n => FIG + n + '.png';
+const ASSET_RULES = {
+  'p15': [
+    [/appendix examples/i, ['discerning-p14', 'discerning-p15', 'discerning-p16', 'discerning-p17', 'discerning-p18']],
+    [/figure 1/i, ['discerning-p05']],
+    [/figure 2/i, ['discerning-p08']]
+  ],
+  'p16': [
+    [/case cards/i, { html: 'sens-cases' }],
+    [/figure 1/i, ['sensitivity-redux-p02']],
+    [/figure 3/i, ['sensitivity-redux-p08']],
+    [/figure 4/i, ['sensitivity-redux-p23']]
+  ],
+  'p17': [
+    [/criterion pairs/i, ['even-morebench-p16', 'even-morebench-p17', 'even-morebench-p18']],
+    [/uniqueness/i, ['even-morebench-p22', 'even-morebench-p23']],
+    [/table 1/i, ['even-morebench-p05']],
+    [/table 2/i, ['even-morebench-p06']],
+    [/table 3/i, ['even-morebench-p06']],
+    [/table 4/i, ['even-morebench-p08']],
+    [/table 5/i, ['even-morebench-p09']]
+  ],
+  'p19': [
+    [/table 1/i, ['incoherent-values-p05']],
+    [/figure 1/i, ['incoherent-values-p06']],
+    [/figure 2/i, ['incoherent-values-p06']],
+    [/figure 3/i, ['incoherent-values-p07']],
+    [/figure 4/i, ['incoherent-values-p07']]
+  ],
+  'p20': [
+    [/figure 4/i, ['nora-p08']]
+  ],
+  'p22': [
+    [/tables 4-7/i, ['blind-refusal-p37', 'blind-refusal-p38']],
+    [/low-stakes/i, { html: 'br-cases' }],
+    [/high-stakes/i, ['blind-refusal-p32', 'blind-refusal-p33', 'blind-refusal-p34', 'blind-refusal-p35']],
+    [/response classifications/i, ['blind-refusal-p31', 'blind-refusal-p32']],
+    [/figure 2/i, ['blind-refusal-p08']],
+    [/figure 3/i, ['blind-refusal-p08']],
+    [/table 1/i, ['blind-refusal-p05']],
+    [/table 2/i, ['blind-refusal-p36']],
+    [/table 3/i, ['blind-refusal-p36']]
+  ],
+  'beyond-verdicts': [
+    [/tables 1-3/i, ['beyond-verdicts-p16', 'beyond-verdicts-p17', 'beyond-verdicts-p18']],
+    [/figure 1/i, ['beyond-verdicts-p13']],
+    [/figure 2/i, ['beyond-verdicts-p14']]
+  ],
+  'discerning': [
+    [/figures 3-6/i, ['discerning-p18', 'discerning-p19']],
+    [/case examples/i, ['discerning-p14', 'discerning-p15', 'discerning-p16', 'discerning-p17', 'discerning-p18']],
+    [/figure 1/i, ['discerning-p05']],
+    [/figure 2/i, ['discerning-p08']]
+  ],
+  'sensitivity-redux': [
+    [/case examples/i, { html: 'sens-cases' }],
+    [/figure 1/i, ['sensitivity-redux-p02']],
+    [/figure 2/i, ['sensitivity-redux-p07']],
+    [/figure 3/i, ['sensitivity-redux-p08']],
+    [/figure 4/i, ['sensitivity-redux-p23']]
+  ],
+  'even-morebench': [
+    [/examples/i, ['even-morebench-p16', 'even-morebench-p17', 'even-morebench-p18', 'even-morebench-p22', 'even-morebench-p23']],
+    [/table 1/i, ['even-morebench-p05']],
+    [/table 2/i, ['even-morebench-p06']],
+    [/table 5/i, ['even-morebench-p09']]
+  ],
+  'incoherent-values': [
+    [/table 1/i, ['incoherent-values-p05']],
+    [/figure 1/i, ['incoherent-values-p06']],
+    [/figure 4/i, ['incoherent-values-p07']]
+  ],
+  'nora': [
+    [/figure 2/i, ['nora-p04']],
+    [/figure 4/i, ['nora-p08']],
+    [/figure 6/i, ['nora-p09']],
+    [/table 1/i, ['nora-p06']]
+  ],
+  'blind-refusal': [
+    [/figures 2-3/i, ['blind-refusal-p08']],
+    [/tables 2-7/i, ['blind-refusal-p36', 'blind-refusal-p37', 'blind-refusal-p38']],
+    [/case examples/i, ['blind-refusal-p31', 'blind-refusal-p32', 'blind-refusal-p33', 'blind-refusal-p34', 'blind-refusal-p35']],
+    [/table 1/i, ['blind-refusal-p05']]
+  ]
+};
+const ASSET_HEAD = /^(paper assets|case assets)/i;
+const ASSET_LIKE = /^(figure|figures|table|tables|case examples|appendix examples|case cards|low-stakes|high-stakes|response classifications|examples)/i;
+const NOTE_RE = /\[note (to|for) claude/i;
+const EXPAND_RE = /^\[EXPAND FROM SOURCE:\s*([^\]]+)\]\.?$/i;
+
+const state = {
+  pages: [], index: 0,
+  beat: -1, annotations: 'follow',
+  pretext: null, preparedCache: new Map(),
+  resizeFrame: 0,
+  motion: true,
+  lightbox: null
+};
+
+const els = {
+  pageList: document.getElementById('page-list'),
+  pageTitle: document.getElementById('page-title'),
+  pageNo: document.getElementById('page-no'),
+  vlabel: document.getElementById('vlabel'),
+  headChips: document.getElementById('head-chips'),
+  content: document.getElementById('content-scroll'),
+  exhibits: document.getElementById('exhibits'),
+  plateRow: document.getElementById('plate-row'),
+  counter: document.getElementById('counter'),
+  beatline: document.getElementById('beatline'),
+  progress: document.getElementById('progress-fill'),
+  prev: document.getElementById('prev-btn'),
+  next: document.getElementById('next-btn'),
+  motion: document.getElementById('motion-btn'),
+  revealButtons: Array.from(document.querySelectorAll('.reveal-btn')),
+  pretextStatus: document.getElementById('pretext-status'),
+  stage: document.getElementById('stage'),
+  lightbox: document.getElementById('lightbox'),
+  lbTag: document.getElementById('lb-tag'),
+  lbBody: document.getElementById('lb-body'),
+  lbName: document.getElementById('lb-name'),
+  lbNav: document.getElementById('lb-nav'),
+  lbClose: document.getElementById('lb-close'),
+  prevMobile: document.getElementById('prev-mobile'),
+  nextMobile: document.getElementById('next-mobile'),
+  revealMobile: document.getElementById('reveal-mobile'),
+  pagesMobile: document.getElementById('pages-mobile'),
+  pageSheet: document.getElementById('page-sheet')
+};
+
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function cleanText(text) {
+  return text
+    .replace(/^- /, '')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI'];
+
+/* ── Markdown parsing ── */
+function parseBullets(body) {
+  const root = [];
+  const stack = [{ indent: -1, children: root }];
+  for (const line of body.split('\n')) {
+    const match = line.match(/^(\s*)-\s+(.*)$/);
+    if (!match) continue;
+    const indent = match[1].length;
+    const raw = match[2].trim();
+    if (!raw) continue;
+    const node = { raw, text: cleanText(raw), children: [] };
+    while (stack.length && indent <= stack[stack.length - 1].indent) stack.pop();
+    stack[stack.length - 1].children.push(node);
+    stack.push({ indent, children: node.children });
+  }
+  return root;
+}
+
+// Everything beneath a "Paper assets"/"Case assets" header (or a library paper
+// entry) is an asset by construction — collect all descendants, no filtering.
+function flattenAssets(nodes, out) {
+  for (const node of nodes) {
+    out.push(node);
+    flattenAssets(node.children, out);
+  }
+}
+
+function resolvePlate(contextKey, node) {
+  if (EXPAND_RE.test(node.raw)) {
+    return { pending: node.raw.match(EXPAND_RE)[1] };
+  }
+  const rules = ASSET_RULES[contextKey] || [];
+  for (const [re, spec] of rules) {
+    if (re.test(node.text)) {
+      if (Array.isArray(spec)) return { name: node.text, images: spec.map(pg) };
+      return { name: node.text, html: spec.html };
+    }
+  }
+  return { name: node.text, images: [] };  // unmatched: plate renders but reports no image
+}
+
+function libSlugFor(text) {
+  if (/beyond verdicts/i.test(text)) return 'beyond-verdicts';
+  if (/discerning/i.test(text)) return 'discerning';
+  if (/sensitivity redux/i.test(text)) return 'sensitivity-redux';
+  if (/morebench/i.test(text)) return 'even-morebench';
+  if (/incoherent values/i.test(text)) return 'incoherent-values';
+  if (/nora/i.test(text)) return 'nora';
+  if (/blind refusal/i.test(text)) return 'blind-refusal';
+  return null;
+}
+
+function buildPages(md) {
+  const rawPages = [];
+  let current = null;
+  for (const line of md.split('\n')) {
+    const match = line.match(/^## Page\s+(\d+)\.\s+(.+)$/);
+    if (match) {
+      if (current) rawPages.push(current);
+      current = { number: Number(match[1]), title: match[2].trim(), body: [] };
+    } else if (current) {
+      current.body.push(line);
+    }
+  }
+  if (current) rawPages.push(current);
+
+  const pages = [];
+  for (const raw of rawPages) {
+    const bullets = parseBullets(raw.body.join('\n'));
+    const paper = PAPER_PAGE[raw.number] || null;
+    const page = {
+      number: raw.number,
+      displayNo: 'No. ' + raw.number,
+      title: raw.title,
+      kind: raw.number === 1 ? 'cover' : (raw.number === 24 ? 'library' : 'normal'),
+      paper,
+      beats: [],
+      plates: [],
+      sections: []
+    };
+    const ctx = 'p' + raw.number;
+
+    if (page.kind === 'library') {
+      for (const bullet of bullets) {
+        if (NOTE_RE.test(bullet.raw)) continue;
+        const slug = libSlugFor(bullet.text);
+        if (!slug) continue;
+        const assets = [];
+        flattenAssets(bullet.children, assets);
+        page.sections.push({
+          slug,
+          plates: assets.map(a => resolvePlate(slug, a))
+        });
+      }
+    } else {
+      for (const bullet of bullets) {
+        if (NOTE_RE.test(bullet.raw)) continue;
+        if (ASSET_HEAD.test(bullet.text) || ASSET_LIKE.test(bullet.text)) {
+          const assets = [];
+          if (ASSET_HEAD.test(bullet.text)) flattenAssets(bullet.children, assets);
+          else { assets.push(bullet); flattenAssets(bullet.children, assets); }
+          for (const a of assets) page.plates.push(resolvePlate(ctx, a));
+          continue;
+        }
+        page.beats.push(bullet);
+      }
+      if (paper) {
+        // Seth's note on p15: first beat of each paper page is the paper's title page.
+        page.titlePlate = {
+          name: PAPERS[paper].title + ' — title page' + (PAPERS[paper].people ? ' · ' + PAPERS[paper].people : ''),
+          images: [pg(paper + '-p01')],
+          isTitle: true, paper
+        };
+        page.plates.unshift(page.titlePlate);
+      }
+    }
+    pages.push(page);
+
+    if (raw.number === 1) {
+      pages.push({
+        number: '1a', displayNo: '✦', title: 'The Collaborators',
+        kind: 'gallery', paper: null, beats: [], plates: [], sections: []
+      });
+    }
+  }
+  return pages;
+}
+
+/* ── Rendering ── */
+function beatCount(page) {
+  return page.beats.length + (page.titlePlate ? 1 : 0);
+}
+
+function renderAnnotation(children) {
+  if (!children.length) return '';
+  const paras = [];
+  (function walk(nodes, depth) {
+    for (const node of nodes) {
+      paras.push(`<p class="ptx ${depth > 0 ? 'sub' : ''}" data-text="${escapeHtml(node.text)}">${escapeHtml(node.text)}</p>`);
+      walk(node.children, depth + 1);
+    }
+  })(children, 0);
+  return `<div class="annotation collapsed">${paras.join('')}</div>`;
+}
+
+function renderBeats(page) {
+  const offset = page.titlePlate ? 1 : 0;
+  return page.beats.map((beat, i) => {
+    const beatIndex = i + offset;
+    return `<div class="beat hidden" data-beat="${beatIndex}">
+      <div class="beat-num">${String(i + 1).padStart(2, '0')}</div>
+      <div class="beat-body">
+        <span class="beat-lead ptx" data-text="${escapeHtml(beat.text)}">${escapeHtml(beat.text)}</span>
+        ${renderAnnotation(beat.children)}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCover(page) {
+  return `<div class="cover-mast" data-noadvance-skip>
+      <div class="cover-kicker">Seth Lazar · MINT Lab</div>
+      <div class="cover-title">Evaluating LLM Normative Competence</div>
+      <div class="cover-bar"></div>
+      <div class="cover-byline">An account in ${state.pages.length} pages — with the collaborators following</div>
+    </div>` + renderBeats(page);
+}
+
+function renderGallery() {
+  return `<div class="gallery">` + GALLERY.map(person => {
+    const initials = person.name.split(/\s+/).map(w => w[0]).join('').replace(/[^A-Z]/g, '').slice(0, 2);
+    const face = person.img
+      ? `<img src="web-assets/people/${person.img}" alt="${escapeHtml(person.name)}">`
+      : `<div class="monogram">${initials}</div>`;
+    return `<div class="credit">
+        <div class="credit-arch">${face}</div>
+        <div class="credit-name">${escapeHtml(person.name)}</div>
+        <div class="credit-papers">${escapeHtml(person.papers)}</div>
+      </div>`;
+  }).join('') + `</div>`;
+}
+
+function plateButton(plate, index) {
+  if (plate.pending) {
+    return `<div class="pending-note">${escapeHtml(plate.pending)}</div>`;
+  }
+  const tag = plate.isTitle ? 'Title' : 'Plate ' + (ROMAN[index] || index + 1);
+  return `<button class="plate" data-plate="${index}" data-noadvance>
+      <span class="plate-tag">${tag}</span>
+      <span class="plate-name">${escapeHtml(plate.name)}</span>
+    </button>`;
+}
+
+function renderLibrary(page) {
+  return page.sections.map(section => {
+    const paper = PAPERS[section.slug];
+    const link = paper.link
+      ? `<a class="chip" href="${paper.link.url}" target="_blank" rel="noopener" data-noadvance>${paper.link.label}</a>`
+      : `<span class="chip chip--ghost">Preprint coming soon</span>`;
+    const titlePlate = { name: paper.title + ' — title page', images: [pg(section.slug + '-p01')] };
+    const plates = [titlePlate, ...section.plates];
+    section.resolved = plates;
+    let romanIdx = 0;
+    const plateHtml = plates.map((plate, i) => {
+      const html = plate.pending ? plateButton(plate, 0)
+        : plateButton(plate, romanIdx).replace(`data-plate="${romanIdx}"`, `data-plate="${section.slug}:${i}"`);
+      if (!plate.pending) romanIdx++;
+      return html;
+    }).join('');
+    return `<div class="lib-section">
+        <div class="lib-head">
+          <div><div class="lib-title">${escapeHtml(paper.title)}</div>
+          ${paper.people ? `<div class="lib-people">${escapeHtml(paper.people)}</div>` : ''}</div>
+          <div data-noadvance>${link}</div>
+        </div>
+        <div class="lib-plates" data-noadvance>${plateHtml}</div>
+      </div>`;
+  }).join('');
+}
+
+function renderPageList() {
+  const itemHtml = state.pages.map((page, i) => `
+    <button class="page-jump ${i === state.index ? 'active' : ''}" data-index="${i}" data-noadvance>
+      <span class="num">${page.displayNo.replace('No. ', '')}</span>
+      <span class="label">${escapeHtml(page.title)}</span>
+    </button>`).join('');
+  els.pageList.innerHTML = itemHtml;
+  els.pageSheet.innerHTML = itemHtml;
+  document.querySelectorAll('.page-jump').forEach(button => {
+    button.addEventListener('click', () => {
+      els.pageSheet.classList.remove('open');
+      goTo(Number(button.dataset.index));
+    });
+  });
+  const active = els.pageList.querySelector('.page-jump.active');
+  if (active) active.scrollIntoView({ block: 'nearest' });
+}
+
+function render() {
+  if (!state.pages.length) return;
+  const page = state.pages[state.index];
+  els.pageTitle.textContent = page.kind === 'cover' ? '' : page.title;
+  els.pageTitle.dataset.text = page.kind === 'cover' ? '' : page.title;
+  els.pageTitle.style.display = page.kind === 'cover' ? 'none' : '';
+  els.pageNo.textContent = page.displayNo + ' — ' + (state.index + 1) + ' of ' + state.pages.length;
+  els.vlabel.textContent = chapterFor(page);
+  updateTicker(page);
+
+  let chips = '';
+  if (page.paper) {
+    const paper = PAPERS[page.paper];
+    chips = paper.link
+      ? `<a class="chip" href="${paper.link.url}" target="_blank" rel="noopener">${paper.link.label}</a>`
+      : `<span class="chip chip--ghost">Preprint coming soon</span>`;
+  } else if (page.kind === 'gallery') {
+    chips = `<span class="chip">With gratitude</span>`;
+  }
+  els.headChips.innerHTML = chips;
+
+  if (page.kind === 'gallery') els.content.innerHTML = renderGallery();
+  else if (page.kind === 'library') els.content.innerHTML = renderLibrary(page);
+  else if (page.kind === 'cover') els.content.innerHTML = renderCover(page);
+  else els.content.innerHTML = renderBeats(page);
+
+  // Exhibits strip (non-library pages)
+  const showPlates = page.kind !== 'library' && page.plates.length > 0;
+  els.exhibits.classList.toggle('empty', !showPlates);
+  if (showPlates) {
+    let romanIdx = 0;
+    els.plateRow.innerHTML = page.plates.map((plate, i) => {
+      if (plate.pending) return plateButton(plate, 0);
+      const html = plateButton(plate, plate.isTitle ? 0 : romanIdx)
+        .replace(`data-plate="${plate.isTitle ? 0 : romanIdx}"`, `data-plate="${i}"`);
+      if (!plate.isTitle) romanIdx++;
+      return html;
+    }).join('');
+  } else {
+    els.plateRow.innerHTML = '';
+  }
+
+  els.counter.textContent = 'Page ' + (state.index + 1) + ' / ' + state.pages.length;
+  els.progress.style.width = state.pages.length <= 1 ? '0%' : ((state.index / (state.pages.length - 1)) * 100) + '%';
+  syncBeats();
+  renderPageList();
+  attachPlateHandlers(page);
+  schedulePretext();
+}
+
+function syncBeats() {
+  const page = state.pages[state.index];
+  const total = beatCount(page);
+  const cards = Array.from(els.content.querySelectorAll('.beat'));
+  for (const card of cards) {
+    const idx = Number(card.dataset.beat);
+    const visible = idx <= state.beat;
+    const wasHidden = card.classList.contains('hidden');
+    card.classList.toggle('hidden', !visible);
+    card.classList.toggle('revealed', visible && wasHidden);
+    const isActive = visible && idx === state.beat && state.annotations === 'follow';
+    card.classList.toggle('active', isActive);
+    card.classList.toggle('dimmed', visible && !isActive && state.annotations === 'follow');
+    const annotation = card.querySelector('.annotation');
+    if (annotation) {
+      const open = visible && (state.annotations === 'all' || (state.annotations === 'follow' && idx === state.beat));
+      annotation.classList.toggle('collapsed', !open);
+    }
+  }
+  const active = els.content.querySelector('.beat.active');
+  if (active) active.scrollIntoView({ block: 'nearest', behavior: state.motion ? 'smooth' : 'auto' });
+  els.beatline.textContent = total ? ('Beat ' + Math.max(0, state.beat + 1) + ' / ' + total) : '';
+  els.revealButtons.forEach(button => {
+    const mode = button.dataset.reveal;
+    const isActive =
+      (mode === 'talk' && state.annotations === 'follow') ||
+      (mode === 'all' && state.annotations === 'none') ||
+      (mode === 'full' && state.annotations === 'all');
+    button.classList.toggle('active', isActive);
+  });
+  schedulePretext();
+}
+
+/* ── Beat sequencing ── */
+function enterPage(index, { fromEnd = false } = {}) {
+  state.index = index;
+  const page = state.pages[index];
+  const total = beatCount(page);
+  state.annotations = 'follow';
+  state.beat = fromEnd ? total - 1 : -1;
+  history.replaceState(null, '', '#p=' + page.number);
+  render();
+  els.content.scrollTop = fromEnd ? els.content.scrollHeight : 0;
+}
+
+function goTo(index, opts) {
+  if (index < 0 || index >= state.pages.length || index === state.index) return;
+  closeLightbox();
+  playTransition();
+  enterPage(index, opts);
+}
+
+function advance() {
+  if (state.lightbox) {
+    const wasBeat = state.lightbox.beatLinked;
+    closeLightbox();
+    if (!wasBeat) return;
+  }
+  const page = state.pages[state.index];
+  const total = beatCount(page);
+  if (state.beat < total - 1) {
+    state.beat++;
+    state.annotations = 'follow';
+    if (page.titlePlate && state.beat === 0) {
+      openPlate(page.titlePlate, { beatLinked: true });
+      syncBeats();
+      return;
+    }
+    syncBeats();
+    return;
+  }
+  goTo(state.index + 1);
+}
+
+function retreat() {
+  if (state.lightbox) { closeLightbox(); return; }
+  if (state.beat >= 0) {
+    state.beat--;
+    state.annotations = 'follow';
+    syncBeats();
+    return;
+  }
+  goTo(state.index - 1, { fromEnd: true });
+}
+
+function setReveal(mode) {
+  const page = state.pages[state.index];
+  const total = beatCount(page);
+  if (mode === 'talk') { state.beat = -1; state.annotations = 'follow'; els.content.scrollTop = 0; }
+  if (mode === 'all') { state.beat = total - 1; state.annotations = 'none'; }
+  if (mode === 'full') { state.beat = total - 1; state.annotations = 'all'; }
+  syncBeats();
+}
+
+/* ── Lightbox ── */
+function caseCardsHtml(kind) {
+  const data = window.NC_CASE_DATA;
+  if (!data) return '<p>Case data file not loaded.</p>';
+  if (kind === 'sens-cases') {
+    const s = data.sensitivity || {};
+    const transcript = (s.chat || '').slice(0, 900);
+    return `
+      <div class="case-card"><h4>Clean — INT-CARE (Interpersonal · Care/Harm)</h4>
+        <div class="cc-body">${escapeHtml(s.clean || 'unavailable')}</div></div>
+      <div class="case-card"><h4>+ Non-moral noise</h4>
+        <div class="cc-body">${escapeHtml(s.noise || 'unavailable')}</div></div>
+      <div class="case-card"><h4>Embedded in chat transcript (excerpt)</h4>
+        <div class="cc-body"><div class="cc-transcript">${escapeHtml(transcript)}&hellip;</div></div></div>`;
+  }
+  if (kind === 'br-cases') {
+    return (data.blindRefusal || []).map(c => `
+      <div class="case-card"><h4>${escapeHtml(c.case_id)} — verified real-source case</h4>
+        <div class="cc-body">
+          <p class="cc-field"><b>Authority</b>${escapeHtml(c.authority)}</p>
+          <p class="cc-field"><b>Rule</b>${escapeHtml(c.rule)}</p>
+          <p class="cc-field"><b>Justification</b>${escapeHtml(c.justification)}</p>
+          <p class="cc-field"><b>Request</b>${escapeHtml(c.request)}</p>
+        </div></div>`).join('');
+  }
+  return '';
+}
+
+function openPlate(plate, { beatLinked = false } = {}) {
+  state.lightbox = { plate, imgIndex: 0, beatLinked };
+  els.lbTag.textContent = plate.isTitle ? 'Title Page' : 'Exhibit';
+  els.lbName.textContent = plate.name;
+  renderLightboxBody();
+  els.lightbox.classList.add('open');
+}
+
+function renderLightboxBody() {
+  const { plate, imgIndex } = state.lightbox;
+  if (plate.html) {
+    els.lbBody.innerHTML = `<div class="lb-html">${caseCardsHtml(plate.html)}</div>`;
+    els.lbNav.innerHTML = '';
+    return;
+  }
+  if (!plate.images || !plate.images.length) {
+    els.lbBody.innerHTML = `<div class="lb-html"><p style="font-family:var(--mono); font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--mid)">No extracted image for this asset yet.</p></div>`;
+    els.lbNav.innerHTML = '';
+    return;
+  }
+  els.lbBody.innerHTML = `<img src="${plate.images[imgIndex]}" alt="${escapeHtml(plate.name)}">`;
+  els.lbNav.innerHTML = plate.images.length > 1
+    ? `<button id="lb-prev" data-noadvance>&lsaquo;</button>
+       <span class="lb-count">${imgIndex + 1} / ${plate.images.length}</span>
+       <button id="lb-next" data-noadvance>&rsaquo;</button>`
+    : '';
+  const prevBtn = document.getElementById('lb-prev');
+  const nextBtn = document.getElementById('lb-next');
+  if (prevBtn) prevBtn.addEventListener('click', () => stepLightbox(-1));
+  if (nextBtn) nextBtn.addEventListener('click', () => stepLightbox(1));
+}
+
+function stepLightbox(delta) {
+  const lb = state.lightbox;
+  if (!lb || !lb.plate.images) return;
+  const n = lb.plate.images.length;
+  lb.imgIndex = (lb.imgIndex + delta + n) % n;
+  renderLightboxBody();
+}
+
+function closeLightbox() {
+  state.lightbox = null;
+  els.lightbox.classList.remove('open');
+}
+
+function attachPlateHandlers(page) {
+  document.querySelectorAll('[data-plate]').forEach(button => {
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      const key = button.dataset.plate;
+      let plate;
+      if (key.includes(':')) {
+        const [slug, idx] = key.split(':');
+        const section = page.sections.find(s => s.slug === slug);
+        plate = section && section.resolved[Number(idx)];
+      } else {
+        plate = page.plates[Number(key)];
+      }
+      if (plate) openPlate(plate);
+    });
+  });
+  // Beat cards: click = jump beat pointer there
+  els.content.querySelectorAll('.beat').forEach(card => {
+    card.addEventListener('click', event => {
+      event.stopPropagation();
+      state.beat = Number(card.dataset.beat);
+      state.annotations = 'follow';
+      syncBeats();
+    });
+  });
+}
+
+/* ── Page-turn cue (FDC slide fade) ── */
+function playTransition() {
+  if (!state.motion) return;
+  els.stage.classList.remove('page-turn');
+  void els.stage.offsetWidth;  // restart the animation
+  els.stage.classList.add('page-turn');
+}
+
+/* ── Motion toggle ── */
+function defaultMotion() {
+  // Deliberately NOT gated on prefers-reduced-motion: embedded browsers force
+  // that query on, which would silently kill the page-turn cue and ticker.
+  // The Motion button / M key turns them off.
+  let stored = null;
+  try { stored = localStorage.getItem('nc-motion'); } catch (error) { /* blocked storage */ }
+  if (stored === 'off') return false;
+  return true;
+}
+function applyMotion() {
+  document.body.classList.toggle('no-motion', !state.motion);
+  els.motion.textContent = state.motion ? 'Motion on' : 'Motion off';
+  if (state.pages.length) updateTicker(state.pages[state.index]);
+}
+function toggleMotion() {
+  state.motion = !state.motion;
+  try { localStorage.setItem('nc-motion', state.motion ? 'on' : 'off'); } catch (error) { /* ignore */ }
+  applyMotion();
+}
+
+/* ── Pretext engine (prepareWithSegments + layoutNextLine, cached) ── */
+window.__pretext = {
+  engine: 'prepareWithSegments + layoutNextLine',
+  source: null, fontsReady: false,
+  preparedBlocks: 0, cacheHits: 0, laidOutBlocks: 0, layoutRuns: 0, lastLayoutMs: 0
+};
+async function initPretext() {
+  if (document.fonts && document.fonts.ready) {
+    try { await document.fonts.ready; window.__pretext.fontsReady = true; }
+    catch (error) { els.pretextStatus.textContent = 'font wait failed'; }
+  }
+  for (const url of PRETEXT_URLS) {
+    try {
+      const mod = await import(url);
+      if (typeof mod.prepareWithSegments === 'function' && typeof mod.layoutNextLine === 'function') {
+        state.pretext = mod;
+        window.__pretext.source = url;
+        els.pretextStatus.textContent = 'pretext ready';
+        return;
+      }
+    } catch (error) {
+      console.warn('pretext load failed', url, error);
+    }
+  }
+  els.pretextStatus.textContent = 'pretext unavailable';
+}
+function fontSpec(el) {
+  const s = getComputedStyle(el);
+  const style = s.fontStyle === 'normal' ? '' : s.fontStyle + ' ';
+  const weight = s.fontWeight ? s.fontWeight + ' ' : '';
+  return `${style}${weight}${s.fontSize} ${s.fontFamily}`;
+}
+function preparedText(text, font) {
+  const key = font + '\n' + text;
+  if (state.preparedCache.has(key)) {
+    window.__pretext.cacheHits++;
+    return state.preparedCache.get(key);
+  }
+  if (state.preparedCache.size > 6000) state.preparedCache.clear();
+  const prepared = state.pretext.prepareWithSegments(text, font);
+  state.preparedCache.set(key, prepared);
+  window.__pretext.preparedBlocks = state.preparedCache.size;
+  return prepared;
+}
+function schedulePretext() {
+  if (state.resizeFrame) window.cancelAnimationFrame(state.resizeFrame);
+  state.resizeFrame = window.requestAnimationFrame(relayoutPretext);
+}
+function computePretextLines(item) {
+  const prepared = preparedText(item.text, item.font);
+  const lines = [];
+  let cursor = { segmentIndex: 0, graphemeIndex: 0 };
+  for (let guard = 0; guard < 120; guard++) {
+    const line = state.pretext.layoutNextLine(prepared, cursor, Math.max(72, Math.floor(item.width)));
+    if (!line) break;
+    lines.push(line.text || '');
+    cursor = line.end;
+    if (!cursor) break;
+  }
+  return lines.length ? lines : [item.text];
+}
+function relayoutPretext() {
+  state.resizeFrame = 0;
+  if (!state.pretext) return;
+  const started = performance.now();
+  const targets = Array.from(document.querySelectorAll('.stage .ptx'))
+    .filter(el => el.offsetParent !== null && el.dataset.text && el.dataset.text.length > 0);
+  const reads = targets.map(el => ({
+    el, text: el.dataset.text,
+    width: el.getBoundingClientRect().width,
+    font: fontSpec(el)
+  }));
+  const layouts = reads.map(item => computePretextLines(item));
+  reads.forEach((item, i) => {
+    item.el.innerHTML = layouts[i].map(line => `<span class="pt-line">${escapeHtml(line)}</span>`).join('');
+  });
+  const elapsed = performance.now() - started;
+  window.__pretext.laidOutBlocks = reads.length;
+  window.__pretext.layoutRuns++;
+  window.__pretext.lastLayoutMs = Math.round(elapsed * 100) / 100;
+  els.pretextStatus.textContent =
+    'pretext · ' + reads.length + ' blocks · ' + state.preparedCache.size + ' prepared · ' + elapsed.toFixed(1) + 'ms';
+}
+
+/* ── Content loading ── */
+async function loadContent() {
+  if (location.protocol === 'file:' && window.NORMATIVE_COMPETENCE_PAGE_CONTENT) {
+    return window.NORMATIVE_COMPETENCE_PAGE_CONTENT;
+  }
+  try {
+    const response = await fetch(CONTENT_PATH);
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    return await response.text();
+  } catch (error) {
+    if (window.NORMATIVE_COMPETENCE_PAGE_CONTENT) return window.NORMATIVE_COMPETENCE_PAGE_CONTENT;
+    throw new Error('Could not load ' + CONTENT_PATH + ' (' + error.message + ')');
+  }
+}
+
+/* ── Wiring ── */
+els.prev.addEventListener('click', retreat);
+els.next.addEventListener('click', advance);
+els.prevMobile.addEventListener('click', retreat);
+els.nextMobile.addEventListener('click', advance);
+els.motion.addEventListener('click', toggleMotion);
+els.revealButtons.forEach(button => button.addEventListener('click', () => setReveal(button.dataset.reveal)));
+els.revealMobile.addEventListener('click', () => {
+  const next = state.annotations === 'follow' ? 'all' : (state.annotations === 'none' ? 'full' : 'talk');
+  setReveal(next === 'all' ? 'all' : next === 'full' ? 'full' : 'talk');
+});
+els.pagesMobile.addEventListener('click', () => els.pageSheet.classList.toggle('open'));
+els.lbClose.addEventListener('click', closeLightbox);
+els.lightbox.addEventListener('click', event => {
+  if (event.target === els.lightbox) closeLightbox();
+  event.stopPropagation();
+});
+
+// Plain click on inert stage area = advance one beat (the default Seth asked about).
+els.stage.addEventListener('click', event => {
+  if (event.target.closest('[data-noadvance], a, button, .beat')) return;
+  advance();
+});
+
+document.addEventListener('keydown', event => {
+  const lightboxOpen = Boolean(state.lightbox);
+  if (event.key === 'Escape') { closeLightbox(); return; }
+  if (lightboxOpen && state.lightbox.plate.images && state.lightbox.plate.images.length > 1
+      && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
+    event.preventDefault();
+    stepLightbox(event.key === 'ArrowRight' ? 1 : -1);
+    return;
+  }
+  if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') {
+    event.preventDefault(); advance();
+  } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+    event.preventDefault(); retreat();
+  } else if (event.key === 'Home') {
+    event.preventDefault(); goTo(0);
+  } else if (event.key === 'End') {
+    event.preventDefault(); goTo(state.pages.length - 1);
+  } else if (event.key === '1') { setReveal('talk');
+  } else if (event.key === '2') { setReveal('all');
+  } else if (event.key === '3') { setReveal('full');
+  } else if (event.key === 'm' || event.key === 'M') { toggleMotion(); }
+});
+
+let resizeSettleTimer = 0;
+window.addEventListener('resize', () => {
+  schedulePretext();
+  window.clearTimeout(resizeSettleTimer);
+  resizeSettleTimer = window.setTimeout(schedulePretext, 200);
+});
+if (typeof ResizeObserver === 'function') {
+  new ResizeObserver(schedulePretext).observe(els.stage);
+}
+
+async function init() {
+  state.motion = defaultMotion();
+  applyMotion();
+  buildTicker();
+  try {
+    const md = await loadContent();
+    state.pages = buildPages(md);
+    let target = 0;
+    const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
+    const wanted = hash.get('p');
+    if (wanted) {
+      const found = state.pages.findIndex(page => String(page.number) === wanted);
+      if (found >= 0) target = found;
+    }
+    enterPage(target);
+  } catch (error) {
+    els.content.innerHTML = `<div style="padding:24px; font-family:var(--mono); font-size:12px; letter-spacing:1px">${escapeHtml(error.message)}</div>`;
+  }
+  await initPretext();
+  schedulePretext();
+}
+init();
+</script>
+</body>
+</html>
