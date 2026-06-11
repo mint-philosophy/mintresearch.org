@@ -137,7 +137,7 @@ body.no-motion .ticker-track { animation: none; }
   color: var(--mid);
   margin-bottom: 7px;
 }
-.reveal-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.reveal-controls { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
 .reveal-btn, .nav-btn {
   font-family: var(--mono);
   font-size: 10px; font-weight: 700;
@@ -313,6 +313,12 @@ body.no-motion .beat.revealed { animation: none; }
   line-height: 1.4;
   cursor: pointer;
 }
+/* FDC tip convention: dashed underline marks an expandable lead */
+.beat-lead.has-note {
+  text-decoration: underline dashed rgba(22, 19, 0, 0.4);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}
 .annotation {
   margin-top: 10px;
   padding: clamp(10px, 1.4vw, 18px) clamp(12px, 1.6vw, 22px);
@@ -324,7 +330,7 @@ body.no-motion .beat.revealed { animation: none; }
 .annotation.collapsed { display: none; }
 .annotation p {
   font-family: var(--serif);
-  font-size: clamp(14px, 1.1vw, 18px);
+  font-size: clamp(18px, calc(1.1vw + 4px), 22px);
   line-height: 1.5;
   margin-bottom: 8px;
 }
@@ -334,11 +340,15 @@ body.no-motion .beat.revealed { animation: none; }
 .pt-line { display: block; white-space: nowrap; }
 
 /* ── Cover ──────────────────────────────────────────────────────────── */
+.cover-center {
+  min-height: 100%;
+  display: grid;
+  align-content: center;
+}
 .cover-mast {
   background: var(--yellow);
   border: var(--border);
-  padding: clamp(16px, 2.6vh, 32px) clamp(18px, 2.6vw, 36px);
-  margin-bottom: clamp(10px, 1.6vh, 18px);
+  padding: clamp(20px, 4vh, 48px) clamp(20px, 3vw, 44px);
 }
 .cover-kicker {
   font-family: var(--mono);
@@ -349,15 +359,15 @@ body.no-motion .beat.revealed { animation: none; }
 .cover-title {
   font-family: var(--serif);
   font-weight: 700;
-  font-size: clamp(34px, 4.6vw, 74px);
+  font-size: clamp(38px, 5.4vw, 88px);
   line-height: 1.02;
   letter-spacing: -1.5px;
   max-width: 18ch;
 }
-.cover-bar { width: 80px; height: 4px; background: var(--black); margin: 14px 0 10px; }
+.cover-bar { width: 80px; height: 4px; background: var(--black); margin: 16px 0 12px; }
 .cover-byline {
   font-family: var(--mono);
-  font-size: clamp(11px, 0.95vw, 15px);
+  font-size: clamp(12px, 1vw, 16px);
   text-transform: uppercase; letter-spacing: 1.5px;
   color: var(--ink);
 }
@@ -662,7 +672,7 @@ body.no-motion .lb-frame { animation: none; }
   .page-title { font-size: clamp(24px, 7.4vw, 38px); }
   .beat-lead { font-size: clamp(16px, 4.4vw, 20px); }
   .beat-num { font-size: clamp(22px, 6vw, 30px); }
-  .annotation p { font-size: clamp(13.5px, 3.8vw, 16px); }
+  .annotation p { font-size: clamp(17.5px, calc(3.8vw + 4px), 20px); }
   .cover-title { font-size: clamp(30px, 9vw, 46px); }
   .plate-row { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
   .plate { flex: 0 0 auto; max-width: 80vw; }
@@ -699,9 +709,8 @@ body.no-motion .lb-frame { animation: none; }
     <div class="reveal-panel">
       <div class="panel-label">Reveal</div>
       <div class="reveal-controls">
-        <button class="reveal-btn" data-reveal="talk" title="Progressive beats (1)">Talk</button>
-        <button class="reveal-btn" data-reveal="all" title="All paragraphs, notes closed (2)">All</button>
-        <button class="reveal-btn" data-reveal="full" title="Everything open (3)">Open</button>
+        <button class="reveal-btn" data-reveal="talk" title="Step through, one click at a time (1)">Step</button>
+        <button class="reveal-btn" data-reveal="full" title="Show everything on the page (2)">Show all</button>
       </div>
     </div>
     <div class="page-list" id="page-list" aria-label="Pages"></div>
@@ -717,7 +726,7 @@ body.no-motion .lb-frame { animation: none; }
         <button class="nav-btn" id="next-btn">Next</button>
       </div>
       <div class="footer-row">
-        <div class="keys"><kbd>click</kbd> reveal &nbsp;<kbd>&larr;</kbd><kbd>&rarr;</kbd>&nbsp;<kbd>1-3</kbd>&nbsp;<kbd>M</kbd></div>
+        <div class="keys"><kbd>click</kbd> reveal &nbsp;<kbd>&larr;</kbd><kbd>&rarr;</kbd>&nbsp;<kbd>1-2</kbd>&nbsp;<kbd>M</kbd></div>
       </div>
       <div class="pretext-status" id="pretext-status">pretext pending</div>
     </div>
@@ -736,7 +745,7 @@ body.no-motion .lb-frame { animation: none; }
       <div style="padding:24px; font-family:var(--mono); font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--mid)">Loading&hellip;</div>
     </div>
     <div class="exhibits empty" id="exhibits" data-noadvance>
-      <div class="exhibits-label">Exhibits — click to view</div>
+      <div class="exhibits-label">Exhibits</div>
       <div class="plate-row" id="plate-row"></div>
     </div>
   </section>
@@ -781,7 +790,7 @@ const PAPERS = {
   'discerning': { title: 'Discerning What Matters', people: 'Daniel Kilov · Caroline Hendy · Secil Yanik Guyot · Aaron J. Snoswell · Seth Lazar',
     link: { label: 'arXiv:2506.13082', url: 'https://arxiv.org/abs/2506.13082' } },
   'sensitivity-redux': { title: 'Sensitivity Redux', people: 'led by Secil Yanik Guyot & Daniel Kilov', link: null },
-  'even-morebench': { title: 'Even MoReBench', people: 'with Menghang Zhu (CY)',
+  'even-morebench': { title: 'Are LLMs Bad at Moral Reasoning?', people: 'with Menghang Zhu (CY)',
     link: { label: 'arXiv:2606.11635', url: 'https://arxiv.org/abs/2606.11635' } },
   'nora': { title: 'NoRa', people: 'led by Sichao Li',
     link: { label: 'arXiv:2606.04806', url: 'https://arxiv.org/abs/2606.04806' } },
@@ -795,7 +804,7 @@ const GALLERY = [
   { name: 'Aaron J. Snoswell', img: null, papers: 'Beyond Verdicts · Discerning' },
   { name: 'Caroline Hendy', img: 'caroline-hendy.jpg', papers: 'Discerning What Matters' },
   { name: 'Secil Yanik Guyot', img: 'secil-yanik-guyot.jpg', papers: 'Discerning · Sensitivity' },
-  { name: 'Menghang Zhu (CY)', img: null, papers: 'Even MoReBench' },
+  { name: 'Menghang Zhu (CY)', img: null, papers: 'Are LLMs Bad at Moral Reasoning?' },
   { name: 'Elena Ajayi', img: 'elena-ajayi.jpg', papers: 'Incoherent Values' },
   { name: 'Angelica Chowdhury', img: null, papers: 'Incoherent Values' },
   { name: 'Sichao Li', img: 'sichao-li.jpg', papers: 'NoRa' },
@@ -803,26 +812,15 @@ const GALLERY = [
   { name: 'Lorenzo Manuali', img: 'lorenzo-manuali.jpg', papers: 'Blind Refusal' }
 ];
 
-function chapterFor(page) {
-  if (page.kind === 'gallery') return 'Collaborators';
-  const n = Number(page.number);
-  if (n <= 3) return 'Opening';
-  if (n <= 10) return 'Why It Matters';
-  if (n <= 14) return 'Measurement & Construct';
-  if (n <= 22) return 'The Experiments';
-  if (n === 23) return 'Next Steps';
-  return 'Evidence Library';
-}
-
-/* ── Chyron sections: page → ticker entry ── */
+/* ── Chyron sections: page → ticker entry (names from Seth's page titles) ── */
 const SECTIONS = [
   'Normative Competence', 'Why It Matters', 'Measurement',
   'Local & Global Reasonableness', 'Knowing / Doing', 'Our Evals',
-  'Moral Sensitivity', 'Even MoReBench', 'Incoherent Values',
+  'Moral Sensitivity', 'Are LLMs Bad at Moral Reasoning?', 'Incoherent Values',
   'NoRa', 'Blind Refusal', 'Next Steps', 'Evidence Library'
 ];
 function tickerKeyFor(page) {
-  if (page.kind === 'gallery') return 'Normative Competence';
+  if (page.kind === 'cover' || page.kind === 'gallery') return 'Normative Competence';
   const n = Number(page.number);
   if (n <= 3) return 'Normative Competence';
   if (n <= 10) return 'Why It Matters';
@@ -831,7 +829,7 @@ function tickerKeyFor(page) {
   if (n === 13) return 'Knowing / Doing';
   if (n === 14) return 'Our Evals';
   if (n <= 16) return 'Moral Sensitivity';
-  if (n === 17) return 'Even MoReBench';
+  if (n === 17) return 'Are LLMs Bad at Moral Reasoning?';
   if (n <= 19) return 'Incoherent Values';
   if (n === 20) return 'NoRa';
   if (n <= 22) return 'Blind Refusal';
@@ -957,6 +955,7 @@ const EXPAND_RE = /^\[EXPAND FROM SOURCE:\s*([^\]]+)\]\.?$/i;
 const state = {
   pages: [], index: 0,
   beat: -1, annotations: 'follow',
+  collapsed: new Set(),   // beat indices whose annotation the user closed by hand
   pretext: null, preparedCache: new Map(),
   resizeFrame: 0,
   motion: true,
@@ -1076,7 +1075,12 @@ function buildPages(md) {
   }
   if (current) rawPages.push(current);
 
-  const pages = [];
+  const pages = [
+    { number: 'cover', displayNo: 'Title', title: 'Evaluating LLM Normative Competence',
+      kind: 'cover', paper: null, beats: [], plates: [], sections: [] },
+    { number: 'team', displayNo: '✦', title: 'The Collaborators',
+      kind: 'gallery', paper: null, beats: [], plates: [], sections: [] }
+  ];
   for (const raw of rawPages) {
     const bullets = parseBullets(raw.body.join('\n'));
     const paper = PAPER_PAGE[raw.number] || null;
@@ -1084,7 +1088,7 @@ function buildPages(md) {
       number: raw.number,
       displayNo: 'No. ' + raw.number,
       title: raw.title,
-      kind: raw.number === 1 ? 'cover' : (raw.number === 24 ? 'library' : 'normal'),
+      kind: raw.number === 24 ? 'library' : 'normal',
       paper,
       beats: [],
       plates: [],
@@ -1127,13 +1131,6 @@ function buildPages(md) {
       }
     }
     pages.push(page);
-
-    if (raw.number === 1) {
-      pages.push({
-        number: '1a', displayNo: '✦', title: 'The Collaborators',
-        kind: 'gallery', paper: null, beats: [], plates: [], sections: []
-      });
-    }
   }
   return pages;
 }
@@ -1159,23 +1156,25 @@ function renderBeats(page) {
   const offset = page.titlePlate ? 1 : 0;
   return page.beats.map((beat, i) => {
     const beatIndex = i + offset;
+    const noteClass = beat.children.length ? ' has-note' : '';
     return `<div class="beat hidden" data-beat="${beatIndex}">
       <div class="beat-num">${String(i + 1).padStart(2, '0')}</div>
       <div class="beat-body">
-        <span class="beat-lead ptx" data-text="${escapeHtml(beat.text)}">${escapeHtml(beat.text)}</span>
+        <span class="beat-lead ptx${noteClass}" data-text="${escapeHtml(beat.text)}">${escapeHtml(beat.text)}</span>
         ${renderAnnotation(beat.children)}
       </div>
     </div>`;
   }).join('');
 }
 
-function renderCover(page) {
-  return `<div class="cover-mast" data-noadvance-skip>
-      <div class="cover-kicker">Seth Lazar · MINT Lab</div>
-      <div class="cover-title">Evaluating LLM Normative Competence</div>
-      <div class="cover-bar"></div>
-      <div class="cover-byline">An account in ${state.pages.length} pages — with the collaborators following</div>
-    </div>` + renderBeats(page);
+function renderCover() {
+  return `<div class="cover-center">
+      <div class="cover-mast">
+        <div class="cover-kicker">Seth Lazar · MINT Lab</div>
+        <div class="cover-title">Evaluating LLM Normative Competence</div>
+        <div class="cover-bar"></div>
+      </div>
+    </div>`;
 }
 
 function renderGallery() {
@@ -1255,7 +1254,9 @@ function render() {
   els.pageTitle.dataset.text = page.kind === 'cover' ? '' : page.title;
   els.pageTitle.style.display = page.kind === 'cover' ? 'none' : '';
   els.pageNo.textContent = page.displayNo + ' — ' + (state.index + 1) + ' of ' + state.pages.length;
-  els.vlabel.textContent = chapterFor(page);
+  els.vlabel.textContent =
+    page.kind === 'cover' ? '' :
+    page.kind === 'gallery' ? 'Collaborators' : tickerKeyFor(page);
   updateTicker(page);
 
   let chips = '';
@@ -1264,14 +1265,12 @@ function render() {
     chips = paper.link
       ? `<a class="chip" href="${paper.link.url}" target="_blank" rel="noopener">${paper.link.label}</a>`
       : `<span class="chip chip--ghost">Preprint coming soon</span>`;
-  } else if (page.kind === 'gallery') {
-    chips = `<span class="chip">With gratitude</span>`;
   }
   els.headChips.innerHTML = chips;
 
   if (page.kind === 'gallery') els.content.innerHTML = renderGallery();
   else if (page.kind === 'library') els.content.innerHTML = renderLibrary(page);
-  else if (page.kind === 'cover') els.content.innerHTML = renderCover(page);
+  else if (page.kind === 'cover') els.content.innerHTML = renderCover();
   else els.content.innerHTML = renderBeats(page);
 
   // Exhibits strip (non-library pages)
@@ -1313,7 +1312,8 @@ function syncBeats() {
     card.classList.toggle('dimmed', visible && !isActive && state.annotations === 'follow');
     const annotation = card.querySelector('.annotation');
     if (annotation) {
-      const open = visible && (state.annotations === 'all' || (state.annotations === 'follow' && idx === state.beat));
+      const wanted = state.annotations === 'all' || (state.annotations === 'follow' && idx === state.beat);
+      const open = visible && wanted && !state.collapsed.has(idx);
       annotation.classList.toggle('collapsed', !open);
     }
   }
@@ -1324,7 +1324,6 @@ function syncBeats() {
     const mode = button.dataset.reveal;
     const isActive =
       (mode === 'talk' && state.annotations === 'follow') ||
-      (mode === 'all' && state.annotations === 'none') ||
       (mode === 'full' && state.annotations === 'all');
     button.classList.toggle('active', isActive);
   });
@@ -1337,6 +1336,7 @@ function enterPage(index, { fromEnd = false } = {}) {
   const page = state.pages[index];
   const total = beatCount(page);
   state.annotations = 'follow';
+  state.collapsed.clear();
   state.beat = fromEnd ? total - 1 : -1;
   history.replaceState(null, '', '#p=' + page.number);
   render();
@@ -1361,6 +1361,7 @@ function advance() {
   if (state.beat < total - 1) {
     state.beat++;
     state.annotations = 'follow';
+    state.collapsed.delete(state.beat);
     if (page.titlePlate && state.beat === 0) {
       openPlate(page.titlePlate, { beatLinked: true });
       syncBeats();
@@ -1377,6 +1378,7 @@ function retreat() {
   if (state.beat >= 0) {
     state.beat--;
     state.annotations = 'follow';
+    state.collapsed.delete(state.beat);
     syncBeats();
     return;
   }
@@ -1386,8 +1388,8 @@ function retreat() {
 function setReveal(mode) {
   const page = state.pages[state.index];
   const total = beatCount(page);
+  state.collapsed.clear();
   if (mode === 'talk') { state.beat = -1; state.annotations = 'follow'; els.content.scrollTop = 0; }
-  if (mode === 'all') { state.beat = total - 1; state.annotations = 'none'; }
   if (mode === 'full') { state.beat = total - 1; state.annotations = 'all'; }
   syncBeats();
 }
@@ -1481,12 +1483,20 @@ function attachPlateHandlers(page) {
       if (plate) openPlate(plate);
     });
   });
-  // Beat cards: click = jump beat pointer there
+  // Beat cards: click = jump the pointer there; click again = fold the note shut
   els.content.querySelectorAll('.beat').forEach(card => {
     card.addEventListener('click', event => {
       event.stopPropagation();
-      state.beat = Number(card.dataset.beat);
-      state.annotations = 'follow';
+      const idx = Number(card.dataset.beat);
+      const focused = state.annotations === 'all' || (state.annotations === 'follow' && idx === state.beat);
+      if (focused) {
+        if (state.collapsed.has(idx)) state.collapsed.delete(idx);
+        else state.collapsed.add(idx);
+      } else {
+        state.beat = idx;
+        state.annotations = 'follow';
+        state.collapsed.delete(idx);
+      }
       syncBeats();
     });
   });
@@ -1628,8 +1638,7 @@ els.nextMobile.addEventListener('click', advance);
 els.motion.addEventListener('click', toggleMotion);
 els.revealButtons.forEach(button => button.addEventListener('click', () => setReveal(button.dataset.reveal)));
 els.revealMobile.addEventListener('click', () => {
-  const next = state.annotations === 'follow' ? 'all' : (state.annotations === 'none' ? 'full' : 'talk');
-  setReveal(next === 'all' ? 'all' : next === 'full' ? 'full' : 'talk');
+  setReveal(state.annotations === 'follow' ? 'full' : 'talk');
 });
 els.pagesMobile.addEventListener('click', () => els.pageSheet.classList.toggle('open'));
 els.lbClose.addEventListener('click', closeLightbox);
@@ -1662,8 +1671,7 @@ document.addEventListener('keydown', event => {
   } else if (event.key === 'End') {
     event.preventDefault(); goTo(state.pages.length - 1);
   } else if (event.key === '1') { setReveal('talk');
-  } else if (event.key === '2') { setReveal('all');
-  } else if (event.key === '3') { setReveal('full');
+  } else if (event.key === '2' || event.key === '3') { setReveal('full');
   } else if (event.key === 'm' || event.key === 'M') { toggleMotion(); }
 });
 
