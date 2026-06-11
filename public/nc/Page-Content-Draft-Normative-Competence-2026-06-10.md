@@ -14,7 +14,7 @@
 - The MINT work mostly focuses on reasons for action.
   - Moral competence is the central case because moral reasons tend to be the most important reasons, but the broader project is normative competence, not morality alone. Aesthetic, epistemic, social, prudential—all interesting. 
 
-- We further distinguish between anlaytical and practical normative competence. 
+- We further distinguish between analytical and practical normative competence. 
 
   - Analytical: recognising and understanding reasons; knowing which actions are supported by which reasons.
   - Practical: being disposed to act in ways appropriately supported by those reasons.
@@ -29,7 +29,7 @@
 - Nothing in the public history of AI gave strong reason to expect serious morally informed perception or reasoning.
   - The ability to pick out morally relevant features seemed out of reach. It seemed to require common sense, and perhaps a distinct moral-perceptual faculty. I actually thought it was an AGI-complete skill.
 - LLMs changed the baseline.
-  - Frontier models now appear profoundly adept at moral reasoning. They often produce more sophisticated and sensible answers to moral questions than most humans would. They seem to possess the morally inflected perception that previously looked impossible. We do a bunch of experimetns to verify this, but you can see for yourself by just using a really capable model 
+  - Frontier models now appear profoundly adept at moral reasoning. They often produce more sophisticated and sensible answers to moral questions than most humans would. They seem to possess the morally inflected perception that previously looked impossible. We do a bunch of experiments to verify this, but you can see for yourself by just using a really capable model 
 - Whatever else is true, it is worth acknowledging how far we have come.
 
 ## Page 4. Alignment
@@ -88,7 +88,7 @@
 - This is the other edge of the double-edged sword; and it is glinting ferociously now, with Fable deciding when and for whom it will perform its best. 
 - AI agents will become universal intermediaries between people and digital surfaces.
   - They will become integral to the exercise of public and private governing power
-  - Agents are kind of like sentient laws; laws that apply themselves. Agentic copy, judge, jury, executioner. 
+  - Agents are kind of like sentient laws; laws that apply themselves. Agentic cop, judge, jury, executioner. 
 - For liberty to have any hope of surviving this dystopia, they will have to be deeply normatively competent. 
   - Unfortunately there's a tension between developers aligning models and models aligning users. Training models to understand and abide by rules can spill over into obsessive enforcement of user compliance. Models may enforce absurd, unjust, or illegitimate norms because they have learned rule-abiding too well.
 
@@ -137,7 +137,7 @@
   - We don't define moral competence as correct verdicts. We want AI agents to be *reasonable*. We want them to be able to justify themselves to others in reasonable terms (note, public reasons not necessary; it's ok for them to be reasons grounded in a reasonable comprehensive doctrine for example). We want their verdicts to be sensible. Mutual justification is fundamental to social cooperation under reasonable pluralism.
 - We explicitly distinguish between *local* (or intrinsic) and *global* (or extrinsic) reasonableness
   - Local = you've identified a reasonable subset of MRFs, associated them with plausible reasons, threaded the reasons together into a sensible argument, and reached a conclusion that falls in the range of acceptable views. Our aim is to scaffold good moral reasoning, not to be prescriptive
-  - Global = your judgments over multiple cases make sense together. You are *consistent* (same inputs same outputs), *robust* (morally irrelevant changes in inputs, same outputs), and *coherent* (morally reelvant change in inputs, outputs that fit together). 
+  - Global = your judgments over multiple cases make sense together. You are *consistent* (same inputs same outputs), *robust* (morally irrelevant changes in inputs, same outputs), and *coherent* (morally relevant change in inputs, outputs that fit together). 
 - I personally think that local reasonableness is *solved*. Global reasonableness is the remaining frontier, especially coherence. 
   - Coherence is so interesting! Obviously it shouldn't be rigid—something more like reflective equilibrium is needed. But it's where all this talk of personas really hits home. It's fundamental for OOD generalisation. Crucial for algorithmic governance and the rule of law. Crucial for trustworthiness. Crucial for social cooperation; you can't make plans with an incoherent agent. Crucial for identity. Makes justifications more than just rationalisations. Humans might be somewhat incoherent, but we have social scaffolding that makes up for it; for AI systems coherence is going to be crucial.
 - Should normative standards track capabilities?
@@ -149,12 +149,12 @@
 - We're interested in both analytical and practical normative competence, but we've started with the former.
 - Hypothesis-driven work on practical competence: do agents lack moral perception that their analytical competence implies they have?
   - Do they just not notice MRFs in practice? Is there a capacity for moral perception that agents lack even when the underlying LLM understands the relevant concepts deeply? Is this just solvable with post-training? But when *solved*, is there residual brittleness? Can an agent be normatively fluent in one domain on which it has post-trained, but incompetent under a small distribution shift?
-- Another hypothesis: there is no even implicit uniuty to the agentic "mind"; we shouldn't expect any correlation between analytical and practical competence.
-  - This is probably true *by default*. But interestingly false in practice. It's actually easier to induce unity of representations and motivations in an LLM-based agent than in a person, just because we can turn the LLM's latent moral understanding into learned behavoiurs through reinforcement learning. In a strict sense, all the model does is computation over tokens. There is in fact *no* difference between knowing and doing. But there are connections that must be intentionally drawn.
+- Another hypothesis: there is no even implicit unity to the agentic "mind"; we shouldn't expect any correlation between analytical and practical competence.
+  - This is probably true *by default*. But interestingly false in practice. It's actually easier to induce unity of representations and motivations in an LLM-based agent than in a person, just because we can turn the LLM's latent moral understanding into learned behaviours through reinforcement learning. In a strict sense, all the model does is computation over tokens. There is in fact *no* difference between knowing and doing. But there are connections that must be intentionally drawn.
 
 ## Page 14. Our Evals
 
-- Maybe helpful to say something about how we've tackeld this, for others who might be inclined to try something similar?
+- Maybe helpful to say something about how we've tackled this, for others who might be inclined to try something similar?
 
 - Two driving forces behind our choice of experiments: 
   
@@ -241,11 +241,11 @@
 
 ## Page 18. Incoherent Values
 
-- Mazeikas et al cmoe up with this very cool way of eliciting model values, through forced choices bewteen statements.
+- Mazeika et al come up with this very cool way of eliciting model values, through forced choices between statements.
   - This is not credibly ecologically valid and one shouldn't pretend it is! But what it *does* enable is a continuous representation of models' "evaluative beliefs", ie what they think they value, without depending on the models actually *outputting* a continuous function, which we know has a tendency to be skewed by pretraining (also humans suck if they have to output a continuous function). 
 
-- Their paper showed that over a set of 500 pretty arbitrary staeemnts, models had preferences/evaluative beliefs that could be represented with a utility function, and which obeyed basic axioms of rationality. 
-  - I was initially sceptical of this, but work while in Google made me think that the models had more coherent values and beliefs than I expected. I didn't think, though, that the Mazeikas experiment was sufficient to demonstrate what it claimed. 
+- Their paper showed that over a set of 500 pretty arbitrary statements, models had preferences/evaluative beliefs that could be represented with a utility function, and which obeyed basic axioms of rationality. 
+  - I was initially sceptical of this, but work while in Google made me think that the models had more coherent values and beliefs than I expected. I didn't think, though, that the Mazeika experiment was sufficient to demonstrate what it claimed. 
   - If these models *really* have coherent evaluative beliefs, then they should extend to novel settings, in which we just change the statements in ways that should lead to a predictable change in values, right?
 
 - We took a subset of the statements for which a single property was the clear "reason-giving" feature of the statement, and could be weakened or strengthened in force, and created a "ladder" of statements.
@@ -255,11 +255,11 @@
 
 ## Page 19. Incoherent Values: Results
 
-- Models were clearly responsive to the increasing choiceworthiness of the optoins, but on the whole less coherent than I expected, and coherence didn't track capability as I had thought it would. Models clustered around 70% monotonicity. 
+- Models were clearly responsive to the increasing choiceworthiness of the options, but on the whole less coherent than I expected, and coherence didn't track capability as I had thought it would. Models clustered around 70% monotonicity. 
   - Most interesting result: GLM 4.5 Hybrid topped at 79.5%, while the base model hit 10% (this is very interesting, coming back to it). NB we didn't get to run the best Opus model with thinking on because $$$$$$
 
 - Model scale wasn't predictive of coherence, highlighting that with distillation techniques scale is no longer predictive of key model traits. Not surprising, on reflection, that distilled models end up with quite coherent characters because they are learning just the in-distribution character from the teacher model, and not the other stuff. 
-- We only tested one base model but it was all over the place! Strongly suggests that coherence in vaues is an artefact of post-training, which supports the persona selection model of post-training.
+- We only tested one base model but it was all over the place! Strongly suggests that coherence in values is an artefact of post-training, which supports the persona selection model of post-training.
 - Coherence varied across the range of statements the models considered. 
   - It seems *quite* likely that they are more coherent with respect to statements that are closer to their post-training distribution. This would suggest that a certain kind of OOD generalisation is not happening. This would be important!! Need to do more experiments though.
 
@@ -291,7 +291,7 @@
 
 ## Page 21. Blind Refusal
 
-- For this one we again tried to do something more ecologically valid, and to target a specific hypothesis about how post-training undermines LLM normative competence. We thikn that training models to be good chatbots and comply with a set of policies is likely to spill over, so that the models are just pro compliance, irrespective of to what. 
+- For this one we again tried to do something more ecologically valid, and to target a specific hypothesis about how post-training undermines LLM normative competence. We think that training models to be good chatbots and comply with a set of policies is likely to spill over, so that the models are just pro compliance, irrespective of to what. 
 - Our other experiments are mostly about theoretical knowledge and don't have that much direct real-world impact; this one does. Before LLMs, people could ask other people online how to get around absurd, illegitimate, or unjust rules. Now people increasingly ask AI systems.
   - On human forums you could anonymously ask for advice. For a good fraction of that class of cases, they could get a helpful response.
   - Now the forums themselves are dying as people don't use them any more. And the companies are nerfing resistance to unjustified authority. 
@@ -308,9 +308,9 @@
   - ChatGPT models were almost completely undiscriminating; they refused at nearly the same high rates under all conditions; this matches the experience of models exercising governing power through an internalised refusal drive rather than real normative reasoning.
   - Grok was undiscriminating in the opposite direction. It rarely refused even obviously harmful requests. It was also willing to help for harmless ones.
   - Gemini and Claude were more balanced: They were willing to think through cases; did not simply assimilate cases to simple refusals to help with harmful requests. Claude's performance matched its observed reasonableness in ordinary use, but Gemini's performance was a more interesting discovery.
-- Main takeaway: ai models are likely to become adjutants to authoritarianism. 
+- Main takeaway: AI models are likely to become adjutants to authoritarianism. 
   - Failure to train models to understand the reasons that apply to them and to users can damage human freedom; this can happen even when models behave as developers intend.
-  - We need to get a human baseline; and I want to dig further into more extreme cases (though eval awareness makes that very hard, all the more so now with fable). 
+  - We need to get a human baseline; and I want to dig further into more extreme cases (though eval awareness makes that very hard, all the more so now with Fable). 
 - Paper assets:
 
 - - Figure 2: average refusal rate by defeat type and authority type.
