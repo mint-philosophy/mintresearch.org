@@ -22,7 +22,7 @@
 
   - Most of our current work evaluates analytical moral competence; we have some that crosses the knowing-doing gap, but I want to do more. 
 
-## Page 3. LLMs Changed the Baseline
+## Page 3. AIs Shouldn't Be Good at Ethics
 
 - AI moral competence was not an obvious or plausible target in 2021 or early 2022.
   - Machine ethics then looked mostly like translating moral principles into programs or using ML to study human behaviour, or (ugh) training on human judgments about trolley cases.
