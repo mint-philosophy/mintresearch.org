@@ -1,5 +1,7 @@
 # Evaluating LLM Normative Competence: Page Content Draft
 
+*Presentation notes (this block is not rendered): this file is the single content source for the web deck at https://mintresearch.org/nc/ (built from `Normative-Competence-Web-Presentation.html` alongside this file). The deck prepends a title page and a Collaborators gallery before Page 1. Top-level bullets render as numbered click-through beats; nested bullets render as that beat's expansion card; "Paper assets"/"Case assets" bullets render as clickable exhibits (figures/tables cropped from the papers, opened in a lightbox), not as slide text. Bullets wrapped in `[Note to/for Claude: …]` are never displayed. Headings use title case. Styling follows the FDC house style.*
+
 ## Page 1. What Has MINT Lab Been Up To?
 
 - The last six months of MINT Lab work on normative competence have produced a set of papers and results that feel like we're both learning something genuinely new, and crossing some profound technological thresholds.
@@ -171,7 +173,7 @@
 
 ## Page 15. Reasoning and Sensitivity
 
-- [Note to Claude: For each paper the first slide should be the title paper from the pdf showing the authors, so I can credit my collaborators]
+- [Note to Claude: For each paper the first beat shows title, authors, and abstract — cropped from the PDF where it carries author names (Beyond Verdicts, Discerning What Matters, Are LLMs Bad at Moral Reasoning?), or a built title card with the verified author list where the PDF is anonymised (Sensitivity, NoRA, Incoherent Values, Blind Refusal). Anonymised title pages and "under review" banners are never shown.]
 - Our first eval focused on moral reasoning, but we've ended up thinking of it as being mostly about the first stage, identifying MRFs. 
   - We developed 12 text-based cases; had LLMs, humans, and trained philosophers write moral analyses, broken into the stages described above: MRFs, reasons, arguments, verdicts. We evaluated them by having (lots) of human judges make blinded pairwise comparisons. 
   - We then perturbed the cases, adding non-moral noise that shouldn't change the analysis but, we judged, might distract LLMs that are used to getting neatly curated vignettes. 
@@ -336,7 +338,7 @@
 
 ## Page 24. Case and Evidence Library
 
-- Note for Claude: Where available we can include links to the arxiv preprints as well. Where not available, we can include the snippets below (and should also bring in here anything mentioned as a paper asset above) but we should also have something saying "preprint coming soon" that we can later update. 
+- [Note for Claude: Implemented links — Beyond Verdicts: AAAI 2026 (https://ojs.aaai.org/index.php/AAAI/article/view/41131); Discerning What Matters: published at IASEAI, arXiv:2506.13082; Are LLMs Bad at Moral Reasoning?: arXiv:2606.11635; NoRA: arXiv:2606.04806. Sensitivity, Incoherent Values, and Blind Refusal show "preprint coming soon" until their preprints are up. Library sections are collapsible and include every paper asset listed above.]
 - Beyond Verdicts:
   - Figure 1: three-part framework for evaluating evaluations of LLM moral reasoning.
   - Figure 2: field-growth chart.
@@ -352,7 +354,7 @@
   - Figure 3: cosine similarity by noise condition.
   - Figure 4 and Table 4: weak-model discriminative-validity check.
   - Case examples: clean, non-moral noise, and chat-history versions.
-- Even MoReBench:
+- Are LLMs Bad at Moral Reasoning?:
   - Table 1: rubric-list capture versus open-ended response.
   - Table 2: dual-method intersection counts.
   - Table 5: scores before and after generality rewrite.
