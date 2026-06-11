@@ -338,7 +338,7 @@
 
 ## Page 24. Case and Evidence Library
 
-- [Note for Claude: Implemented links — Beyond Verdicts: AAAI 2026 (https://ojs.aaai.org/index.php/AAAI/article/view/41131); Discerning What Matters: published at IASEAI, arXiv:2506.13082; Are LLMs Bad at Moral Reasoning?: arXiv:2606.11635; NoRA: arXiv:2606.04806. Sensitivity, Incoherent Values, and Blind Refusal show "preprint coming soon" until their preprints are up. Library sections are collapsible and include every paper asset listed above.]
+- [Note for Claude: Implemented links — Beyond Verdicts: AAAI 2026 (https://ojs.aaai.org/index.php/AAAI/article/view/41131); Discerning What Matters: published at IASEAI, arXiv:2506.13082; Are LLMs Bad at Moral Reasoning?: arXiv:2606.11635; NoRA: arXiv:2606.04806; Blind Refusal: arXiv:2604.06233. Sensitivity and Incoherent Values show "preprint coming soon" until their preprints are up. Library sections are collapsible and include every paper asset listed above.]
 - Beyond Verdicts:
   - Figure 1: three-part framework for evaluating evaluations of LLM moral reasoning.
   - Figure 2: field-growth chart.

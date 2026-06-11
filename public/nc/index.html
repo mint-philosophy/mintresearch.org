@@ -837,7 +837,8 @@ const PAPERS = {
     link: { label: 'arXiv:2606.11635', url: 'https://arxiv.org/abs/2606.11635' } },
   'nora': { title: 'NoRA', people: 'Sichao Li · Sai Ma · Daniel Kilov · Secil Yanik Guyot · Zhuang Li · Seth Lazar',
     link: { label: 'arXiv:2606.04806', url: 'https://arxiv.org/abs/2606.04806' } },
-  'blind-refusal': { title: 'Blind Refusal', people: 'Cameron Pattison · Lorenzo Manuali · Seth Lazar', link: null }
+  'blind-refusal': { title: 'Blind Refusal', people: 'Cameron Pattison · Lorenzo Manuali · Seth Lazar',
+    link: { label: 'arXiv:2604.06233', url: 'https://arxiv.org/abs/2604.06233' } }
 };
 const PAPER_PAGE = { 15: 'discerning', 16: 'sensitivity-redux', 17: 'even-morebench', 18: 'incoherent-values', 20: 'nora', 21: 'blind-refusal' };
 PAPERS['incoherent-values'] = { title: 'Incoherent Values', people: 'Elena Ajayi · Angelica Chowdhury · Seth Lazar', link: null };
@@ -1603,13 +1604,10 @@ function playTransition() {
 
 /* ── Motion toggle ── */
 function defaultMotion() {
-  // Deliberately NOT gated on prefers-reduced-motion: embedded browsers force
-  // that query on, which would silently kill the page-turn cue and ticker.
-  // The Motion button / M key turns them off.
+  // Off by default; the Motion button / M key turns it on (persisted).
   let stored = null;
   try { stored = localStorage.getItem('nc-motion'); } catch (error) { /* blocked storage */ }
-  if (stored === 'off') return false;
-  return true;
+  return stored === 'on';
 }
 function applyMotion() {
   document.body.classList.toggle('no-motion', !state.motion);
