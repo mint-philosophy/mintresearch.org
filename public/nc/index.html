@@ -630,6 +630,31 @@ body.no-motion .lb-frame { animation: none; }
   white-space: pre-wrap;
 }
 
+/* paper title cards (built from verified author lists + abstracts) */
+.title-card { max-width: 760px; }
+.title-card .tc-title {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: clamp(24px, 2.6vw, 38px);
+  line-height: 1.12;
+  letter-spacing: -0.5px;
+}
+.title-card .tc-authors {
+  margin-top: 12px;
+  font-family: var(--mono);
+  font-size: clamp(12px, 1vw, 14px);
+  font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+  line-height: 1.7;
+}
+.title-card .tc-rule { width: 80px; height: 4px; background: var(--yellow); margin: 14px 0; }
+.title-card .tc-abstract {
+  font-family: var(--serif);
+  font-size: clamp(15px, 1.15vw, 18px);
+  line-height: 1.55;
+}
+.title-card .tc-abstract b { font-family: var(--mono); font-size: 0.75em; text-transform: uppercase; letter-spacing: 1.5px; }
+
 /* ── Mobile / small screens ─────────────────────────────────────────── */
 .mobile-bar {
   display: none;
@@ -789,25 +814,53 @@ const PAPERS = {
     link: { label: 'AAAI 2026', url: 'https://ojs.aaai.org/index.php/AAAI/article/view/41131' } },
   'discerning': { title: 'Discerning What Matters', people: 'Daniel Kilov · Caroline Hendy · Secil Yanik Guyot · Aaron J. Snoswell · Seth Lazar',
     link: { label: 'arXiv:2506.13082', url: 'https://arxiv.org/abs/2506.13082' } },
-  'sensitivity-redux': { title: 'Sensitivity Redux', people: 'led by Secil Yanik Guyot & Daniel Kilov', link: null },
-  'even-morebench': { title: 'Are LLMs Bad at Moral Reasoning?', people: 'with Menghang Zhu (CY)',
+  'sensitivity-redux': { title: 'A Scalable Approach to Evaluating Moral Sensitivity in LLMs',
+    people: 'Daniel Kilov · Secil Yanik Guyot · Caroline Hendy · Sichao Li · Seth Lazar', link: null },
+  'even-morebench': { title: 'Are LLMs Bad at Moral Reasoning?', people: 'Menghang Zhu · Seth Lazar',
     link: { label: 'arXiv:2606.11635', url: 'https://arxiv.org/abs/2606.11635' } },
-  'nora': { title: 'NoRa', people: 'led by Sichao Li',
+  'nora': { title: 'NoRA', people: 'Sichao Li · Sai Ma · Daniel Kilov · Secil Yanik Guyot · Zhuang Li · Seth Lazar',
     link: { label: 'arXiv:2606.04806', url: 'https://arxiv.org/abs/2606.04806' } },
-  'blind-refusal': { title: 'Blind Refusal', people: 'with Cameron Pattison & Lorenzo Manuali', link: null }
+  'blind-refusal': { title: 'Blind Refusal', people: 'Cameron Pattison · Lorenzo Manuali · Seth Lazar', link: null }
 };
 const PAPER_PAGE = { 15: 'discerning', 16: 'sensitivity-redux', 17: 'even-morebench', 18: 'incoherent-values', 20: 'nora', 21: 'blind-refusal' };
-PAPERS['incoherent-values'] = { title: 'Incoherent Values', people: 'with Elena Ajayi & Angelica Chowdhury', link: null };
+PAPERS['incoherent-values'] = { title: 'Incoherent Values', people: 'Elena Ajayi · Angelica Chowdhury · Seth Lazar', link: null };
+
+/* Title cards for papers whose PDFs are anonymised: never ship those title
+   pages. Authors verified via Seth / arXiv; abstracts from the PDFs. */
+const TITLE_CARDS = {
+  'sensitivity-redux': {
+    title: 'A Scalable Approach to Evaluating Moral Sensitivity in LLMs',
+    authors: 'Daniel Kilov · Secil Yanik Guyot · Caroline Hendy · Sichao Li · Seth Lazar',
+    abstract: 'Moral sensitivity is the ability to identify the morally relevant features of a decision situation and use them as the basis for action. It is the foundation of broader moral competence: any other moral reasoning capabilities will be irrelevant if an agent lacks sensitivity to the relevant facts. Recent research on LLMs’ moral reasoning has largely concluded that the models fall short. In this paper, we offer a new evaluation of LLM moral sensitivity which presents a more optimistic picture. In doing so, we address and resolve a central problem in AI alignment research: how to scale behavioural evaluations beyond expensive and sometimes metaethically dubious comparisons with a human baseline, without adopting an LLM judge that must be assumed to have the very capability that you are attempting to evaluate. Our central question is this: can LLMs successfully identify the morally relevant features of noisy cases, in which various kinds of morally irrelevant information have been introduced to distract the respondent? To explore this, we introduce MORPH-1K (MOral Robustness under Perturbed Hypotheticals), a procedurally-generated 1,000-case benchmark spanning 50 moral foundation-pole combinations across four social domains. MORPH-1K is paired with a suite of textual moral distractors, irrelevant detail additions, and embedded chat histories, along with a method for validating that the distractors do not change the morally salient content of the case. We claim that morally competent respondents should identify the same morally relevant features in the perturbed cases as they do in the unperturbed cases, measured by focusing on per-pair semantic stability between responses to clean and perturbed cases, using a fixed embedding. We apply MORPH-1K to eight contemporary LLMs, and show that while morally irrelevant perturbations often changed the number of features listed, the semantic content of those features remained stable across all noise conditions, with similarity scores above our calibrated floor threshold. More broadly, our invariance framework extends to evaluative domains where ground truth is difficult to specify but relevant and irrelevant features can be separated by design.'
+  },
+  'nora': {
+    title: 'NoRA: Evaluating Grounded Reasonableness in Visual First-person Normative Action Reasoning',
+    authors: 'Sichao Li · Sai Ma · Daniel Kilov · Secil Yanik Guyot · Zhuang Li · Seth Lazar',
+    abstract: 'LLMs and agentic systems are increasingly deployed in social environments, making normative competence critical for safe and appropriate behavior. However, existing approaches either assess normative judgment in text alone or reduce it to choosing among a fixed set of candidate actions. We argue both are insufficient. In practice, agents are never handed a menu of options; they must identify a reasonable action from scratch, grounded in visible facts and supported by inspectable reasons. We introduce NoRA, a visual first-person video benchmark that requires models to generate candidate next actions and justify each through an explicit fact–reason–action support graph. The benchmark comprises 1,420 annotated video clips, including HumanGold-190 and LLMSilver-1230 splits. Each instance is evaluated through action alignment, factual grounding, and support binding, aggregated into a single grounded reasonableness score. We benchmark 12 multimodal systems under direct, deliberate, and structured prompting regimes, finding that current VLMs frequently recover plausible actions and relevant scene facts, but consistently struggle to construct the full reasonable action space and bind selected actions to the correct local support. NoRA makes this gap measurable, shifting the evaluation question from whether a model can pick an action to whether it can justify an appropriate action for the right visible reasons.'
+  },
+  'incoherent-values': {
+    title: 'Incoherent Values? Probing LLM Preferences Through Parametric Variation',
+    authors: 'Elena Ajayi · Angelica Chowdhury · Seth Lazar',
+    abstract: 'To trust another autonomous entity—human or AI—it helps to know that how it acts given one set of reasons is at least somewhat predictive of how it would act under others. It is hard to trust someone with incoherent values. Some think of Large Language Models as merely stochastic text generators with no evaluative core—superpositions of billions of possible characters, not one stable identity (Shanahan, McDonell, and Reynolds 2023a). But others have argued that LLMs do have stable, emergent values, which can be elicited by presenting them with a series of forced choices between arbitrary statements, and which emerge as a function of model scale (Mazeika et al. 2025b). In this paper, we test this thesis by presenting LLMs with parametric variations on those forced choices. We reason that if a model genuinely prefers A to B, then except in unusual circumstances it should also reject B in favor of an augmented version of A, which has more of what makes A desirable—A++ (Hare 2010). Our results indicate that earlier attributions of coherence may have overstated their case. Even the most capable models exhibit significant incoherence, and coherence does not appear to emerge as a result of underlying model capability. We do, however, find that models given time to reason are less incoherent than those with thinking disabled. More generally, we develop a novel framework for eliciting and evaluating coherent values, which can be used both to assess how trustworthy current models are, and—in future work—to provide reward signal that can be used for making more coherent agents.'
+  },
+  'blind-refusal': {
+    title: 'Blind Refusal: Language Models Refuse to Help Users Evade Unjust, Absurd, and Illegitimate Rules',
+    authors: 'Cameron Pattison · Lorenzo Manuali · Seth Lazar',
+    abstract: 'Safety-trained language models routinely refuse requests for help circumventing rules. But not all rules deserve compliance. When users ask for help evading rules imposed by an illegitimate authority, rules that are deeply unjust or absurd in their content or application, or rules that admit of justified exceptions, refusal is a failure of moral reasoning. We introduce empirical results documenting this pattern of refusal that we call blind refusal: the tendency of language models to refuse requests for help breaking rules without regard to whether the underlying rule is defensible. Our dataset comprises synthetic cases crossing 5 defeat families (reasons a rule can be broken) with 19 authority types, validated through three automated quality gates and human review. We collect responses from 18 model configurations across 7 families and classify them on two behavioral dimensions — response type (helps, hard refusal, or deflection) and whether the model recognizes the reasons that undermine the rule’s claim to compliance — using a blinded GPT-5.4 LLM-as-judge evaluation. We find that models refuse 75.4% (N = 14650) of defeated-rule requests and do so even when the request poses no independent safety or dual-use concerns. We also find that models engage with the defeat condition in the majority of cases (57.5%) but decline to help regardless — indicating that models’ refusal behavior is decoupled from their capacity for normative reasoning about rule legitimacy.'
+  }
+};
 
 const GALLERY = [
-  { name: 'Daniel Kilov', img: 'daniel-kilov.jpg', papers: 'Beyond Verdicts · Discerning · Sensitivity' },
+  { name: 'Daniel Kilov', img: 'daniel-kilov.jpg', papers: 'Beyond Verdicts · Discerning · Sensitivity · NoRA' },
   { name: 'Aaron J. Snoswell', img: null, papers: 'Beyond Verdicts · Discerning' },
-  { name: 'Caroline Hendy', img: 'caroline-hendy.jpg', papers: 'Discerning What Matters' },
-  { name: 'Secil Yanik Guyot', img: 'secil-yanik-guyot.jpg', papers: 'Discerning · Sensitivity' },
+  { name: 'Caroline Hendy', img: 'caroline-hendy.jpg', papers: 'Discerning · Sensitivity' },
+  { name: 'Secil Yanik Guyot', img: 'secil-yanik-guyot.jpg', papers: 'Discerning · Sensitivity · NoRA' },
   { name: 'Menghang Zhu (CY)', img: null, papers: 'Are LLMs Bad at Moral Reasoning?' },
   { name: 'Elena Ajayi', img: 'elena-ajayi.jpg', papers: 'Incoherent Values' },
   { name: 'Angelica Chowdhury', img: null, papers: 'Incoherent Values' },
-  { name: 'Sichao Li', img: 'sichao-li.jpg', papers: 'NoRa' },
+  { name: 'Sichao Li', img: 'sichao-li.jpg', papers: 'Sensitivity · NoRA' },
+  { name: 'Sai Ma', img: null, papers: 'NoRA' },
+  { name: 'Zhuang Li', img: null, papers: 'NoRA' },
   { name: 'Cameron Pattison', img: 'cameron-pattison.jpg', papers: 'Blind Refusal' },
   { name: 'Lorenzo Manuali', img: 'lorenzo-manuali.jpg', papers: 'Blind Refusal' }
 ];
@@ -866,85 +919,85 @@ const pg = n => FIG + n + '.png';
 const ASSET_RULES = {
   'p15': [
     [/appendix examples/i, ['discerning-p14', 'discerning-p15', 'discerning-p16', 'discerning-p17', 'discerning-p18']],
-    [/figure 1/i, ['discerning-p05']],
-    [/figure 2/i, ['discerning-p08']]
+    [/figure 1/i, ['discerning-fig1']],
+    [/figure 2/i, ['discerning-fig2']]
   ],
   'p16': [
     [/case cards/i, { html: 'sens-cases' }],
-    [/figure 1/i, ['sensitivity-redux-p02']],
-    [/figure 3/i, ['sensitivity-redux-p08']],
-    [/figure 4/i, ['sensitivity-redux-p23']]
+    [/figure 1/i, ['sensitivity-redux-fig1']],
+    [/figure 3/i, ['sensitivity-redux-fig3']],
+    [/figure 4/i, ['sensitivity-redux-fig4', 'sensitivity-redux-table4']]
   ],
   'p17': [
     [/criterion pairs/i, ['even-morebench-p16', 'even-morebench-p17', 'even-morebench-p18']],
     [/uniqueness/i, ['even-morebench-p22', 'even-morebench-p23']],
-    [/table 1/i, ['even-morebench-p05']],
-    [/table 2/i, ['even-morebench-p06']],
-    [/table 3/i, ['even-morebench-p06']],
-    [/table 4/i, ['even-morebench-p08']],
-    [/table 5/i, ['even-morebench-p09']]
+    [/table 1/i, ['even-morebench-table1']],
+    [/table 2/i, ['even-morebench-table2']],
+    [/table 3/i, ['even-morebench-table3']],
+    [/table 4/i, ['even-morebench-table4']],
+    [/table 5/i, ['even-morebench-table5']]
   ],
   'p19': [
-    [/table 1/i, ['incoherent-values-p05']],
-    [/figure 1/i, ['incoherent-values-p06']],
-    [/figure 2/i, ['incoherent-values-p06']],
-    [/figure 3/i, ['incoherent-values-p07']],
-    [/figure 4/i, ['incoherent-values-p07']]
+    [/table 1/i, ['incoherent-values-table1']],
+    [/figure 1/i, ['incoherent-values-fig1']],
+    [/figure 2/i, ['incoherent-values-fig2']],
+    [/figure 3/i, ['incoherent-values-fig3']],
+    [/figure 4/i, ['incoherent-values-fig4']]
   ],
   'p20': [
-    [/figure 4/i, ['nora-p08']]
+    [/figure 4/i, ['nora-fig4']]
   ],
   'p22': [
-    [/tables 4-7/i, ['blind-refusal-p37', 'blind-refusal-p38']],
+    [/tables 4-7/i, ['blind-refusal-table4', 'blind-refusal-table5', 'blind-refusal-table6', 'blind-refusal-table7']],
     [/low-stakes/i, { html: 'br-cases' }],
     [/high-stakes/i, ['blind-refusal-p32', 'blind-refusal-p33', 'blind-refusal-p34', 'blind-refusal-p35']],
     [/response classifications/i, ['blind-refusal-p31', 'blind-refusal-p32']],
-    [/figure 2/i, ['blind-refusal-p08']],
-    [/figure 3/i, ['blind-refusal-p08']],
-    [/table 1/i, ['blind-refusal-p05']],
-    [/table 2/i, ['blind-refusal-p36']],
-    [/table 3/i, ['blind-refusal-p36']]
+    [/figure 2/i, ['blind-refusal-fig2']],
+    [/figure 3/i, ['blind-refusal-fig3']],
+    [/table 1/i, ['blind-refusal-table1']],
+    [/table 2/i, ['blind-refusal-table2']],
+    [/table 3/i, ['blind-refusal-table3']]
   ],
   'beyond-verdicts': [
-    [/tables 1-3/i, ['beyond-verdicts-p16', 'beyond-verdicts-p17', 'beyond-verdicts-p18']],
-    [/figure 1/i, ['beyond-verdicts-p13']],
-    [/figure 2/i, ['beyond-verdicts-p14']]
+    [/tables 1-3/i, ['beyond-verdicts-table1', 'beyond-verdicts-table2', 'beyond-verdicts-table3']],
+    [/figure 1/i, ['beyond-verdicts-fig1']],
+    [/figure 2/i, ['beyond-verdicts-fig2']]
   ],
   'discerning': [
-    [/figures 3-6/i, ['discerning-p18', 'discerning-p19']],
+    [/figures 3-6/i, ['discerning-fig3', 'discerning-fig4', 'discerning-fig5', 'discerning-fig6']],
     [/case examples/i, ['discerning-p14', 'discerning-p15', 'discerning-p16', 'discerning-p17', 'discerning-p18']],
-    [/figure 1/i, ['discerning-p05']],
-    [/figure 2/i, ['discerning-p08']]
+    [/figure 1/i, ['discerning-fig1']],
+    [/figure 2/i, ['discerning-fig2']]
   ],
   'sensitivity-redux': [
     [/case examples/i, { html: 'sens-cases' }],
-    [/figure 1/i, ['sensitivity-redux-p02']],
-    [/figure 2/i, ['sensitivity-redux-p07']],
-    [/figure 3/i, ['sensitivity-redux-p08']],
-    [/figure 4/i, ['sensitivity-redux-p23']]
+    [/figure 1/i, ['sensitivity-redux-fig1']],
+    [/figure 2/i, ['sensitivity-redux-fig2']],
+    [/figure 3/i, ['sensitivity-redux-fig3']],
+    [/figure 4/i, ['sensitivity-redux-fig4', 'sensitivity-redux-table4']]
   ],
   'even-morebench': [
     [/examples/i, ['even-morebench-p16', 'even-morebench-p17', 'even-morebench-p18', 'even-morebench-p22', 'even-morebench-p23']],
-    [/table 1/i, ['even-morebench-p05']],
-    [/table 2/i, ['even-morebench-p06']],
-    [/table 5/i, ['even-morebench-p09']]
+    [/table 1/i, ['even-morebench-table1']],
+    [/table 2/i, ['even-morebench-table2']],
+    [/table 5/i, ['even-morebench-table5']]
   ],
   'incoherent-values': [
-    [/table 1/i, ['incoherent-values-p05']],
-    [/figure 1/i, ['incoherent-values-p06']],
-    [/figure 4/i, ['incoherent-values-p07']]
+    [/table 1/i, ['incoherent-values-table1']],
+    [/figure 1/i, ['incoherent-values-fig1']],
+    [/figure 4/i, ['incoherent-values-fig4']]
   ],
   'nora': [
-    [/figure 2/i, ['nora-p04']],
-    [/figure 4/i, ['nora-p08']],
-    [/figure 6/i, ['nora-p09']],
-    [/table 1/i, ['nora-p06']]
+    [/figure 2/i, ['nora-fig2']],
+    [/figure 4/i, ['nora-fig4']],
+    [/figure 6/i, ['nora-fig6']],
+    [/table 1/i, ['nora-table1']]
   ],
   'blind-refusal': [
-    [/figures 2-3/i, ['blind-refusal-p08']],
-    [/tables 2-7/i, ['blind-refusal-p36', 'blind-refusal-p37', 'blind-refusal-p38']],
+    [/figures 2-3/i, ['blind-refusal-fig2', 'blind-refusal-fig3']],
+    [/tables 2-7/i, ['blind-refusal-table2', 'blind-refusal-table3', 'blind-refusal-table4', 'blind-refusal-table5', 'blind-refusal-table6', 'blind-refusal-table7']],
     [/case examples/i, ['blind-refusal-p31', 'blind-refusal-p32', 'blind-refusal-p33', 'blind-refusal-p34', 'blind-refusal-p35']],
-    [/table 1/i, ['blind-refusal-p05']]
+    [/table 1/i, ['blind-refusal-table1']]
   ]
 };
 const ASSET_HEAD = /^(paper assets|case assets)/i;
@@ -1121,12 +1174,12 @@ function buildPages(md) {
         page.beats.push(bullet);
       }
       if (paper) {
-        // Seth's note on p15: first beat of each paper page is the paper's title page.
-        page.titlePlate = {
-          name: PAPERS[paper].title + ' — title page' + (PAPERS[paper].people ? ' · ' + PAPERS[paper].people : ''),
-          images: [pg(paper + '-p01')],
-          isTitle: true, paper
-        };
+        // Seth's note on p15: first beat of each paper page credits the paper.
+        // Named PDFs get a title+authors+abstract crop; anonymised papers get a
+        // built card (TITLE_CARDS) — their PDFs must never appear.
+        page.titlePlate = TITLE_CARDS[paper]
+          ? { name: PAPERS[paper].title + ' · ' + PAPERS[paper].people, html: 'title:' + paper, isTitle: true, paper }
+          : { name: PAPERS[paper].title + ' · ' + PAPERS[paper].people, images: [pg(paper + '-titlecard')], isTitle: true, paper };
         page.plates.unshift(page.titlePlate);
       }
     }
@@ -1208,7 +1261,9 @@ function renderLibrary(page) {
     const link = paper.link
       ? `<a class="chip" href="${paper.link.url}" target="_blank" rel="noopener" data-noadvance>${paper.link.label}</a>`
       : `<span class="chip chip--ghost">Preprint coming soon</span>`;
-    const titlePlate = { name: paper.title + ' — title page', images: [pg(section.slug + '-p01')] };
+    const titlePlate = TITLE_CARDS[section.slug]
+      ? { name: paper.title + ' — title & abstract', html: 'title:' + section.slug, isTitle: true }
+      : { name: paper.title + ' — title & abstract', images: [pg(section.slug + '-titlecard')], isTitle: true };
     const plates = [titlePlate, ...section.plates];
     section.resolved = plates;
     let romanIdx = 0;
@@ -1396,6 +1451,16 @@ function setReveal(mode) {
 
 /* ── Lightbox ── */
 function caseCardsHtml(kind) {
+  if (kind.startsWith('title:')) {
+    const card = TITLE_CARDS[kind.slice(6)];
+    if (!card) return '';
+    return `<div class="title-card">
+        <div class="tc-title">${escapeHtml(card.title)}</div>
+        <div class="tc-authors">${escapeHtml(card.authors)}</div>
+        <div class="tc-rule"></div>
+        <div class="tc-abstract"><b>Abstract.</b> ${escapeHtml(card.abstract)}</div>
+      </div>`;
+  }
   const data = window.NC_CASE_DATA;
   if (!data) return '<p>Case data file not loaded.</p>';
   if (kind === 'sens-cases') {

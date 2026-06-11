@@ -1,6 +1,6 @@
 # Evaluating LLM Normative Competence: Page Content Draft
 
-## Page 1. What has MINT Lab Been Up To?
+## Page 1. What Has MINT Lab Been Up To?
 
 - The last six months of MINT Lab work on normative competence have produced a set of papers and results that feel like we're both learning something genuinely new, and crossing some profound technological thresholds.
   - Sometimes it feels like pushing the frontiers of philosophy; sometimes it feels like going out the door and into something else.
@@ -22,7 +22,7 @@
 
   - Most of our current work evaluates analytical moral competence; we have some that crosses the knowing-doing gap, but I want to do more. 
 
-## Page 3. LLMs Changed The Baseline
+## Page 3. LLMs Changed the Baseline
 
 - AI moral competence was not an obvious or plausible target in 2021 or early 2022.
   - Machine ethics then looked mostly like translating moral principles into programs or using ML to study human behaviour, or (ugh) training on human judgments about trolley cases.
@@ -48,7 +48,7 @@
   - Engineering controls alone look limited for powerful agents. Systems can already recognise evaluation contexts and spot control mechanisms, and bridle against them. Plus agents are harder than chatbots because the important outputs are tool calls and actions, not only text. Indeed, if systems can recognise and resist control, there may also be ethical questions about imposing it.
   
 
-## Page 5. Incomplete Rules And Vast Choice Spaces
+## Page 5. Incomplete Rules and Vast Choice Spaces
 
 - As AI agents become more capable and general, they will face a combinatorial explosion of choice situations.
   - No declarative policy or model spec can cover all relevant scenarios. Any rule set will be incomplete and ambiguous, and so depend on interpretation.
@@ -154,8 +154,6 @@
 
 ## Page 14. Our Evals
 
-- Maybe helpful to say something about how we've tackled this, for others who might be inclined to try something similar?
-
 - Two driving forces behind our choice of experiments: 
   
   - A specific hypothesis, borne out of experience spending time with the models, from our understanding of how they are trained, or from our broader approach to moral theory. 
@@ -184,7 +182,7 @@
   - Discerning What Matters Figure 2: novel-vignette Bradley-Terry estimates.
   - Appendix examples: published and novel vignettes.
 
-## Page 16. Sensitivity At Scale
+## Page 16. Sensitivity at Scale
 
 - The first experiment was suggestive, but it exposed methodological problems.
   - The dataset was too small, human pairwise evaluation does not scale, and human judges can be swayed by irrelevant factors such as response length and style.
@@ -204,7 +202,7 @@
   - Sensitivity Redux Figure 4 / Table 4: weak-model validity check.
   - Case cards: clean / non-moral noise / chat-history versions.
 
-## Page 17. Even MoReBench
+## Page 17. Are LLMs Bad at Moral Reasoning?
 
 - MoReBench was like "Discerning" on steroids. They assembled 1,000 cases and had experts write detailed gold-standard rubrics for evaluating each case, releasing data for 500 of them. 
 
@@ -336,7 +334,7 @@
 
 
 
-## Page 24. Case And Evidence Library
+## Page 24. Case and Evidence Library
 
 - Note for Claude: Where available we can include links to the arxiv preprints as well. Where not available, we can include the snippets below (and should also bring in here anything mentioned as a paper asset above) but we should also have something saying "preprint coming soon" that we can later update. 
 - Beyond Verdicts:
