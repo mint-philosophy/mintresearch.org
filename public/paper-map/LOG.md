@@ -1,4 +1,25 @@
 
+## 2026-06-23 | Codex
+
+**Work**: Repaired incoherent paper-map labels from the upstream LanceDB
+cluster metadata rather than patching the frontend. The old deterministic
+TF-IDF path had allowed one-off phrases such as "Affordable Housing",
+"Charter School", and "Electronic Mail" to become visible labels. The repair
+keeps existing cluster assignments but now derives cluster names from recurring
+member-paper terms, maps research areas to a fixed 16-label taxonomy, and
+collapses fragile subcluster labels back to parent cluster labels.
+
+**Verification**: `SCRIPTS/recluster_corpus.py --repair-labels` updated 4,668
+assigned embedded papers across 84 clusters and passed validation. The local
+paper-map updater regenerated assets for 4,668 mapped papers and 4,818 total
+corpus documents, refreshed `src/data/stats.json`, the served guide stats, and
+legacy `public/paper-map/data/` + `output/` inspection artifacts. The update was
+local-only; no commit or push was made.
+
+**State**: The served map artifacts and lab infrastructure stats are current in
+this checkout. The remaining untracked `src/pages/guide.astro` is unrelated and
+was left untouched.
+
 ## 2026-03-09 | Lab-Minty-9c856c68
 
 **Work**: Verified GitHub connectivity by tailing the full `paper-map-updater` automation through recluster, map generation, artifact verification, commit, and push into `mintresearch.org`. Confirmed the first observed automated auto-recluster run completed and deployed refreshed paper-map assets plus `src/data/stats.json`.

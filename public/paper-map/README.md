@@ -2,12 +2,13 @@
 
 Interactive visualization of the MINT Lab research corpus using datamapplot.
 
-**Live**: https://mint-philosophy.github.io/paper-map/
+**Live**: https://mintresearch.org/paper-map/
 
 ## Features
 
-- 1,240 papers visualized with UMAP projection
-- Colored by macro_category (22 categories)
+- 4,668 embedded papers visualized with UMAP projection
+- 4,818 total papers in the local corpus as of the 2026-06-23 regeneration
+- Colored by macro_category (16 research areas)
 - Hierarchical labels (macro → cluster → title on zoom)
 - Click to open Google Drive PDF
 - Search by title + author
@@ -26,9 +27,10 @@ Interactive visualization of the MINT Lab research corpus using datamapplot.
 ## Regenerating
 
 ```bash
-python3 export_corpus_data.py
-python3 compute_umap.py
-python3 create_paper_map.py
-cp output/mint_paper_map.html index.html
-git add -A && git commit -m "Update" && git push
+cd /Volumes/Agents/Active-Research/Minty
+daemons/pipeline/.venv/bin/python3 SCRIPTS/recluster_corpus.py --repair-labels
+daemons/pipeline/.venv/bin/python3 daemons/paper-map-updater/update_paper_map.py --local-only --skip-recluster
 ```
+
+Use the local-only update for inspection. Do not push or publish regenerated
+website assets without explicit authorization.
