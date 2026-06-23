@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
+    "sync:site-papers": "python3 setup/sync_site_papers.py --csv ../public/assets/papers/latest-paper-deliverables.csv --output-dir setup/generated-site-papers --download-arxiv-pdfs",
+    "refresh:vector-store": "python3 setup/create_assistant.py --vector-store-only --fresh-vector-store --publications-dir setup/publications setup/generated-site-papers",
     "tail": "wrangler tail"
   },
   "devDependencies": {

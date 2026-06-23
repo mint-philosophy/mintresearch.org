@@ -1,6 +1,6 @@
 # Minty Chatbot
 
-Cloudflare Worker + OpenAI Assistants API powering the interactive Minty chat on mintresearch.org.
+Cloudflare Worker + OpenAI Responses API file search powering the interactive Minty chat on mintresearch.org.
 
 ## Architecture
 
@@ -9,9 +9,16 @@ User double-clicks Minty sprite
   -> Chat bubble (frontend JS, injected via inject_minty.py)
   -> POST to Cloudflare Worker
   -> Worker: validates origin, checks rate limits, caps tokens
-  -> OpenAI Assistants API (GPT-5.4 xhigh + Vector Store)
+  -> OpenAI Responses API (GPT-5.4 + Vector Store)
   -> SSE stream back to chat bubble
 ```
+
+The public Papers feed on the homepage is the default source for chatbot paper
+metadata. Before each full deploy, `setup/sync_site_papers.py` reads
+`../public/assets/papers/latest-paper-deliverables.csv`, generates a markdown
+paper index for every public homepage paper, and downloads public arXiv PDFs
+where available. The deploy script uploads those generated files together with
+any locally curated full-text files under `setup/publications/`.
 
 ## Rate Limiting (3 layers)
 
@@ -30,33 +37,36 @@ User double-clicks Minty sprite
 - [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/install-and-update/): `npm install -g wrangler`
 - OpenAI API key (dedicated project recommended)
 - Python 3.10+ with `openai` package
+- Cloudflare auth for Worker deploys: run `wrangler login`, or set
+  `CLOUDFLARE_API_TOKEN` to a token with access to the `minty-chatbot` Worker.
+  The deploy script checks this before uploading a new vector store.
 
-### Step 1: Create OpenAI Assistant
+### Step 1: Prepare publications and create a vector store
 
 ```bash
-cd chatbot-worker/setup
+cd chatbot-worker
 
 # Install the OpenAI SDK if needed
 pip install openai
 
-# Set your API key
+# Set your API key, or put it in the gitignored .dev.vars file.
 export OPENAI_API_KEY="sk-..."
 
-# Prepare publications (copy from corpus markdown directory)
-python extract_publications.py \
-  --source-dir /Volumes/Agents/Active-Research/Resources/markdown \
-  --output-dir ./publications
+# Generate public paper records from the website CSV.
+npm run sync:site-papers
 
-# Review and curate the publications/ directory, then:
-python create_assistant.py --publications-dir ./publications
+# Optional: review/curate full-text local files in setup/publications/.
+
+# Create a fresh vector store from curated full text plus generated site records.
+npm run refresh:vector-store
 ```
 
-This prints an `assistant_id` and saves it to `assistant_config.json`.
+This prints a `vector_store_id` and saves it to `setup/assistant_config.json`.
 
 ### Step 2: Configure Worker
 
 Edit `wrangler.toml`:
-- Set `ASSISTANT_ID` to the value from step 1
+- Set `VECTOR_STORE_ID` to the value from step 1
 
 Create the KV namespace:
 ```bash
@@ -101,16 +111,35 @@ In the [OpenAI dashboard](https://platform.openai.com/settings/organization/limi
 
 ## Updating
 
+### Publications and vector store
+
+Use the deployment script for the normal refresh path:
+
+```bash
+cd chatbot-worker
+./deploy.sh
+```
+
+The script:
+- regenerates public paper metadata from the homepage CSV;
+- downloads arXiv PDFs for public Papers-feed rows where possible;
+- uses any curated full-text files already present in `setup/publications/`;
+- creates a fresh vector store;
+- writes the new `VECTOR_STORE_ID` into `wrangler.toml`;
+- deploys the Cloudflare Worker.
+
+For a local preparation pass without deploy:
+
+```bash
+cd chatbot-worker
+npm run sync:site-papers
+```
+
 ### System prompt
 ```bash
 cd chatbot-worker/setup
 # Edit system_prompt.txt, then:
 python create_assistant.py --update-prompt --assistant-id asst_xxx
-```
-
-### Publications
-```bash
-python create_assistant.py --publications-dir ./new_papers --assistant-id asst_xxx
 ```
 
 ### Rate limits
@@ -138,8 +167,10 @@ chatbot-worker/
   src/index.js           -- Worker code
   setup/
     system_prompt.txt    -- Minty persona + instructions
-    create_assistant.py  -- Creates/updates assistant + vector store
+    sync_site_papers.py  -- Generates chatbot paper records from the site CSV
+    create_assistant.py  -- Creates/updates vector store; legacy assistant support
     extract_publications.py -- Filters corpus for MINT Lab papers
-    assistant_config.json -- Generated: stores assistant/vector store IDs
+    assistant_config.json -- Generated: stores vector store/assistant IDs
+    generated-site-papers/ -- Generated: site CSV records + arXiv PDFs
   README.md              -- This file
 ```
