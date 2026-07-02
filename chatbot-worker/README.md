@@ -1,24 +1,49 @@
 # Minty Chatbot
 
-Cloudflare Worker + OpenAI Responses API file search powering the interactive Minty chat on mintresearch.org.
+Cloudflare Worker + OpenAI Responses API file search powering the interactive
+Minty chat on mintresearch.org.
 
 ## Architecture
 
 ```
 User double-clicks Minty sprite
-  -> Chat bubble (frontend JS, injected via inject_minty.py)
-  -> POST to Cloudflare Worker
-  -> Worker: validates origin, checks rate limits, caps tokens
-  -> OpenAI Responses API (GPT-5.4 + Vector Store)
+  -> Chat bubble (frontend JS, injected via scripts/inject_minty.py)
+  -> POST to Cloudflare Worker (minty-chatbot.mintresearch.workers.dev)
+  -> Worker: validates origin, rate-limits, then fetches two site assets:
+       /assets/minty/vector-store-id.txt   (which vector store to search)
+       /assets/minty/snapshot.txt          (current-lab snapshot -> system prompt)
+  -> OpenAI Responses API (GPT-5.4 + file_search over the vector store)
   -> SSE stream back to chat bubble
 ```
 
-The public Papers feed on the homepage is the default source for chatbot paper
-metadata. Before each full deploy, `setup/sync_site_papers.py` reads
-`../public/assets/papers/latest-paper-deliverables.csv`, generates a markdown
-paper index for every public homepage paper, and downloads public arXiv PDFs
-where available. The deploy script uploads those generated files together with
-any locally curated full-text files under `setup/publications/`.
+**Freshness is fully automated.** The `minty-chatbot-sync` daemon
+(`minty-private/daemons/minty-chatbot-sync/`, daily 05:15) syncs the papers
+CSV from Notion, regenerates all chatbot records, rebuilds the vector store
+when content changes, and publishes the new store ID + snapshot via the site.
+Because the Worker resolves both at request time (5-minute edge cache),
+content updates never require a Worker redeploy.
+
+The snapshot is what makes recency questions ("what are your latest
+preprints?") reliable: it is a dated, authoritative top-10 list appended to
+the system prompt, regenerated on every sync.
+
+### Vector store contents (~162 files)
+
+- `setup/publications/` — curated full text of Seth's publications (121 files,
+  local-only, not in git: copyright)
+- `setup/generated-site-papers/` — paper index generated from the homepage CSV
+  + public arXiv PDFs (generated, not in git)
+- `setup/generated-site-content/` — website content records: newsletters,
+  research reports, the lab guide, people, CV, site pages (generated, not in git)
+
+### Why fresh stores instead of in-place updates
+
+As of 2026-07-02, OpenAI's `DELETE /vector_stores/{id}/files/{file_id}`
+returns `deleted: true` without detaching the file (verified via raw REST).
+In-place updates would accumulate stale duplicates, so the daemon rebuilds a
+fresh store on content change and swaps the published pointer, then garbage-
+collects superseded stores. `setup/sync_vector_store.py --adds-only` remains
+safe for manual additive fixes.
 
 ## Rate Limiting (3 layers)
 
@@ -29,148 +54,56 @@ any locally curated full-text files under `setup/publications/`.
 | Worker (global) | 500/day | wrangler.toml vars |
 | OpenAI project | Monthly spending cap | OpenAI dashboard |
 
-## Deployment
-
-### Prerequisites
-
-- [Cloudflare account](https://dash.cloudflare.com/sign-up) (free tier)
-- [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/install-and-update/): `npm install -g wrangler`
-- OpenAI API key (dedicated project recommended)
-- Python 3.10+ with `openai` package
-- Cloudflare auth for Worker deploys: run `wrangler login`, or set
-  `CLOUDFLARE_API_TOKEN` to a token with access to the `minty-chatbot` Worker.
-  The deploy script checks this before uploading a new vector store.
-
-### Step 1: Prepare publications and create a vector store
+## Deploying the Worker (code changes only)
 
 ```bash
 cd chatbot-worker
-
-# Install the OpenAI SDK if needed
-pip install openai
-
-# Set your API key, or put it in the gitignored .dev.vars file.
-export OPENAI_API_KEY="sk-..."
-
-# Generate public paper records from the website CSV.
-npm run sync:site-papers
-
-# Optional: review/curate full-text local files in setup/publications/.
-
-# Create a fresh vector store from curated full text plus generated site records.
-npm run refresh:vector-store
+npx wrangler login          # once; or export a Workers-scoped CLOUDFLARE_API_TOKEN
+./deploy.sh                 # add --set-secret to (re)set OPENAI_API_KEY from .dev.vars
 ```
 
-This prints a `vector_store_id` and saves it to `setup/assistant_config.json`.
+Note: the keychain item `minty-vault-CLOUDFLARE_API_TOKEN` lacks Workers
+permissions as of 2026-07-02; mint a token with Workers Scripts:Edit if you
+want unattended code deploys too.
 
-### Step 2: Configure Worker
-
-Edit `wrangler.toml`:
-- Set `VECTOR_STORE_ID` to the value from step 1
-
-Create the KV namespace:
-```bash
-cd chatbot-worker
-wrangler kv namespace create RATE_LIMIT
-```
-
-Copy the returned `id` into the `[[kv_namespaces]]` section of `wrangler.toml`.
-
-### Step 3: Deploy Worker
+## Manual content refresh (normally unnecessary)
 
 ```bash
-# Login to Cloudflare
-wrangler login
-
-# Set the API key as a secret (never in code!)
-wrangler secret put OPENAI_API_KEY
-
-# Deploy
-wrangler deploy
+/Volumes/Agents/Active-Research/minty-private/daemons/pipeline/.venv/bin/python \
+  /Volumes/Agents/Active-Research/minty-private/daemons/minty-chatbot-sync/sync_chatbot.py
 ```
 
-The worker will be available at `https://minty-chatbot.<account>.workers.dev`.
+## Updating the system prompt
 
-### Step 4: Update Frontend
-
-In `scripts/inject_minty.py`, update `CHAT_WORKER_URL` to your worker URL:
-
-```python
-CHAT_WORKER_URL = 'https://minty-chatbot.<account>.workers.dev'
-```
-
-Then re-inject all pages:
-```bash
-python scripts/inject_minty.py
-```
-
-### Step 5: Set OpenAI Spending Limit
-
-In the [OpenAI dashboard](https://platform.openai.com/settings/organization/limits):
-- Set a monthly budget on the project associated with your API key
-
-## Updating
-
-### Publications and vector store
-
-Use the deployment script for the normal refresh path:
-
-```bash
-cd chatbot-worker
-./deploy.sh
-```
-
-The script:
-- regenerates public paper metadata from the homepage CSV;
-- downloads arXiv PDFs for public Papers-feed rows where possible;
-- uses any curated full-text files already present in `setup/publications/`;
-- creates a fresh vector store;
-- writes the new `VECTOR_STORE_ID` into `wrangler.toml`;
-- deploys the Cloudflare Worker.
-
-For a local preparation pass without deploy:
-
-```bash
-cd chatbot-worker
-npm run sync:site-papers
-```
-
-### System prompt
-```bash
-cd chatbot-worker/setup
-# Edit system_prompt.txt, then:
-python create_assistant.py --update-prompt --assistant-id asst_xxx
-```
-
-### Rate limits
-Edit the `[vars]` section in `wrangler.toml`, then `wrangler deploy`.
-
-### Greetings
-Edit the `GREETINGS` array in `CHAT_JS` within `scripts/inject_minty.py`, then re-inject pages.
+The prompt is baked into `src/index.js` (`DEFAULT_SYSTEM_PROMPT`) and can be
+overridden with a `SYSTEM_PROMPT` var in wrangler.toml. Edit, then `./deploy.sh`.
+(`setup/system_prompt.txt` is the legacy Assistants-API copy — not used by the
+Worker.)
 
 ## Security
 
 - API key stored in Cloudflare Workers Secrets (encrypted at rest)
-- Never committed to git, never in client-side code
-- CORS restricts to mintresearch.org origin
-- Input length capped at 1000 characters
-- Output tokens capped at 500 per response
-- Rate limiting at IP and global level
-- OpenAI project spending cap as ultimate safety net
+- CORS restricts to mintresearch.org origin; input capped at 1000 chars
+- Rate limiting at IP and global level; OpenAI project spending cap as backstop
+- The daemon reads its keys from the macOS keychain daemon tier
+  (`minty-vault-MINTY_CHATBOT_OPENAI_KEY`, `minty-vault-NOTION_TOKEN`)
 
 ## Files
 
 ```
 chatbot-worker/
-  wrangler.toml          -- Worker config + env vars
-  package.json           -- Dependencies (wrangler)
-  src/index.js           -- Worker code
+  wrangler.toml            -- Worker config; VECTOR_STORE_ID is the FALLBACK store
+                              (normally overridden by the published pointer)
+  src/index.js             -- Worker code (prompt, snapshot fetch, pointer fetch)
+  deploy.sh                -- Worker code deploy (auth check + wrangler deploy)
   setup/
-    system_prompt.txt    -- Minty persona + instructions
-    sync_site_papers.py  -- Generates chatbot paper records from the site CSV
-    create_assistant.py  -- Creates/updates vector store; legacy assistant support
-    extract_publications.py -- Filters corpus for MINT Lab papers
-    assistant_config.json -- Generated: stores vector store/assistant IDs
-    generated-site-papers/ -- Generated: site CSV records + arXiv PDFs
-  README.md              -- This file
+    sync_site_papers.py    -- paper index + arXiv PDFs from the homepage CSV
+    sync_site_content.py   -- website content records (newsletters, reports, ...)
+    build_snapshot.py      -- current-lab snapshot -> public/assets/minty/snapshot.txt
+    sync_vector_store.py   -- hash-diffed store sync (see --adds-only caveat above)
+    create_assistant.py    -- legacy full-rebuild path (superseded by the daemon)
+    extract_publications.py-- corpus extraction helper for curated publications
+    publications/          -- curated full text (local-only)
+    generated-site-papers/ -- generated (local-only)
+    generated-site-content/-- generated (local-only)
 ```
