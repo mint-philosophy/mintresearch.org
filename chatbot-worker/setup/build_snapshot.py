@@ -55,12 +55,24 @@ def snapshot_line(index: int, row: dict[str, str]) -> str:
     return "".join(parts).rstrip()
 
 
-def render_snapshot(rows: list[dict[str, str]]) -> str:
+def render_snapshot(rows: list[dict[str, str]], dated: bool = True) -> str:
+    """Render the snapshot. The published copy is dated (the Worker puts it
+    in the system prompt, where "as of <date>" is the payload). The vector-
+    store record copy is undated: records are hashed to decide whether the
+    store needs a rebuild, so a date would force a rebuild every UTC day."""
     today = datetime.now(timezone.utc).date().isoformat()
+    if dated:
+        header = f"# CURRENT MINT LAB SNAPSHOT (auto-generated {today})"
+        intro = f"As of {today}, this is the authoritative, up-to-date summary of MINT Lab output."
+        count = f"{len(rows)} public papers listed on mintresearch.org as of {today}."
+    else:
+        header = "# CURRENT MINT LAB SNAPSHOT"
+        intro = "This is the authoritative, up-to-date summary of MINT Lab output."
+        count = f"{len(rows)} public papers listed on mintresearch.org."
     lines = [
-        f"# CURRENT MINT LAB SNAPSHOT (auto-generated {today})",
+        header,
         "",
-        f"As of {today}, this is the authoritative, up-to-date summary of MINT Lab output.",
+        intro,
         'When asked about "latest", "recent", or "new" work, use THIS list, not memory or file search alone.',
         "",
         "## Ten most recent papers/preprints (newest first)",
@@ -71,7 +83,7 @@ def render_snapshot(rows: list[dict[str, str]]) -> str:
         [
             "",
             "## Publication count",
-            f"{len(rows)} public papers listed on mintresearch.org as of {today}.",
+            count,
         ]
     )
     return "\n".join(lines).rstrip() + "\n"
@@ -123,15 +135,16 @@ def main() -> None:
         print(f"ERROR: no public paper rows found in {csv_path}", file=sys.stderr)
         sys.exit(1)
 
-    snapshot = render_snapshot(rows)
+    record_snapshot = render_snapshot(rows, dated=False)
+    published_snapshot = render_snapshot(rows, dated=True)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(snapshot, encoding="utf-8")
+    output_path.write_text(record_snapshot, encoding="utf-8")
     publish_output_path.parent.mkdir(parents=True, exist_ok=True)
-    publish_output_path.write_text(snapshot, encoding="utf-8")
+    publish_output_path.write_text(published_snapshot, encoding="utf-8")
 
     if args.print_snapshot:
-        print(snapshot, end="")
+        print(published_snapshot, end="")
 
     print(f"Snapshot record: {output_path}", file=sys.stderr)
     print(f"Published copy: {publish_output_path}", file=sys.stderr)

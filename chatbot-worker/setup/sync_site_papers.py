@@ -91,7 +91,9 @@ def links_for(row: dict[str, str]) -> list[tuple[str, str]]:
 
 
 def render_markdown(rows: list[dict[str, str]], csv_path: Path) -> str:
-    generated_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+    # No timestamp here: this file is hashed to decide whether the vector
+    # store needs a rebuild, so its content must be a pure function of the
+    # CSV. Generation time lives in manifest.json, which is not hashed.
     lines = [
         "# MINT Lab Public Papers Index",
         "",
@@ -100,7 +102,6 @@ def render_markdown(rows: list[dict[str, str]], csv_path: Path) -> str:
         "rebuilt before refreshing the chatbot vector store.",
         "",
         f"- Source CSV: {csv_path}",
-        f"- Generated at: {generated_at}",
         f"- Public paper count: {len(rows)}",
         "",
         "Use these records as the canonical public metadata and link index for",

@@ -72,12 +72,14 @@ def generated_timestamp() -> str:
 
 
 def record_header(source_path: Path, canonical_url: str) -> str:
+    # No timestamp here: records are hashed to decide whether the vector
+    # store needs a rebuild, so headers must be stable when content is.
+    # Generation time lives in manifest.json, which is not hashed.
     return (
         "<!--\n"
         "Generated for the Minty website helper (mintresearch.org chatbot).\n"
         f"Source: {source_path.relative_to(REPO_DIR)}\n"
         f"Canonical URL: {canonical_url}\n"
-        f"Generated at: {generated_timestamp()}\n"
         "-->\n"
     )
 
