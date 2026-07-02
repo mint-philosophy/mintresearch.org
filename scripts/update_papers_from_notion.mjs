@@ -27,25 +27,12 @@ function usageError(message) {
 }
 
 async function loadEnv() {
-  let text;
+  let text = "";
   try {
     text = await readFile(ENV_PATH, "utf8");
   } catch (error) {
-    if (error.code === "ENOENT") {
-      usageError(
-        [
-          "Missing .env file in the repo root.",
-          "",
-          "Create .env with:",
-          "NOTION_API_KEY=your_notion_secret",
-          "NOTION_PAPERS_VIEW_ID=your_notion_view_id",
-          "",
-          "If you do not have Notion API access, use the CSV fallback documented in README.md:",
-          'npm.cmd run import:papers -- "C:\\path\\to\\notion-export.csv"',
-        ].join("\n"),
-      );
-    }
-    throw error;
+    if (error.code !== "ENOENT") throw error;
+    // No .env — fall back to process.env below (daemon / CI usage).
   }
 
   const env = {};
@@ -65,13 +52,19 @@ async function loadEnv() {
     env[key] = value;
   }
 
+  // Process environment fills anything the .env file does not define, so
+  // daemons and CI can inject credentials without a file on disk.
+  for (const key of ["NOTION_API_KEY", "NOTION_PAPERS_VIEW_ID"]) {
+    if (!env[key] && process.env[key]) env[key] = process.env[key];
+  }
+
   const missing = ["NOTION_API_KEY", "NOTION_PAPERS_VIEW_ID"].filter((key) => !env[key]);
   if (missing.length) {
     usageError(
       [
-        `Missing required .env value${missing.length === 1 ? "" : "s"}: ${missing.join(", ")}`,
+        `Missing required value${missing.length === 1 ? "" : "s"}: ${missing.join(", ")}`,
         "",
-        "Add the missing key(s) to .env, or use the CSV fallback documented in README.md:",
+        "Provide them in .env or as environment variables, or use the CSV fallback documented in README.md:",
         'npm.cmd run import:papers -- "C:\\path\\to\\notion-export.csv"',
       ].join("\n"),
     );
@@ -274,6 +267,10 @@ async function confirmUpdate() {
 }
 
 async function main() {
+  const autoYes = process.argv.includes("--yes");
+  const maxRemovalsArg = process.argv.find((arg) => arg.startsWith("--max-removals="));
+  const maxRemovals = maxRemovalsArg ? Number(maxRemovalsArg.split("=")[1]) : 3;
+
   const env = await loadEnv();
   const currentRows = parseCsv(await readFile(ACTIVE_CSV, "utf8"), LEGACY_REQUIRED_COLUMNS);
   const notionRows = await fetchNotionRows({
@@ -293,7 +290,25 @@ async function main() {
     return;
   }
 
-  if (!(await confirmUpdate())) {
+  if (autoYes) {
+    // Unattended mode: refuse suspicious updates rather than asking.
+    // A collapsed Notion view or auth hiccup must never wipe the live CSV.
+    if (!notionRows.length || !visibleCount) {
+      usageError("Refusing unattended update: Notion returned no rows / no visible papers.");
+    }
+    if (notionRows.length < Math.floor(currentRows.length / 2)) {
+      usageError(
+        `Refusing unattended update: Notion returned ${notionRows.length} rows ` +
+          `but the CSV has ${currentRows.length}. Run interactively to confirm.`,
+      );
+    }
+    if (diff.removed.length > maxRemovals) {
+      usageError(
+        `Refusing unattended update: ${diff.removed.length} rows would be removed ` +
+          `(limit ${maxRemovals}). Run interactively to confirm, or raise --max-removals=N.`,
+      );
+    }
+  } else if (!(await confirmUpdate())) {
     console.log("Cancelled. The site CSV was not changed.");
     return;
   }
