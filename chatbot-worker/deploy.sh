@@ -19,11 +19,16 @@ WRANGLER="$SCRIPT_DIR/node_modules/.bin/wrangler"
 
 echo "=== Minty Chatbot Worker deploy ==="
 
-if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] && command -v security >/dev/null 2>&1; then
-  CF_TOKEN="$(security find-generic-password -s "minty-vault-CLOUDFLARE_API_TOKEN" -w 2>/dev/null || true)"
-  if [ -n "$CF_TOKEN" ]; then
-    export CLOUDFLARE_API_TOKEN="$CF_TOKEN"
-    echo "Using CLOUDFLARE_API_TOKEN from Keychain (not shown)."
+# Prefer an existing wrangler OAuth session; the keychain token is a fallback
+# only (as of 2026-07-02 it lacks Workers scope, and an exported
+# CLOUDFLARE_API_TOKEN would override a working OAuth login).
+if ! "$WRANGLER" whoami >/dev/null 2>&1; then
+  if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] && command -v security >/dev/null 2>&1; then
+    CF_TOKEN="$(security find-generic-password -s "minty-vault-CLOUDFLARE_API_TOKEN" -w 2>/dev/null || true)"
+    if [ -n "$CF_TOKEN" ]; then
+      export CLOUDFLARE_API_TOKEN="$CF_TOKEN"
+      echo "Using CLOUDFLARE_API_TOKEN from Keychain (not shown)."
+    fi
   fi
 fi
 
