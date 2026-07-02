@@ -82,12 +82,20 @@ def is_covered(row: dict, pubs: list[tuple[str, str, set[str]]]) -> bool:
         if (ARXIV_DIR / f"{slugify(codename or title, 'paper')}.pdf").is_file():
             return True
 
-    ttoks = tokens(title)
+    # Curated filenames usually carry the main title but not the subtitle,
+    # so a long subtitle dilutes token overlap below threshold. Match on the
+    # pre-colon/dash main title as well (when it has >=2 significant tokens).
+    main = re.split(r"[:—]", title)[0]
+    candidate_tokens = [tokens(title)]
+    mtoks = tokens(main)
+    if len(mtoks) >= 2 and mtoks != candidate_tokens[0]:
+        candidate_tokens.append(mtoks)
+
     ntitle = norm(title)
     for _, nname, ftoks in pubs:
-        overlap = len(ttoks & ftoks) / max(1, len(ttoks))
-        if overlap >= MATCH_THRESHOLD:
-            return True
+        for ctoks in candidate_tokens:
+            if len(ctoks & ftoks) / max(1, len(ctoks)) >= MATCH_THRESHOLD:
+                return True
         if SequenceMatcher(None, ntitle, nname).ratio() >= MATCH_THRESHOLD:
             return True
     return False
