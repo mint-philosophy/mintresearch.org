@@ -22,7 +22,12 @@ echo "=== Minty Chatbot Worker deploy ==="
 # Prefer an existing wrangler OAuth session; the keychain token is a fallback
 # only (as of 2026-07-02 it lacks Workers scope, and an exported
 # CLOUDFLARE_API_TOKEN would override a working OAuth login).
-if ! "$WRANGLER" whoami >/dev/null 2>&1; then
+# `wrangler whoami` exits 0 even when unauthenticated, so check its output.
+wrangler_authed() {
+  "$WRANGLER" whoami 2>/dev/null | grep -qi "You are logged in"
+}
+
+if ! wrangler_authed; then
   if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] && command -v security >/dev/null 2>&1; then
     CF_TOKEN="$(security find-generic-password -s "minty-vault-CLOUDFLARE_API_TOKEN" -w 2>/dev/null || true)"
     if [ -n "$CF_TOKEN" ]; then
@@ -32,7 +37,7 @@ if ! "$WRANGLER" whoami >/dev/null 2>&1; then
   fi
 fi
 
-if ! "$WRANGLER" whoami >/dev/null 2>&1; then
+if ! wrangler_authed; then
   echo "ERROR: no working Cloudflare auth. Run: npx wrangler login"
   exit 1
 fi
