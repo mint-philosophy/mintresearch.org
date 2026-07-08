@@ -57,5 +57,5 @@ fi
 
 echo ""
 echo "=== Deploy complete ==="
-echo "Verify: curl -s https://minty-chatbot.mintresearch.workers.dev/health"
+echo "Verify: curl -s https://minty-chatbot.mintresearch.org/health"
 echo "Then double-click Minty on https://mintresearch.org and ask about recent preprints."

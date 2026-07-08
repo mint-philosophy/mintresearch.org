@@ -824,7 +824,7 @@ initPretext().catch(err => {{
 
 
 # ── Chat Worker URL (set before deploying) ────────────────────────────────────
-CHAT_WORKER_URL = 'https://minty-chatbot.mintresearch.workers.dev'
+CHAT_WORKER_URL = 'https://minty-chatbot.mintresearch.org'
 
 CHAT_JS = '''\
 <script type="module">
