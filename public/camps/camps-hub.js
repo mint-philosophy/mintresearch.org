@@ -12,6 +12,12 @@
 (function () {
   'use strict';
 
+  // Sign-in hashing needs a secure context (crypto.subtle), so never serve on http.
+  if (location.protocol === 'http:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+    location.replace('https://' + location.host + location.pathname + location.search + location.hash);
+    return;
+  }
+
   // Private preview: page is sign-in gated for now (single user). To change the
   // passphrase, put the sha256 hex of the new one here. Note the underlying
   // camps.json is still public in the GitHub repo — this gates the app, not the data.
@@ -526,6 +532,10 @@
     document.getElementById('login-form').addEventListener('submit', function (e) {
       e.preventDefault();
       var v = document.getElementById('login-pass').value;
+      if (!window.crypto || !window.crypto.subtle) {
+        renderLogin('Sign-in needs a secure connection — reload this page over https.');
+        return;
+      }
       sha256Hex(v).then(function (h) {
         if (h === AUTH_HASH) { localStorage.setItem(AUTH_LS, h); render(); }
         else renderLogin('That passphrase isn’t right.');
