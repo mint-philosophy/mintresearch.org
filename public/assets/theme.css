@@ -103,3 +103,32 @@ html[data-theme="light"] .ref-table th + th { border-left-color: rgba(0, 0, 0, 0
   font-size: 11px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
 }
+
+/* Keep the shared masthead compact across desktop and mobile viewports. */
+.top-banner { padding: 12px 0; }
+.top-banner-inner { padding: 0 18px; gap: 12px; }
+.top-banner-logo { height: min(75px, 9vh); }
+.top-banner-minties { gap: 6px; }
+.top-banner-minty { width: min(60px, 7.5vh); height: min(60px, 7.5vh); }
+main {
+  margin-top: var(--banner-h, 144px);
+  min-height: calc(100vh - var(--statusline-h) - var(--banner-h, 144px));
+}
+
+@media (max-width: 900px) {
+  main { margin-top: var(--banner-h, 120px); }
+  .top-banner { min-height: 60px; }
+  .top-banner-inner { gap: 6px; padding: 9px 12px; }
+  .top-banner-logo { height: 36px; }
+  .top-banner-minties { gap: 4.5px; }
+  .top-banner-minty { width: 24px; height: 24px; }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+  main { margin-top: var(--banner-h, 45px); }
+  .top-banner { min-height: 37.5px; }
+  .top-banner-inner { gap: 7.5px; padding: 4.5px 12px; }
+  .top-banner-logo { height: 24px; }
+  .top-banner-minties { gap: 2.25px; }
+  .top-banner-minty { width: 16.5px; height: 16.5px; }
+}
