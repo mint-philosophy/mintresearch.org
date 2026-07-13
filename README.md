@@ -33,6 +33,11 @@ grep -rE '/assets/(people|cv)/' public/
 public/                # served as-is (static HTML + assets)
   index.html           # homepage (hand-edited; people grid + detail panel)
   <page>/index.html    # other top-level pages (cv, newsletter, corpus-map, ...)
+  camps/               # Summer Camps for Kids Who Aren't Sporty (passphrase-gated
+                       #   SPA + camps.json dataset; a weekly Claude Routine pushes
+                       #   data-only updates here — see camps/camps-hub.js header)
+  coquelin/            # private house tracker (GitHub-token unlock; its state JSON
+                       #   lives in the mint-website repo so saves don't redeploy)
   assets/people/       # team headshots — referenced from public/index.html
   assets/cv/           # Minty costume sprites — referenced from multiple pages
   _astro/              # frozen Astro asset bundles from the last build
