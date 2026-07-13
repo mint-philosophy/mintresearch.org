@@ -18,6 +18,14 @@
     return;
   }
 
+  // Canonical home is the subdomain; the same file also serves
+  // mintresearch.org/camps/ (the daily gh-pages sync copies it), so redirect
+  // only when loaded from the folder path.
+  if (location.hostname === 'mintresearch.org') {
+    location.replace('https://camps.mintresearch.org/' + location.search + location.hash);
+    return;
+  }
+
   // Private preview: page is sign-in gated for now (single user). To change the
   // passphrase, put the sha256 hex of the new one here. Note the underlying
   // camps.json is still public in the GitHub repo — this gates the app, not the data.
