@@ -35,6 +35,19 @@ Generated newsletter and report pages use `src/data/navigation.ts` and
 `src/components/Sidebar.astro`. Keep the static copies and generated-page
 navigation synchronized whenever the sidebar changes.
 
+Public microsites inherit the current MINT design tokens, light theme, theme
+toggle, and masthead sizing from these stable main-site assets:
+
+```text
+https://mintresearch.org/assets/theme.css
+https://mintresearch.org/assets/theme.js
+```
+
+Load the shared stylesheet after the microsite's base stylesheet and before any
+project-specific theme overrides. Keep the banner markup and asset set aligned
+with the main site's `.top-banner` implementation, and use an absolute
+`https://mintresearch.org/` Home link in each microsite sidebar.
+
 `Microsites` is a non-clickable, always-expanded sidebar branch. Its public
 leaves are currently:
 
