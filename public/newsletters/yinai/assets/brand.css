@@ -1,10 +1,13 @@
 /* ═══════════════════════════════════════════════════════════════
-   MINT newsletter brand — YiNAI Deep Edition (web surfaces)
+   MINT newsletter brand — Yesterday in AI (web surfaces)
    Editorial sub-brand of mintresearch.org. Loads AFTER /assets/theme.css
    and consumes its tokens (dark default; html[data-theme="light"] = paper).
    Newsletter pages default to the paper theme via markup + a pre-paint
    script; the stored site preference (localStorage "mint-theme") wins.
    No hardcoded colors here — tokens only, so both themes just work.
+   (One deliberate exception: the scanlines overlay below is copied
+   byte-for-byte from the site's global.css, black-alpha literals and
+   all, so the film matches the main site exactly.)
    Consumers: issue index + article pages (render.py) and the daily
    digest page (digest_page_template.html).
    ═══════════════════════════════════════════════════════════════ */
@@ -22,6 +25,27 @@ body {
   display: flex;
   min-height: 100vh;
   flex-direction: column;
+}
+
+/* Scanlines overlay (CRT effect) — copied verbatim from the main site's
+   src/styles/global.css so newsletter pages carry the same film. Fixed,
+   full-viewport, pointer-events none: no effect on selection, clicks, or
+   the theme toggle. theme.css (loaded before this file) already softens
+   it on paper via its html[data-theme="light"] body::after override —
+   same stripes, lower alpha — so both themes match the site. Web pages
+   only: email never loads this stylesheet. */
+body::after {
+  content: '';
+  position: fixed; top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  pointer-events: none; z-index: 9999;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
 }
 /* Reading column. theme.css pushes `main` down below the site banner
    (margin-top: var(--banner-h)); newsletter pages have no banner, so
