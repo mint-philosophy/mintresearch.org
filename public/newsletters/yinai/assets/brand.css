@@ -1,0 +1,225 @@
+/* ═══════════════════════════════════════════════════════════════
+   MINT newsletter brand — YiNAI Deep Edition (web surfaces)
+   Editorial sub-brand of mintresearch.org. Loads AFTER /assets/theme.css
+   and consumes its tokens (dark default; html[data-theme="light"] = paper).
+   Newsletter pages default to the paper theme via markup + a pre-paint
+   script; the stored site preference (localStorage "mint-theme") wins.
+   No hardcoded colors here — tokens only, so both themes just work.
+   Consumers: issue index + article pages (render.py) and the daily
+   digest page (digest_page_template.html).
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1. Scaffold ───────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg-1);
+  color: var(--text-bright);
+  font-family: Georgia, 'Iowan Old Style', Palatino, serif;
+  font-size: 17px;
+  line-height: 1.7;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+/* Reading column. theme.css pushes `main` down below the site banner
+   (margin-top: var(--banner-h)); newsletter pages have no banner, so
+   neutralize that here. */
+main.nl-page {
+  margin: 0 auto;
+  min-height: 0;
+  width: 100%;
+  max-width: 680px;
+  padding: 30px 20px 56px;
+  flex: 1;
+}
+
+/* Shared mono stack for all UI text (kickers, meta, bylines, chips,
+   boxes, footer). Body copy stays serif — readability wins. */
+.nl-kicker, .byline, .chip, .folio, .section-head, .readmore,
+.sources, .how-reported, .disclosure, .nl-exit, .nl-footer, .nl-hero-meta {
+  font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, Menlo, Consolas, monospace;
+}
+
+/* ── 2. Links — site accent with the faint-underline treatment ─── */
+a { color: var(--accent); text-decoration: none; }
+.article-body a, .sources a, .blurb a {
+  text-decoration: underline;
+  text-decoration-color: var(--accent-dim);
+  text-underline-offset: 2px;
+}
+.article-body a:hover, .sources a:hover, .blurb a:hover {
+  color: var(--accent-bright);
+  text-decoration-color: var(--accent-bright);
+}
+.readmore a:hover, .nl-exit a:hover, .nl-footer a:hover,
+.nl-kicker a:hover { text-decoration: underline; }
+
+/* ── 3. Branded header (slim strip, not the site sidebar) ──────── */
+.nl-header { border-bottom: 1px solid var(--border); }
+.nl-header-inner {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 18px 20px 14px;
+}
+.nl-wordmark { display: inline-flex; }
+.nl-wordmark img { height: 28px; width: auto; display: block; }
+.nl-kicker {
+  margin: 10px 0 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.nl-kicker a { color: var(--accent); }
+
+/* ── 4. Editorial typography (serif heds/deks/body) ────────────── */
+h1.hed { font-size: 31px; line-height: 1.15; margin: 0 0 14px; font-weight: 700; }
+p.dek {
+  font-style: italic; font-size: 18.5px; color: var(--text-1);
+  line-height: 1.5; margin: 0 0 22px;
+}
+.article-body p { margin: 0 0 1.3em; }
+.article-body h3 {
+  font-family: Georgia, 'Iowan Old Style', Palatino, serif;
+  font-size: 21px; line-height: 1.3; margin: 1.6em 0 0.6em; font-weight: 700;
+}
+h1.mast { font-size: 36px; line-height: 1.12; margin: 0 0 12px; font-weight: 700; }
+h1.mast em { font-weight: 400; }
+
+/* ── 5. Mono meta rows (byline, chip, folio) ───────────────────── */
+.byline {
+  font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;
+  color: var(--text-2);
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  padding: 9px 0; margin: 0 0 28px;
+  display: flex; flex-wrap: wrap; gap: 8px 14px;
+  align-items: center; justify-content: space-between;
+}
+.chip {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+  color: var(--accent); background: var(--accent-soft);
+  border: 1px solid var(--border); border-radius: 3px;
+  padding: 3px 8px; white-space: nowrap;
+}
+.folio {
+  font-size: 11.5px; letter-spacing: 0.3px; color: var(--text-2);
+  margin: 0; padding: 0 0 16px; border-bottom: 1px solid var(--border);
+}
+
+/* ── 6. Section heads — site h2 convention: mono uppercase over a
+        hairline rule in var(--border) ─────────────────────────── */
+.section-head {
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--accent);
+  border-top: 1px solid var(--border);
+  padding-top: 10px; margin: 40px 0 4px;
+}
+
+/* ── 7. Issue index stories ────────────────────────────────────── */
+.story { margin: 20px 0 26px; }
+.story h3 { font-size: 22px; line-height: 1.2; margin: 0 0 8px; font-weight: 700; }
+.story h3 a { color: inherit; }
+.story h3 a:hover { text-decoration: underline; text-decoration-color: var(--accent); }
+.story .blurb { font-size: 16.5px; margin: 0 0 8px; }
+.readmore { font-size: 12px; letter-spacing: 0.3px; margin: 0; }
+
+/* ── 8. Sources & how-reported boxes — bg-2 cards, hairlines,
+        mono labels ──────────────────────────────────────────────── */
+.sources, .how-reported {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px 18px;
+  font-size: 12.5px; line-height: 1.6;
+}
+.sources { margin: 38px 0 0; }
+.how-reported { margin: 14px 0 0; }
+.sources h2, .how-reported h2 {
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; margin: 0 0 10px;
+}
+.sources h2 { color: var(--text-2); }
+.how-reported h2 { color: var(--accent); }
+.sources ul { margin: 0; padding-left: 18px; }
+.sources li { margin: 0 0 9px; }
+.sources li:last-child { margin-bottom: 0; }
+.sources .how { color: var(--text-2); }
+.how-reported p { margin: 0; color: var(--text-1); }
+
+/* ── 9. Exit affordances (article pages: back + continue; index:
+        all newsletters). Prominent mono nav row above the footer. ── */
+.nl-exit {
+  margin-top: 44px; padding: 14px 0 0;
+  border-top: 1px solid var(--border);
+  font-size: 13px; font-weight: 600; letter-spacing: 0.3px;
+  display: flex; flex-wrap: wrap; gap: 10px 18px;
+  align-items: center; justify-content: space-between;
+}
+.nl-exit a { white-space: nowrap; }
+
+/* Front-page disclosure */
+.disclosure {
+  margin-top: 44px; padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-size: 11px; line-height: 1.6; color: var(--text-2);
+}
+
+/* ── 10. Footer strip — statusline echo (full-width, bg-0, mono) ── */
+.nl-footer {
+  background: var(--bg-0);
+  border-top: 1px solid var(--border);
+  font-size: 11px; color: var(--text-3);
+  padding: 8px 14px;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+}
+.nl-footer-minty {
+  width: 16px; height: 16px;
+  image-rendering: pixelated; opacity: 0.6; flex-shrink: 0;
+}
+.nl-footer-site { color: var(--accent); white-space: nowrap; }
+.nl-footer-section {
+  color: var(--text-2); white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.nl-footer .theme-toggle { margin-left: auto; }
+/* .theme-toggle itself is styled by theme.css; the label is painted by the
+   page's inline script, so hide the empty shell when JS is off */
+.nl-footer .theme-toggle:empty { display: none; }
+
+/* ── 11. Daily digest page (digest_page_template.html) ─────────── */
+.nl-hero { margin: 0 0 10px; }
+.nl-hero h1 { font-size: 34px; line-height: 1.12; margin: 0 0 10px; font-weight: 700; }
+.nl-hero h1 em { font-weight: 400; }
+.nl-hero-meta {
+  font-size: 11.5px; letter-spacing: 0.3px; color: var(--text-2);
+  margin: 0; padding: 0 0 16px; border-bottom: 1px solid var(--border);
+}
+.nl-digest-content { margin-top: 24px; }
+.nl-digest-content h2 {
+  font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, Menlo, Consolas, monospace;
+  font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--accent); border-top: 1px solid var(--border);
+  padding-top: 10px; margin: 40px 0 12px;
+}
+.nl-digest-content h3 { font-size: 20px; line-height: 1.25; margin: 1.4em 0 0.5em; }
+.nl-digest-content p { margin: 0 0 1.2em; }
+.nl-digest-content a {
+  text-decoration: underline;
+  text-decoration-color: var(--accent-dim);
+  text-underline-offset: 2px;
+}
+.nl-digest-content a:hover { color: var(--accent-bright); text-decoration-color: var(--accent-bright); }
+
+/* ── 12. Small screens ─────────────────────────────────────────── */
+@media (max-width: 720px) {
+  main.nl-page { padding: 24px 16px 48px; }
+  .nl-header-inner { padding: 14px 16px 12px; }
+  h1.hed { font-size: 27px; }
+  h1.mast { font-size: 30px; }
+  .nl-hero h1 { font-size: 29px; }
+}
