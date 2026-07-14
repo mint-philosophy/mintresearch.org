@@ -20,7 +20,7 @@ export const siteNav: PageNav[] = [
     sections: [
       { href: "#about", label: "About" },
       { href: "#people", label: "People" },
-      { href: "#publications", label: "Publications" },
+      { href: "#papers", label: "Publications" },
       { href: "#events", label: "Events" },
       { href: "#news", label: "News" },
       { href: "#contact", label: "Contact" },
