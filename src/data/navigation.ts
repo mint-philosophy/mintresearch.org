@@ -96,7 +96,7 @@ export const siteNav: PageNav[] = [
       { href: "https://blindrefusal.mintresearch.org/", label: "Blind Refusal" },
       { href: "/lab-overview/", label: "Can Machines Reason Morally?" },
       { href: "/nc/", label: "Evaluating LLM Normative Competence" },
-      { href: "/FDC/", label: "Mapping the MPP Core Pitches" },
+      { href: "/FDC", label: "The AGI-Ready Policy Student" },
     ],
   },
   {

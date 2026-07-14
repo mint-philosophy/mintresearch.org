@@ -71,7 +71,7 @@
         ['https://blindrefusal.mintresearch.org/', 'Blind Refusal'],
         ['/lab-overview/', 'Can Machines Reason Morally?'],
         ['/nc/', 'Evaluating LLM Normative Competence'],
-        ['/FDC/', 'Mapping the MPP Core Pitches']
+        ['/FDC', 'The AGI-Ready Policy Student']
       ]
     },
     { path: '/corpus-map/', label: 'Corpus Map', sections: [] },
