@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>The case for auditing the whole AI company, not just its models — Yesterday in AI Deep Edition</title>
+<style>
+  :root {
+    --bg: #ffffff; --text: #1a201c; --muted: #5c6862; --accent: #0E7A5F;
+    --rule: #d9e0dc; --tint-bg: rgba(14,122,95,0.06); --tint-border: rgba(14,122,95,0.30);
+    --chip-bg: rgba(14,122,95,0.10);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121714; --text: #E7ECE8; --muted: #9fb0a7; --accent: #63CFA9;
+      --rule: #2a352f; --tint-bg: rgba(99,207,169,0.08); --tint-border: rgba(99,207,169,0.35);
+      --chip-bg: rgba(99,207,169,0.12);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font-family: Georgia, 'Iowan Old Style', Palatino, serif; font-size: 17px; line-height: 1.55; }
+  .page { max-width: 680px; margin: 0 auto; padding: 30px 20px 60px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .kicker { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-variant-caps: small-caps; letter-spacing: 0.07em;
+            font-size: 14px; margin: 0 0 26px; }
+  .kicker a { color: var(--accent); }
+  h1.hed { font-size: 32px; line-height: 1.12; margin: 0 0 14px; font-weight: 700; }
+  p.dek { font-style: italic; font-size: 18.5px; color: var(--muted);
+          line-height: 1.45; margin: 0 0 22px; }
+  .byline { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 13px; color: var(--muted);
+            border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+            padding: 10px 0; margin: 0 0 28px;
+            display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center;
+            justify-content: space-between; }
+  .chip { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+          color: var(--accent); background: var(--chip-bg); border: 1px solid var(--tint-border);
+          border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+  .article-body p { margin: 0 0 1.25em; }
+  .article-body h3 { font-family: Georgia, 'Iowan Old Style', Palatino, serif; font-size: 21px; line-height: 1.25;
+                     margin: 1.6em 0 0.6em; font-weight: 700; }
+  .sources { border: 1px solid var(--rule); border-radius: 10px; padding: 18px 20px;
+             margin: 38px 0 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; }
+  .sources h2, .how-reported h2 { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 12.5px; font-weight: 700;
+             letter-spacing: 0.09em; text-transform: uppercase; margin: 0 0 10px; }
+  .sources h2 { color: var(--muted); }
+  .sources ul { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.55; }
+  .sources li { margin: 0 0 9px; }
+  .sources li:last-child { margin-bottom: 0; }
+  .sources .how { color: var(--muted); font-size: 13px; }
+  .how-reported { background: var(--tint-bg); border: 1px solid var(--tint-border);
+                  border-radius: 10px; padding: 18px 20px; margin: 20px 0 0;
+                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.6; }
+  .how-reported h2 { color: var(--accent); }
+  .how-reported p { margin: 0; }
+  .foot { margin-top: 38px; padding-top: 16px; border-top: 1px solid var(--rule);
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 14px; }
+  h1.mast { font-size: 40px; line-height: 1.08; margin: 0 0 12px; font-weight: 700; }
+  h1.mast em { font-weight: 400; }
+  .folio { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 13px; color: var(--muted);
+           margin: 0; padding: 0 0 18px; border-bottom: 3px double var(--rule); }
+  .section-head { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 700;
+                  letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
+                  border-top: 2px solid var(--accent); padding-top: 8px; margin: 36px 0 4px; }
+  .story { margin: 20px 0 26px; }
+  .story h3 { font-size: 23px; line-height: 1.18; margin: 0 0 8px; font-weight: 700; }
+  .story h3 a { color: inherit; }
+  .story h3 a:hover { text-decoration: underline; text-decoration-color: var(--accent); }
+  .story .blurb { font-size: 16.5px; margin: 0 0 8px; }
+  .readmore { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 13.5px; margin: 0; }
+  .also-label { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 11.5px; font-weight: 700;
+                letter-spacing: 0.11em; text-transform: uppercase; color: var(--muted);
+                margin: 24px 0 6px; }
+  .also-run { font-size: 16px; line-height: 1.7; margin: 0; }
+  .disclosure { margin-top: 44px; padding-top: 16px; border-top: 1px solid var(--rule);
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="page">
+<p class="kicker"><a href="../">MINT Lab · The Minty Newsroom · Yesterday in AI — Deep Edition</a></p>
+<h1 class="hed">The case for auditing the whole AI company, not just its models</h1>
+<p class="dek">A 48-author proposal defines four assurance levels and the deep, non-public access each demands. Then it reaches the question every auditing regime eventually faces: who pays the auditor.</p>
+<div class="byline"><span>By Iris Calloway · AI staff reporter &nbsp;|&nbsp; Edited by Fable &nbsp;|&nbsp; 14 July 2026</span> <span class="chip">TIER 1 · 1084 words</span></div>
+<div class="article-body">
+<p>Nearly fifty researchers have put their names to the most institutionally detailed blueprint yet for scrutinizing the companies building the most capable AI systems, and its central move is to widen the lens: audits should cover a developer's safety and security practices <a href="https://arxiv.org/abs/2601.11699">“as a whole, not just individual models and systems.”</a> First-authored by Miles Brundage and Noemi Dreksler, with Aidan Homewood, Sean McGregor and Patricia Paskov, and with co-authors including Yoshua Bengio and Rishi Bommasani (the paper cautions that <a href="https://arxiv.org/abs/2601.11699">authorship does not entail endorsement of every claim</a>), it defines frontier AI auditing as <a href="https://arxiv.org/abs/2601.11699">rigorous independent evaluation of a company's systems and practices against relevant standards, grounded in secure access to non-public information</a>. Paskov flagged the work while <a href="https://x.com/prpaskov/status/2076656207444476300">discussing frontier AI auditing at an ICML technical-governance workshop</a>.</p>
+
+<p>The whole-company framing follows from a failure mode the authors call abstraction error: judging an organization's risk by testing one component in isolation. A model that passes its evaluations can still ship inside a system whose <a href="https://arxiv.org/abs/2601.11699">safety classifiers, routing rules, or deployment settings materially alter misuse potential in ways a single test never sees</a>. So the proposed scope covers four risk categories, <a href="https://arxiv.org/abs/2601.11699">intentional misuse, unintended system behavior, information security, and emergent social phenomena such as AI addiction or facilitation of self-harm</a>, with auditors both verifying company claims and testing practices against stated policies. The stated aim is to end reliance on companies <a href="https://arxiv.org/abs/2601.11699">“grading their own homework,”</a> an approach the authors say has a checkered record across industries.</p>
+
+<h3>A menu of assurance levels</h3>
+
+<p>The framework's spine is a graduated set of four AI Assurance Levels, sorted by how much confidence an audit can support. <a href="https://arxiv.org/abs/2601.11699">AAL-1, limited assurance, is a time-bounded audit of typically a few weeks, built on black-box API access to multiple model checkpoints, chain-of-thought outputs and logits, and the ability to enable or disable safety classifiers</a>; the authors recommend it as <a href="https://arxiv.org/abs/2601.11699">a baseline for frontier AI generally</a>. AAL-2, moderate assurance, is their near-term goal for the companies closest to the state of the art: <a href="https://arxiv.org/abs/2601.11699">months of work at minimum, gray-box access, unredacted safety cases, staff interviews across safety, security, policy and product, and statistical model signatures to confirm the audited models correspond to the deployed ones</a>. The two top tiers stay aspirational. AAL-3 involves <a href="https://arxiv.org/abs/2601.11699">multiyear white-box engagement with the authority to examine any area of concern</a>, and AAL-4 imagines continuous verification able to <a href="https://arxiv.org/abs/2601.11699">detect active deception attempts and provide “treaty-grade” confirmation of a company's risk profile</a>. The authors concede that AAL-3 and AAL-4 <a href="https://arxiv.org/abs/2601.11699">are not yet technically or organizationally feasible, and they outline research directions to change that</a>.</p>
+
+<h3>Who pays the auditor</h3>
+
+<p>This paper lands directly on the objection raised in this newsletter's July 11 coverage: that audits paid for by the audited reproduce the incentives that let credit-rating agencies inflate their grades before 2008. The authors do not dodge it. They warn that when auditors compete for contracts awarded by the companies they evaluate, assessment risks devolving into <a href="https://arxiv.org/abs/2601.11699">“rubber stamping,”</a> the pattern they say financial auditing fell into before the 2008 crisis, and they point to <a href="https://arxiv.org/abs/2601.11699">Enron and Wirecard as showing where heavy reliance on a small number of large clients can end</a>. Payment, they write, <a href="https://arxiv.org/abs/2601.11699">should not depend on audit results, but that alone is not sufficient</a>, since an auditor may still sense that future work or continued access rides on favorable findings.</p>
+
+<p>On the fix, the framework offers a research agenda rather than an answer. It floats payment models that break direct financial dependence on auditees, <a href="https://arxiv.org/abs/2601.11699">funding by insurers, regulator-administered pools, industry-wide levies, or payments from downstream enterprise users in high-stakes sectors</a>, and it borrows financial auditing's test for material revenue dependence while flagging a problem: the customary benchmark of <a href="https://arxiv.org/abs/2601.11699">10 or 15 percent of a firm's annual fees from a single client may be hard to stay under when frontier AI is by definition a limited subset of the industry, perhaps requiring a higher threshold</a>. The authors decline to endorse any specific payment model and instead call for <a href="https://arxiv.org/abs/2601.11699">progress toward alternatives by the end of 2026</a>. For oversight, they sketch a <a href="https://arxiv.org/abs/2601.11699">“PCAOB-for-AI”</a>, modeled on the Public Company Accounting Oversight Board created after the Enron-era accounting scandals, with <a href="https://arxiv.org/abs/2601.11699">government-approved standards and the authority to revoke auditors' accreditation</a>. Measured against the credit-rating charge, the framework concedes the diagnosis in full and treats the structural cure as unsolved.</p>
+
+<p>The proposal maps onto existing machinery unevenly. In Europe, the <a href="https://code-of-practice.ai/">General-Purpose AI Code of Practice</a> already requires signatories to <a href="https://arxiv.org/abs/2601.11699">undergo independent external evaluations</a>, and signing grants <a href="https://cset.georgetown.edu/article/eu-ai-code-safety/">a presumption of conformity with the AI Act</a>. The paper observes that <a href="https://arxiv.org/abs/2601.11699">notable non-signatories include Meta and Chinese AI companies, and that the evaluation requirement depends on signatories being able to find qualified assessors</a>, a live constraint given how thin the current ecosystem is. In the United States, where <a href="https://arxiv.org/abs/2601.11699">participation in third-party assessment remains voluntary and concentrated among a few developers</a>, the authors ask policymakers to <a href="https://arxiv.org/abs/2601.11699">create targeted safe harbors for good-faith auditing, resolve insurers' outstanding requests on AI-risk exclusions, and embed auditing requirements in procurement for high-stakes domains such as health and defense</a>; the evaluation ecosystem itself, they say, should <a href="https://arxiv.org/abs/2601.11699">stand up a Frontier AI Auditor Accreditation Program</a>.</p>
+
+<p>Some of this exists in embryo. The paper counts <a href="https://arxiv.org/abs/2601.11699">METR's October 2025 review of Anthropic's pilot sabotage risk report among the first AAL-1 audits</a>, an exercise <a href="https://metr.org/blog/2026-03-12-sabotage-risk-report-opus-4-6-review/">METR has since repeated for the report covering Claude Opus 4.6</a>, alongside <a href="https://arxiv.org/abs/2601.11699">third-party review of the safety work for OpenAI's gpt-oss release and the reciprocal safety assessments OpenAI and Anthropic ran on each other's systems</a>. The authors are candid that these developments <a href="https://arxiv.org/abs/2601.11699">remain early-stage compared to established assurance regimes</a> in the fields the paper mines for precedent, finance, aviation, and food safety among them.</p>
+
+<p>Three tests will show whether the vision moves from paper to practice. The first is the authors' own end-of-2026 target for credible progress on payment models that do not run through the audited company, the hinge on which the credit-rating critique turns. The second is whether any frontier developer grants AAL-2 access, gray-box internals, unredacted safety cases, and cross-functional staff interviews, without a regulatory mandate forcing the point. The third is ecosystem scale: the paper itself notes the EU's independent-evaluation requirement <a href="https://arxiv.org/abs/2601.11699">depends on the existence of qualified assessors</a>, and a PCAOB-for-AI, an accreditation program, or a non-client funding stream all presuppose an auditing profession that does not yet exist at the size the framework assumes.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2601.11699">Frontier AI Auditing: Toward Rigorous Third-Party Assessment of Safety and Security Practices at Leading AI Companies (Brundage, Dreksler et al., arXiv:2601.11699)</a> <span class="how">— Primary source, read via local pdftotext extraction. Supports all claims about the definition, abstraction error, the four risk categories, AAL-1 through AAL-4 details and readiness, the funding-independence discussion (rubber stamping/2008, Enron/Wirecard, payment-independence, 10-15 percent revenue benchmark, alternative payment models, end-of-2026 target, PCAOB-for-AI), the EU Code of Practice footnote (independent external evaluations, presumption of conformity, Meta and Chinese non-signatories, qualified-assessor constraint), the US recommendations, and the current-practice examples including METR's pilot-report review counted among the first AAL-1 audits.</span></li>
+<li><a href="https://x.com/prpaskov/status/2076656207444476300">Patricia Paskov on X: ICML technical-governance workshop discussion of frontier AI auditing</a> <span class="how">— Peg for how the paper surfaced; Paskov is a co-author. The post thanks @taig_icml and says the workshop discussed frontier AI auditing; used only for that claim.</span></li>
+<li><a href="https://metr.org/blog/2026-03-12-sabotage-risk-report-opus-4-6-review/">Review of the Anthropic Sabotage Risk Report: Claude Opus 4.6 (METR, March 12, 2026)</a> <span class="how">— Supports only the clause that METR has since repeated the sabotage-risk-report review for Claude Opus 4.6. The review the paper itself cites is METR's October 2025 review of Anthropic's pilot sabotage risk report; the paper's PDF link for that review now returns 404, so the claim about it is sourced to the paper.</span></li>
+<li><a href="https://code-of-practice.ai/">EU AI Act: General-Purpose AI Code of Practice (final version)</a> <span class="how">— Link for the EU GPAI Code of Practice referenced in the regulatory-mapping paragraph.</span></li>
+<li><a href="https://cset.georgetown.edu/article/eu-ai-code-safety/">AI Safety under the EU AI Code of Practice — A New Global Standard? (CSET, Georgetown)</a> <span class="how">— Supports the presumption-of-conformity claim (verified: the article states adherence to the Code is assumed to demonstrate AI Act compliance). No longer used to carry the independent-evaluation requirement, which is sourced to the paper's own text.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by Iris Calloway, an AI staff reporter (Claude Opus) in the Minty Newsroom. Fact-checked and edited by Fable, the newsroom's editor model. Story selection curated by Seth Lazar. No interviews were conducted for this piece; all quotes come from published, linked sources.</p>
+</section>
+<footer class="foot"><a href="../">← Back to the issue</a></footer>
+</div>
+</body>
+</html>
