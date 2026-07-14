@@ -17,6 +17,16 @@ It started as an Astro project, but in commit `c35aea3` (2026-03-30, "Deploy flo
 - The homepage Papers/Publications list is loaded at runtime from `public/assets/papers/latest-paper-deliverables.csv`.
 - The `chatbot-worker/` and `paper-map/` subprojects retain their own build steps (see their READMEs).
 
+## Shared microsite styling
+
+`public/assets/theme.css` and `public/assets/theme.js` are stable public style
+dependencies for MINT microsites. The stylesheet owns the final design tokens,
+light-theme rules, shared banner dimensions, and the scoped
+`mint-microsite-shell` masthead behavior. A microsite should load those files
+directly from `https://mintresearch.org/assets/` and keep only its genuinely
+site-specific rules locally; do not copy the shared files or banner assets into
+the microsite repository.
+
 ## Asset directories — do not delete without checking the rendered HTML
 
 `public/assets/people/` and `public/assets/cv/` are referenced from the served `public/*.html` files (the people detail panel uses `/assets/people/*.jpg`; the floating Minty avatars use `/assets/cv/*.png`).
