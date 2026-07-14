@@ -5,23 +5,29 @@
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
 <title>The AGI-Ready Policy Student — Seth Lazar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&amp;display=swap" rel="stylesheet">
 <style>
 :root {
   --cream: #FFFAED; --yellow: #FFD054; --orange: #ee7a44;
   --black: #161300; --ink: #1a1a1a; --mid: #555; --light: #999;
   --blue: #5299F2; --green: #259344; --red: #BF4E30;
   --border: 2px dashed var(--black); --border-dot: 2px dotted var(--black);
-  --mono: 'Space Mono', monospace; --serif: 'Newsreader', Georgia, serif;
+  --mono: 'JetBrains Mono', monospace; --serif: 'Newsreader', Georgia, serif;
+  --ticker-h: 40px;
   --nav-h: 64px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { background: var(--cream); }
 body { font-family: var(--serif); background: var(--cream); color: var(--black); line-height: 1.5; font-size: 34px; -webkit-font-smoothing: antialiased; overflow: hidden; height: 100vh; width: 100vw; }
 
-.slides { position: relative; width: 100vw; height: calc(100vh - var(--nav-h)); overflow: hidden; }
+.slides { position: fixed; inset: var(--ticker-h) 0 var(--nav-h); width: 100vw; height: auto; overflow: hidden; }
 .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; opacity: 0; transform: translateY(6px); transition: opacity 0.35s ease, transform 0.35s ease; pointer-events: none; overflow-y: auto; }
 .slide.active { opacity: 1; transform: translateY(0); pointer-events: all; }
+.slide.pretext-measuring { transform: none; transition: none; }
+
+@media (min-width: 901px) {
+  .slide.pretext-fitted { overflow-y: hidden; }
+}
 
 /* Layouts — use more screen */
 .full { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 48px 10vw; }
@@ -221,7 +227,7 @@ nav {
 
 /* ── Phone ── */
 @media (max-width: 600px) {
-  :root { --nav-h: 54px; }
+  :root { --ticker-h: 32px; --nav-h: 54px; }
   body { font-size: 18px; }
   h1 { font-size: 32px !important; } h1.mega { font-size: 36px !important; }
   h2 { font-size: 14px; letter-spacing: 2px; }
@@ -232,8 +238,6 @@ nav {
   .split-right { padding-bottom: calc(var(--nav-h) + 56px); }
   /* For slides with only split-left (closing slide) */
   .slide:last-child .split-left { padding-bottom: calc(var(--nav-h) + 56px); }
-  .slides { margin-top: 32px; }
-
   /* Ticker */
   .ticker { height: 32px; }
   .ticker-track { font-size: 12px; letter-spacing: 1.5px; gap: 24px; }
@@ -324,7 +328,7 @@ nav {
 
 <div class="progress"><div class="progress-fill" id="progress-fill" style="width: 0%;"></div></div>
 
-<div class="slides" style="height: calc(100vh - var(--nav-h)); margin-top: 40px;">
+<div class="slides">
 
 <!-- ═══ 1. TITLE ═══ -->
 <div class="slide active" data-name="Title">
@@ -708,6 +712,246 @@ document.querySelectorAll('.tip').forEach(tip => {
     }
   });
 });
+
+// Pretext prepares each visible text/font pair once, predicts reflow at candidate
+// scales, and leaves one rendered bounds check to account for cards and borders.
+const PRETEXT_SOURCES = [
+  'https://esm.sh/@chenglou/pretext@0.0.8',
+  'https://cdn.jsdelivr.net/npm/@chenglou/pretext@0.0.8/+esm'
+];
+const FIT_STEP = 0.01;
+const FIT_BLOCK_SELECTOR = [
+  'p', 'blockquote', '.dc-text', '.obstacle-item', '.comp-title', '.comp-desc',
+  '.verif-text', '.cap-text', '.cur-title', '.cur-text'
+].join(',');
+const BODY_FLOOR_SELECTOR = [
+  'p:not(.dim)', 'blockquote', '.dc-text', '.obstacle-item', '.comp-title',
+  '.comp-desc', '.verif-text', '.cap-text', '.cur-title', '.cur-text'
+].join(',');
+const LABEL_FLOOR_SELECTOR = [
+  'h2', '.label', '.vlabel', 'blockquote cite', '.dc-label', '.verif-label',
+  '.cap-label', '.comp-number', 'p.dim'
+].join(',');
+const preparedByElement = new Map();
+const preparedCache = new Map();
+let pretextModule = null;
+let fitTimer = null;
+let fitGeneration = 0;
+
+window.__pretextFit = {
+  source: null,
+  status: 'pending',
+  runs: 0,
+  preparedBlocks: 0,
+  layoutRuns: 0,
+  slides: []
+};
+
+async function loadPretext() {
+  for (const source of PRETEXT_SOURCES) {
+    try {
+      const module = await import(source);
+      if (typeof module.prepare === 'function' && typeof module.layout === 'function') {
+        window.__pretextFit.source = source;
+        return module;
+      }
+    } catch (error) {
+      console.warn('pretext load failed', source, error);
+    }
+  }
+  return null;
+}
+
+function visibleText(element) {
+  const clone = element.cloneNode(true);
+  clone.querySelectorAll('.tiptext, [hidden], [aria-hidden="true"]').forEach((node) => node.remove());
+  return clone.textContent.replace(/\s+/g, ' ').trim();
+}
+
+function prepareTextBlocks() {
+  if (!pretextModule || preparedByElement.size) return;
+  slides.forEach((slide) => {
+    slide.querySelectorAll(FIT_BLOCK_SELECTOR).forEach((element) => {
+      const text = visibleText(element);
+      if (!text) return;
+      const style = getComputedStyle(element);
+      const fontSize = parseFloat(style.fontSize);
+      const lineHeight = parseFloat(style.lineHeight) || fontSize * 1.2;
+      const font = `${style.fontStyle} ${style.fontWeight} ${fontSize}px ${style.fontFamily}`;
+      const cacheKey = `${font}\n${text}`;
+      if (!preparedCache.has(cacheKey)) {
+        preparedCache.set(cacheKey, pretextModule.prepare(text, font));
+      }
+      preparedByElement.set(element, {
+        prepared: preparedCache.get(cacheKey),
+        fontSize,
+        lineHeight
+      });
+    });
+  });
+  window.__pretextFit.preparedBlocks = preparedCache.size;
+}
+
+function projectionBlocks(slide) {
+  const blocks = Array.from(slide.querySelectorAll(FIT_BLOCK_SELECTOR))
+    .filter((element) => preparedByElement.has(element));
+  return blocks.filter((element) =>
+    !blocks.some((other) => other !== element && other.contains(element))
+  );
+}
+
+function projectedSlideHeight(slide, scale) {
+  if (!pretextModule) return slide.scrollHeight;
+  return projectionBlocks(slide).reduce((height, element) => {
+    const record = preparedByElement.get(element);
+    const style = getComputedStyle(element);
+    const width = Math.max(
+      72,
+      element.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
+    );
+    const layout = pretextModule.layout(record.prepared, width / scale, record.lineHeight);
+    window.__pretextFit.layoutRuns += 1;
+    return height + layout.height * scale - element.getBoundingClientRect().height;
+  }, slide.scrollHeight);
+}
+
+function minimumReadableScale(slide) {
+  let floor = 0;
+  slide.querySelectorAll(BODY_FLOOR_SELECTOR).forEach((element) => {
+    if (visibleText(element)) floor = Math.max(floor, 24 / parseFloat(getComputedStyle(element).fontSize));
+  });
+  slide.querySelectorAll(LABEL_FLOOR_SELECTOR).forEach((element) => {
+    if (visibleText(element)) floor = Math.max(floor, 14 / parseFloat(getComputedStyle(element).fontSize));
+  });
+  return Math.min(1, Math.ceil(floor * 100) / 100);
+}
+
+function applySlideScale(slide, scale) {
+  const content = slide.firstElementChild;
+  if (!content) return;
+  content.style.zoom = String(scale);
+  content.style.width = `${100 / scale}%`;
+  content.style.height = '100%';
+}
+
+function resetSlideScale(slide) {
+  slide.classList.remove('pretext-fitted');
+  const content = slide.firstElementChild;
+  if (!content) return;
+  content.style.zoom = '1';
+  content.style.width = '100%';
+  content.style.height = '100%';
+}
+
+function visibleContentBottom(slide) {
+  return Array.from(slide.querySelectorAll('*')).reduce((bottom, element) => {
+    if (element.closest('.tiptext') || getComputedStyle(element).display === 'none') return bottom;
+    const rect = element.getBoundingClientRect();
+    return rect.width && rect.height ? Math.max(bottom, rect.bottom) : bottom;
+  }, slide.getBoundingClientRect().top);
+}
+
+function slideFits(slide) {
+  const navTop = document.querySelector('nav').getBoundingClientRect().top;
+  return slide.scrollHeight <= slide.clientHeight + 1 && visibleContentBottom(slide) <= navTop + 1;
+}
+
+async function nextFrame(generation) {
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+  return generation === fitGeneration;
+}
+
+async function fitSlides() {
+  const generation = ++fitGeneration;
+  if (!matchMedia('(min-width: 901px)').matches) {
+    slides.forEach((slide) => {
+      resetSlideScale(slide);
+      const content = slide.firstElementChild;
+      content?.style.removeProperty('zoom');
+      content?.style.removeProperty('width');
+      content?.style.removeProperty('height');
+      slide.classList.remove('pretext-measuring');
+    });
+    window.__pretextFit.status = 'mobile-scroll';
+    window.__pretextFit.runs += 1;
+    window.__pretextFit.slides = [];
+    return;
+  }
+
+  prepareTextBlocks();
+  slides.forEach((slide) => {
+    resetSlideScale(slide);
+    slide.classList.add('pretext-measuring');
+  });
+  if (!await nextFrame(generation)) return;
+
+  const diagnostics = [];
+  for (const slide of slides) {
+    const floor = minimumReadableScale(slide);
+    let scale = 1;
+    if (!slideFits(slide) && pretextModule) {
+      while (scale > floor && projectedSlideHeight(slide, scale) > slide.clientHeight) {
+        scale = Math.max(floor, Math.round((scale - FIT_STEP) * 100) / 100);
+      }
+    }
+
+    applySlideScale(slide, scale);
+    if (!await nextFrame(generation)) return;
+    while (scale > floor && !slideFits(slide)) {
+      scale = Math.max(floor, Math.round((scale - FIT_STEP) * 100) / 100);
+      applySlideScale(slide, scale);
+      if (!await nextFrame(generation)) return;
+    }
+
+    let fits = slideFits(slide);
+    while (fits && scale < 1) {
+      const trialScale = Math.min(1, Math.round((scale + FIT_STEP) * 100) / 100);
+      applySlideScale(slide, trialScale);
+      if (!await nextFrame(generation)) return;
+      if (slideFits(slide)) {
+        scale = trialScale;
+      } else {
+        applySlideScale(slide, scale);
+        if (!await nextFrame(generation)) return;
+        break;
+      }
+    }
+
+    fits = slideFits(slide);
+    slide.classList.toggle('pretext-fitted', fits);
+    slide.dataset.fitScale = scale.toFixed(2);
+    const navTop = document.querySelector('nav').getBoundingClientRect().top;
+    diagnostics.push({
+      name: slide.dataset.name || '',
+      scale: Number(scale.toFixed(2)),
+      floor,
+      fits,
+      clientHeight: slide.clientHeight,
+      scrollHeight: slide.scrollHeight,
+      visibleBottom: Math.round(visibleContentBottom(slide)),
+      navTop: Math.round(navTop)
+    });
+  }
+
+  slides.forEach((slide) => slide.classList.remove('pretext-measuring'));
+  window.__pretextFit.status = diagnostics.every((slide) => slide.fits)
+    ? (pretextModule ? 'fitted' : 'fitted-fallback')
+    : 'readability-floor';
+  window.__pretextFit.runs += 1;
+  window.__pretextFit.slides = diagnostics;
+}
+
+async function initialiseSlideFitting() {
+  try { await document.fonts.ready; } catch (error) { console.warn('font wait failed', error); }
+  pretextModule = await loadPretext();
+  await fitSlides();
+}
+
+window.addEventListener('resize', () => {
+  clearTimeout(fitTimer);
+  fitTimer = setTimeout(fitSlides, 120);
+});
+initialiseSlideFitting();
 
 
 </script>
