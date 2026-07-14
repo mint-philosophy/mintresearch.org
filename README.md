@@ -53,10 +53,37 @@ leaves are currently:
 
 - `Blind Refusal` — `https://blindrefusal.mintresearch.org/`
 - `Can Machines Reason Morally?` — `/lab-overview/`
+- `Evaluating LLM Normative Competence` — `/nc/`
+- `Mapping the MPP Core Pitches` — `/FDC/`
 
 Only add maintained, public, indexable project microsites. Do not expose
-private or deliberately unlisted surfaces such as `/nc/`, `/proofeditor/`,
-`/camps/`, `/coquelin/`, `/FDC-AI.html`, or the access-gated review service.
+private or deliberately unlisted surfaces such as `/proofeditor/`, `/camps/`,
+`/coquelin/`, the legacy direct FDC deck files, or the access-gated review
+service.
+
+## Presentation microsites
+
+The public presentation routes `/lab-overview/`, `/nc/`, and `/FDC/` use the
+shared shell in `public/assets/presentation-shell.css` and
+`public/assets/presentation-shell.js`. The shell renders the standard MINT
+banner, sidebar, status line, mobile navigation, and theme control around each
+self-contained deck. Its presentation-mode control hides or restores all site
+chrome without modifying the deck itself.
+
+The canonical wrappers and their isolated deck sources are:
+
+```text
+public/lab-overview/index.html -> public/lab-overview/deck.html
+public/nc/index.html           -> public/nc/deck.html
+public/FDC/index.html          -> public/FDC-AI.html
+```
+
+Keep deck code isolated inside its iframe so deck-specific keyboard controls,
+scaling, styles, and animations cannot conflict with the site shell. The deck
+sources remain `noindex`; only the branded wrapper routes are canonical and
+indexable. When the Microsites branch changes, update the seven static
+sidebars, `src/data/navigation.ts`, and the shared presentation-shell
+navigation together.
 
 ## Newsletter archive
 
