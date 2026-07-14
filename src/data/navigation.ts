@@ -10,6 +10,8 @@ export interface PageNav {
   label: string;
   icon: string;
   sections: SectionLink[];
+  groupOnly?: boolean;
+  alwaysExpanded?: boolean;
 }
 
 export const siteNav: PageNav[] = [
@@ -81,17 +83,18 @@ export const siteNav: PageNav[] = [
     sections: [
       { href: "#yesterday-in-ai", label: "Yesterday in AI" },
       { href: "#philosophy-of-computing", label: "Philosophy of Computing" },
-      { href: "#back-issues", label: "Back Issues" },
+      { href: "#back-issues", label: "YinAI Archive" },
     ],
   },
   {
-    path: "/agent-reports/",
-    label: "Agent Reports",
+    path: "",
+    label: "Microsites",
     icon: "◇",
+    groupOnly: true,
+    alwaysExpanded: true,
     sections: [
-      { href: "#reports", label: "Research Reports" },
-      { href: "#searches", label: "Search Responses" },
-      { href: "#about", label: "About" },
+      { href: "https://blindrefusal.mintresearch.org/", label: "Blind Refusal" },
+      { href: "/lab-overview/", label: "Can Machines Reason Morally?" },
     ],
   },
   {

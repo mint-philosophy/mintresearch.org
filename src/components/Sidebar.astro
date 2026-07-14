@@ -18,6 +18,11 @@ function isActivePage(pagePath: string): boolean {
   return cleanPath.startsWith(pagePath);
 }
 
+function sectionHref(pagePath: string, href: string, active: boolean): string {
+  if (/^https?:\/\//.test(href) || href.startsWith('/')) return href;
+  return active ? href : base + pagePath + href;
+}
+
 ---
 
 <nav class="sidebar" id="sidebar">
@@ -32,26 +37,33 @@ function isActivePage(pagePath: string): boolean {
 
   <div class="nav-pages">
     {siteNav.map((page) => {
-      const active = isActivePage(page.path);
+      const active = !page.groupOnly && isActivePage(page.path);
       return (
         <>
-          <a class:list={["nav-link", "nav-page", { active }]} href={base + page.path}>
-            <span class="nav-mark">{active ? '❯' : '▸'}</span>
-            {page.label}
-          </a>
+          {page.groupOnly ? (
+            <div class="nav-link nav-page nav-group" role="heading" aria-level="2">
+              <span class="nav-mark">▾</span>
+              {page.label}
+            </div>
+          ) : (
+            <a class:list={["nav-link", "nav-page", { active }]} href={base + page.path}>
+              <span class="nav-mark">{active ? '❯' : '▸'}</span>
+              {page.label}
+            </a>
+          )}
           {page.sections.length > 0 && (
-            <div class:list={["nav-sections", { expanded: active }]}>
+            <div class:list={["nav-sections", { expanded: active || page.alwaysExpanded }]}>
               {page.sections.map((section: SectionLink, idx: number) => {
                 const isLast = idx === page.sections.length - 1 && !section.children?.length;
                 return (
                   <>
                     {section.divider && <div class="nav-divider">{section.divider}</div>}
-                    <a class="nav-link nav-section" href={active ? section.href : base + page.path + section.href}>
+                    <a class="nav-link nav-section" href={sectionHref(page.path, section.href, active)}>
                       <span class="nav-mark">{isLast ? '└──' : '├──'}</span>
                       {section.label}
                     </a>
                     {section.children?.map((child: SectionLink, ci: number) => (
-                      <a class="nav-link nav-section sub-link" href={active ? child.href : base + page.path + child.href}>
+                      <a class="nav-link nav-section sub-link" href={sectionHref(page.path, child.href, active)}>
                         <span class="nav-mark">{ci === (section.children?.length || 0) - 1 ? '└──' : '├──'}</span>
                         {child.label}
                       </a>

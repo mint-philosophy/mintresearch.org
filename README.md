@@ -17,6 +17,45 @@ It started as an Astro project, but in commit `c35aea3` (2026-03-30, "Deploy flo
 - The homepage Papers/Publications list is loaded at runtime from `public/assets/papers/latest-paper-deliverables.csv`.
 - The `chatbot-worker/` and `paper-map/` subprojects retain their own build steps (see their READMEs).
 
+## Sidebar navigation and public microsites
+
+The served sidebar is duplicated in these seven static files:
+
+```text
+public/index.html
+public/agent-reports/index.html
+public/corpus-map/index.html
+public/cv/index.html
+public/data-dash/index.html
+public/guide/index.html
+public/newsletter/index.html
+```
+
+Generated newsletter and report pages use `src/data/navigation.ts` and
+`src/components/Sidebar.astro`. Keep the static copies and generated-page
+navigation synchronized whenever the sidebar changes.
+
+`Microsites` is a non-clickable, always-expanded sidebar branch. Its public
+leaves are currently:
+
+- `Blind Refusal` — `https://blindrefusal.mintresearch.org/`
+- `Can Machines Reason Morally?` — `/lab-overview/`
+
+Only add maintained, public, indexable project microsites. Do not expose
+private or deliberately unlisted surfaces such as `/nc/`, `/proofeditor/`,
+`/camps/`, `/coquelin/`, `/FDC-AI.html`, or the access-gated review service.
+
+## Newsletter archive
+
+The public newsletter landing page is `public/newsletter/index.html`. YinAI
+issues live under `public/newsletters/yinai/<YYYY-MM-DD>/`; each issue directory
+contains its aggregate index and any full-report child pages. The archive
+currently begins with the 13 July 2026 Deep Edition, the earliest YinAI issue
+stored locally. Add each future issue to that directory structure and add a
+dated archive link under `#back-issues` on the landing page. Do not relabel the
+older `src/pages/newsletters/*-weekly.md` files as YinAI: those sixteen files
+are the discontinued `Minty's Week in AI` product.
+
 ## Asset directories — do not delete without checking the rendered HTML
 
 `public/assets/people/` and `public/assets/cv/` are referenced from the served `public/*.html` files (the people detail panel uses `/assets/people/*.jpg`; the floating Minty avatars use `/assets/cv/*.png`).
