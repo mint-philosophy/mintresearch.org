@@ -49,7 +49,8 @@ loads its markup/asset contract for every main-site banner. External microsites
 may load those two files directly, but must not import the full main-site theme.
 Do not duplicate banner dimensions or image lists in a microsite. Run
 `npm run check:banner` before deployment; the Pages workflow enforces the same
-check.
+check and also verifies the Blind Refusal `main` branch remains a compatible
+banner-only consumer.
 
 `Microsites` is a non-clickable, always-expanded sidebar branch. Its public
 leaves are currently:

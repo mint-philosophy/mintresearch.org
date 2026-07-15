@@ -41,4 +41,39 @@ for (const declaration of [
   assert.ok(sourceCss.includes(declaration), `Astro source drift: ${declaration}`);
 }
 
-console.log('MINT banner contract passed: canonical component, eight Minties, and 60% logo-height sizing.');
+if (process.argv.includes('--check-blind-refusal')) {
+  const rawRoot = 'https://raw.githubusercontent.com/mint-philosophy/b-r-minisite/main/';
+  const fetchText = async (path) => {
+    const response = await fetch(rawRoot + path, { cache: 'no-store' });
+    assert.equal(response.status, 200, `Blind Refusal ${path} returned ${response.status}`);
+    return response.text();
+  };
+  const [consumerHtml, consumerCss] = await Promise.all([
+    fetchText('index.html'),
+    fetchText('styles.css')
+  ]);
+
+  assert.ok(consumerHtml.includes('https://mintresearch.org/assets/mint-banner.css'), 'Blind Refusal must load the banner stylesheet');
+  assert.ok(consumerHtml.includes('https://mintresearch.org/assets/mint-banner.js'), 'Blind Refusal must load the banner component');
+  assert.ok(!consumerHtml.includes('https://mintresearch.org/assets/theme.css'), 'Blind Refusal must not load the full main-site theme');
+  assert.ok(!consumerHtml.includes('https://mintresearch.org/assets/theme.js'), 'Blind Refusal must not load the full main-site theme script');
+
+  const forbidden = {
+    '.top-banner': new Set(['padding', 'height', 'min-height']),
+    '.top-banner-inner': new Set(['padding', 'gap', 'flex-direction']),
+    '.top-banner-logo': new Set(['height']),
+    '.top-banner-minties': new Set(['gap', 'flex-wrap']),
+    '.top-banner-minty': new Set(['width', 'height'])
+  };
+  for (const match of consumerCss.matchAll(/(\.top-banner(?:-(?:inner|logo|minties|minty))?)\s*\{([^{}]*)\}/g)) {
+    const [, selector, body] = match;
+    const banned = forbidden[selector];
+    if (!banned) continue;
+    for (const declaration of body.split(';')) {
+      const property = declaration.split(':', 1)[0].trim();
+      assert.ok(!banned.has(property), `Blind Refusal ${selector} must not locally own ${property}`);
+    }
+  }
+}
+
+console.log(`MINT banner contract passed: canonical component, eight Minties, 60% logo-height sizing${process.argv.includes('--check-blind-refusal') ? ', and Blind Refusal compatibility' : ''}.`);
