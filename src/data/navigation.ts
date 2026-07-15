@@ -22,7 +22,7 @@ export const siteNav: PageNav[] = [
     sections: [
       { href: "#about", label: "About" },
       { href: "#people", label: "People" },
-      { href: "#papers", label: "Publications" },
+      { href: "#papers", label: "Papers" },
       { href: "#events", label: "Events" },
       { href: "#news", label: "News" },
       { href: "#contact", label: "Contact" },
@@ -98,6 +98,12 @@ export const siteNav: PageNav[] = [
       { href: "/nc/", label: "Evaluating LLM Normative Competence" },
       { href: "/FDC", label: "The AGI-Ready Policy Student" },
     ],
+  },
+  {
+    path: "/agent-reports/",
+    label: "Agent Reports",
+    icon: "▸",
+    sections: [],
   },
   {
     path: "/corpus-map/",

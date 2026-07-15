@@ -35,7 +35,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href={`${base}/assets/theme.css`} />
+  <link rel="stylesheet" href={`${base}/assets/mint-banner.css`} />
   <script is:inline>try{if(localStorage.getItem("mint-theme")==="light")document.documentElement.setAttribute("data-theme","light")}catch(e){}</script>
+  <script is:inline src={`${base}/assets/mint-site-nav.v1.js`} defer></script>
+  <script is:inline src={`${base}/assets/mint-banner.js`} defer></script>
   <script is:inline src={`${base}/assets/theme.js`} defer></script>
 </head>
 <body>
@@ -52,21 +55,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">«</button>
 
   <!-- Top Banner -->
-  <div class="top-banner">
-    <div class="top-banner-inner">
-      <a href={`${base}/`} style="display:inline-flex;"><img src={`${base}/assets/mint-banner.png`} alt="MINT LAB" class="top-banner-logo" /></a>
-      <div class="top-banner-minties">
-        <img src={`${base}/assets/minty-red.png`} alt="" class="top-banner-minty" style="animation-delay: 0s;" />
-        <img src={`${base}/assets/minty-brown.png`} alt="" class="top-banner-minty" style="animation-delay: 0.3s;" />
-        <img src={`${base}/assets/minty-yellow.png`} alt="" class="top-banner-minty" style="animation-delay: 0.6s;" />
-        <img src={`${base}/assets/minty-green.png`} alt="" class="top-banner-minty" style="animation-delay: 0.9s;" />
-        <img src={`${base}/assets/minty-teal.png`} alt="" class="top-banner-minty" style="animation-delay: 1.2s;" />
-        <img src={`${base}/assets/minty-indigo.png`} alt="" class="top-banner-minty" style="animation-delay: 1.5s;" />
-        <img src={`${base}/assets/minty-purple.png`} alt="" class="top-banner-minty" style="animation-delay: 1.8s;" />
-        <img src={`${base}/assets/minty-cool.png`} alt="" class="top-banner-minty" style="animation-delay: 2.1s;" />
-      </div>
-    </div>
-  </div>
+  <div class="top-banner" aria-label="MINT Lab masthead"></div>
 
   <slot />
 
@@ -97,13 +86,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     }
     menuBtn?.addEventListener('click', toggleMenu);
     overlay?.addEventListener('click', toggleMenu);
-    sidebar?.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        if (window.innerWidth <= 900) {
-          sidebar?.classList.remove('open');
-          overlay?.classList.remove('open');
-        }
-      });
+    sidebar?.addEventListener('click', (event) => {
+      if (!(event.target instanceof Element) || !event.target.closest('a')) return;
+      if (window.innerWidth <= 900) {
+        sidebar?.classList.remove('open');
+        overlay?.classList.remove('open');
+      }
     });
 
     // Sidebar collapse toggle (desktop)
@@ -116,7 +104,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       const collapsed = document.body.classList.toggle('sidebar-collapsed');
       if (sidebarToggle) sidebarToggle.textContent = collapsed ? '»' : '«';
       localStorage.setItem('sidebar-collapsed', collapsed ? '1' : '0');
-      setTimeout(syncBannerHeight, 350); // re-sync after transition
     });
 
     // Search overlay
@@ -139,26 +126,17 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       if (e.key === 'Escape') searchOverlay?.classList.remove('open');
     });
 
-    // Sync main margin-top with actual banner height
-    const banner = document.querySelector('.top-banner') as HTMLElement | null;
-    function syncBannerHeight() {
-      if (banner) {
-        const h = banner.offsetHeight;
-        document.documentElement.style.setProperty('--banner-h', h + 'px');
-      }
-    }
-    syncBannerHeight();
-    window.addEventListener('resize', syncBannerHeight);
-    // Re-check after fonts/images load
-    window.addEventListener('load', syncBannerHeight);
-
     // Statusline scroll progress
     const BAR_LEN = 16;
     const statusBar = document.getElementById('statusBar');
     const statusPct = document.getElementById('statusPct');
     const statusSection = document.getElementById('statusSection');
     const tokenEl = document.getElementById('tokenDisplay');
-    const sectionLinks = document.querySelectorAll('.nav-section');
+    let sectionLinks = document.querySelectorAll('.nav-section');
+    document.addEventListener('mint-site-nav:rendered', () => {
+      sectionLinks = document.querySelectorAll('.nav-section');
+      updateStatusline();
+    });
     const allSections = document.querySelectorAll('section[id]');
     const mainEl = document.querySelector('main');
     const totalChars = mainEl ? mainEl.textContent.length : 0;
