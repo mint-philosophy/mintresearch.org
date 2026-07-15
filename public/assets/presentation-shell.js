@@ -150,13 +150,37 @@
   var toggle = document.getElementById('presentationModeToggle');
   var frame = document.getElementById('presentationFrame');
 
+  function notifyFrameResize() {
+    if (frame && frame.contentWindow) {
+      frame.contentWindow.postMessage('mint-presentation-resize', window.location.origin);
+      try {
+        frame.contentWindow.dispatchEvent(new Event('resize'));
+        frame.contentWindow.refitFdcSlides?.();
+      } catch (error) {
+        // Cross-origin presentation frames still receive the postMessage path.
+      }
+    }
+  }
+
+  frame.addEventListener('load', notifyFrameResize);
+  if ('ResizeObserver' in window) {
+    var frameObserver = new ResizeObserver(notifyFrameResize);
+    frameObserver.observe(frame);
+  }
+
   function setPresentationMode(enabled) {
     body.classList.toggle('presentation-mode', enabled);
     toggle.setAttribute('aria-pressed', enabled ? 'true' : 'false');
     toggle.setAttribute('aria-label', enabled ? 'Show site navigation and header' : 'Hide site navigation and header');
     toggle.title = enabled ? 'Show site navigation and header' : 'Hide site navigation and header';
+    requestAnimationFrame(notifyFrameResize);
+    setTimeout(notifyFrameResize, 350);
     if (enabled) frame.focus();
   }
+
+  document.querySelector('.presentation-main')?.addEventListener('transitionend', function (event) {
+    if (event.propertyName === 'inset' || event.propertyName === 'padding') notifyFrameResize();
+  });
 
   toggle.addEventListener('click', function () {
     setPresentationMode(!body.classList.contains('presentation-mode'));

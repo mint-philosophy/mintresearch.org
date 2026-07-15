@@ -26,6 +26,7 @@ body { font-family: var(--serif); background: var(--cream); color: var(--black);
 .slide.fit-measuring { transform: none; transition: none; overflow: hidden; }
 
 .slide.fit-contained { overflow: hidden; }
+.slide.fit-scroll-fallback { overflow: auto; }
 
 /* Layouts — use more screen */
 .full { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 48px 10vw; }
@@ -157,11 +158,6 @@ nav {
 
 .fi { opacity: 1; transform: none; transition: none; }
 .slide.active .fi { opacity: 1; transform: translateY(0); }
-.slide.active .fi.d1 { transition-delay: 0.07s; }
-.slide.active .fi.d2 { transition-delay: 0.14s; }
-.slide.active .fi.d3 { transition-delay: 0.21s; }
-.slide.active .fi.d4 { transition-delay: 0.28s; }
-.slide.active .fi.d5 { transition-delay: 0.35s; }
 
 .dotted-bg {
   background-image: radial-gradient(circle, rgba(22,19,0,0.07) 1px, transparent 1px);
@@ -183,9 +179,8 @@ nav {
 /* ── Tablet ── */
 @media (max-width: 900px) {
   body { font-size: 26px; }
-  /* Slide must be block (not flex) so children can grow beyond viewport and scroll */
+  /* Responsive source layout also serves as the readable scroll fallback. */
   .slide { display: block; -webkit-overflow-scrolling: touch; }
-  /* Children must be height:auto so they grow with content and trigger slide scroll */
   .split, .split.wide-left, .split.wide-right { grid-template-columns: 1fr; height: auto; min-height: 100%; }
   .full { height: auto; min-height: 100%; justify-content: flex-start; }
   .split-left, .split-right { justify-content: flex-start; }
@@ -621,7 +616,7 @@ const slides=document.querySelectorAll('.slide'),total=slides.length;let cur=0;
 const dots=document.getElementById('nav-dots'),prog=document.getElementById('progress-fill'),counter=document.getElementById('slide-counter'),secName=document.getElementById('section-name');
 for(let i=0;i<total;i++){const d=document.createElement('div');d.className='nav-dot'+(i===0?' active':'');d.onclick=()=>go(i);dots.appendChild(d);}
 function hideTooltip(){overlay.style.display='none';activeTip=null;}
-function go(n){if(n<0||n>=total||n===cur)return;hideTooltip();slides[cur].classList.remove('active');cur=n;slides[cur].classList.add('active');document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===n));prog.style.width=((n/(total-1))*100)+'%';counter.textContent=(n+1)+' / '+total;secName.textContent=slides[n].dataset.name||'';scheduleFit();}
+function go(n){if(n<0||n>=total||n===cur)return;hideTooltip();slides[cur].classList.remove('active');cur=n;slides[cur].classList.add('active');document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===n));prog.style.width=((n/(total-1))*100)+'%';counter.textContent=(n+1)+' / '+total;secName.textContent=slides[n].dataset.name||'';fitSlides();}
 document.addEventListener('click',e=>{if(!e.target.closest('.tip')&&!e.target.closest('#tooltip-overlay'))hideTooltip();});
 document.addEventListener('keydown',e=>{
   // In edit mode, don't hijack arrow keys (needed for text cursor)
@@ -712,15 +707,11 @@ document.querySelectorAll('.tip').forEach(tip => {
 const MIN_FIT_SCALE = 0.05;
 const FIT_SEARCH_ITERATIONS = 10;
 const FRAME_INSET = 6;
-const ASSET_WAIT_MS = 1500;
 const BODY_FLOOR_SELECTOR = [
   'p:not(.dim)', 'blockquote', '.dc-text', '.obstacle-item', '.comp-title',
   '.comp-desc', '.verif-text', '.cap-text', '.cur-title', '.cur-text'
 ].join(',');
-let fitTimer = null;
-let fitGeneration = 0;
-let fitRunning = false;
-let fitPending = false;
+let fitFrame = null;
 const FIT_DEBUG = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
 
 if (FIT_DEBUG) {
@@ -791,7 +782,7 @@ function prepareScaleMeasurement(slide, scale) {
 }
 
 function resetSlideScale(slide) {
-  slide.classList.remove('fit-contained');
+  slide.classList.remove('fit-contained', 'fit-scroll-fallback');
   const content = slide.firstElementChild;
   if (!content) return;
   content.style.flex = '0 0 auto';
@@ -852,25 +843,22 @@ function projectedTextBounds(slide, scale) {
   };
 }
 
-function measureScale(slide, scale, generation) {
+function measureScale(slide, scale) {
   prepareScaleMeasurement(slide, scale);
-  if (generation !== fitGeneration) return null;
   return projectedTextBounds(slide, scale);
 }
 
-function fitSlideWithinFrame(slide, frameScale, generation) {
+function fitSlideWithinFrame(slide, frameScale) {
   const probe = frameScale;
 
-  let probeResult = measureScale(slide, probe, generation);
-  if (probeResult === null) return null;
+  const probeResult = measureScale(slide, probe);
   const probeFits = probeResult.fits;
   let lower = MIN_FIT_SCALE;
   let upper = probeFits ? frameScale : probe;
   let best = probeFits ? probe : null;
 
   if (!probeFits) {
-    const minimumResult = measureScale(slide, MIN_FIT_SCALE, generation);
-    if (minimumResult === null) return null;
+    const minimumResult = measureScale(slide, MIN_FIT_SCALE);
     if (!minimumResult.fits) {
       applySlideScale(slide, MIN_FIT_SCALE);
       return { scale: MIN_FIT_SCALE, fits: false, bounds: minimumResult.bounds };
@@ -882,8 +870,7 @@ function fitSlideWithinFrame(slide, frameScale, generation) {
 
   for (let iteration = 0; iteration < FIT_SEARCH_ITERATIONS && upper - lower > 0.001; iteration += 1) {
     const candidate = Math.round(((lower + upper) / 2) * 1000) / 1000;
-    const candidateResult = measureScale(slide, candidate, generation);
-    if (candidateResult === null) return null;
+    const candidateResult = measureScale(slide, candidate);
     if (candidateResult.fits) {
       best = candidate;
       lower = candidate;
@@ -893,94 +880,91 @@ function fitSlideWithinFrame(slide, frameScale, generation) {
   }
 
   const scale = best ?? MIN_FIT_SCALE;
-  const finalResult = measureScale(slide, scale, generation);
-  if (finalResult === null) return null;
+  const finalResult = measureScale(slide, scale);
   applySlideScale(slide, scale);
   return { scale, fits: finalResult.fits, bounds: finalResult.bounds };
 }
 
-async function fitCurrentSlide() {
+function fitCurrentSlide() {
   if (FIT_DEBUG) secName.textContent = 'FITTING';
-  const generation = ++fitGeneration;
   const index = cur;
   const slide = slides[index];
   resetSlideScale(slide);
   slide.classList.add('fit-measuring');
-
-  const preferredFloor = preferredReadableScale(slide);
-  const frameScale = frameScaleForSlide(slide);
-  const result = fitSlideWithinFrame(slide, frameScale, generation);
-  if (!result || index !== cur) return;
-  const { scale, fits, bounds } = result;
-  slide.classList.toggle('fit-contained', fits);
-  slide.classList.remove('fit-measuring');
-  slide.dataset.fitScale = scale.toFixed(2);
-  const frame = slide.getBoundingClientRect();
-  const diagnostic = {
-    name: slide.dataset.name || '',
-    scale: Number(scale.toFixed(2)),
-    frameScale,
-    preferredFloor,
-    belowPreferredFloor: scale < preferredFloor,
-    fits,
-    viewportWidth: slide.clientWidth,
-    viewportHeight: slide.clientHeight,
-    clientWidth: slide.clientWidth,
-    clientHeight: slide.clientHeight,
-    scrollWidth: slide.scrollWidth,
-    scrollHeight: slide.scrollHeight,
-    contentTop: Math.round(bounds.top - frame.top),
-    contentRight: Math.round(bounds.right - frame.left),
-    contentBottom: Math.round(bounds.bottom - frame.top),
-    contentLeft: Math.round(bounds.left - frame.left)
-  };
-
-  window.__fdcFit.status = fits ? 'fitted' : 'minimum-scale';
-  window.__fdcFit.runs += 1;
-  window.__fdcFit.slides[index] = diagnostic;
-  updateFitDebug(index);
-}
-
-async function fitSlides() {
-  if (fitRunning) {
-    fitPending = true;
-    return;
-  }
-  fitRunning = true;
-  const startIndex = cur;
-  const startWidth = window.innerWidth;
-  const startHeight = window.innerHeight;
   try {
-    await fitCurrentSlide();
-  } finally {
-    fitRunning = false;
-    const needsStableRefit = fitPending && (
-      cur !== startIndex
-      || window.innerWidth !== startWidth
-      || window.innerHeight !== startHeight
-    );
-    fitPending = false;
-    if (needsStableRefit) scheduleFit();
-  }
-}
+    const preferredFloor = preferredReadableScale(slide);
+    const frameScale = frameScaleForSlide(slide);
+    const result = fitSlideWithinFrame(slide, frameScale);
+    const { scale, fits, bounds } = result;
+    slide.dataset.fitScale = scale.toFixed(2);
+    const frame = slide.getBoundingClientRect();
+    const diagnostic = {
+      name: slide.dataset.name || '',
+      scale: Number(scale.toFixed(2)),
+      frameScale,
+      preferredFloor,
+      belowPreferredFloor: scale < preferredFloor,
+      fits,
+      viewportWidth: slide.clientWidth,
+      viewportHeight: slide.clientHeight,
+      clientWidth: slide.clientWidth,
+      clientHeight: slide.clientHeight,
+      scrollWidth: slide.scrollWidth,
+      scrollHeight: slide.scrollHeight,
+      contentTop: Math.round(bounds.top - frame.top),
+      contentRight: Math.round(bounds.right - frame.left),
+      contentBottom: Math.round(bounds.bottom - frame.top),
+      contentLeft: Math.round(bounds.left - frame.left)
+    };
 
-async function initialiseSlideFitting() {
-  try {
-    await Promise.race([
-      document.fonts.ready,
-      new Promise((resolve) => setTimeout(resolve, ASSET_WAIT_MS))
-    ]);
+    if (fits) {
+      slide.classList.add('fit-contained');
+      window.__fdcFit.status = 'fitted';
+    } else {
+      resetSlideScale(slide);
+      slide.classList.add('fit-scroll-fallback');
+      window.__fdcFit.status = 'scroll-fallback';
+    }
+    window.__fdcFit.runs += 1;
+    window.__fdcFit.slides[index] = diagnostic;
+    updateFitDebug(index);
   } catch (error) {
-    console.warn('font wait failed', error);
+    resetSlideScale(slide);
+    slide.classList.add('fit-scroll-fallback');
+    window.__fdcFit.status = 'fit-error';
+    console.error('slide fitting failed', error);
+    if (FIT_DEBUG) secName.textContent = `FIT ERROR ${error.message}`;
+  } finally {
+    slide.classList.remove('fit-measuring');
   }
-  await fitSlides();
 }
+
+function fitSlides() {
+  fitCurrentSlide();
+}
+window.refitFdcSlides = fitSlides;
 
 function scheduleFit() {
-  clearTimeout(fitTimer);
-  fitTimer = setTimeout(fitSlides, 120);
+  hideTooltip();
+  if (fitFrame !== null) return;
+  fitFrame = requestAnimationFrame(() => {
+    fitFrame = null;
+    fitSlides();
+  });
+}
+
+function initialiseSlideFitting() {
+  fitSlides();
+  if (!document.fonts) return;
+  document.fonts.ready.then(fitSlides).catch((error) => {
+    console.warn('font readiness failed', error);
+  });
+  document.fonts.addEventListener?.('loadingdone', fitSlides);
 }
 window.addEventListener('resize', scheduleFit);
+window.addEventListener('message', (event) => {
+  if (event.origin === location.origin && event.data === 'mint-presentation-resize') scheduleFit();
+});
 initialiseSlideFitting();
 
 

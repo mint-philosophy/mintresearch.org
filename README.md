@@ -104,25 +104,26 @@ cannot flex-shrink, so inverse dimensions survive until the final transform.
 The branded shell's banner, sidebar, status line, toolbar, padding,
 and borders therefore reduce the type scale even when the outer display remains
 large. An unframed `2560x1080` presentation is the authored `1.0` reference; at
-every framed size the search now begins at that authored `1.0` type scale and
-shrinks only when rendered text crosses an actual slide edge. The former `24px`
-body and `14px` label floors are now readability
-diagnostics rather than hard limits, because a fixed minimum font size cannot
-guarantee simultaneous containment in a smaller frame. Fitting runs at every
-iframe width, including responsive tablet and phone layouts. Only the visible
-slide is measured; navigation and the iframe's native viewport-resize event
-trigger a fresh bounded fit, avoiding both long intermediate states and
-self-cancellation from observing the fitter's own layout writes. Candidate
-measurement suppresses slide overflow so temporary compensated dimensions do
-not create scrollbars and recursively fire iframe resize events. The fitter is
-non-reentrant: events received during measurement are coalesced and rerun only
-after a genuine final viewport or slide change.
-Hidden tooltip copy is excluded. The versioned iframe URL prevents a stale
-subframe from surviving a deployment. The shell measures both banner and
-status-bar height instead of
-estimating the available frame. Run `npm run check:fdc-fit` for deterministic
-full-screen, framed desktop, and `390x844` mobile geometry checks; final
-acceptance must inspect all ten slides in Safari because transformed text
+each framed size the search begins at that authored `1.0` type scale and shrinks
+only when rendered text crosses an actual slide edge. The former `24px` body and
+`14px` label floors are readability diagnostics rather than hard limits, because
+a fixed minimum font size cannot guarantee containment in a smaller frame.
+Fitting runs at every iframe width, including responsive tablet and phone
+layouts. If containment fails at the safety minimum, the slide restores its
+responsive source layout and readable scrolling instead of hiding text.
+
+Only the visible slide is measured. Navigation fits synchronously before paint;
+viewport changes close any tooltip and refit on the next animation frame. The
+parent shell observes the iframe element and sends same-origin resize notices,
+so presentation-mode and sidebar transitions also refit against the final frame.
+The deck fits once immediately, again when web fonts become ready, and after
+later font-loading events. Candidate measurement suppresses overflow so temporary
+compensated dimensions do not create scrollbars and recursively fire iframe
+resize events. Hidden tooltip copy is excluded. The versioned iframe URL
+prevents a stale subframe from surviving a deployment. The shell measures both
+banner and status-bar height instead of estimating the available frame. Run
+`npm run check:fdc-fit` for the source-contract checks; final acceptance must
+inspect all ten slides and both shell states in Safari because transformed text
 geometry is engine-dependent.
 
 `/FDC-AI.html` is a separate private presentation. Its public artifact contains
