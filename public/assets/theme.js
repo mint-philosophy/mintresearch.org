@@ -1,19 +1,10 @@
 /* MINT Lab — theme toggle.
    Dark is the default; 'light' is stored in localStorage as 'mint-theme'.
    A tiny inline script in each page's <head> applies the stored theme
-   before first paint; this file just renders and wires the button. */
+   before first paint; this file just renders and wires the button.
+   The banner is a separate contract and must be loaded explicitly. */
 (function () {
   var KEY = 'mint-theme';
-
-  function loadBannerContract() {
-    if (document.querySelector('script[data-mint-banner-loader]')) return;
-    var script = document.createElement('script');
-    script.src = '/assets/mint-banner.js';
-    script.dataset.mintBannerLoader = '1';
-    document.head.appendChild(script);
-  }
-
-  loadBannerContract();
 
   function current() {
     return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';

@@ -14,12 +14,21 @@ It started as an Astro project, but in commit `c35aea3` (2026-03-30, "Deploy flo
 - `npm run build` will *not* regenerate the homepage — `src/pages/` no longer contains it.
 - Edits go directly into the served HTML. To re-apply the Minty overlay after edits, run `python3 scripts/inject_minty.py`.
 - The team data array is embedded in `public/index.html` as `<script id="personData" type="application/json">[...]</script>`. Edit that JSON to add/change people.
-- The homepage Papers/Publications list is loaded at runtime from `public/assets/papers/latest-paper-deliverables.csv`.
+- The homepage Papers list is loaded at runtime from `public/assets/papers/latest-paper-deliverables.csv`.
 - The `chatbot-worker/` and `paper-map/` subprojects retain their own build steps (see their READMEs).
 
-## Sidebar navigation and public microsites
+## Shared site contracts
 
-The served sidebar is duplicated in these seven static files:
+The canonical primary-navigation hierarchy and renderer now live in
+`public/assets/mint-site-nav.v1.js`. This is deliberately primary navigation,
+not a literal copy of `sitemap.xml`: it includes the public Agent Reports index,
+but report pages and newsletter issues remain discoverable through their index
+pages. The homepage section is consistently named `Papers`.
+
+All seven main-site static pages load this renderer into a marked navigation
+mount. Their existing HTML remains as a no-JavaScript fallback, but the shared
+contract replaces it at runtime, so labels, ordering, active state, and new
+top-level destinations come from one source:
 
 ```text
 public/index.html
@@ -31,9 +40,12 @@ public/guide/index.html
 public/newsletter/index.html
 ```
 
-Generated newsletter and report pages use `src/data/navigation.ts` and
-`src/components/Sidebar.astro`. Keep the static copies and generated-page
-navigation synchronized whenever the sidebar changes.
+Generated newsletter and report pages retain `src/data/navigation.ts` and
+`src/components/Sidebar.astro` only for their build-time fallback; the layout
+loads the same runtime contract. New external paper sites should use the
+versioned public renderer instead of copying either source. See
+`docs/shared-site-contracts.md` for the API, fallback markup, injected-paper
+workflow, and versioning policy.
 
 Public microsites share the main site's navigation hierarchy and typography
 roles, but not every microsite shares the full runtime theme. The presentation
@@ -44,13 +56,17 @@ Across both implementations, use JetBrains Mono for structural UI, headings,
 labels, legends, and metadata, and Newsreader for sustained prose.
 
 The canonical masthead implementation is `public/assets/mint-banner.css` plus
-`public/assets/mint-banner.js`. `theme.css` imports its geometry and `theme.js`
-loads its markup/asset contract for every main-site banner. External microsites
-may load those two files directly, but must not import the full main-site theme.
-Do not duplicate banner dimensions or image lists in a microsite. The shared
-ownership boundary prevents the oversized-banner regression without blocking
-deployment. `npm run check:banner` is available as an optional local diagnostic;
-add `-- --check-blind-refusal` to inspect the current Blind Refusal `main` branch.
+`public/assets/mint-banner.js`. It accepts an empty `.top-banner` mount, creates
+the logo and all eight Minties, owns complete responsive wrapping, and publishes
+the measured `--banner-h`. Main-site pages and presentation shells load those
+assets directly; external microsites may do the same but must not import the
+full main-site theme. Host pages own only placement, surface styling, and
+sidebar offsets. See `docs/shared-site-contracts.md` for the visible
+no-JavaScript fallback and ownership boundary.
+
+Run `npm run check:contracts` for both local contracts. The command
+`npm run check:banner -- --check-blind-refusal` additionally inspects the
+deployed Blind Refusal source.
 
 `Microsites` is a non-clickable, always-expanded sidebar branch. Its public
 leaves are currently:
@@ -85,9 +101,10 @@ public/FDC.html                -> public/FDC-deck.html
 Keep deck code isolated inside its iframe so deck-specific keyboard controls,
 scaling, styles, and animations cannot conflict with the site shell. The deck
 sources remain `noindex`; only the branded wrapper routes are canonical and
-indexable. When the Microsites branch changes, update the seven static
-sidebars, `src/data/navigation.ts`, and the shared presentation-shell
-navigation together.
+indexable. The shell now exposes empty banner and navigation mounts; the shared
+assets populate both. Do not reintroduce a navigation array, Minty image list,
+or banner measurement in `presentation-shell.js`. `npm run check:contracts`
+verifies the canonical contract and every served integration mount.
 
 `public/FDC-deck.html` uses a bounded browser-native search for the largest scale
 at which each slide is fully contained. The rendered postcondition
@@ -120,8 +137,9 @@ The deck fits once immediately, again when web fonts become ready, and after
 later font-loading events. Candidate measurement suppresses overflow so temporary
 compensated dimensions do not create scrollbars and recursively fire iframe
 resize events. Hidden tooltip copy is excluded. The versioned iframe URL
-prevents a stale subframe from surviving a deployment. The shell measures both
-banner and status-bar height instead of estimating the available frame. Run
+prevents a stale subframe from surviving a deployment. The shared banner
+contract measures the banner while the shell reserves the measured status-bar
+height, rather than estimating either part of the available frame. Run
 `npm run check:fdc-fit` for the source-contract checks; final acceptance must
 inspect all ten slides and both shell states in Safari because transformed text
 geometry is engine-dependent.
@@ -201,7 +219,7 @@ chatbot-worker/        # Cloudflare Worker for the Minty chatbot
 
 ## Updating homepage Papers
 
-The homepage Papers/Publications section is generated in the browser from:
+The homepage Papers section is generated in the browser from:
 
 ```text
 public/assets/papers/latest-paper-deliverables.csv
@@ -221,7 +239,7 @@ Preferred Notion API update flow:
    - In Windows PowerShell, use `npm.cmd run update:papers:notion` if script execution policy blocks `npm`.
 4. Review the listed additions, removals, and changed rows.
 5. Type `y` to update `public/assets/papers/latest-paper-deliverables.csv`, or `n` to cancel without changing the site CSV.
-6. Refresh the local preview and check the homepage Papers/Publications section.
+6. Refresh the local preview and check the homepage Papers section.
 
 The Notion updater fetches page details sequentially and retries if Notion returns a rate-limit response, using Notion's `Retry-After` header before continuing.
 
@@ -231,6 +249,6 @@ CSV fallback update flow:
 2. Import the export with `npm run import:papers -- <path-to-notion-export.csv>`.
    - In Windows PowerShell, use `npm.cmd run import:papers -- <path-to-notion-export.csv>` if script execution policy blocks `npm`.
 3. Confirm public visible rows have the intended link fields. Codenames are maintained in Notion for paper artefacts and stability checks, and should use short kebab-case when present, e.g. `blind-refusal`. If future duplicates occur, use `paper-name`, then `paper-name-2`.
-4. Verify locally by serving `public/` (`python3 -m http.server -d public 8090`) and checking the homepage Papers/Publications section.
+4. Verify locally by serving `public/` (`python3 -m http.server -d public 8090`) and checking the homepage Papers section.
 
 The import script blocks duplicate non-empty codenames, or changed codenames for papers already known to the current site CSV. The loader ignores placeholder links such as `no github` and `no post yet`. If `Site: Alt Source` is populated, the Papers section shows it as an `Alt source` link immediately after `View paper`. Create `public/assets/papers/<codename>/` folders only when a paper has artefacts that need to be served from the site.
