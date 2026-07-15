@@ -26,8 +26,16 @@
     return Math.min(1, Math.max(floor, stepped));
   }
 
+  function compensatedFontSize(sourceFontSize, scale, minimumRenderedSize) {
+    if (!Number.isFinite(sourceFontSize) || sourceFontSize <= 0) return sourceFontSize;
+    if (!Number.isFinite(scale) || scale <= 0) return sourceFontSize;
+    if (!Number.isFinite(minimumRenderedSize) || minimumRenderedSize <= 0) return sourceFontSize;
+    return Math.max(sourceFontSize, minimumRenderedSize / scale);
+  }
+
   root.MintFdcFitMath = Object.freeze({
     referenceViewport: referenceViewport,
-    scaleForViewport: scaleForViewport
+    scaleForViewport: scaleForViewport,
+    compensatedFontSize: compensatedFontSize
   });
 })(typeof window === 'undefined' ? globalThis : window);

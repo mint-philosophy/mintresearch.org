@@ -6,7 +6,7 @@
 <title>The AGI-Ready Policy Student — Seth Lazar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&amp;display=swap" rel="stylesheet">
-<script src="/assets/fdc-fit-math.js"></script>
+<script src="/assets/fdc-fit-math.js?v=20260715.2"></script>
 <style>
 :root {
   --cream: #FFFAED; --yellow: #FFD054; --orange: #ee7a44;
@@ -733,6 +733,7 @@ const LABEL_FLOOR_SELECTOR = [
 ].join(',');
 const preparedByElement = new Map();
 const preparedCache = new Map();
+const labelFontRecords = new Map();
 let pretextModule = null;
 let fitTimer = null;
 let fitGeneration = 0;
@@ -820,14 +821,39 @@ function minimumReadableScale(slide) {
   slide.querySelectorAll(BODY_FLOOR_SELECTOR).forEach((element) => {
     if (visibleText(element)) floor = Math.max(floor, 24 / parseFloat(getComputedStyle(element).fontSize));
   });
-  slide.querySelectorAll(LABEL_FLOOR_SELECTOR).forEach((element) => {
-    if (visibleText(element)) floor = Math.max(floor, 14 / parseFloat(getComputedStyle(element).fontSize));
-  });
   return Math.min(1, Math.ceil(floor * 100) / 100);
 }
 
 function frameScaleForSlide(slide, floor) {
   return window.MintFdcFitMath?.scaleForViewport(slide.clientWidth, slide.clientHeight, floor) ?? 1;
+}
+
+function resetLabelReadability(slide) {
+  slide.querySelectorAll(LABEL_FLOOR_SELECTOR).forEach((element) => {
+    const record = labelFontRecords.get(element);
+    if (!record) return;
+    if (record.inlineFontSize) element.style.fontSize = record.inlineFontSize;
+    else element.style.removeProperty('font-size');
+  });
+}
+
+function applyLabelReadability(slide, scale) {
+  slide.querySelectorAll(LABEL_FLOOR_SELECTOR).forEach((element) => {
+    if (!visibleText(element)) return;
+    let record = labelFontRecords.get(element);
+    if (!record) {
+      record = {
+        inlineFontSize: element.style.fontSize,
+        sourceFontSize: parseFloat(getComputedStyle(element).fontSize)
+      };
+      labelFontRecords.set(element, record);
+    }
+    const adjusted = window.MintFdcFitMath?.compensatedFontSize(record.sourceFontSize, scale, 14)
+      ?? record.sourceFontSize;
+    if (adjusted > record.sourceFontSize + 0.01) element.style.fontSize = `${adjusted}px`;
+    else if (record.inlineFontSize) element.style.fontSize = record.inlineFontSize;
+    else element.style.removeProperty('font-size');
+  });
 }
 
 function applySlideScale(slide, scale) {
@@ -836,10 +862,12 @@ function applySlideScale(slide, scale) {
   content.style.zoom = String(scale);
   content.style.width = `${100 / scale}%`;
   content.style.height = `${100 / scale}%`;
+  applyLabelReadability(slide, scale);
 }
 
 function resetSlideScale(slide) {
   slide.classList.remove('pretext-fitted');
+  resetLabelReadability(slide);
   const content = slide.firstElementChild;
   if (!content) return;
   content.style.zoom = '1';
