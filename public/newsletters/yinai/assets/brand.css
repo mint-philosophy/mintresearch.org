@@ -57,12 +57,16 @@ main.nl-page {
   max-width: 680px;
   padding: 30px 20px 56px;
   flex: 1;
+  /* The issue page collapses/expands whole story reports in place;
+     browser scroll anchoring fights the scripted scroll-backs. */
+  overflow-anchor: none;
 }
 
 /* Shared mono stack for all UI text (kickers, meta, bylines, chips,
    boxes, footer). Body copy stays serif — readability wins. */
 .nl-kicker, .byline, .chip, .folio, .section-head, .readmore,
-.sources, .how-reported, .disclosure, .nl-exit, .nl-footer, .nl-hero-meta {
+.sources, .how-reported, .disclosure, .nl-exit, .nl-footer, .nl-hero-meta,
+.readmore-toggle, .expansion-label, .expansion-collapse, .issue-note {
   font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, Menlo, Consolas, monospace;
 }
 
@@ -239,11 +243,70 @@ h1.mast em { font-weight: 400; }
 }
 .nl-digest-content a:hover { color: var(--accent-bright); text-decoration-color: var(--accent-bright); }
 
-/* ── 12. Small screens ─────────────────────────────────────────── */
+/* ── 12. Issue-page story expansions — each reported story's digest
+        paragraph ends with a "Read more →" toggle; the full piece sits
+        directly after it in a collapsed <details class="story-expansion"
+        id="story-{slug}"> card (bg-2, accent left rule, mono chrome,
+        serif body). Native <summary> keeps expansion JS-free; the page's
+        inline script adds toggle/deep-link behavior. ─────────────────── */
+.readmore-toggle {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.nl-digest-content a.readmore-toggle { text-decoration: none; }
+.nl-digest-content a.readmore-toggle:hover { text-decoration: underline; }
+details.story-expansion {
+  margin: 10px 0 28px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  scroll-margin-top: 18px;
+}
+details.story-expansion > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px;
+  padding: 11px 16px;
+}
+details.story-expansion > summary::-webkit-details-marker { display: none; }
+details.story-expansion > summary::before { content: "▸"; color: var(--accent); }
+details.story-expansion[open] > summary::before { content: "▾"; }
+details.story-expansion[open] > summary {
+  border-bottom: 1px solid var(--border);
+  padding: 14px 18px;
+}
+.expansion-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--accent);
+}
+.expansion-hed {
+  font-family: Georgia, 'Iowan Old Style', Palatino, serif;
+  font-size: 16.5px; line-height: 1.35; font-weight: 700;
+  color: var(--text-bright);
+}
+details.story-expansion[open] .expansion-hed { font-size: 20px; }
+.expansion-inner { padding: 18px 20px 16px; }
+details.story-expansion p.dek { font-size: 17px; margin: 0 0 18px; }
+details.story-expansion .article-body { font-size: 16.5px; }
+details.story-expansion .sources,
+details.story-expansion .how-reported { background: var(--bg-1); }
+details.story-expansion .sources { margin: 26px 0 0; }
+.expansion-collapse {
+  margin: 16px 0 0; font-size: 12px; font-weight: 600;
+  letter-spacing: 0.3px; text-align: right;
+}
+
+/* Article pages: one-line mono pointer to the piece's slot in the issue */
+.issue-note { margin: 26px 0 0; font-size: 12px; letter-spacing: 0.3px; color: var(--text-2); }
+
+/* ── 13. Small screens ─────────────────────────────────────────── */
 @media (max-width: 720px) {
   main.nl-page { padding: 24px 16px 48px; }
   .nl-header-inner { padding: 14px 16px 12px; }
   h1.hed { font-size: 27px; }
   h1.mast { font-size: 30px; }
   .nl-hero h1 { font-size: 29px; }
+  details.story-expansion[open] > summary { padding: 12px 16px; }
+  .expansion-inner { padding: 16px 16px 14px; }
 }
