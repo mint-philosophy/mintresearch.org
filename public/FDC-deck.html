@@ -6,6 +6,7 @@
 <title>The AGI-Ready Policy Student — Seth Lazar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&amp;display=swap" rel="stylesheet">
+<script src="/assets/fdc-fit-math.js"></script>
 <style>
 :root {
   --cream: #FFFAED; --yellow: #FFD054; --orange: #ee7a44;
@@ -742,6 +743,7 @@ window.__pretextFit = {
   runs: 0,
   preparedBlocks: 0,
   layoutRuns: 0,
+  referenceViewport: window.MintFdcFitMath?.referenceViewport || null,
   slides: []
 };
 
@@ -824,12 +826,16 @@ function minimumReadableScale(slide) {
   return Math.min(1, Math.ceil(floor * 100) / 100);
 }
 
+function frameScaleForSlide(slide, floor) {
+  return window.MintFdcFitMath?.scaleForViewport(slide.clientWidth, slide.clientHeight, floor) ?? 1;
+}
+
 function applySlideScale(slide, scale) {
   const content = slide.firstElementChild;
   if (!content) return;
   content.style.zoom = String(scale);
   content.style.width = `${100 / scale}%`;
-  content.style.height = '100%';
+  content.style.height = `${100 / scale}%`;
 }
 
 function resetSlideScale(slide) {
@@ -886,8 +892,9 @@ async function fitSlides() {
   const diagnostics = [];
   for (const slide of slides) {
     const floor = minimumReadableScale(slide);
-    let scale = 1;
-    if (!slideFits(slide) && pretextModule) {
+    const frameScale = frameScaleForSlide(slide, floor);
+    let scale = frameScale;
+    if (pretextModule) {
       while (scale > floor && projectedSlideHeight(slide, scale) > slide.clientHeight) {
         scale = Math.max(floor, Math.round((scale - FIT_STEP) * 100) / 100);
       }
@@ -902,8 +909,8 @@ async function fitSlides() {
     }
 
     let fits = slideFits(slide);
-    while (fits && scale < 1) {
-      const trialScale = Math.min(1, Math.round((scale + FIT_STEP) * 100) / 100);
+    while (fits && scale < frameScale) {
+      const trialScale = Math.min(frameScale, Math.round((scale + FIT_STEP) * 100) / 100);
       applySlideScale(slide, trialScale);
       if (!await nextFrame(generation)) return;
       if (slideFits(slide)) {
@@ -922,8 +929,11 @@ async function fitSlides() {
     diagnostics.push({
       name: slide.dataset.name || '',
       scale: Number(scale.toFixed(2)),
+      frameScale,
       floor,
       fits,
+      viewportWidth: slide.clientWidth,
+      viewportHeight: slide.clientHeight,
       clientHeight: slide.clientHeight,
       scrollHeight: slide.scrollHeight,
       visibleBottom: Math.round(visibleContentBottom(slide)),
@@ -945,10 +955,14 @@ async function initialiseSlideFitting() {
   await fitSlides();
 }
 
-window.addEventListener('resize', () => {
+function scheduleFit() {
   clearTimeout(fitTimer);
   fitTimer = setTimeout(fitSlides, 120);
-});
+}
+window.addEventListener('resize', scheduleFit);
+if ('ResizeObserver' in window) {
+  new ResizeObserver(scheduleFit).observe(document.querySelector('.slides'));
+}
 initialiseSlideFitting();
 
 

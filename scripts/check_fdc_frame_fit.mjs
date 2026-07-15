@@ -1,0 +1,100 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+
+const mathSource = fs.readFileSync('public/assets/fdc-fit-math.js', 'utf8');
+const deck = fs.readFileSync('public/FDC-deck.html', 'utf8');
+const shellScript = fs.readFileSync('public/assets/presentation-shell.js', 'utf8');
+const shellCss = fs.readFileSync('public/assets/presentation-shell.css', 'utf8');
+const context = {};
+vm.createContext(context);
+vm.runInContext(mathSource, context);
+
+const fit = context.MintFdcFitMath;
+assert.ok(fit, 'frame-fit math must initialize');
+assert.equal(fit.referenceViewport.width, 2560);
+assert.equal(fit.referenceViewport.height, 1080);
+assert.equal(fit.referenceViewport.slideHeight, 976);
+
+function framedSlidePlane({
+  width,
+  height,
+  banner,
+  sidebar,
+  status,
+  paddingX,
+  paddingY,
+  toolbar,
+  border,
+  ticker = fit.referenceViewport.tickerHeight,
+  navigation = fit.referenceViewport.navigationHeight
+}) {
+  return {
+    width: width - sidebar - paddingX - border,
+    height: height - banner - status - paddingY - toolbar - border
+      - ticker - navigation
+  };
+}
+
+const full = { width: 2560, height: 976 };
+const presentation1440 = { width: 1440, height: 796 };
+const framed2560 = framedSlidePlane({
+  width: 2560,
+  height: 1080,
+  banner: 100,
+  sidebar: 240,
+  status: 28,
+  paddingX: 24,
+  paddingY: 20,
+  toolbar: 32,
+  border: 2
+});
+const framed1440 = framedSlidePlane({
+  width: 1440,
+  height: 900,
+  banner: 100,
+  sidebar: 240,
+  status: 28,
+  paddingX: 24,
+  paddingY: 20,
+  toolbar: 32,
+  border: 2
+});
+const framed390 = framedSlidePlane({
+  width: 390,
+  height: 844,
+  banner: 107,
+  sidebar: 0,
+  status: 49,
+  paddingX: 16,
+  paddingY: 14,
+  toolbar: 32,
+  border: 2,
+  ticker: 32,
+  navigation: 54
+});
+
+assert.deepEqual(full, { width: 2560, height: 976 });
+assert.deepEqual(framed2560, { width: 2294, height: 794 });
+assert.deepEqual(framed1440, { width: 1174, height: 614 });
+assert.deepEqual(framed390, { width: 372, height: 554 });
+assert.equal(fit.scaleForViewport(full.width, full.height, 0.71), 1);
+assert.equal(fit.scaleForViewport(presentation1440.width, presentation1440.height, 0), 0.56);
+assert.equal(fit.scaleForViewport(framed2560.width, framed2560.height, 0), 0.81);
+assert.equal(fit.scaleForViewport(framed2560.width, framed2560.height, 0.71), 0.81);
+assert.equal(fit.scaleForViewport(framed2560.width, framed2560.height, 0.86), 0.86);
+assert.equal(fit.scaleForViewport(framed1440.width, framed1440.height, 0), 0.45);
+assert.equal(fit.scaleForViewport(framed1440.width, framed1440.height, 0.71), 0.71);
+assert.equal(fit.scaleForViewport(framed1440.width, framed1440.height, 0.86), 0.86);
+
+assert.ok(deck.includes('<script src="/assets/fdc-fit-math.js"></script>'), 'deck must load frame-fit math');
+assert.ok(deck.includes('scaleForViewport(slide.clientWidth, slide.clientHeight, floor)'), 'fitter must use the actual iframe slide plane');
+assert.ok(deck.includes('while (fits && scale < frameScale)'), 'overflow recovery must not grow beyond the frame cap');
+assert.ok(deck.includes("content.style.height = `${100 / scale}%`;"), 'scaled slide backgrounds must continue filling the visible stage');
+assert.ok(deck.includes("new ResizeObserver(scheduleFit).observe(document.querySelector('.slides'))"), 'fitter must observe iframe slide-plane changes');
+assert.ok(deck.includes("if (!matchMedia('(min-width: 901px)').matches)"), 'mobile must retain its native scrolling path');
+assert.ok(shellScript.includes("style.setProperty('--presentation-status-h', statusline.getBoundingClientRect().height + 'px')"), 'shell must reserve the measured status-bar height');
+assert.ok(shellScript.includes('chromeObserver.observe(statusline)'), 'shell must observe status-bar size changes');
+assert.ok(shellCss.includes('--presentation-status-h: 49px'), 'mobile fallback must match the two-row status bar');
+
+console.log('FDC frame-fit check passed: full-screen 1.00, framed desktop scaling, and 390x844 mobile chrome reservation.');

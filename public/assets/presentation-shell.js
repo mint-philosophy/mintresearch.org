@@ -133,13 +133,19 @@
     '</div>';
 
   var banner = chrome.querySelector('.top-banner');
-  function measureBanner() {
+  var statusline = chrome.querySelector('.statusline');
+  function measureFrameChrome() {
     document.documentElement.style.setProperty('--banner-h', banner.getBoundingClientRect().height + 'px');
+    document.documentElement.style.setProperty('--presentation-status-h', statusline.getBoundingClientRect().height + 'px');
   }
-  measureBanner();
-  window.addEventListener('load', measureBanner);
-  window.addEventListener('resize', measureBanner);
-  if ('ResizeObserver' in window) new ResizeObserver(measureBanner).observe(banner);
+  measureFrameChrome();
+  window.addEventListener('load', measureFrameChrome);
+  window.addEventListener('resize', measureFrameChrome);
+  if ('ResizeObserver' in window) {
+    var chromeObserver = new ResizeObserver(measureFrameChrome);
+    chromeObserver.observe(banner);
+    chromeObserver.observe(statusline);
+  }
 
   var toggle = document.getElementById('presentationModeToggle');
   var frame = document.getElementById('presentationFrame');
