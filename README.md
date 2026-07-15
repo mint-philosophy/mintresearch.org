@@ -36,11 +36,20 @@ Generated newsletter and report pages use `src/data/navigation.ts` and
 navigation synchronized whenever the sidebar changes.
 
 Public microsites share the main site's navigation hierarchy and typography
-roles, but not every microsite shares runtime assets. The presentation routes
-below use the shared main-site shell. The externally hosted Blind Refusal site
-keeps its theme and assets self-contained in `mint-philosophy/b-r-minisite`.
+roles, but not every microsite shares the full runtime theme. The presentation
+routes below use the shared main-site shell. The externally hosted Blind Refusal
+site keeps its paper theme self-contained in `mint-philosophy/b-r-minisite`, but
+loads the banner-only contract and banner images from this repository.
 Across both implementations, use JetBrains Mono for structural UI, headings,
 labels, legends, and metadata, and Newsreader for sustained prose.
+
+The canonical masthead implementation is `public/assets/mint-banner.css` plus
+`public/assets/mint-banner.js`. `theme.css` imports its geometry and `theme.js`
+loads its markup/asset contract for every main-site banner. External microsites
+may load those two files directly, but must not import the full main-site theme.
+Do not duplicate banner dimensions or image lists in a microsite. Run
+`npm run check:banner` before deployment; the Pages workflow enforces the same
+check.
 
 `Microsites` is a non-clickable, always-expanded sidebar branch. Its public
 leaves are currently:

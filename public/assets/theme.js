@@ -5,6 +5,16 @@
 (function () {
   var KEY = 'mint-theme';
 
+  function loadBannerContract() {
+    if (document.querySelector('script[data-mint-banner-loader]')) return;
+    var script = document.createElement('script');
+    script.src = '/assets/mint-banner.js';
+    script.dataset.mintBannerLoader = '1';
+    document.head.appendChild(script);
+  }
+
+  loadBannerContract();
+
   function current() {
     return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
   }
