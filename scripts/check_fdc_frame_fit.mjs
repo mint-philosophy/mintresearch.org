@@ -85,59 +85,39 @@ assert.equal(fit.scaleForViewport(framed2560.width, framed2560.height, 0), 0.81)
 assert.equal(fit.scaleForViewport(framed2560.width, framed2560.height, 0.71), 0.81);
 assert.equal(fit.scaleForViewport(framed2560.width, framed2560.height, 0.86), 0.86);
 assert.equal(fit.scaleForViewport(framed1440.width, framed1440.height, 0), 0.45);
-assert.equal(fit.scaleForViewport(framed1440.width, framed1440.height, 0.71), 0.71);
-assert.equal(fit.scaleForViewport(framed1440.width, framed1440.height, 0.86), 0.86);
-assert.equal(fit.compensatedFontSize(16, 0.71, 14), 14 / 0.71);
-assert.equal(fit.compensatedFontSize(21, 0.71, 14), 21);
+assert.equal(fit.scaleForViewport(framed1440.width, framed1440.height, 0.05), 0.45);
+assert.equal(fit.scaleForViewport(framed390.width, framed390.height, 0.05), 0.14);
 
-const labelRuntimeSource = deck.match(
-  /function resetLabelReadability\(slide\) \{[\s\S]*?(?=\nfunction applySlideScale)/
-)?.[0];
-assert.ok(labelRuntimeSource, 'label readability runtime must be extractable for cycle checks');
-const labelRuntimeContext = {
-  window: { MintFdcFitMath: fit },
-  getComputedStyle: (element) => ({ fontSize: element.style.fontSize || '16px' })
-};
-vm.runInNewContext(`
-  const LABEL_FLOOR_SELECTOR = '.label';
-  const labelFontRecords = new Map();
-  const visibleText = () => 'label';
-  ${labelRuntimeSource}
-  this.applyLabelReadability = applyLabelReadability;
-  this.resetLabelReadability = resetLabelReadability;
-`, labelRuntimeContext);
-const labelStyle = {
-  fontSize: '',
-  removeProperty(property) {
-    if (property === 'font-size') this.fontSize = '';
-  }
-};
-const labelElement = { style: labelStyle };
-const labelSlide = { querySelectorAll: () => [labelElement] };
-labelRuntimeContext.applyLabelReadability(labelSlide, 0.71);
-assert.equal(parseFloat(labelStyle.fontSize), 14 / 0.71);
-labelRuntimeContext.applyLabelReadability(labelSlide, 0.45);
-assert.equal(parseFloat(labelStyle.fontSize), 14 / 0.45, 'repeated scaling must use the source size, not compound');
-labelRuntimeContext.resetLabelReadability(labelSlide);
-assert.equal(labelStyle.fontSize, '', 'mobile/reset path must restore the original font size');
-labelRuntimeContext.applyLabelReadability(labelSlide, 0.81);
-assert.equal(parseFloat(labelStyle.fontSize), 14 / 0.81, 'desktop re-entry must recompute from the source size');
-labelRuntimeContext.resetLabelReadability(labelSlide);
-assert.equal(labelStyle.fontSize, '');
-
-assert.ok(deck.includes('<script src="/assets/fdc-fit-math.js?v=20260715.2"></script>'), 'deck must load versioned frame-fit math');
-assert.ok(deck.includes('scaleForViewport(slide.clientWidth, slide.clientHeight, floor)'), 'fitter must use the actual iframe slide plane');
-assert.ok(deck.includes('while (fits && scale < frameScale)'), 'overflow recovery must not grow beyond the frame cap');
+assert.ok(!deck.includes('@chenglou/pretext'), 'runtime fitting must not load the Safari-blocking Pretext layout path');
+assert.ok(deck.includes('return slide.clientWidth && slide.clientHeight ? 1 : MIN_FIT_SCALE;'), 'each visible slide must start at authored type size and shrink only for measured containment');
+assert.ok(deck.includes('function fitSlideWithinFrame'), 'every slide must use bounded frame fitting');
+assert.ok(deck.includes('FIT_SEARCH_ITERATIONS = 10'), 'frame fitting must use a bounded search');
+assert.ok(deck.includes('const index = cur;\n  const slide = slides[index];'), 'each pass must retain the identity of its visible slide');
+assert.ok(deck.includes('.slide.fit-measuring { transform: none; transition: none; overflow: hidden; }'), 'candidate geometry must not create scrollbars that retrigger iframe resize');
+assert.ok(deck.includes('if (fitRunning) {\n    fitPending = true;'), 'resize and navigation events must not interrupt an active fit pass');
+assert.ok(deck.includes('const needsStableRefit = fitPending && ('), 'coalesced events must refit only after a real viewport or slide change');
+assert.ok(deck.includes("secName.textContent=slides[n].dataset.name||'';scheduleFit();"), 'navigation must fit the newly visible slide');
+assert.ok(deck.includes('.fi { opacity: 1; transform: none; transition: none; }'), 'Safari slide navigation must not leave text transparent');
+assert.ok(deck.includes('.slide.active { opacity: 1; visibility: visible;'), 'Safari must not composite transformed inactive slides over the current slide');
+assert.ok(deck.includes("content.style.transform = `scale(${scale})`;"), 'Safari fitting must use rendered transform geometry');
+assert.ok(!deck.includes('content.style.zoom'), 'Safari fitting must not depend on inconsistent CSS zoom geometry');
+assert.ok(deck.includes("content.style.transform = 'none';"), 'candidate measurement must use untransformed text geometry');
+assert.ok(deck.includes("content.style.flex = '0 0 auto';"), 'inverse-size compensation must not be collapsed by flex shrink');
+assert.ok(deck.includes('origin.top + (content.bottom - origin.top) * scale'), 'candidate bounds must be projected into the visible frame');
+assert.ok(!deck.includes('requestAnimationFrame(resolve)'), 'Safari fitting must not stall on animation frames during oversized candidate layout');
 assert.ok(deck.includes("content.style.height = `${100 / scale}%`;"), 'scaled slide backgrounds must continue filling the visible stage');
-assert.ok(deck.includes("new ResizeObserver(scheduleFit).observe(document.querySelector('.slides'))"), 'fitter must observe iframe slide-plane changes');
-assert.ok(deck.includes("if (!matchMedia('(min-width: 901px)').matches)"), 'mobile must retain its native scrolling path');
-const floorFunction = deck.match(/function minimumReadableScale\(slide\) \{([\s\S]*?)\n\}/)?.[1] || '';
-assert.ok(floorFunction.includes('BODY_FLOOR_SELECTOR'), 'slide floor must protect substantive text');
-assert.ok(!floorFunction.includes('LABEL_FLOOR_SELECTOR'), 'small labels must not hold the whole slide above its frame scale');
-assert.ok(deck.includes('applyLabelReadability(slide, scale)'), 'labels must retain their own rendered floor');
-assert.ok(wrapper.includes('src="/FDC-deck.html?v=20260715.2"'), 'wrapper must bypass stale iframe caches');
+assert.ok(deck.includes("window.addEventListener('resize', scheduleFit)"), 'fitter must react to actual iframe viewport changes');
+assert.ok(!deck.includes('new ResizeObserver(scheduleFit)'), 'fitter must not observe layout writes that cancel its own search');
+assert.ok(!deck.includes("if (!matchMedia('(min-width: 901px)').matches)"), 'narrow framed decks must not bypass fitting');
+assert.ok(deck.includes('document.createTreeWalker(slide, NodeFilter.SHOW_TEXT)'), 'containment must measure rendered text nodes');
+assert.ok(deck.includes('projected.top >= frame.top'), 'containment must keep edge-aligned structural labels inside the top edge');
+assert.ok(deck.includes('projected.right <= frame.right - FRAME_INSET'), 'containment must include a safe right inset');
+assert.ok(deck.includes('projected.bottom <= frame.bottom - FRAME_INSET'), 'containment must include a safe bottom inset');
+assert.ok(deck.includes('projected.left >= frame.left'), 'containment must keep edge-aligned structural labels inside the left edge');
+assert.ok(deck.includes('belowPreferredFloor: scale < preferredFloor'), 'readability must be diagnostic rather than a hard overflow floor');
+assert.ok(wrapper.includes('src="/FDC-deck.html?v=20260715.22"'), 'wrapper must bypass stale iframe caches');
 assert.ok(shellScript.includes("style.setProperty('--presentation-status-h', statusline.getBoundingClientRect().height + 'px')"), 'shell must reserve the measured status-bar height');
 assert.ok(shellScript.includes('chromeObserver.observe(statusline)'), 'shell must observe status-bar size changes');
 assert.ok(shellCss.includes('--presentation-status-h: 49px'), 'mobile fallback must match the two-row status bar');
 
-console.log('FDC frame-fit check passed: frame scaling, repeatable label reset cycles, cache version, and mobile chrome reservation.');
+console.log('FDC frame-fit check passed: bounded all-viewport scaling, four-edge containment, cache version, and mobile chrome reservation.');
