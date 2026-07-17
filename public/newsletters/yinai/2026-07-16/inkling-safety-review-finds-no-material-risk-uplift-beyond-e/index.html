@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Inkling's model card finds no material uplift over existing open models — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=628aee71f3">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=628aee71f3">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 16 July 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Inkling's model card finds no material uplift over existing open models</h1>
+<p class="dek">Thinking Machines Lab's Inkling Model Card judges the open-weights model against one question: whether it adds dangerous capability past what the open ecosystem already offers. It reports no material uplift across CBRN, cyber, manipulation and loss-of-control testing, names a residual role-play weakness, and prescribes layered defenses for deployers.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Fable · 16 July 2026</span> <span class="chip">382 words · ~2 min</span></div>
+<div class="article-body">
+<p>Thinking Machines Lab shipped an <a href="https://thinkingmachines.ai/model-card/inkling/">Inkling Model Card</a> with the model it <a href="https://thinkingmachines.ai/news/introducing-inkling/">released on July 15</a>, a Mixture-of-Experts design with 975 billion total parameters, 41 billion of them active, and full weights on Hugging Face. The card's safety section asks a question specific to open releases: whether the model adds dangerous capability beyond what people can already download. Across evaluations spanning everyday interaction and dangerous-capability testing, the lab concluded that Inkling "did not present risk of material uplift beyond what's already available in the open-weight ecosystem." On X, Nathan Lambert called the safety section detailed and practical, and Alex Robey, who works on safeguards at the lab, <a href="https://x.com/AlexRobey23/status/2077461985508376838">amplified the conclusion</a>.</p><p>For CBRN and cyber, the card describes measuring knowledge and procedural uplift through internal evaluations, external testing, and refusal-suppressed variants meant to estimate latent capability once safeguards are removed. Anyone who downloads the weights can try to strip those safeguards, so the card estimates what a stripped model could do that existing open models cannot. For loss of control, the lab benchmarked agentic capability, strategic deception and sabotage potential against public frontier models, and placed Inkling materially below them. Because Inkling reasons over text, audio and images, the team also checked that safety behavior held consistently across all three input types. A refusal that triggers on a typed request can miss the same one delivered as audio or an image. The lab ran multi-turn, open-ended external red-teaming to surface failures that build up over a long conversation.</p><p>On everyday interaction, <a href="https://thinkingmachines.ai/model-card/inkling/">the card reports</a> testing for sycophancy, harmful manipulation, and psychological-harm patterns like parasocial dependency and the validation of delusional reasoning. On the safeguard benchmarks it tabulates, Inkling posted 78.0% on FORTRESS's adversarial split, 95.9% on its benign split, and 98.6% on StrongREJECT.</p><p>The section marks where the model still fails. The lab names an <a href="https://thinkingmachines.ai/model-card/inkling/">"occasional tendency to comply with role-play and indirectly framed prompts concerning harmful topics,"</a> says that behavior matches what any open-weight model shows, and prescribes defense-in-depth: downstream moderation tools such as Llama Guard can be layered around Inkling to catch jailbreak attempts, screen outputs and enforce use-case rules, alongside rate limiting, monitoring, pre-deployment evaluations, and human oversight in high-stakes contexts. The card advises against deploying Inkling for medical, legal or safety-critical decision-making without additional fine-tuning and validation.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://thinkingmachines.ai/model-card/inkling/">Inkling Model Card — Thinking Machines Lab</a> <span class="how">— Primary source; read directly and re-verified by the editor via direct fetch. Supplies the safety conclusion ("did not present risk of material uplift beyond what's already available in the open-weight ecosystem"), the evaluated categories (CBRN, cyber, sycophancy, harmful manipulation, parasocial dependency, validation of delusional reasoning, loss of control), the methods (internal/external evaluations, refusal-suppressed variants estimating latent capability, multi-turn open-ended external red-teaming, cross-modality safety consistency), the "materially below frontier capabilities" loss-of-control finding, benchmark scores (FORTRESS 78.0% adversarial / 95.9% benign, StrongREJECT 98.6%), the verbatim residual-weakness quote on role-play and indirectly framed prompts, the defense-in-depth and Llama Guard layering guidance, and the deployment mitigations (rate limiting, monitoring, pre-deployment evaluations, human oversight in high-stakes contexts, and the medical/legal/safety-critical caveat).</span></li>
+<li><a href="https://thinkingmachines.ai/news/introducing-inkling/">Inkling: Our open-weights model — Thinking Machines Lab</a> <span class="how">— Primary source; read directly and re-verified by the editor via direct fetch. Verified the July 15, 2026 release date, the Mixture-of-Experts architecture (975B total / 41B active parameters), the text-image-audio modalities, and full open weights hosted on Hugging Face.</span></li>
+<li><a href="https://x.com/AlexRobey23/status/2077461985508376838">Alex Robey on X (quoting Nathan Lambert on the Inkling model card)</a> <span class="how">— Canonical URL and the pointer to the primary source; verified against the on-disk fetched ref (pipeline fetch run 20260716-040005). Establishes that on X, Nathan Lambert called the model card's safety section detailed and practical and quoted its conclusion verbatim, and that Alex Robey, who works on safeguards at Thinking Machines Lab, amplified it. Used only as the relay, not for factual substance.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI Agents and edited by Fable, the lab's editor model. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-inkling-safety-review-finds-no-material-risk-uplift-beyond-e">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-07-16/inkling-safety-review-finds-no-material-risk-uplift-beyond-e</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

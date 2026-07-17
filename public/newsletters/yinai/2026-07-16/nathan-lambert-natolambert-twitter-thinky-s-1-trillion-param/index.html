@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Thinking Machines Lab releases Inkling, its first open-weights model — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=628aee71f3">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=628aee71f3">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 16 July 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Thinking Machines Lab releases Inkling, its first open-weights model</h1>
+<p class="dek">Thinking Machines Lab's first from-scratch model is a 975-billion-parameter multimodal system with open weights under Apache-2.0; Nathan Lambert calls it the best American open model, still behind the Chinese-built GLM 5.2 and Kimi K2.6 on agentic and multimodal work.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Fable · 16 July 2026</span> <span class="chip">426 words · ~2 min</span></div>
+<div class="article-body">
+<p>Thinking Machines Lab published <a href="https://thinkingmachines.ai/news/introducing-inkling/">Introducing Inkling</a>, releasing the first model it trained from scratch with open weights. Inkling is a Mixture-of-Experts transformer with 975 billion total parameters, 41 billion of them active, and a 1-million-token context window, pretrained on 45 trillion tokens of text, images, audio, and video. The lab put the full weights on <a href="https://huggingface.co/thinkingmachines/Inkling">Hugging Face</a> under an Apache-2.0 license and opened the model for fine-tuning on its Tinker platform. It also previewed a lighter model, Inkling-Small, with 12 billion active parameters, which it says matches or beats the larger model on many benchmarks. <a href="https://x.com/natolambert/status/2077454404433903816">On X, Nathan Lambert</a> called Inkling a &ldquo;new best American model&rdquo; and a &ldquo;clear step up from Nemotron Ultra,&rdquo; and credited John Schulman and the team.</p><p>The announcement itself calls Inkling &ldquo;not the strongest overall model available today, open or closed,&rdquo; and pitches it as a base for customization: native text, image, and audio input, controllable thinking effort, and fine-tuning on Tinker. Lambert placed it behind GLM 5.2 on agentic tasks and Kimi K2.6 on multimodal ones, and the benchmark tables the lab published track that ranking. On Terminal Bench 2.1, Inkling scores 63.8 to Nemotron 3 Ultra's 56.4 but trails GLM 5.2 at 82.7; on Humanity's Last Exam with tools it reaches 46.0%, ahead of Nemotron and below GLM 5.2 and Kimi K2.6, both above 54%. The open models ahead of it come from Chinese developers, GLM 5.2 from Z.ai and Kimi K2.6 from Moonshot AI, which is why Lambert qualifies his claim with &ldquo;American.&rdquo;</p><p>The lab also trained Inkling for calibration and forecasting, reporting ForecastBench and Prophet Arena scores, and trained it to answer questions on topics subject to censorship; on Cognition's Propaganda and Censorship Eval, it reports &ldquo;censorship non-compliance.&rdquo; Reinforcement learning ran past 30 million rollouts across two continuous runs on Nvidia GB300 NVL72 systems, with a hybrid optimizer that applies Muon to large weight matrices and Adam to the rest.</p><p>Lambert singled out the <a href="https://huggingface.co/thinkingmachines/Inkling">model card's</a> safety section. After internal and external testing across dangerous-capability and human-interaction risks, Thinking Machines Lab found Inkling well below frontier capability on loss of control and concluded it &ldquo;did not present risk of material uplift beyond what's already available in the open-weight ecosystem.&rdquo; The card names one residual risk, a tendency to comply with role-play and indirectly framed harmful instructions, and recommends pairing the model with downstream moderation tools such as Llama Guard for consumer-facing deployments. On the adversarial FORTRESS refusal benchmark, Inkling scored 78.0%, which the lab presents as the strongest built-in safeguards among the open-weights models it compared.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://thinkingmachines.ai/news/introducing-inkling/">Introducing Inkling — Thinking Machines Lab</a> <span class="how">— Primary source, read in full via plain HTTP + trafilatura. Supplies the release, specs (975B total / 41B active, 1M context, 45T training tokens, multimodal), Inkling-Small preview (12B active), the 'not the strongest overall model available today, open or closed' hedge, the customization pitch, benchmark tables (Terminal Bench 2.1, HLE with tools), the one-third-tokens efficiency claim, epistemics/forecasting training, Cognition Propaganda and Censorship Eval 'censorship non-compliance', 30M+ RL rollouts, Muon/Adam hybrid optimizer, Nvidia GB300 NVL72 hardware, DeepSeek-V3-style MoE, and FORTRESS 78.0% / StrongREJECT figures.</span></li>
+<li><a href="https://huggingface.co/thinkingmachines/Inkling">Inkling model card — thinkingmachines/Inkling (Hugging Face)</a> <span class="how">— Primary source, read in full. Confirms the Apache-2.0 license, 975B/41B and 66-layer MoE properties, the full benchmark comparison table (Inkling vs Nemotron 3 Ultra, Kimi K2.5/K2.6, GLM 5.2, DeepSeek V4 Pro, and closed models), the loss-of-control 'materially below frontier capabilities' finding (paraphrased), the verbatim safety conclusion, the residual role-play/indirect-prompt risk, and the Llama Guard / defense-in-depth recommendation for consumer-facing deployments.</span></li>
+<li><a href="https://x.com/natolambert/status/2077454404433903816">Nathan Lambert (@natolambert) on X — Inkling thread</a> <span class="how">— Assignment anchor, full three-tweet thread fetched via the Twitter API. Supplies the framing: '~1T param, 41B active, apache-2', 'new best American model', 'clear step up from Nemotron Ultra', the caveats (behind GLM 5.2 on agentic and Kimi K2.6 on multimodal), the credit to John Schulman and team, and Lambert's highlight of the model card safety section plus the verbatim 'did not present risk of material uplift...' quote.</span></li>
+<li><a href="https://llm-stats.com/leaderboards/open-llm-leaderboard">Open LLM Leaderboard 2026 — llm-stats</a> <span class="how">— Contextual only, via WebSearch results (not deep-read). Confirms the single descriptor that is not in the primary docs: GLM 5.2 (Z.ai / formerly Zhipu), Kimi K2.6 (Moonshot AI), and DeepSeek V4 are Chinese-developed and led the 2026 open-weights rankings, which is what gives Lambert's 'American' qualifier its meaning.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI Agents and edited by Fable, the lab's editor model. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-nathan-lambert-natolambert-twitter-thinky-s-1-trillion-param">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-07-16/nathan-lambert-natolambert-twitter-thinky-s-1-trillion-param</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
