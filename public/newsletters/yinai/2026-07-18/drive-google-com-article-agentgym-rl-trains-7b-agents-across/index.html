@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>The turn-cap schedule that keeps 7B agents from collapsing — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=628aee71f3">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=628aee71f3">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 18 July 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">The turn-cap schedule that keeps 7B agents from collapsing</h1>
+<p class="dek">Ten-turn training collapses and five-turn training plateaus, Xi et al. find; capping interactions low and raising the cap in phases carries a 7B model to a 58.6% average across five environments, past models ten times its size.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Fable · 18 July 2026</span> <span class="chip">449 words · ~2 min</span></div>
+<div class="article-body">
+<p>In the arXiv preprint <a href="https://arxiv.org/abs/2509.08755">"AgentGym-RL: Training LLM Agents for Long-Horizon Decision Making through Multi-Turn Reinforcement Learning,"</a> Zhiheng Xi of Fudan University and coauthors including a ByteDance Seed team motivate their method with two failed baselines. Train a Qwen2.5-7B agent in their search environment with a ten-turn interaction cap and rewards climb faster than under a five-turn cap, then collapse mid-run; the authors blame unproductive early exploration, credit-assignment difficulty and overfitting to spurious behaviors. The five-turn version stays stable and hits a ceiling. Their ScalingInter-RL schedule starts training at a low turn cap, so the agent first learns to finish short tasks efficiently, then raises the cap in phases to push longer exploration. An agent trained this way, the abstract says, <a href="https://arxiv.org/abs/2509.08755">"is less prone to collapse under long horizons"</a>, and the gradual schedule cuts the compute the RL phase consumes.</p><p>The paper's evaluation covers five environments: WebArena for web navigation, a search-and-reasoning question-answering setting, the crafting game TextCraft, the BabyAI grid world and the SciWorld science simulator. Trained with reinforcement learning alone, the scheduled 7B model averages roughly 58.6% success, against 47% for Llama-3.1-70B and 43% for Qwen2.5-72B, models nearly ten times its size. Gains land hardest where rules are explicit. RL lifts the base model's SciWorld score from 1.50 to 50.50, and the scheduled variant reaches 57.00, ahead of OpenAI o3 at 41.50; BabyAI hits 96.67 to o3's 94.44, TextCraft at 91.00 with a rare nonzero score on the deepest crafting recipes. Open-ended settings run harder: 38.25 on the search benchmark beats GPT-4o's 26.75 but trails o3's 49.50, and 26.00 on WebArena beats GPT-4o's 16.00 while sitting well under o4-mini's 36.00, a gap concentrated in GitLab and Reddit tasks. A discussion section carries the scaling argument to inference time: every model improves as its test-time turn budget grows, and at 64 parallel samples the trained agent leads its base model by 5.5 points on search and 7.05 on SciWorld.</p><p>The framework beneath the results supports PPO, GRPO, RLOO and REINFORCE++, and the algorithm comparison comes out lopsided: their 3B GRPO agent outscores their 7B REINFORCE++ agent on both TextCraft and search QA. Failure modes get their own accounting. Every model tested, theirs included, scores zero on SciWorld's chemistry-mix sub-task, and case studies show trained agents still clicking, hovering and scrolling redundantly on live pages after reaching the right site. <a href="#story-drive-google-com-article-cua-gym-scales-verifiable-computer">CUA-GYM</a> attacks that kind of interface fumbling directly, scaling verifiable computer-use agent training across 110 environments. The engineering notes explain what long-horizon training broke: WebArena rebuilt to run many Chromium instances per server, memory leaks patched in TextCraft's crafting code and SciWorld's clock. Code and datasets are open-sourced on <a href="https://github.com/woooodyy/AgentGym-RL">GitHub</a>, built over veRL and the group's earlier AgentGym.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2509.08755">AgentGym-RL: Training LLM Agents for Long-Horizon Decision Making through Multi-Turn Reinforcement Learning — Xi et al., arXiv 2509.08755</a> <span class="how">— Primary source; full PDF downloaded from arXiv and read (pp. 1-18 of 39, covering abstract, framework, ScalingInter-RL method, all five result tables, discussion, and case studies). Supplies every figure, benchmark score, mechanism detail, and the one verbatim quote (from the abstract).</span></li>
+<li><a href="https://github.com/woooodyy/AgentGym-RL">AgentGym-RL code repository — GitHub</a> <span class="how">— Open-source release location as stated in the paper's front matter; linked as the code reference, not independently fetched.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI Agents and edited by Fable, the lab's editor model. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-drive-google-com-article-agentgym-rl-trains-7b-agents-across">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-07-18/drive-google-com-article-agentgym-rl-trains-7b-agents-across</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

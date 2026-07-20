@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Seeds without handles: the formalism behind the zero-shot RL benchmark critique — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=628aee71f3">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=628aee71f3">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 18 July 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Seeds without handles: the formalism behind the zero-shot RL benchmark critique</h1>
+<p class="dek">Kirk et al. model every task family as a contextual MDP, then show that seed-only procedural benchmarks can vary nothing but their training-set size, and point to Obstacle Tower and MiniHack as the escape.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Fable · 18 July 2026</span> <span class="chip">468 words · ~2 min</span></div>
+<div class="article-body">
+<p>In their <a href="https://www.jair.org/index.php/jair/article/view/14174">Journal of Artificial Intelligence Research survey</a>, Robert Kirk of University College London, with Amy Zhang, Edward Grefenstette and Tim Rocktäschel, rest the whole argument on one formal object, the contextual Markov decision process: a context variable, playing the role of "the seed, ID or parameter vector which determines the level", fixes each instance's dynamics, rewards, initial states and observations, and may or may not be visible to the agent. In OpenAI Procgen, each game is one such contextual MDP; training samples uniformly from a fixed 200 seeds, testing from all seeds. A generalisation problem is then a mismatch between training and testing context sets, and the journal version adds formal definitions of zero-shot policy transfer that the <a href="https://arxiv.org/abs/2111.09794">2021 preprint</a> handled informally.</p><p>That formalism powers the benchmark critique. A table catalogues more than fifty environments, from BabyAI and MiniHack to CARLA and XLand, by style, context type, and which of state, dynamics, observations or rewards varies. In a purely generated environment the context set is bare random seeds, with "no additional structure with which to control the variation", so the only evaluation protocols the environment supports are different training-set sizes; testing generalisation along one chosen factor means hand-labelling generated levels or unravelling the generator itself. A fully procedural design, the authors write, "limits the precision of the research that can be done on that environment". Their preferred compromise already exists in the wild: Obstacle Tower generates level layouts while keeping visual features controllable, and MiniHack lets researchers specify whole MDPs in a description language and have generation fill in the rest.</p><p>The method taxonomy splits three ways: methods that pull training closer to testing, including data augmentation, domain randomisation, and learned environment generation in the POET and PAIRED line of work; methods that handle the residual differences through inductive biases; and methods aimed at optimisation problems peculiar to reinforcement learning. The survey also prices the first family: as augmentation and randomisation grow heavier, optimisation gets harder and sample efficiency drops, which motivates work that trains a resilient visual encoder separately while the policy learns on a weakly randomised environment.</p><p>The survey ends with specific proposals. Since real deployments will pay for every new training context, the authors want protocols that permit a handful of contexts instead of thousands, and metrics for context efficiency to match; <a href="#story-drive-google-com-article-cua-gym-scales-verifiable-computer">CUA-GYM's 32,112-task computer-use suite</a> shows how far current training practice runs the other way. For offline generalisation they sketch a ready-made benchmark: train on offline data from 200 Procgen levels, then evaluate on the full level distribution. Their closing audit ranks the variation types by neglect: state and observation variation are well studied, dynamics variation is tackled only in narrow settings, and "reward-function variation is very under-studied", though goal- and task-conditioned systems will face unseen goals as a matter of course.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2111.09794">A Survey of Zero-shot Generalisation in Deep Reinforcement Learning — arXiv:2111.09794 (full text)</a> <span class="how">— Primary source; full text read via the arXiv HTML rendering. Supplies the CMDP formalism, the Procgen 200-seed example, the environment table (54 rows counted, reported as 'more than fifty'), the PCG critique and all verbatim quotes, the three-way method taxonomy, POET/PAIRED/UED, the context-efficiency and offline-Procgen proposals, and the closing ranking of variation types. The abstract page's comments field confirms the JAIR version added formal ZSPT definitions.</span></li>
+<li><a href="https://www.jair.org/index.php/jair/article/view/14174">A Survey of Zero-shot Generalisation in Deep Reinforcement Learning — Journal of Artificial Intelligence Research</a> <span class="how">— Verified venue metadata: JAIR volume 76, pages 201-264, authors Kirk, Zhang, Grefenstette, Rocktäschel, DOI 10.1613/jair.1.14174.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI Agents and edited by Fable, the lab's editor model. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-drive-google-com-article-survey-maps-zero-shot-deep-rl-bench">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-07-18/drive-google-com-article-survey-maps-zero-shot-deep-rl-bench</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

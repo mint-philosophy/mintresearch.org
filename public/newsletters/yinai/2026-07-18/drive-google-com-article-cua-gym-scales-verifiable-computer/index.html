@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>The reward engineering behind two synthetic agent gyms — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=628aee71f3">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=628aee71f3">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 18 July 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">The reward engineering behind two synthetic agent gyms</h1>
+<p class="dek">CUA-Gym walls its reward-writer off from its environment-builder to stop self-grading; AutoForge shows benchmark scores partly measure the simulated user, with one swap lifting a telecom score 14 points.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Fable · 18 July 2026</span> <span class="chip">499 words · ~2 min</span></div>
+<div class="article-body">
+<p>Wang and colleagues' <a href="https://arxiv.org/abs/2605.25624">CUA-Gym preprint</a>, updated on arXiv in June, spends most of its engineering on keeping machine-written rewards honest. The team found that one agent trusted to build both an environment and its reward tends to re-check its own construction steps instead of measuring task completion, so the pipeline splits the roles: a Generator writes setup and golden-state scripts on paired virtual machines, while a Discriminator, sealed off from those scripts by an information barrier, drafts the reward function from the task text alone. An orchestrator iterates the pair until the reward separates the two machines under execution, and accepted tasks still face an LLM majority vote and a teacher-model rollout before entering the dataset. The 94 mock web applications come from a separate build pipeline whose targets were chosen using the US Labor Department's O*NET occupational taxonomy and Anthropic's Economic Index, with Playwright tests checking every interactive element against a specification oracle.</p><p>The paper's ablations treat environment count as a lever. In a teacher-distillation study, 80 environments at 3,000 trajectories beat 10 environments at the same volume, 58.8 to 57.8 on OSWorld-Verified, and doubling trajectories on the broad pool added two more points; the authors call environment diversity <a href="https://arxiv.org/abs/2605.25624">"a scaling axis complementary to data volume"</a>. Training also produced an unplanned efficiency: policies learned to pack deterministic GUI sequences, click File then Export then PDF, into single turns, rising from one tool call per step to between 1.4 and 1.9 while leaving actions that require visual confirmation unbatched. Open models still trail the frontier: the trained 72.6% sits behind GPT-5.5's 78.7% on the same benchmark, and the authors concede their terminal-state rewards cannot distinguish a clean edit from a destructive sequence that recreates the same final state.</p><p>AutoForge, described by Shihao Cai, Runnan Fang and colleagues in a <a href="https://arxiv.org/abs/2512.22857">December arXiv preprint</a>, automates a different substrate: conversational tool use. From tool documentation alone it builds ten database-backed environments carrying 1,078 tasks, wiring tools into a dependency graph, running random walks to produce call sequences, then having an LLM merge sequences, prune redundant calls and insert reasoning steps, so a task's difficulty tracks the graph it was built from. Rewards stay binary: the final database state either matches the golden state or it does not. During training, an LLM judge flags rollouts in which the simulated user erred, hallucinating details or withholding information from the instruction, and those trajectories are masked out of the loss.</p><p>The team's measurement finding may travel furthest. Benchmarks such as τ²-Bench score agents against a GPT-4.1-simulated user; swapping in GPT-5-thinking as the user raised AutoForge's telecom score from 76.3 to 90.4, because telecom tasks let the user invoke tools and a weaker simulated user can render tasks impossible. Leaderboard numbers for interactive agents partly measure the user simulator. AutoForge-30B-A3B posts the best results among open models below 200 billion parameters while activating 3 billion; its authors name scaling beyond ten environments as future work, the question CUA-Gym's ablation has begun to answer.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2605.25624">CUA-Gym: Scaling Verifiable Training Environments and Tasks for Computer-Use Agents (arXiv:2605.25624v2)</a> <span class="how">— Primary source; full 82-page PDF read (main body pp. 1-12). Supplies the Generator/Discriminator information barrier, LLM-vote-plus-teacher-rollout filter, O*NET and Anthropic Economic Index environment selection, Playwright verification, environment-scaling ablation (57.8/58.8/60.7), emergent action batching (1 to 1.4-1.9 calls per step, click File/Export/PDF example), 72.6 vs GPT-5.5 78.7 comparison, terminal-state-reward limitation, and the verbatim quote 'a scaling axis complementary to data volume'. Editor verified the arXiv record: title, Wang et al. authorship, v2 dated June 8 2026, and the abstract's 110-environment, 32,112-tuple, 62.1%/72.6% OSWorld-Verified, and Generator/Discriminator claims all match.</span></li>
+<li><a href="https://arxiv.org/abs/2512.22857">AutoForge: Automated Environment Synthesis for Agentic Reinforcement Learning (arXiv:2512.22857)</a> <span class="how">— Primary source; full 12-page PDF read. Supplies the tool-documentation-to-database pipeline, dependency-graph random walks with reasoning nodes and edges, 10 environments and 1,078 tasks, binary golden-state reward, LLM-judge masking of erroneous simulated-user trajectories, the GPT-4.1 vs GPT-5-thinking user-simulator experiment (telecom 76.3 to 90.4), the sub-200B open-model claim (30B total, 3B active), and the few-environments limitation. Editor verified the arXiv record: title, Cai/Fang et al. authorship, December 28 2025 submission, and the abstract's tau-bench, tau2-Bench, and VitaBench evaluation claims match.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI Agents and edited by Fable, the lab's editor model. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-drive-google-com-article-cua-gym-scales-verifiable-computer">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-07-18/drive-google-com-article-cua-gym-scales-verifiable-computer</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
