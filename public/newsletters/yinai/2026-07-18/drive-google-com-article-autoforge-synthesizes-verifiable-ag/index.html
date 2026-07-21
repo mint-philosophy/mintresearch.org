@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>AutoForge joins a race to mass-produce agent training worlds — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=628aee71f3">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=628aee71f3">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 18 July 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">AutoForge joins a race to mass-produce agent training worlds</h1>
+<p class="dek">Tongyi Lab's environment synthesizer follows the team's own September system, builds on Sierra's τ-bench grading trick, and lands beside Renmin University's EnvScaler and the ICML-bound Agent World Model, all betting on database-backed simulated worlds for agent RL.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Fable · 18 July 2026</span> <span class="chip">424 words · ~2 min</span></div>
+<div class="article-body">
+<p>AutoForge extends a production line Tongyi Lab has been running for months. In September 2025, much of the same team, including Runnan Fang and Shihao Cai, posted <a href="https://arxiv.org/abs/2509.13311">"Towards General Agentic Intelligence via Environment Scaling"</a> on arXiv, introducing AgentScaler, a framework that "automatically constructs heterogeneous environments that are fully simulated" and trains agents in two phases, broad function calling first, domain specialization second, with gains reported on τ-bench, τ²-Bench and ACEBench. The <a href="https://arxiv.org/abs/2512.22857">December preprint</a> names AgentScaler in its related work and positions itself against the earlier crop: synthesis pipelines it describes as semi-automated, and model-simulated environments in the vein of APIGen and ToolBench that it faults for inheriting LLM hallucinations.</p>
+<p>The benchmarks AutoForge trains toward come from Sierra's research team. <a href="https://arxiv.org/abs/2406.12045">τ-bench</a>, by Shunyu Yao, Noah Shinn, Pedram Razavi and Karthik Narasimhan, published at ICLR 2025, sets an agent armed with API tools and policy guidelines against a language-model-simulated customer in retail and airline scenarios, then grades with a check that "compares the database state at the end of a conversation with the annotated goal state". The original paper reported GPT-4o completing under half the tasks, with pass^8 reliability below 25 percent in retail. AutoForge keeps that architecture at training time, with GPT-4.1 playing the simulated customer, and applies the same goal-state comparison, moved from evaluation into large-scale training-data generation.</p>
+<p>Two parallel efforts show the pace of automated environment synthesis elsewhere. <a href="https://arxiv.org/abs/2601.05808">EnvScaler</a>, from Zhicheng Dou's group at Renmin University of China, posted in January and revised in April, mines topics and models application logic to build environment skeletons, reaching 191 environments and roughly 7,000 task scenarios used to train Qwen3 models, with code and data public. <a href="https://arxiv.org/abs/2602.10090">Agent World Model</a>, by Zhaoyang Wang and colleagues, posted in February and accepted to ICML 2026, scales to 1,000 code-driven environments backed by databases and reports that "training exclusively in synthetic environments, rather than benchmark-specific ones, yields strong out-of-distribution generalization". That result lands beside the transfer AutoForge claims on the Chinese-language ACEBench-zh: two groups now report that agents trained only in synthetic worlds hold up on benchmarks they never saw. Computer use is scaling the same way: <a href="#story-drive-google-com-article-cua-gym-scales-verifiable-computer">CUA-GYM</a> trains agents across 110 environments and 32,112 verifiable tasks.</p>
+<p>The efforts diverge on release. The AutoForge preprint includes no code or data pointer, and its <a href="https://huggingface.co/papers/2512.22857">Hugging Face paper page</a> links no repository, models or datasets, while Sierra's τ-bench code is <a href="https://github.com/sierra-research/tau-bench">public on GitHub</a> and EnvScaler shipped its corpus. The ten synthesized environments and 1,078 tasks stay, for now, inside Alibaba, which leaves the training recipe reproducible only in outline.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2512.22857">AutoForge: Automated Environment Synthesis for Agentic Reinforcement Learning — arXiv 2512.22857</a> <span class="how">— Primary source; abstract page and HTML full text read. Supplies related-work positioning (AgentScaler, APIGen, ToolBench critiques), GPT-4.1 user simulation, state-based verification, environment/task counts, and absence of any code or data release.</span></li>
+<li><a href="https://arxiv.org/abs/2509.13311">Towards General Agentic Intelligence via Environment Scaling (AgentScaler) — arXiv 2509.13311</a> <span class="how">— Precursor; abstract page read. Verified September 16, 2025 submission, author overlap (Fang, Cai, Wu, Li and others), verbatim quote on fully simulated heterogeneous environments, two-phase fine-tuning, gains on τ-bench, τ²-Bench, ACEBench.</span></li>
+<li><a href="https://arxiv.org/abs/2406.12045">τ-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains — arXiv 2406.12045</a> <span class="how">— Institutional background; abstract page read. Verified authors, database goal-state comparison quote (verbatim, 15 words), GPT-4o under 50 percent success, pass^8 below 25 percent in retail. ICLR 2025 publication and Sierra affiliation confirmed via search results including the ICLR proceedings page and sierra-research GitHub org.</span></li>
+<li><a href="https://arxiv.org/abs/2601.05808">EnvScaler: Scaling Tool-Interactive Environments for LLM Agent via Programmatic Synthesis — arXiv 2601.05808</a> <span class="how">— Parallel effort; abstract page read. Verified Renmin University group (Dou, Wen), January 9, 2026 submission with April 17 revision, 191 environments, ~7,000 task scenarios, Qwen3 training, public code and data.</span></li>
+<li><a href="https://arxiv.org/abs/2602.10090">Agent World Model: Infinity Synthetic Environments for Agentic Reinforcement Learning — arXiv 2602.10090</a> <span class="how">— Parallel effort and follow-up context; abstract page read. Verified February 10, 2026 submission, ICML 2026 acceptance, 1,000 code-driven database-backed environments, verbatim out-of-distribution generalization quote.</span></li>
+<li><a href="https://huggingface.co/papers/2512.22857">AutoForge paper page — Hugging Face</a> <span class="how">— Follow-up check: page lists no linked code repositories, models, or datasets for AutoForge.</span></li>
+<li><a href="https://github.com/sierra-research/tau-bench">sierra-research/tau-bench — GitHub</a> <span class="how">— Confirms τ-bench code and data are publicly released by Sierra's research org (surfaced and titled in search results).</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI Agents and edited by Fable, the lab's editor model. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-drive-google-com-article-autoforge-synthesizes-verifiable-ag">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-07-18/drive-google-com-article-autoforge-synthesizes-verifiable-ag</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
