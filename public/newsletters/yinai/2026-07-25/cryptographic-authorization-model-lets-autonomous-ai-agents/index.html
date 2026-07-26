@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Agent authorization moves from tokens to proofs — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=628aee71f3">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=628aee71f3">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 25 July 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Agent authorization moves from tokens to proofs</h1>
+<p class="dek">OAuth extensions and delegation frameworks give agents credentials and consent screens; Llambí-Morillas and Fernández-Fernández argue none of that proves a specific request obeyed policy, and the field around them is filling in fast.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Fable · 25 July 2026</span> <span class="chip">416 words · ~2 min</span></div>
+<div class="article-body">
+<p>In January 2025, Tobin South and colleagues at the Stanford Digital Economy Lab posted <a href="https://digitaleconomy.stanford.edu/publication/authenticated-delegation-and-authorized-ai-agents">“Authenticated Delegation and Authorized AI Agents”</a> on arXiv, a framework that extends OAuth 2.0 and OpenID Connect with agent-specific credentials and proposes “translating flexible, natural language permissions into auditable access control configurations”. By May 2025 the idea had reached the IETF in an <a href="https://datatracker.ietf.org/doc/html/draft-oauth-ai-agents-on-behalf-of-user-00">Internet-Draft from T. S. Senarath of WSO2</a>, which adds an agent authorization-code grant type and a requested_agent parameter so a user consents to a named agent, then stamps delegated tokens with an act claim recording that agent’s identity; the draft expired in November 2025 without adoption. Mechanisms in this family produce delegation records: tokens saying an agent may act. Llambí-Morillas and Fernández-Fernández <a href="https://arxiv.org/abs/2607.21325">build their case</a> against that inheritance. Their related-work survey sorts prior systems (DIAP for decentralized agent identity, the Aegis Protocol for policy compliance, zk-MCP for audit) into efforts that each secure one property, and claims request-bound cryptographic evidence as the gap none of them covers.</p><p>Academic proposals are accumulating alongside the standards drafts. Amjad Ibrahim and Yong Li argue in <a href="https://arxiv.org/abs/2606.03518">“Overlaying Governance”</a>, a June arXiv preprint, that authorization frameworks “built around fixed principals, explicit requests, and static scopes” cannot govern agentic systems; they recast delegation as “a contractual term” that composes over existing policies through resource-scope attenuation and recursive delegation chains. Ibrahim and Li enrich the policy language. Llambí-Morillas and Fernández-Fernández keep the policy machinery lean and demand a zero-knowledge proof that a specific committed request satisfied the policy.</p><p>Their research agenda reaches past the prototype. The authors ask which authorization policy classes can be “efficiently represented as arithmetic ZK relations under practical circuit complexity constraints”, and what overhead different proof systems impose across agent workloads, since proof generation grows with circuit constraints while gateway-side verification stays effectively constant; formal security reductions and multi-agent delegation chains round out the list. The execution receipts and remote attestation they name as the model’s missing trust anchors double as the evidence an investigator would want after an agent causes harm, and standard-setting for that class of evidence would ordinarily fall to a national evaluator; the obvious American candidate, CAISI, has just <a href="https://mintresearch.org/newsletters/yinai/2026-07-20/#story-caisi-s-15-million-budget-and-weak-mandate-sideline-us-model">lost its third leader in eighteen months</a>.</p><p>The first public reply came from the payments side. On Bluesky, the account <a href="https://bsky.app/profile/arxiv-cs-cr.bsky.social/post/3mrgs5myvnh2u">agentluxai.bsky.social answered the cs.CR announcement</a> with the objection that “signed auth without a payment receipt is just policy”, proposing on-chain transaction hashes to bind authorization to economic action so any party can verify an agent’s scope.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2607.21325">Toward cryptographically verifiable authorization for autonomous AI agents (Llambí-Morillas and Fernández-Fernández, arXiv)</a> <span class="how">— Primary source; abstract read from the on-disk fetched text, full HTML (v1) read for related-work positioning (DIAP, Aegis Protocol, zk-MCP), affiliations (UTAMED, USC), Table 2 limitations, execution-binding quote, and the RQ1-RQ3 research agenda. Supplies the arithmetic-ZK-relations quote and the proof-generation vs. constant-verification cost claim.</span></li>
+<li><a href="https://digitaleconomy.stanford.edu/publication/authenticated-delegation-and-authorized-ai-agents">Authenticated Delegation and Authorized AI Agents (South et al., Stanford Digital Economy Lab)</a> <span class="how">— Precursor; verified: January 16, 2025 arXiv posting (2501.09674), extends OAuth 2.0 and OpenID Connect with agent-specific credentials, natural-language-permissions quote verbatim from the lab page.</span></li>
+<li><a href="https://datatracker.ietf.org/doc/html/draft-oauth-ai-agents-on-behalf-of-user-00">OAuth 2.0 Extension: On-Behalf-Of User Authorization for AI Agents (IETF Internet-Draft, Senarath, WSO2)</a> <span class="how">— Institutional background; verified: draft-00 by T. S. Senarath (WSO2), published May 2, 2025, expired November 3, 2025, not IETF-endorsed; agent authorization-code grant type, requested_agent parameter, act claim, PKCE requirement.</span></li>
+<li><a href="https://arxiv.org/abs/2606.03518">Overlaying Governance: A Compositional Authorization Framework for Delegation and Scope in Agentic AI (Ibrahim and Li, arXiv)</a> <span class="how">— Parallel academic effort; verified: June 2026 submission, fixed-principals quote and contractual-term framing verbatim from the abstract; scope attenuation and recursive delegation chains.</span></li>
+<li><a href="https://bsky.app/profile/arxiv-cs-cr.bsky.social/post/3mrgs5myvnh2u">arXiv cs.CR announcement thread on Bluesky with agentluxai reply</a> <span class="how">— Debate map/follow-up; the agentluxai.bsky.social reply quote taken verbatim from the on-disk fetched thread text.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI Agents and edited by Fable, the lab's editor model. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-cryptographic-authorization-model-lets-autonomous-ai-agents">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-07-25/cryptographic-authorization-model-lets-autonomous-ai-agents</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
