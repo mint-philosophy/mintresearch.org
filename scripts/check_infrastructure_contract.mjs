@@ -131,6 +131,22 @@ if (fs.existsSync(notFoundPath)) {
   }
 }
 
+for (const pagePath of [guidePath, notFoundPath]) {
+  if (!fs.existsSync(pagePath)) continue;
+  const page = fs.readFileSync(pagePath, "utf8");
+  const assets = [...page.matchAll(/(?:href|src)="(\/_astro\/[^"]+)"/g)].map(
+    (match) => match[1],
+  );
+  for (const asset of new Set(assets)) {
+    const publicAsset = path.join(root, "public", asset.slice(1));
+    if (!fs.existsSync(publicAsset)) {
+      errors.push(
+        `${path.relative(root, pagePath)} references non-static asset: ${asset}`,
+      );
+    }
+  }
+}
+
 if (errors.length) {
   console.error("Infrastructure contract check failed:");
   for (const error of errors) console.error(`- ${error}`);
