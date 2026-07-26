@@ -1,0 +1,369 @@
+{
+  "architecture": {
+    "corpusIngest": [
+      "corpus-intake-local",
+      "corpus-intake-slack",
+      "corpus-ingest-handoff",
+      "corpus-analyze",
+      "corpus-db-writer",
+      "corpus-tidy"
+    ],
+    "feedDelivery": "Curator slate plus selector auto-promotion to #firehose",
+    "feedSlackPosting": "Retired 2026-07-18",
+    "mainWebsite": "Static HTML deployed by GitHub Pages",
+    "newsletterPlatform": "listmonk with PostgreSQL"
+  },
+  "corpus": {
+    "chunkCount": 428157,
+    "clusterCount": 16,
+    "disciplineCount": 15,
+    "embeddingDimsPerDoc": 48,
+    "generatedAt": "2026-07-26T04:06:25.008562",
+    "lancedbSizeGB": 4.3,
+    "microTopicCount": 114,
+    "paperCount": 5359,
+    "raptorSummaryCount": 5123,
+    "schemaColumnCount": 141,
+    "semanticAnalysisCount": 5121,
+    "semanticQuestionCount": 41,
+    "similarityPairCount": 11570
+  },
+  "fleet": {
+    "canonicalServices": 32,
+    "loadedSystemDaemons": 2,
+    "loadedTotal": 47,
+    "loadedUserAgents": 45,
+    "services": [
+      {
+        "description": "Reverse proxy for local web services",
+        "label": "com.mintlab.caddy-proxy",
+        "loaded": true,
+        "name": "caddy-proxy",
+        "ownership": "Minty",
+        "schedule": "Persistent (KeepAlive)",
+        "status": "Active"
+      },
+      {
+        "description": "Periodic health probe for CLI auth and daemon sanity",
+        "label": "com.mintlab.cli-health-probe",
+        "loaded": true,
+        "name": "cli-health-probe",
+        "ownership": "Minty",
+        "schedule": "Every 10 minutes (StartInterval 600)",
+        "status": "Active"
+      },
+      {
+        "description": "Cloudflare Tunnel for mintresearch.org and related services",
+        "label": "com.mintlab.cloudflared",
+        "loaded": true,
+        "name": "cloudflared",
+        "ownership": "Minty",
+        "schedule": "Persistent (KeepAlive)",
+        "status": "Active"
+      },
+      {
+        "description": "Socket Mode Slack bot (@Minty)",
+        "label": "com.mintlab.corpus-agent",
+        "loaded": true,
+        "name": "corpus-agent",
+        "ownership": "Minty",
+        "schedule": "Persistent (KeepAlive)",
+        "status": "Active"
+      },
+      {
+        "description": "External heartbeat guard for corpus-agent Slack Socket Mode",
+        "label": "com.mintlab.corpus-agent-watchdog",
+        "loaded": true,
+        "name": "corpus-agent-watchdog",
+        "ownership": "Minty",
+        "schedule": "Every 2 minutes",
+        "status": "Active"
+      },
+      {
+        "description": "Local-paper intake watcher",
+        "label": "com.mintlab.corpus-intake-local",
+        "loaded": true,
+        "name": "corpus-intake-local",
+        "ownership": "Minty",
+        "schedule": "Persistent (KeepAlive)",
+        "status": "Active"
+      },
+      {
+        "description": "Slack-paper intake watcher",
+        "label": "com.mintlab.corpus-intake-slack",
+        "loaded": true,
+        "name": "corpus-intake-slack",
+        "ownership": "Minty",
+        "schedule": "Persistent (KeepAlive)",
+        "status": "Active"
+      },
+      {
+        "description": "Moves unprocessed slack-pdfs to local-pdfs for the overnight intake window",
+        "label": "com.mintlab.corpus-ingest-handoff",
+        "loaded": true,
+        "name": "corpus-ingest-handoff",
+        "ownership": "Minty",
+        "schedule": "Daily at 00:00 America/New_York; failed exits retry after 60 seconds",
+        "status": "Active"
+      },
+      {
+        "description": "Analysis worker for ingested papers",
+        "label": "com.mintlab.corpus-analyze",
+        "loaded": true,
+        "name": "corpus-analyze",
+        "ownership": "Minty",
+        "schedule": "Persistent (KeepAlive)",
+        "status": "Active"
+      },
+      {
+        "description": "Manifest/DB writer for analyzed papers",
+        "label": "com.mintlab.corpus-db-writer",
+        "loaded": true,
+        "name": "corpus-db-writer",
+        "ownership": "Minty",
+        "schedule": "Persistent (KeepAlive)",
+        "status": "Active"
+      },
+      {
+        "description": "Maintenance / cleanup for ingest pipeline",
+        "label": "com.mintlab.corpus-tidy",
+        "loaded": true,
+        "name": "corpus-tidy",
+        "ownership": "Minty",
+        "schedule": "Hourly",
+        "status": "Active"
+      },
+      {
+        "description": "Daily fleet monitor: checks WATCHLIST.md items, self-heals safe issues (kickstarts, log truncation, Drive-link backfill), emails lab administrators only when human action is needed",
+        "label": "com.mintlab.daemon-custodian",
+        "loaded": true,
+        "name": "daemon-custodian",
+        "ownership": "Minty",
+        "schedule": "Daily at 08:30 + at load (boot reconciler for missed calendar jobs)",
+        "status": "Active"
+      },
+      {
+        "description": "Manual relay: copies Seth's :thumbsup: picks from active feed channels to #firehose. Selector auto-promotion lives in feedme-daily's end-of-pipeline stage (pipeline/scripts/run_auto_promote.py), not here. Effectively dormant since feedme-daily stopped posting to #feed-* (2026-07-18)",
+        "label": "com.mintlab.feed-promote",
+        "loaded": true,
+        "name": "feed-promote",
+        "ownership": "Minty",
+        "schedule": "Every 5 minutes (StartInterval 300)",
+        "status": "Active"
+      },
+      {
+        "description": "Full FeedMe pipeline: curator slate plus selector auto-promotion to #firehose (feed-to-Slack #feed-* posting retired 2026-07-18; Morning Briefing trigger retired 2026-07-11)",
+        "label": "com.mintlab.feedme-daily",
+        "loaded": true,
+        "name": "feedme-daily",
+        "ownership": "Minty",
+        "schedule": "Daily at 04:00",
+        "status": "Active"
+      },
+      {
+        "description": "Curator-only refresh for Twitter, Twitter For You, Bluesky, and arXiv; no Slack posting, auto-promotion, briefing, or duplicate ready email",
+        "label": "com.mintlab.feedme-incremental",
+        "loaded": true,
+        "name": "feedme-incremental",
+        "ownership": "Minty",
+        "schedule": "Daily at 12:00 and 20:00",
+        "status": "Active"
+      },
+      {
+        "description": "Verifies the FeedMe daily run lands and nudges recovery windows",
+        "label": "com.mintlab.feedme-daily-watchdog",
+        "loaded": true,
+        "name": "feedme-daily-watchdog",
+        "ownership": "Minty",
+        "schedule": "Calendar checks around the morning run",
+        "status": "Active"
+      },
+      {
+        "description": "Periodic repo dirt classifier for clean-tree monitoring",
+        "label": "com.mintlab.git-hygiene",
+        "loaded": true,
+        "name": "git-hygiene",
+        "ownership": "Minty",
+        "schedule": "Every 30 minutes",
+        "status": "Active"
+      },
+      {
+        "description": "Deterministically exports the public infrastructure snapshot used by mintresearch.org/guide/, validates the static-page contract, and publishes only that generated snapshot",
+        "label": "com.mintlab.guide-updater",
+        "loaded": true,
+        "name": "guide-updater",
+        "ownership": "Minty",
+        "schedule": "Daily at 06:00 and 18:00",
+        "status": "Active"
+      },
+      {
+        "description": "Newsletter application stack",
+        "label": "com.mintlab.listmonk",
+        "loaded": true,
+        "name": "listmonk",
+        "ownership": "Minty",
+        "schedule": "Persistent (KeepAlive)",
+        "status": "Active"
+      },
+      {
+        "description": "Polling bot for article/PDF recovery",
+        "label": "com.mintlab.news-pdf-bot",
+        "loaded": true,
+        "name": "news-pdf-bot",
+        "ownership": "Minty",
+        "schedule": "Every 5 minutes",
+        "status": "Active"
+      },
+      {
+        "description": "Rebuilds and deploys paper-map artifacts",
+        "label": "com.mintlab.paper-map-updater",
+        "loaded": true,
+        "name": "paper-map-updater",
+        "ownership": "Minty",
+        "schedule": "Daily at 04:00",
+        "status": "Active"
+      },
+      {
+        "description": "Tiered compressed backups: Minty + corpus archives every run; Drive upload and listmonk Postgres pg_dump (keep 14) on the 06:00 run",
+        "label": "com.mintlab.rclone-backup",
+        "loaded": true,
+        "name": "rclone-backup",
+        "ownership": "Minty",
+        "schedule": "4\u00d7/day at 00:00/06:00/12:00/18:00",
+        "status": "Active"
+      },
+      {
+        "description": "Socket Mode Slack watcher for shared items",
+        "label": "com.mintlab.share-to-minty",
+        "loaded": true,
+        "name": "share-to-minty",
+        "ownership": "Minty",
+        "schedule": "Persistent (KeepAlive)",
+        "status": "Active"
+      },
+      {
+        "description": "Slack indexing pipeline",
+        "label": "com.mintlab.slack-index",
+        "loaded": true,
+        "name": "slack-index",
+        "ownership": "Minty",
+        "schedule": "Hourly",
+        "status": "Active"
+      },
+      {
+        "description": "Slack semantic search service",
+        "label": "com.mintlab.slack-search",
+        "loaded": true,
+        "name": "slack-search",
+        "ownership": "Minty",
+        "schedule": "Persistent (KeepAlive)",
+        "status": "Active"
+      },
+      {
+        "description": "Weekly source-coverage report",
+        "label": "com.mintlab.weekly-source-digest",
+        "loaded": true,
+        "name": "weekly-source-digest",
+        "ownership": "Minty",
+        "schedule": "Weekly, Friday 08:45",
+        "status": "Active"
+      },
+      {
+        "description": "Workspace search index update",
+        "label": "com.mintlab.workspace-index",
+        "loaded": true,
+        "name": "workspace-index",
+        "ownership": "Minty",
+        "schedule": "Every 6 hours (StartInterval 21600)",
+        "status": "Active"
+      },
+      {
+        "description": "Daily AI news digest",
+        "label": "com.mintlab.yesterday-in-ai",
+        "loaded": true,
+        "name": "yesterday-in-ai",
+        "ownership": "Minty",
+        "schedule": "Daily at 04:30",
+        "status": "Active"
+      },
+      {
+        "description": "Starts a guarded YiNAI write from an exact finalized curator artifact; send-history and process locks prevent overlap with the scheduled fallback",
+        "label": "com.mintlab.yesterday-in-ai-write-consumer",
+        "loaded": true,
+        "name": "yesterday-in-ai-write-consumer",
+        "ownership": "Minty",
+        "schedule": "Every minute (StartInterval 60) + at load",
+        "status": "Active"
+      },
+      {
+        "description": "Contract checker for legacy Deep Edition request/result artifacts; retained while the linear desk flow beds in",
+        "label": "com.mintlab.yinai-deep",
+        "loaded": true,
+        "name": "yinai-deep",
+        "ownership": "Minty",
+        "schedule": "Every minute (StartInterval 60)",
+        "status": "Available / not yet installed"
+      },
+      {
+        "description": "Alarm-only guard: reports an unsent Deep Edition issue but never sends the newsletter",
+        "label": "com.mintlab.yinai-deep-safety-send",
+        "loaded": true,
+        "name": "yinai-deep-safety-send",
+        "ownership": "Minty",
+        "schedule": "Daily at 07:30",
+        "status": "Active when Deep Edition is enabled"
+      },
+      {
+        "description": "Morning verification that Yesterday in AI fired correctly",
+        "label": "com.mintlab.yinai-health-check",
+        "loaded": true,
+        "name": "yinai-health-check",
+        "ownership": "Minty",
+        "schedule": "Daily at 06:00",
+        "status": "Active"
+      }
+    ]
+  },
+  "generatedAt": "2026-07-26T13:11:09-04:00",
+  "github": {
+    "organization": "mint-philosophy",
+    "repositoryCount": 41
+  },
+  "models": {
+    "auxiliaryEmbeddings": "Voyage voyage-3, 1024d",
+    "daemonDefault": "gpt-5.6-sol",
+    "deterministicEffort": "medium",
+    "functionalEffort": "high",
+    "intelligenceEffort": "xhigh",
+    "paperEmbeddings": "Voyage voyage-context-3, 2048d"
+  },
+  "newsletter": {
+    "delivery": "Weekday email, web archive, and #mint-community",
+    "enabledSubscribers": 109,
+    "name": "Yesterday in AI",
+    "weeklyDigestStatus": "Retired 2026-07-03"
+  },
+  "schemaVersion": 1,
+  "sources": [
+    "Minty/AGENTS.md",
+    "Minty/daemons/README.md",
+    "Minty/.codex/",
+    "launchctl",
+    "mintresearch.org/src/data/stats.json",
+    "listmonk PostgreSQL",
+    "mint-philosophy GitHub organization"
+  ],
+  "timezone": "America/New_York",
+  "workspace": {
+    "agentNamePattern": "Lab-Minty-[hex]",
+    "canonicalContract": "AGENTS.md",
+    "canonicalExtensions": ".codex/",
+    "commands": 25,
+    "compatibilityMirrors": [
+      ".agents/",
+      ".claude/"
+    ],
+    "skills": 34,
+    "workerSpecs": 6
+  }
+}

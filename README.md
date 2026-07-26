@@ -4,17 +4,27 @@ The MINT Research Lab website (https://mintresearch.org/).
 
 ## Architecture — read this before editing
 
-**This site is no longer built by Astro.** It is hand-edited static HTML served from `public/`.
+**Primary site pages are hand-edited static HTML served from `public/`.** Astro remains
+the packaging tool for generated reports, discontinued newsletter archives, and
+the legacy RTS routes under `src/pages/`.
 
-It started as an Astro project, but in commit `c35aea3` (2026-03-30, "Deploy floating Minty overlay across all pages") all six pages were converted to static HTML so a Python post-processor (`scripts/inject_minty.py`) could inject the walking Minty sprite + reflowing text into every page. The original `.astro` sources were moved to `src/pages-archive/` and are no longer part of the build. Hashed Astro asset bundles are persisted in `public/_astro/`.
+The primary pages were converted from Astro in commit `c35aea3` (2026-03-30) so
+the Minty post-processor could update them directly. The infrastructure guide
+and 404 page completed that conversion in July 2026. Their former active Astro
+routes were removed, and hashed shared asset bundles remain in `public/_astro/`.
 
 **What this means in practice:**
 
 - The source of truth for page content is `public/*.html` (each page sits at `public/<page>/index.html`).
-- `npm run build` will *not* regenerate the homepage — `src/pages/` no longer contains it.
+- `npm run build` copies primary pages unchanged and builds only the remaining
+  report, archive, and RTS sources under `src/pages/`.
 - Edits go directly into the served HTML. To re-apply the Minty overlay after edits, run `python3 scripts/inject_minty.py`.
 - The team data array is embedded in `public/index.html` as `<script id="personData" type="application/json">[...]</script>`. Edit that JSON to add/change people.
 - The homepage Papers list is loaded at runtime from `public/assets/papers/latest-paper-deliverables.csv`.
+- Volatile infrastructure facts in `public/guide/index.html` bind to
+  `public/assets/minty/infra-snapshot.json`. Minty's deterministic
+  `guide-updater` owns and publishes that snapshot; do not hand-edit generated
+  counts or the daemon inventory.
 - The `chatbot-worker/` and `paper-map/` subprojects retain their own build steps (see their READMEs).
 
 ## Shared site contracts
@@ -64,7 +74,8 @@ full main-site theme. Host pages own only placement, surface styling, and
 sidebar offsets. See `docs/shared-site-contracts.md` for the visible
 no-JavaScript fallback and ownership boundary.
 
-Run `npm run check:contracts` for both local contracts. The command
+Run `npm run check:contracts` for the banner, navigation, and infrastructure
+contracts. The command
 `npm run check:banner -- --check-blind-refusal` additionally inspects the
 deployed Blind Refusal source.
 
@@ -200,6 +211,7 @@ public/                # served as-is (static HTML + assets)
   assets/cv/           # Minty costume sprites — referenced from multiple pages
   _astro/              # frozen Astro asset bundles from the last build
 src/
+  pages/               # generated reports, old newsletter issues, and RTS routes
   pages-archive/       # archived original .astro sources (not built)
   data/people.ts       # archived people data (not used at runtime)
 scripts/
