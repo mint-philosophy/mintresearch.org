@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>The century of theory behind Greene's compression essay — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=628aee71f3">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=628aee71f3">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 26 July 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">The century of theory behind Greene's compression essay</h1>
+<p class="dek">Solomonoff's 1960s induction theory, the Chinchilla and HKUST compression results Greene builds on, a concurrent coding scheme posted twelve days earlier, and a reply thread that folded reinforcement learning into the bit accounting.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Fable · 26 July 2026</span> <span class="chip">498 words · ~2 min</span></div>
+<div class="article-body">
+<p>Ray Solomonoff was born in Cleveland on July 25, 1926, one hundred years to the day before Ryan Greene <a href="https://x.com/ryangr/status/2081031939532714210">posted</a> <a href="https://www.greene.sh/compression-and-intelligence/">“Compression and Intelligence”</a> in his honor. Solomonoff presented algorithmic probability at a Caltech conference in 1960 and worked it out in “A Formal Theory of Inductive Inference” (Information and Control, 1964): weigh every program that could have generated the data observed so far, penalize each by its length, and let the shortest programs dominate the prediction of what comes next. Andrey Kolmogorov reached similar ideas independently in 1965, and the complexity measure took his name; the induction theory kept Solomonoff’s, since prediction was his goal. He was among the <a href="https://en.wikipedia.org/wiki/Ray_Solomonoff">ten invitees</a> to the 1956 Dartmouth workshop, one of three who stayed the whole summer.</p><p>Greene’s empirical case that language models approximate this picture rests on two papers. In <a href="https://arxiv.org/abs/2309.10668">“Language Modeling Is Compression”</a> (2023), Grégoire Delétang, Marcus Hutter, Joel Veness and colleagues showed that Chinchilla 70B, trained only on text, compresses ImageNet patches to 43.4 percent of their raw size against PNG’s 58.5, and LibriSpeech audio to 16.4 percent against FLAC’s 30.3. In <a href="https://arxiv.org/abs/2404.09937">“Compression Represents Intelligence Linearly”</a> (COLM 2024), Yuzhen Huang and colleagues at HKUST measured 31 open-weight models on 12 benchmarks and found average scores track compression of fresh text almost linearly. Greene reads their Qwen outlier, a series that beat its compressive weight on math benchmarks, as a warning that benchmark scores can be bought with proximate training data while broad-corpus loss resists gaming; held-out Witness tests just found the same gap in <a href="#story-guanghan-ning-quietnning-twitter-held-out-witness-tests-find">Opus 5’s ARC-AGI-3 gains</a>. His related-works survey traces the thesis inside frontier labs to Jack Rae’s 2023 “Compression for AGI” talk and Ilya Sutskever’s account of SGD as a compressor.</p><p>The essay closes on data efficiency, arguing further gains must come from learners that extract more from each token, and leans on Dwarkesh Patel’s June 19 essay <a href="https://www.dwarkesh.com/p/the-sample-efficiency-black-hole">“The Data Black Hole at the Center of AI”</a>: humans absorb roughly 200 million tokens of language by adulthood while frontier models train on tens of trillions, and teenagers learn to drive in about 20 hours against the billions of driving hours behind Waymo and Tesla. On July 13, Shikai Qiu, Marc Finzi, Yujia Zheng, Kun Zhang and Andrew Gordon Wilson posted <a href="https://arxiv.org/abs/2607.11883">“Requential Coding”</a>, concurrent work Greene cites, in which a teacher selects training samples from the student’s own distribution and the code records only the selections, yielding descriptions they report as orders of magnitude shorter than prequential ones.</p><p>In the replies, Lunjun Zhang asked how reinforcement learning fits a compression account of intelligence. <a href="https://x.com/ryangr/status/2081213217691344906">Greene answered</a> that in theory Hutter’s AIXI extends Solomonoff induction to action, “the ideal agent is an expectimax-wrapper of the ideal predictor”, while in practice RL may only surface solutions the pretrained weights already contain. <a href="https://x.com/delisl3/status/2081488506464133308">Nathan Delisle added</a> that the KL penalty in RLHF works as “a budget on how many bits RL can change about the base model”, and that verifiable-reward RL feeds the model one bit per rollout.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.greene.sh/compression-and-intelligence/">Compression and Intelligence — Ryan Greene, greene.sh</a> <span class="how">— Primary source; full essay fetched and read (trafilatura extraction). Supplies the essay's argument, its reading of the Huang et al. Qwen outlier, the related-works lineage (Rae, Sutskever), the data-efficiency close, and the citation of Qiu et al. as concurrent work.</span></li>
+<li><a href="https://x.com/ryangr/status/2081031939532714210">Ryan Greene announcement thread on X</a> <span class="how">— Canonical URL; full thread fetched via Bird. Confirms July 25 posting date, centenary framing, and the reply exchange.</span></li>
+<li><a href="https://x.com/ryangr/status/2081213217691344906">Greene's reply on RL and AIXI — X</a> <span class="how">— Verbatim quote 'the ideal agent is an expectimax-wrapper of the ideal predictor'; his point that RL is bounded by what the model has already compressed (citing Yue et al. 2025).</span></li>
+<li><a href="https://x.com/delisl3/status/2081488506464133308">Nathan Delisle reply on KL penalties as bit budgets — X</a> <span class="how">— Verbatim quote 'a budget on how many bits RL can change about the base model' and the one-bit-per-rollout point about RLVR.</span></li>
+<li><a href="https://x.com/LunjunZhang/status/2081166013232480749">Lunjun Zhang's question on RL — X</a> <span class="how">— The reply-thread question Greene and Delisle answered.</span></li>
+<li><a href="https://en.wikipedia.org/wiki/Ray_Solomonoff">Ray Solomonoff — Wikipedia</a> <span class="how">— Verified: born July 25, 1926, Cleveland; 1960 Caltech presentation and February 1960 report; 1964 'A Formal Theory of Inductive Inference'; Kolmogorov's independent 1965 work; one of ten Dartmouth 1956 invitees, one of three who stayed all summer.</span></li>
+<li><a href="https://arxiv.org/abs/2309.10668">Language Modeling Is Compression — Delétang et al., arXiv</a> <span class="how">— Verified: Chinchilla 70B compresses ImageNet patches to 43.4% vs PNG 58.5%, LibriSpeech to 16.4% vs FLAC 30.3%; author list.</span></li>
+<li><a href="https://arxiv.org/abs/2404.09937">Compression Represents Intelligence Linearly — Huang et al., arXiv</a> <span class="how">— Verified: HKUST authors, COLM 2024, 31 models, 12 benchmarks, near-linear correlation between benchmark scores and compression of external corpora.</span></li>
+<li><a href="https://www.dwarkesh.com/p/the-sample-efficiency-black-hole">The Data Black Hole at the Center of AI — Dwarkesh Patel</a> <span class="how">— Verified: June 19, 2026; ~200M lifetime human tokens vs tens of trillions for frontier models; ~20 hours to learn driving vs billions of fleet hours for Waymo and Tesla.</span></li>
+<li><a href="https://arxiv.org/abs/2607.11883">Requential Coding: Pushing the Limits of Model Compression with Self-Generated Training Data — Qiu et al., arXiv</a> <span class="how">— Verified: submitted July 13, 2026; teacher selects samples from the student's own distribution, code records only selections, codes orders of magnitude shorter than prequential.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI Agents and edited by Fable, the lab's editor model. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-ryan-greene-ryangr-twitter-compression-based-accounts-of-int">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-07-26/ryan-greene-ryangr-twitter-compression-based-accounts-of-int</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
