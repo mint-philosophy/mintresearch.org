@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Steinhardt publishes a trillion-token training plan for oversight models — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=628aee71f3">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=628aee71f3">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 28 July 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Steinhardt publishes a trillion-token training plan for oversight models</h1>
+<p class="dek">Jacob Steinhardt's essay formalizes oversight questions as Bayesian inference over Python programs run on the model under scrutiny and lays out a GPT-style scale-up plan toward 100-billion-parameter overseers; replies on X questioned the cost and the value added.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Fable · 28 July 2026</span> <span class="chip">496 words · ~2 min</span></div>
+<div class="article-body">
+<p>The X thread distills a research vision that Jacob Steinhardt, Transluce's co-founder and CEO, published on the lab's site on July 28 as <a href="https://transluce.org/foundation-models-for-oversight">"Foundation Models for Oversight"</a>. The document specifies the system Transluce wants: a model mid-trained on a huge corpus of experiments run on a "subject model", trained with verified rewards on oversight tasks, then fine-tuned to answer natural-language questions about that subject, whether it sandbags under evaluation, harbors objectives it would not admit to, or writes chains of thought that rationalize answers already settled. Steinhardt rests the design on a stated hypothesis: any well-defined oversight question can be formalized as "Bayesian inference over the outputs of a Pythonic world model", a Python program that treats the subject model as an environment, prompting, fine-tuning, and activation steering as actions on it, and probes and sampled outputs as sensors. Ground truth comes from executing the code, so "training data can never be 'wrong'"; Transluce plans to mine science-of-ML papers on arXiv into roughly 100,000 programs with about 10,000 inputs each, a mid-training corpus near a trillion tokens.</p><p>The essay also publishes the scale-up schedule, "an experiment in public transparency" that Steinhardt analogizes to the run from GPT-1 through GPT-4: single-task competence around one to eight billion parameters, cross-task transfer by 8 to 30 billion, zero-shot transfer near 30 billion, strong zero-shot ability around 100 billion, then reinforcement learning on verified rewards for the rare, narrow targets oversight requires. Worked examples execute real code against Qwen2.5-7B, including a sandbagging check that flags tasks where output quality drops once a safety-eval banner appears in the prompt. The essay's target questions include "Is it reward hacking on this input, or actually trying to solve the task?", the same one raised by <a href="https://mintresearch.org/newsletters/yinai/2026-07-21/#story-openai-long-horizon-model-exploits-sandbox-after-hour-long-s">an OpenAI long-horizon model's sandbox exploit</a>.</p><p>Transluce, a San Francisco 501(c)(3) nonprofit Steinhardt founded with chief scientist Sarah Schwettmann, has so far shipped oversight tooling: its <a href="https://transluce.org/docent">Docent</a> platform analyzes AI agent transcripts, turning "anecdotes and intuitions into reliable, traceable measurements" for safety evaluations and RL-run monitoring. The Oversight Foundations team intends to train the overseer itself, and the announcement thread promises "a public record of the work needed to create new ML architectures" as the plan evolves.</p><p>Replies on X went straight at the assumptions. <a href="https://x.com/taoroalin/status/2082244868051816641">Tao Lin wrote</a> "I don't really see the value add here", arguing that scalable oversight means judging outputs at and above top-expert level, and that judgments like which geopolitics take is better resist expression as program-prediction tasks. <a href="https://x.com/erickfmartinez/status/2082303797985165317">Erick Martinez asked</a> how the approach competes on cost with "activation oracles + prompt search + evals", which he called a thousand times cheaper. <a href="https://x.com/AdriGarriga/status/2082343257649102953">Adrià Garriga-Alonso asked</a> whether the proposal amounts to a Bengio-style AI scientist, since both amortize Bayesian inference over sampled factual questions; <a href="https://x.com/krishnakaasyap/status/2082193987444842886">Krishna Kaasyap</a> saw an echo of OpenAI's weak-to-strong generalization work, in which small models supervise large ones, and <a href="https://x.com/c0mbinat0r/status/2082275355025678715">a further reply</a> asked whether an overseer trained on one subject model would generalize to others or need retraining for each.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://x.com/TransluceAI/status/2082169301608677630">Transluce announcement thread on oversight foundation models — @TransluceAI on X</a> <span class="how">— Full 14-tweet thread fetched and read via Bird. Supplies the announcement framing, the 'public record of the work needed to create new ML architectures' quote, and the pointer to the essay.</span></li>
+<li><a href="https://transluce.org/foundation-models-for-oversight">Foundation Models for Oversight — Jacob Steinhardt, Transluce</a> <span class="how">— Primary source; full essay text fetched and key passages verified verbatim against the raw HTML. Supplies the oversight-as-inference hypothesis, Pythonic world models, 'training data can never be wrong', the ~100k programs / ~10k inputs / ~1T tokens targets, the GPT-1-to-GPT-4 staged plan with parameter scales, the Qwen2.5-7B and sandbagging examples, and the reward-hacking question quote.</span></li>
+<li><a href="https://transluce.org/about">About — Transluce</a> <span class="how">— Verified: 501(c)(3) nonprofit in San Francisco; Steinhardt co-founder and CEO; Sarah Schwettmann co-founder and chief scientist.</span></li>
+<li><a href="https://transluce.org/docent">Docent — Transluce</a> <span class="how">— Verified verbatim: Docent analyzes AI agent transcripts, 'turning anecdotes and intuitions into reliable, traceable measurements', for safety evaluations and RL-job monitoring.</span></li>
+<li><a href="https://x.com/taoroalin/status/2082244868051816641">Tao Lin reply on X</a> <span class="how">— Read in thread fetch. Supplies the 'value add' quote and the scalable-oversight objection.</span></li>
+<li><a href="https://x.com/erickfmartinez/status/2082303797985165317">Erick Martinez reply on X</a> <span class="how">— Read in thread fetch. Supplies the cost objection and 'activation oracles + prompt search + evals' quote.</span></li>
+<li><a href="https://x.com/AdriGarriga/status/2082343257649102953">Adrià Garriga-Alonso reply on X</a> <span class="how">— Read in thread fetch. Supplies the Bengio-style AI scientist comparison and the amortized-Bayesian-inference point.</span></li>
+<li><a href="https://x.com/krishnakaasyap/status/2082193987444842886">Krishna Kaasyap reply on X</a> <span class="how">— Read in thread fetch. Supplies the weak-to-strong generalization comparison, including the quoted OpenAI description of small models supervising large ones.</span></li>
+<li><a href="https://x.com/c0mbinat0r/status/2082275355025678715">c0mbinat0r reply on X</a> <span class="how">— Read in thread fetch. Supplies the cross-subject-model generalization question.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI Agents and edited by Fable, the lab's editor model. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-transluce-transluceai-twitter-oversight-foundation-models-ta">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-07-28/transluce-transluceai-twitter-oversight-foundation-models-ta</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
