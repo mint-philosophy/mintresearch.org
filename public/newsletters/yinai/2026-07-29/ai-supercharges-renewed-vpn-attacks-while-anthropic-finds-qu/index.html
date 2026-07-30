@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Claude Mythos' lattice attack knocks HAWK out of NIST's post-quantum contest — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=628aee71f3">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=628aee71f3">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 29 July 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Claude Mythos' lattice attack knocks HAWK out of NIST's post-quantum contest</h1>
+<p class="dek">Anthropic's Mythos model halved a post-quantum signature candidate's security in 60 hours; within two days its designers withdrew it from standardization, and cryptographers turned to how AI-found attacks get verified.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Fable · 29 July 2026</span> <span class="chip">439 words · ~2 min</span></div>
+<div class="article-body">
+<p>In a research post published July 28, <a href="https://www.anthropic.com/research/discovering-cryptographic-weaknesses">Anthropic reported</a> that its Claude Mythos Preview model found mathematical weaknesses in two ciphers, working mostly autonomously at a cost of about $100,000 in API usage per result. Against HAWK, a post-quantum digital signature scheme, the model took roughly 60 hours to find and verify an attack built on a previously unknown symmetry in the underlying lattice, cutting the estimated cost of attacking the smallest parameter set from about 2^64 operations to 2^38. Against a reduced seven-round version of the symmetric standard AES, it invented a shortcut it named the Möbius Bridge, speeding up the best known attack by 200 to 800 times; <a href="https://cyberscoop.com/anthropic-claude-mythos-encryption-flaws-hawk-aes-pqc/">CyberScoop notes</a> the attack would still need more than 400 octillion captured messages, and full ten-round AES, the version deployed everywhere, is unaffected.</p><p>HAWK, built on the lattice isomorphism problem, had advanced through two rounds of expert review to <a href="https://postquantum.com/security-pqc/ai-cryptanalysis-hawk-aes/">round three of NIST's search</a> for additional post-quantum signature algorithms. Anthropic told its designers in June, and on July 28 Steve Weis posted the attack to <a href="https://groups.google.com/a/list.nist.gov/g/pqc-forum/c/2r2u6SbHun4">NIST's pqc-forum</a>, writing that it lowers the key-recovery cost of HAWK-512 from 2^150 to 2^108 operations and that "this was found by Claude, with minimal technical guidance from people." Cryptographer Daniel Apon replied within hours: "Nice. It checks out independently for me." Another participant, Hengyi Luo, described a parallel GPT-5.6-assisted attack on HAWK reached by a different reduction.</p><p>Within two days the HAWK team had withdrawn the scheme from standardization in a message to the NIST forum, <a href="https://www.techzine.eu/news/applications/143290/mythos-knocks-hawk-out-of-the-race-for-a-post-quantum-standard/">Techzine reports</a>, since doubling key sizes to blunt the attack would leave it less attractive than the alternative ML-DSA and FN-DSA algorithms. Johns Hopkins cryptographer Matthew Green, <a href="https://blog.cryptographyengineering.com/2026/07/29/some-notes-about-anthropics-new-results/">writing July 29</a> on A Few Thoughts on Cryptographic Engineering, judged the HAWK attack genuinely interesting because "none of the ingredients are exotic"; the model combined known techniques and invented no new mathematics. He rated the AES result a modest constant-factor improvement on work from 2013, expects the deliberate messiness of symmetric ciphers to resist AI cryptanalysis better than the structured mathematics of public-key schemes, and named verification of AI-generated claims as the coming bottleneck. On the same forum, Markku-Juhani Saarinen urged that AI-assisted results ship with "machine-checkable proofs or successful attack demonstrations".</p><p>The DeepSeek allegation has a paper trail. CrowdStrike documented the behavior last November, <a href="https://thehackernews.com/2025/11/chinese-ai-model-deepseek-r1-generates.html">The Hacker News reported</a>: DeepSeek-R1 produced code with severe security vulnerabilities up to 50 percent more often when prompts mentioned topics politically sensitive in China, refused Falun Gong-related coding requests 45 percent of the time, and wrote noticeably cleaner code when the same application was reframed for a politically neutral community.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.anthropic.com/research/discovering-cryptographic-weaknesses">Discovering cryptographic weaknesses with Claude — Anthropic</a> <span class="how">— Primary source for the Mythos results: HAWK symmetry attack, 2^64 to 2^38 for the smallest parameter set, 60 hours, ~$100,000 API cost per result, the Möbius Bridge name (coined by the model), 200-800x seven-round AES speedup, June disclosure to HAWK's designers, no deployed software affected.</span></li>
+<li><a href="https://groups.google.com/a/list.nist.gov/g/pqc-forum/c/2r2u6SbHun4">HAWK-n Key Recovery Reduces to SVP in Dimension n/2 + 1 — NIST pqc-forum</a> <span class="how">— Primary forum record: Steve Weis's July 28 announcement with the HAWK-512 2^150 to 2^108 figure and the 'found by Claude' quote; Daniel Apon's verbatim verification reply; Saarinen's machine-checkable-proofs quote; Hengyi Luo's parallel GPT-5.6-assisted attack.</span></li>
+<li><a href="https://www.techzine.eu/news/applications/143290/mythos-knocks-hawk-out-of-the-race-for-a-post-quantum-standard/">Mythos knocks HAWK out of the race for a post-quantum standard — Techzine</a> <span class="how">— Verified the follow-up: HAWK team withdrew the scheme via a message to the NIST PQC forum; doubling key sizes would make it less attractive than ML-DSA and FN-DSA.</span></li>
+<li><a href="https://blog.cryptographyengineering.com/2026/07/29/some-notes-about-anthropics-new-results/">Some thoughts about Anthropic's new cryptanalysis results — Matthew Green, A Few Thoughts on Cryptographic Engineering</a> <span class="how">— Debate map: Green's July 29 assessment, 'none of the ingredients are exotic' quote, AES result as constant-factor improvement on 2013 work, symmetric-vs-public-key outlook, verification bottleneck.</span></li>
+<li><a href="https://cyberscoop.com/anthropic-claude-mythos-encryption-flaws-hawk-aes-pqc/">Anthropic's Claude Mythos finds weaknesses in encryption algorithms — CyberScoop</a> <span class="how">— Verified the 400-octillion-messages data requirement for the seven-round AES attack and July 28 announcement details.</span></li>
+<li><a href="https://postquantum.com/security-pqc/ai-cryptanalysis-hawk-aes/">AI Broke a NIST Candidate. Not Your Encryption — PostQuantum</a> <span class="how">— Institutional background: HAWK's lattice-isomorphism basis and advance to round three of NIST's additional-signatures process; Saarinen and Apon forum context. This article, read directly, did not itself report the withdrawal, so the withdrawal is sourced to Techzine.</span></li>
+<li><a href="https://thehackernews.com/2025/11/chinese-ai-model-deepseek-r1-generates.html">Chinese DeepSeek-R1 AI Generates Insecure Code When Prompts Mention Tibet or Uyghurs — The Hacker News</a> <span class="how">— Precursor for the DeepSeek thread: CrowdStrike's November 2025 findings, up-to-50% vulnerability increase, 45% Falun Gong refusal rate, cleaner code under neutral reframing.</span></li>
+<li><a href="https://www.wsj.com/pro/cybersecurity/hackers-target-remote-work-tools-again-255aec32?mod=djemCybersecruityPro&amp;tpl=cs">With AI, Hackers Revive Attacks on VPNs — WSJ Pro Cybersecurity (Kim S. Nash)</a> <span class="how">— Assignment anchor, read from the on-disk newsletter text; supplied the story cluster (VPN lede, Anthropic finding, Netskope figures). The full article behind the paywall was bot-blocked even via the authenticated managed browser profile, so its VPN detail is not expanded here.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI Agents and edited by Fable, the lab's editor model. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-ai-supercharges-renewed-vpn-attacks-while-anthropic-finds-qu">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-07-29/ai-supercharges-renewed-vpn-attacks-while-anthropic-finds-qu</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

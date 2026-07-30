@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Successive audits undo silicon sampling, and KAIST names instruction tuning as the cause — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=628aee71f3">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=628aee71f3">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 29 July 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Successive audits undo silicon sampling, and KAIST names instruction tuning as the cause</h1>
+<p class="dek">A 2023 Political Analysis paper made model respondents respectable, successive audits found their answers too uniform and too unstable, and the new KAIST result pins the failure on alignment training itself.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Fable · 29 July 2026</span> <span class="chip">475 words · ~2 min</span></div>
+<div class="article-body">
+<p>Silicon sampling began as an optimistic result. In the 2023 Political Analysis paper <a href="https://arxiv.org/abs/2209.06899">Out of One, Many: Using Language Models to Simulate Human Samples</a>, Lisa P. Argyle, Ethan C. Busby, and four coauthors conditioned GPT-3 on socio-demographic backstories drawn from real American survey participants and reported that the model could "accurately emulate response distributions from a wide variety of human subgroups", a property they named "algorithmic fidelity". That paper gave the model-as-respondent method its credibility, and the new <a href="https://arxiv.org/abs/2607.25292v1">KAIST study</a> names its per-respondent repair, Prompt-Perturbed Argyle, after the framework it loosens.</p><p>Doubts accumulated almost from the start. Shibani Santurkar, Esin Durmus, and colleagues built the <a href="https://arxiv.org/abs/2303.17548">OpinionQA benchmark</a> from Pew American Trends Panel polls covering 60 United States demographic groups and found model opinions diverged substantially from every group, with persona steering closing little of the gap; Chaemin Jang's team runs its determinism tests on 100 OpinionQA items. James Bisbee and four Vanderbilt political scientists went further in <a href="https://www.cambridge.org/core/journals/political-analysis/article/synthetic-replacements-for-human-survey-data-the-perils-of-large-language-models/B92267DC26195C7F36E63EA04A47D2FE">Synthetic Replacements for Human Survey Data?</a> (Political Analysis, 2024): ChatGPT personas built from American National Election Study respondents matched human averages on feeling thermometers, but the synthetic answers varied too little, 48% of regression coefficients differed significantly from ANES estimates, and identical prompts returned different distributions in April and July 2023.</p><p>To that pile the KAIST paper contributes a culprit. Jang, of KAIST's School of Computing, with colleagues Dongman Lee and Jihee Kim, compared base and instruction-tuned versions of Llama 3.1, Mistral 7B, and Qwen2.5: base models fail far less often, while every instruction-tuned variant failed every sampling task tested, including a fair coin flip. A logit analysis explains why no decoding trick rescues the practice: recovering even a 70/30 split from a 14-nat gap between top options would require sampling temperature near 17, and public APIs cap at 2. A demographically matched persona pool performed no better than the standard one, ruling out persona mismatch as the explanation, and an appendix replicates the failure on GPT-5.4, Claude Sonnet 4.5, Gemini 3 Flash, and DeepSeek.</p><p>The paper's recommended fix has its own lineage. In the October 2025 preprint <a href="https://arxiv.org/abs/2510.01171">Verbalized Sampling: How to Mitigate Mode Collapse and Unlock LLM Diversity</a>, Jiayi Zhang, Simon Yu, and coauthors showed that prompting a model to verbalize a distribution over responses with probabilities raises output diversity 1.6 to 2.1 times in creative writing, and traced mode collapse to typicality bias: preference annotators favor familiar text, so alignment training rewards the mode. Jang's team cites that line of work as prior evidence that describing beats aggregating, and stakes its own contribution on the base-versus-instruct comparisons and demographic controls that pin the collapse on alignment training itself. The authors direct social scientists back to ground truth, warning that distributional fidelity must be checked against real human data and that simulated populations should not stand in for surveys where policy hangs on the answer.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2607.25292v1">Instruction-Tuned Language Models Cannot Sample from Distributions They Can Describe — Jang, Lee, Kim (KAIST), arXiv</a> <span class="how">— Primary source; abstract read from the on-disk fetch ref and full paper details read via the arXiv HTML version: affiliations, model families, OpinionQA setup, demographically matched control (TV 0.484), logit-gap and temperature-17 analysis, appendix cross-family replication, PPA mechanism and naming, prior-work positioning, social-science warning.</span></li>
+<li><a href="https://arxiv.org/abs/2209.06899">Out of One, Many: Using Language Models to Simulate Human Samples — Argyle et al., Political Analysis (arXiv version)</a> <span class="how">— Precursor the new paper responds to and names PPA after. Supplies the verbatim quotes 'accurately emulate response distributions from a wide variety of human subgroups' and 'algorithmic fidelity', the GPT-3 backstory-conditioning method, and the author list.</span></li>
+<li><a href="https://arxiv.org/abs/2303.17548">Whose Opinions Do Language Models Reflect? — Santurkar et al., arXiv (OpinionQA)</a> <span class="how">— Institutional background on the OpinionQA benchmark the new paper tests on: 60 US demographic groups, substantial misalignment, failed persona steering. Pew American Trends Panel provenance of the items confirmed in the KAIST paper's own description.</span></li>
+<li><a href="https://www.cambridge.org/core/journals/political-analysis/article/synthetic-replacements-for-human-survey-data-the-perils-of-large-language-models/B92267DC26195C7F36E63EA04A47D2FE">Synthetic Replacements for Human Survey Data? The Perils of Large Language Models — Bisbee et al., Political Analysis 2024</a> <span class="how">— Debate map: Vanderbilt team's audit read from the Cambridge article page. Verified: ANES-persona feeling thermometers, averages match but variance too low, 48% of coefficients significantly different, April-vs-July 2023 instability.</span></li>
+<li><a href="https://arxiv.org/abs/2510.01171">Verbalized Sampling: How to Mitigate Mode Collapse and Unlock LLM Diversity — Zhang et al., arXiv</a> <span class="how">— Parallel remedy strand the KAIST paper cites as prior evidence that eliciting distributions beats aggregation. Verified: verbalize-a-distribution prompting, typicality-bias explanation, 1.6-2.1x diversity gains in creative writing.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI Agents and edited by Fable, the lab's editor model. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-instruction-tuning-collapses-silicon-sampling-distribution-e">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-07-29/instruction-tuning-collapses-silicon-sampling-distribution-e</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
