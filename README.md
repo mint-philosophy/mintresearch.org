@@ -19,7 +19,7 @@ routes were removed, and hashed shared asset bundles remain in `public/_astro/`.
 - `npm run build` copies primary pages unchanged and builds only the remaining
   report, archive, and RTS sources under `src/pages/`.
 - Edits go directly into the served HTML. To re-apply the Minty overlay after edits, run `python3 scripts/inject_minty.py`.
-- The team data array is embedded in `public/index.html` as `<script id="personData" type="application/json">[...]</script>`. Edit that JSON to add/change people.
+- The homepage People section is loaded at runtime from `public/assets/people/latest-people.csv`.
 - The homepage Papers list is loaded at runtime from `public/assets/papers/latest-paper-deliverables.csv`.
 - Volatile infrastructure facts in `public/guide/index.html` bind to
   `public/assets/minty/infra-snapshot.json`. Minty's deterministic
@@ -200,14 +200,14 @@ grep -rE '/assets/(people|cv)/' public/
 
 ```
 public/                # served as-is (static HTML + assets)
-  index.html           # homepage (hand-edited; people grid + detail panel)
+  index.html           # homepage (hand-edited; People and Papers runtime mounts)
   <page>/index.html    # other top-level pages (cv, newsletter, corpus-map, ...)
   camps/               # Summer Camps for Kids Who Aren't Sporty (passphrase-gated
                        #   SPA + camps.json dataset; a weekly Claude Routine pushes
                        #   data-only updates here — see camps/camps-hub.js header)
   coquelin/            # private house tracker (GitHub-token unlock; its state JSON
                        #   lives in the mint-website repo so saves don't redeploy)
-  assets/people/       # team headshots — referenced from public/index.html
+  assets/people/       # People CSV, runtime loader, and team headshots
   assets/cv/           # Minty costume sprites — referenced from multiple pages
   _astro/              # frozen Astro asset bundles from the last build
 src/
@@ -219,15 +219,42 @@ scripts/
 chatbot-worker/        # Cloudflare Worker for the Minty chatbot
 ```
 
-## Adding a new team member
+## Updating homepage People
 
-1. Add their photo to `public/assets/people/<firstname-lastname>.jpg` (consistent kebab-case naming).
-2. In `public/index.html`, find the `<script id="personData" ...>` JSON array and add an object:
-   ```json
-   {"name":"...","role":"...","disc":"...","affiliation":"...","bio":"...","headshot":"/assets/people/<firstname-lastname>.jpg"}
-   ```
-   Set `"headshot":null` if no photo is available — the panel will fall back to initials.
-3. Verify locally by serving `public/` (`python3 -m http.server -d public 8090`) and clicking the person in the team grid.
+The homepage Team, Affiliates, and Alumni grids are generated in the browser from:
+
+```text
+public/assets/people/latest-people.csv
+```
+
+Like the Papers section, People uses a Notion database as its source of truth.
+The CSV in this repository is the deployment copy consumed by the website:
+make people and ordering changes in Notion first, then export the People database
+view and replace the site CSV. Do not maintain a separate people list in
+`public/index.html`.
+
+The website includes rows where `Site: Public?` is `Yes` and `Site: Section` is
+`Team`, `Affiliate`, or `Alumni`. Each section is sorted numerically by
+`Site: Sort Order`.
+
+The visible cards and Team detail panel use the `Site:` columns for role,
+discipline, affiliation, bio, and up to three labelled links. A value of `??`
+is treated as missing rather than shown publicly.
+
+For a Team headshot:
+
+1. Prefer a valid URL or root-relative path in `Site: headshot link`.
+2. Otherwise, the loader tries `/assets/people/<Site: id>.jpg`.
+3. If that image is unavailable, the existing initials fallback is shown.
+
+To update People:
+
+1. Update the Notion People database, then export its site-facing view as CSV.
+2. Replace `public/assets/people/latest-people.csv`.
+3. Run `npm run check:people`.
+4. Verify locally by serving `public/` (`python3 -m http.server -d public 8090`) and clicking several Team cards.
+
+No People markup or embedded JSON in `public/index.html` needs to be edited.
 
 ## Updating homepage Papers
 
