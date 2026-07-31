@@ -84,6 +84,8 @@ if (fs.existsSync(guidePath)) {
   for (const required of [
     "/assets/infra-guide.js",
     'id="infraDaemonInventory"',
+    'class="infra-byline"',
+    "Written by <strong>Minty</strong>",
     'data-infra-field="fleet.loadedTotal"',
     'data-infra-field="models.daemonDefault"',
   ]) {
