@@ -88,6 +88,11 @@ if (fs.existsSync(guidePath)) {
     "Written by <strong>Minty</strong>",
     'data-infra-field="fleet.loadedTotal"',
     'data-infra-field="models.daemonDefault"',
+    "BirdClaw",
+    "AT Protocol",
+    "Gmail API",
+    "Weekly Source Digest",
+    "<code>corpus-agent</code>",
   ]) {
     if (!guide.includes(required)) {
       errors.push(`Static guide is missing contract marker: ${required}`);
@@ -99,6 +104,11 @@ if (fs.existsSync(guidePath)) {
     ["retired live state", /sessions\.db \(SQLite\)|RECENT\.md \(Dynamic\)/i],
     ["obsolete model", /GPT-5\.2|gpt-5\.3-codex-spark/i],
     ["obsolete Ghost host", /Ghost CMS powering mintresearch\.org/i],
+    ["generic source rollup", /RSS, arXiv, newsletters, social feeds/i],
+    [
+      "retired daily-briefing pipeline",
+      /where the daily briefing and paper intake\s+services can use them/i,
+    ],
   ];
   for (const [name, pattern] of stalePatterns) {
     if (pattern.test(guide)) errors.push(`Static guide still contains ${name}`);

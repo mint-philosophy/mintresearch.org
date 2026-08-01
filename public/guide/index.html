@@ -351,41 +351,48 @@
           </span>
         </h2>
         <p>
-          The news pipeline separates collection, human curation, and
-          publication. FeedMe gathers and scores material against the lab's
-          research interests. Curated items converge in
-          <code>#firehose</code>, where the daily briefing and paper intake
-          services can use them.
+          FeedMe is the shared collection and ranking layer. The full 04:00 run
+          invokes each source adapter, removes material seen in earlier runs,
+          classifies every new item, summarizes eligible longform pieces, ranks
+          the results, and builds a story-aware curator slate. The 12:00 and
+          20:00 runs refresh X, Bluesky, and arXiv without repeating the full
+          source sweep.
         </p>
         <div class="infra-flow" aria-label="Content pipeline">
           <div class="infra-node">
-            <span class="infra-kicker">Collect</span> <strong>FeedMe</strong>
-            <small>RSS, arXiv, newsletters, social feeds</small>
+            <span class="infra-kicker">Collect</span>
+            <strong>Source adapters</strong>
+            <small>X, Bluesky, RSS/Atom, Gmail, arXiv, and PhilPapers</small>
           </div>
           <span class="infra-arrow" aria-hidden="true">&rarr;</span>
           <div class="infra-node">
-            <span class="infra-kicker">Curate</span> <strong>Selector</strong>
-            <small>Daily slate and incremental promotion</small>
+            <span class="infra-kicker">Process</span> <strong>FeedMe</strong>
+            <small>Deduplicate, classify, summarize, rank, and plan stories</small>
           </div>
           <span class="infra-arrow" aria-hidden="true">&rarr;</span>
           <div class="infra-node infra-node-hub">
-            <span class="infra-kicker">Route</span> <strong>#firehose</strong>
-            <small>Shared intake channel</small>
+            <span class="infra-kicker">Route</span>
+            <strong>Curator + intake</strong>
+            <small>Finalized slate, #firehose, and the #papers corpus queue</small>
           </div>
           <span class="infra-arrow" aria-hidden="true">&rarr;</span>
           <div class="infra-node">
-            <span class="infra-kicker">Publish</span>
-            <strong>Yesterday in AI</strong>
-            <small>Email, web archive, and Slack</small>
+            <span class="infra-kicker">Serve</span>
+            <strong>Research services</strong>
+            <small>YiNAI, Weekly Source Digest, and Corpus Agent</small>
           </div>
         </div>
+        <h3>Source adapters</h3>
         <div class="cards">
           <div class="card no-expand">
             <div class="card-head">
               <div>
-                <div class="card-title">Daily collection</div>
+                <div class="card-title">X timelines</div>
                 <div class="card-sub">
-                  A full source sweep runs at 04:00 America/New_York.
+                  BirdClaw reads the chronological Following timeline, with its
+                  local cache as a bounded fallback. Bird reads the algorithmic
+                  For You timeline through an authenticated OpenClaw browser
+                  session; both paths expand threads and linked articles.
                 </div>
               </div>
             </div>
@@ -393,9 +400,11 @@
           <div class="card no-expand">
             <div class="card-head">
               <div>
-                <div class="card-title">Incremental collection</div>
+                <div class="card-title">Bluesky feeds</div>
                 <div class="card-sub">
-                  Smaller updates run at 12:00 and 20:00.
+                  An authenticated AT Protocol client reads Following, Discover,
+                  Mutuals, AI Papers, and ML Blend, then expands threads before
+                  writing normalized items.
                 </div>
               </div>
             </div>
@@ -403,10 +412,12 @@
           <div class="card no-expand">
             <div class="card-head">
               <div>
-                <div class="card-title">Curator and selector</div>
+                <div class="card-title">RSS and Atom</div>
                 <div class="card-sub">
-                  The current selector can promote qualifying items directly to
-                  #firehose.
+                  Direct HTTP requests read configured Substack publications,
+                  independent blogs, and selected journal or custom feeds. RSS
+                  and Atom entries retain publication and source-priority
+                  metadata for later ranking.
                 </div>
               </div>
             </div>
@@ -414,19 +425,92 @@
           <div class="card no-expand">
             <div class="card-head">
               <div>
-                <div class="card-title">Weekday briefing</div>
+                <div class="card-title">Newsletter inbox</div>
                 <div class="card-sub">
-                  Yesterday in AI is written, checked, archived, and delivered
-                  each weekday.
+                  The Gmail API reads editorial newsletters from the lab inbox.
+                  The adapter resolves tracking links and retrieves full articles
+                  with parallel HTTP requests, using a serial authenticated
+                  browser fallback for protected or truncated sources.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card no-expand">
+            <div class="card-head">
+              <div>
+                <div class="card-title">arXiv</div>
+                <div class="card-sub">
+                  Category <code>/new</code> pages for <code>cs.CY</code>,
+                  <code>cs.AI</code>, <code>cs.CL</code>, <code>cs.LG</code>, and
+                  <code>cs.HC</code> provide fresh paper IDs; the arXiv Atom API
+                  supplies metadata and abstracts for classification.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card no-expand">
+            <div class="card-head">
+              <div>
+                <div class="card-title">PhilPapers</div>
+                <div class="card-sub">
+                  PhilPapers JSON browse endpoints supply recent records from
+                  philosophy of AI, computer and information ethics, privacy,
+                  misinformation, social media, and technology ethics.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <h3>Products and agents</h3>
+        <div class="cards infra-service-cards">
+          <div class="card no-expand">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Yesterday in AI</div>
+                <div class="card-sub">
+                  Finalized curator artifacts and protected manual rows feed the
+                  weekday issue. The writer checks the draft, publishes the
+                  hosted issue before email delivery, and posts only the issue
+                  link to <code>#mint-community</code>.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card no-expand">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Weekly Source Digest</div>
+                <div class="card-sub">
+                  Every Friday at 08:45, the source digester reads seven days of
+                  FeedMe artifacts for configured high-priority publications,
+                  recovers full text, builds one evidence packet per source, and
+                  fact-checks a spoken script plus a linked Markdown digest.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card no-expand">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Corpus Agent</div>
+                <div class="card-sub">
+                  <code>news-pdf-bot</code> recovers papers from
+                  <code>#firehose</code> and cross-posts them to
+                  <code>#papers</code>. The corpus pipeline ingests those files
+                  and local submissions into LanceDB; the persistent
+                  <code>corpus-agent</code> serves grounded search and literature
+                  reviews through <code>@Minty</code> in Slack.
                 </div>
               </div>
             </div>
           </div>
         </div>
         <p class="infra-note">
-          The former Slack feed-channel promotion loop was retired on 18 July
-          2026. The separate weekly briefing was retired on 3 July 2026; the
-          maintained publication is the weekday Yesterday in AI briefing.
+          The Morning Briefing product was retired on 11 July 2026, and current
+          FeedMe runs do not invoke it. Retained modules supply reusable
+          full-text retrieval and fallback-ranking code. Daily
+          <code>#feed-*</code> posting was retired on 18 July; selector
+          auto-promotion to <code>#firehose</code> remains active.
         </p>
       </section>
       <section id="corpus" class="fade-in">
@@ -763,14 +847,22 @@
               <td>Full source collection and ranking</td>
             </tr>
             <tr>
-              <td>Weekday morning</td>
-              <td><code>yesterday-in-ai</code></td>
-              <td>Write, verify, archive, and deliver the briefing</td>
+              <td>On finalization; 04:30 fallback</td>
+              <td>
+                <code>yesterday-in-ai-write-consumer</code><br />
+                <code>yesterday-in-ai</code>
+              </td>
+              <td>Write, verify, publish, and deliver Yesterday in AI</td>
             </tr>
             <tr>
               <td>12:00 and 20:00</td>
               <td><code>feedme-incremental</code></td>
-              <td>Incremental collection and selector run</td>
+              <td>Refresh X, Bluesky, and arXiv curator candidates</td>
+            </tr>
+            <tr>
+              <td>Friday 08:45</td>
+              <td><code>weekly-source-digest</code></td>
+              <td>Build the full-text source review and spoken script</td>
             </tr>
             <tr>
               <td>06:00 and 18:00</td>
@@ -781,6 +873,11 @@
               <td>Continuous</td>
               <td><code>corpus-*</code></td>
               <td>Queue-backed paper intake, analysis, and writes</td>
+            </tr>
+            <tr>
+              <td>Persistent</td>
+              <td><code>corpus-agent</code></td>
+              <td>Answer grounded corpus searches and literature reviews in Slack</td>
             </tr>
             <tr>
               <td>Continuous</td>
@@ -1162,6 +1259,9 @@
         color: var(--text-3);
         font-size: 12px;
       }
+      .infra-service-cards {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
       .service-pipeline {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1290,6 +1390,9 @@
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
         .infra-flow {
+          grid-template-columns: 1fr;
+        }
+        .infra-service-cards {
           grid-template-columns: 1fr;
         }
         .infra-arrow {
