@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Thinking Machines builds its staged-release case from Anthropic, EleutherAI, and OpenAI research — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=628aee71f3">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=628aee71f3">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 1 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Thinking Machines builds its staged-release case from Anthropic, EleutherAI, and OpenAI research</h1>
+<p class="dek">The staged-release framework builds on Anthropic's Glasswing disclosures, EleutherAI's data-filtering results, and OpenAI's worst-case fine-tuning of gpt-oss, and turns the Tinker API into a release stage.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Fable · 1 August 2026</span> <span class="chip">444 words · ~2 min</span></div>
+<div class="article-body">
+<p>Thinking Machines grounded its July 31 post <a href="https://thinkingmachines.ai/blog/a-safe-path-to-open-weights/">"A Safe Path to Open Weights"</a> in other labs' published work, and the debt to Anthropic comes first. The post motivates its misuse worries with Anthropic's April report that Claude Mythos Preview found thousands of previously unknown vulnerabilities across major operating systems and browsers and wrote working exploits without human guidance. Anthropic's <a href="https://www.anthropic.com/research/glasswing-initial-update">May 22 update on Project Glasswing</a>, the coalition of roughly 50 partners given early access to that model, tallies more than 10,000 high- or critical-severity vulnerabilities found in the project's first month; Cloudflare surfaced 2,000 bugs, Mozilla 271 in Firefox, and the model itself remains unreleased. Thinking Machines treats that private-disclosure window as the working example of its first release stage, early inference access for defenders who patch systems before a capability reaches everyone.</p><p>The framework's speculative half, the hypothesis that dangerous capability can be removed in training instead of refused at inference, rests on <a href="https://arxiv.org/abs/2508.06601">"Deep Ignorance: Filtering Pretraining Data Builds Tamper-Resistant Safeguards into Open-Weight LLMs"</a>, a 2025 paper from EleutherAI and the UK AI Security Institute led by Kyle O'Brien. Filtering biothreat-related documents from pretraining produced 6.9-billion-parameter models that withstood up to 10,000 steps and 300 million tokens of adversarial fine-tuning on the removed material, resisting tampering more than an order of magnitude better than post-training safeguards with no observed degradation to unrelated capabilities; the authors caution that filtered models can still act on dangerous information supplied through search tools. The worst-case test Thinking Machines ran on <a href="https://thinkingmachines.ai/news/inkling-small">Inkling and Inkling-Small</a> follows OpenAI's precedent: for <a href="https://arxiv.org/abs/2508.03153">"Estimating Worst-Case Frontier Risks of Open-Weight LLMs"</a>, Eric Wallace and colleagues fine-tuned gpt-oss for maximal biology and cybersecurity capability, found the tuned models still underperformed o3 and did not substantially advance the open-weight frontier, and wrote that the results "contributed to our decision to release the model."</p><p>The intermediate stage already operates as a business. Thinking Machines launched <a href="https://thinkingmachines.ai/news/announcing-tinker/">Tinker</a> last October as "a flexible API for fine-tuning language models": users write their own training loops and supply their own data while the company hosts the weights, an arrangement that preserves monitoring, guardrails, and revocation. Buck Shlegeris of Redwood Research <a href="https://www.alignmentforum.org/posts/r68nCQK3veQtCdqGt/the-thinking-machines-tinker-api-is-good-news-for-ai-control">argued at the time on the Alignment Forum</a> that the design made him "moderately more optimistic about securing model weights" against human and AI insider threats, since most training research can proceed without anyone loading weights directly. The July 31 post elevates that architecture into release policy, slotting hosted fine-tuning between limited inference and open weights, and commits to two follow-ons: Tinker safety grants funding defensive research, and a fuller framework specifying evaluations, access criteria, and stop conditions, the questions the post concedes it has not yet answered.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://thinkingmachines.ai/blog/a-safe-path-to-open-weights/">A Safe Path to Open Weights — Thinking Machines Lab</a> <span class="how">— Primary source; full text read from the on-disk fetch and verified against the live page (July 31, no named authors). Supplies the framework, the Mythos motivation, the Glasswing and citation trail, and the safety-grants and detailed-framework commitments.</span></li>
+<li><a href="https://www.anthropic.com/research/glasswing-initial-update">Project Glasswing: An initial update — Anthropic</a> <span class="how">— Verified: May 22, 2026 update; 10,000+ high- or critical-severity vulnerabilities in the first month; ~50 partners; Cloudflare 2,000 bugs; Mozilla 271 Firefox vulnerabilities; Claude Mythos Preview unreleased.</span></li>
+<li><a href="https://arxiv.org/abs/2508.06601">Deep Ignorance: Filtering Pretraining Data Builds Tamper-Resistant Safeguards into Open-Weight LLMs — O'Brien et al., arXiv</a> <span class="how">— Verified: author list led by Kyle O'Brien with EleutherAI and UK AISI coauthors; 6.9B filtered models withstood up to 10,000 steps and 300M tokens of adversarial fine-tuning, over an order of magnitude better than post-training baselines; no observed degradation to unrelated capabilities; search-tool limitation.</span></li>
+<li><a href="https://arxiv.org/abs/2508.03153">Estimating Worst-Case Frontier Risks of Open-Weight LLMs — Wallace et al., arXiv</a> <span class="how">— Verified: Eric Wallace and colleagues' malicious fine-tuning of gpt-oss in biology and cybersecurity; underperformed o3, did not substantially advance the open-weight frontier; 'contributed to our decision to release the model' quote.</span></li>
+<li><a href="https://thinkingmachines.ai/news/announcing-tinker/">Announcing Tinker — Thinking Machines Lab</a> <span class="how">— Verified: October 1, 2025 launch; 'a flexible API for fine-tuning language models' quote; users control algorithms and data while the company runs the infrastructure.</span></li>
+<li><a href="https://www.alignmentforum.org/posts/r68nCQK3veQtCdqGt/the-thinking-machines-tinker-api-is-good-news-for-ai-control">The Thinking Machines Tinker API is good news for AI control and security — Buck Shlegeris, Alignment Forum</a> <span class="how">— Verified: October 9, 2025 post; 'moderately more optimistic about securing model weights' quote taken verbatim; argument that Tinker-style APIs let research proceed without direct weight access. Authorship as Buck Shlegeris confirmed via the Redwood Research blog cross-post of the same title.</span></li>
+<li><a href="https://thinkingmachines.ai/news/inkling-small">Inkling-Small — Thinking Machines Lab</a> <span class="how">— Continuity link woven where the piece names the models the safety tests covered; no new facts drawn from it.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI Agents and edited by Fable, the lab's editor model. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-inkling-safety-tests-support-staged-open-weight-releases-tie">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-01/inkling-safety-tests-support-staged-open-weight-releases-tie</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
