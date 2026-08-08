@@ -34,12 +34,12 @@ function assertImageFiles(source, label) {
 const governingFile = 'public/assets/collections/governing-with-agents.js';
 const governing = arraySource(governingFile, 'const cases = [', 'const statusClass');
 const governingIds = values(governing, 'id');
-assert.equal(governingIds.length, 17, 'Governing with Agents must contain the 17 reviewed cases');
+assert.equal(governingIds.length, 23, 'Governing with Agents must contain the 23 reviewed cases');
 assertUnique(governingIds, 'Governing with Agents');
 const governingQuotes = values(governing, 'sourceQuote');
-assert.equal(governingQuotes.length, 17, 'Every governance case needs a source quotation');
-assert.equal(values(governing, 'sourceLabel').length, 17, 'Every governance quotation needs a visible source label');
-assert.equal(values(governing, 'sourceHref').length, 17, 'Every governance quotation needs a source URL');
+assert.equal(governingQuotes.length, 23, 'Every governance case needs a source quotation');
+assert.equal(values(governing, 'sourceLabel').length, 23, 'Every governance quotation needs a visible source label');
+assert.equal(values(governing, 'sourceHref').length, 23, 'Every governance quotation needs a source URL');
 governingQuotes.forEach((quote) => {
   assert.ok(wordCount(quote) <= 25, `Governance source quotation exceeds 25 words: ${quote}`);
 });
@@ -111,4 +111,4 @@ for (const rejected of [
 assert.ok(fs.existsSync('public/assets/governing-with-agents/og-governing-with-agents.png'), 'Governance social card is missing');
 assert.ok(fs.existsSync('public/assets/ai-culture/og-ai-culture.png'), 'Culture social card is missing');
 
-console.log('MINT curated collections contract passed: 17 source-quoted governance cases, 58 source-quoted culture entries, local assets, notes, and moderated forms.');
+console.log('MINT curated collections contract passed: 23 source-quoted governance cases, 58 source-quoted culture entries, local assets, notes, and moderated forms.');

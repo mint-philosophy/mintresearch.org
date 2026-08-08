@@ -92,7 +92,7 @@ const cases = [
     id: 'talk-to-the-city',
     title: 'Talk to the City',
     category: 'participation',
-    categoryLabel: 'Participation & consultation',
+    categoryLabel: 'Participation, organising & public discourse',
     status: 'live',
     statusLabel: 'Deployed platform',
     who: 'The AI Objectives Institute; used in collaboration with Taiwan’s Ministry of Digital Affairs',
@@ -111,7 +111,7 @@ const cases = [
     id: 'community-voice',
     title: 'Community Voice',
     category: 'participation',
-    categoryLabel: 'Participation & consultation',
+    categoryLabel: 'Participation, organising & public discourse',
     status: 'pilot',
     statusLabel: 'Small field pilot',
     who: 'Fair Count through Cooperative Impact Lab’s AI-for-organizing programme',
@@ -123,10 +123,79 @@ const cases = [
     links: [['Programme case record', 'https://www.cooperativeimpactlab.org/ai4org']]
   },
   {
+    id: 'zke-youth-voices',
+    title: 'zKe: Youth Voices',
+    category: 'participation',
+    categoryLabel: 'Participation, organising & public discourse',
+    status: 'live',
+    statusLabel: 'Live programme',
+    who: 'Kenyan youth organisers working with Siasa Place and The Situation Room',
+    sourceLabel: 'zKe: Youth Voices',
+    sourceHref: 'https://www.zkevoices.org/',
+    sourceQuote: 'This initiative uses unique deliberative digital spaces like WhatsApp, Talk to the City, pol.is, and Remesh to ensure robust discussions and gather real-time insights.',
+    image: '/assets/governing-with-agents/zke-youth-voices.webp',
+    imageAlt: 'zKe Youth Voices campaign artwork featuring Kenyan youth participants.',
+    links: [
+      ['Participate in zKe', 'https://www.zkevoices.org/'],
+      ['Plurality Institute mapping report', 'https://drive.google.com/file/d/1cmePd2Rie7V3tWdhKjGWXZeqshszmDqm/view']
+    ]
+  },
+  {
+    id: 'bridgingbot',
+    title: 'BridgingBot',
+    category: 'participation',
+    categoryLabel: 'Participation, organising & public discourse',
+    status: 'pilot',
+    statusLabel: 'Randomized trial',
+    who: 'Plurality Institute, led by Jeffrey Fossett with research and community partners',
+    sourceLabel: 'Plurality Institute',
+    sourceHref: 'https://www.plurality.institute/',
+    sourceQuote: 'BridgingBot is an LLM-powered social media moderator developed by Plurality Institute to foster healthier, more constructive online dialogue.',
+    image: '/assets/governing-with-agents/bridgingbot.webp',
+    imageAlt: 'Jeffrey Fossett presenting BridgingBot at the Plurality Institute.',
+    links: [
+      ['Project account', 'https://jeffreyfossett.com/2025/08/11/bridging-bot-media.html'],
+      ['Prototype and trial design', 'https://techandsocialcohesion.substack.com/p/from-battleground-to-common-ground']
+    ]
+  },
+  {
+    id: 'a-healthier-democracy',
+    title: 'A Healthier Democracy AI',
+    category: 'participation',
+    categoryLabel: 'Participation, organising & public discourse',
+    status: 'live',
+    statusLabel: 'In use',
+    who: 'Northeastern University’s Burnes Center with A Healthier Democracy, Link Health, and Vot-ER',
+    sourceLabel: 'Burnes Center for Social Change',
+    sourceHref: 'https://burnes.northeastern.edu/projects/a-healthier-democracy-ai/',
+    sourceQuote: 'Delivers over $4M in federal aid by helping low-income families apply for benefits directly in healthcare settings via an AI assistant.',
+    image: '/assets/governing-with-agents/a-healthier-democracy.webp',
+    imageAlt: 'A healthcare worker holding a Vot-ER voter registration badge.',
+    links: [
+      ['AI for Impact project', 'https://burnes.northeastern.edu/projects/a-healthier-democracy-ai/'],
+      ['National programme', 'https://burnes.northeastern.edu/a-healthier-democracy-ai/']
+    ]
+  },
+  {
+    id: 'civic-connect',
+    title: 'Civic Connect',
+    category: 'participation',
+    categoryLabel: 'Participation, organising & public discourse',
+    status: 'pilot',
+    statusLabel: 'Completed pilot',
+    who: 'Northeastern University’s Burnes Center with POPVOX Foundation and Representative Seth Moulton',
+    sourceLabel: 'Burnes Center for Social Change',
+    sourceHref: 'https://burnes.northeastern.edu/projects/civic-connect/',
+    sourceQuote: 'Test the use of AI to help a Member of Congress respond to constituent questions.',
+    image: '/assets/governing-with-agents/civic-connect.webp',
+    imageAlt: 'POPVOX Foundation logo.',
+    links: [['Project record', 'https://burnes.northeastern.edu/projects/civic-connect/']]
+  },
+  {
     id: 'consult',
     title: 'Consult',
     category: 'participation',
-    categoryLabel: 'Participation & consultation',
+    categoryLabel: 'Participation, organising & public discourse',
     status: 'live',
     statusLabel: 'Operational system',
     who: 'The UK government’s Incubator for AI, built within DSIT',
@@ -144,7 +213,7 @@ const cases = [
     id: 'policy-synth',
     title: 'New Jersey AI Task Force + Policy Synth',
     category: 'participation',
-    categoryLabel: 'Participation & consultation',
+    categoryLabel: 'Participation, organising & public discourse',
     status: 'pilot',
     statusLabel: 'Completed process',
     who: 'A New Jersey AI Task Force working group, Citizens Foundation, and The GovLab',
@@ -157,6 +226,39 @@ const cases = [
       ['Official task-force report', 'https://dspace.njstatelib.org/bitstreams/23f513ef-b2ad-43a5-9798-30d24e487c73/download'],
       ['Policy Synth source', 'https://github.com/CitizensFoundation/policy-synth']
     ]
+  },
+  {
+    id: 'grantwell',
+    title: 'GrantWell',
+    category: 'law-administration',
+    categoryLabel: 'Law & administrative capacity',
+    status: 'pilot',
+    statusLabel: 'Functional + piloted',
+    who: 'Northeastern University’s Burnes Center with the Massachusetts Federal Funds and Infrastructure Office',
+    sourceLabel: 'Burnes Center for Social Change',
+    sourceHref: 'https://burnes.northeastern.edu/projects/grantwell-simplifying-federal-grant-applications-with-ai/',
+    sourceQuote: 'Assisting Massachusetts municipalities, environmental justice groups, rural towns, and historically-underserved communities to apply for federal and state grant, grant-matching, and tax-break opportunities.',
+    image: '/assets/governing-with-agents/grantwell.webp',
+    imageAlt: 'GrantWell interface for finding grants from a description of local funding needs.',
+    links: [
+      ['Project record', 'https://burnes.northeastern.edu/projects/grantwell-simplifying-federal-grant-applications-with-ai/'],
+      ['Source code', 'https://github.com/The-Burnes-Center/AI4Impact-GrantWell']
+    ]
+  },
+  {
+    id: 'transit-planning-ai',
+    title: 'Caltrans–UCLA Transit Planning AI',
+    category: 'law-administration',
+    categoryLabel: 'Law & administrative capacity',
+    status: 'pilot',
+    statusLabel: 'Prototype',
+    who: 'Caltrans and UCLA; documented by Elizabeth Speed and Bennett Capozzi at the Institute for Progress',
+    sourceLabel: 'Institute for Progress',
+    sourceHref: 'https://ifp.org/use-ai-to-improve-transit-planning/',
+    sourceQuote: 'Caltrans and UCLA’s prototype AI tool is RAG-based, and demonstrates how AI can be safely and reliably used to surface information from existing project documents.',
+    image: '/assets/governing-with-agents/transit-planning-ai.webp',
+    imageAlt: 'Institute for Progress cover for Use AI to Improve Transit Planning.',
+    links: [['IFP project account', 'https://ifp.org/use-ai-to-improve-transit-planning/']]
   },
   {
     id: 'axiom',
