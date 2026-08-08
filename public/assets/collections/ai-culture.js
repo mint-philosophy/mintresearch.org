@@ -74,6 +74,14 @@ const books = [
     tags: ['democracy', 'information power', 'elections']
   },
   {
+    id: 'the-dispossessed', title: 'The Dispossessed', author: 'Ursula K. Le Guin', year: '1974',
+    cover: '/assets/ai-culture/covers/the-dispossessed.webp',
+    source: 'https://www.orionbooks.co.uk/titles/ursula-k-le-guin/the-dispossessed/9781857988826/',
+    sourceLabel: 'Orion / Gollancz',
+    sourceQuote: '…hierarchy-bound Urras and its anarchist neighbour planet Anarres.',
+    tags: ['anarchism', 'political order', 'institutional change']
+  },
+  {
     id: 'a-half-built-garden', title: 'A Half-Built Garden', author: 'Ruthanna Emrys', year: '2022',
     cover: '/assets/ai-culture/covers/a-half-built-garden.webp',
     source: 'https://us.macmillan.com/books/9781250210999',
@@ -427,13 +435,6 @@ const screen = [
     tags: ['uploaded minds', 'geopolitics', 'takeoff']
   },
   {
-    id: 'murderbot', title: 'Murderbot', medium: 'tv', year: '2025–',
-    image: '/assets/ai-culture/screen/murderbot.jpg', imageSource: 'https://www.themoviedb.org/tv/241554-murderbot',
-    source: 'https://www.apple.com/tv-pr/originals/murderbot/', sourceLabel: 'Apple TV Press',
-    sourceQuote: 'A self-hacking security construct who is horrified by human emotion yet drawn to its vulnerable clients.',
-    tags: ['free will', 'labour', 'corporate power']
-  },
-  {
     id: 'battlestar-galactica', title: 'Battlestar Galactica', medium: 'tv', year: '2004–2009',
     image: '/assets/ai-culture/screen/battlestar-galactica.jpg', imageSource: 'https://www.themoviedb.org/tv/1972-battlestar-galactica',
     source: 'https://www.tomsguide.com/entertainment/peacock/new-on-pluto-tv-in-may-2026-all-the-new-shows-and-movies-to-stream-for-free', sourceLabel: 'Tom’s Guide — Alyse Stanley',
@@ -448,27 +449,6 @@ const screen = [
     tags: ['rights', 'work', 'social membership']
   },
   {
-    id: 'mrs-davis', title: 'Mrs. Davis', medium: 'tv', year: '2023',
-    image: '/assets/ai-culture/screen/mrs-davis.jpg', imageSource: 'https://www.themoviedb.org/tv/197548-mrs-davis',
-    source: 'https://www.peacocktv.com/watch-online/tv/mrs.-davis/5074205589847182112', sourceLabel: 'Peacock',
-    sourceQuote: 'Sister Simone partners with her rebellious ex-boyfriend on a globe-spanning journey to destroy a powerful artificial intelligence known as Mrs. Davis.',
-    tags: ['benevolent rule', 'faith', 'resistance']
-  },
-  {
-    id: 'devs', title: 'Devs', medium: 'tv', year: '2020',
-    image: '/assets/ai-culture/screen/devs.jpg', imageSource: 'https://www.themoviedb.org/tv/81349-devs',
-    source: 'https://www.fxnetworks.com/shows/devs/nick-offerman-forest', sourceLabel: 'FX',
-    sourceQuote: 'She comes to suspect her employer may be responsible for the death of her boyfriend.',
-    tags: ['prediction', 'determinism', 'founder power']
-  },
-  {
-    id: 'pluto', title: 'PLUTO', medium: 'tv', year: '2023',
-    image: '/assets/ai-culture/screen/pluto.jpg', imageSource: 'https://www.themoviedb.org/tv/91997-pluto',
-    source: 'https://about.netflix.com/en/news/netflix-pluto-anime', sourceLabel: 'About Netflix',
-    sourceQuote: 'The suspense drama takes place in a neo-futuristic world where humans and high-functioning robots live in complete harmony.',
-    tags: ['war', 'grief', 'machine rights']
-  },
-  {
     id: 'terminator-one-two', title: 'The Terminator + Terminator 2', medium: 'film', year: '1984 / 1991',
     image: '/assets/ai-culture/screen/terminator-one-two.jpg', imageSource: 'https://www.themoviedb.org/movie/280-terminator-2-judgment-day',
     imageAlt: 'Promotional image for Terminator 2: Judgment Day.',
@@ -477,32 +457,11 @@ const screen = [
     tags: ['strategic automation', 'takeoff', 'path dependence']
   },
   {
-    id: 'colossus', title: 'Colossus: The Forbin Project', medium: 'film', year: '1970',
-    image: '/assets/ai-culture/screen/colossus.jpg', imageSource: 'https://www.themoviedb.org/movie/14801-colossus-the-forbin-project',
-    source: 'https://www.universalpicturesathome.com/movies/colossus-the-forbin-project', sourceLabel: 'Universal Pictures',
-    sourceQuote: 'the American government grants total control of its nuclear defenses to Colossus, an advanced supercomputer designed by Dr. Charles Forbin.',
-    tags: ['nuclear command', 'machine rule', 'peace']
-  },
-  {
-    id: 'after-yang', title: 'After Yang', medium: 'film', year: '2022',
-    image: '/assets/ai-culture/screen/after-yang.jpg', imageSource: 'https://www.themoviedb.org/movie/585378-after-yang',
-    source: 'https://a24films.com/films/after-yang', sourceLabel: 'A24',
-    sourceQuote: 'When his young daughter’s beloved companion — an android named Yang — malfunctions, Jake (Colin Farrell) searches for a way to repair him.',
-    tags: ['interior life', 'family', 'memory']
-  },
-  {
-    id: 'i-am-mother', title: 'I Am Mother', medium: 'film', year: '2019',
-    image: '/assets/ai-culture/screen/i-am-mother.jpg', imageSource: 'https://www.themoviedb.org/movie/505948-i-am-mother',
-    source: 'https://media.netflix.com/en/only-on-netflix/80227090', sourceLabel: 'Netflix Media Center',
-    sourceQuote: 'the first of a new generation of humans to be raised by Mother, a robot designed to repopulate the earth after the extinction of humankind.',
-    tags: ['paternalism', 'repopulation', 'control']
-  },
-  {
-    id: 'mars-express', title: 'Mars Express', medium: 'film', year: '2023',
-    image: '/assets/ai-culture/screen/mars-express.jpg', imageSource: 'https://www.themoviedb.org/movie/586810-mars-express',
-    source: 'https://gkids.com/films/mars-express/', sourceLabel: 'GKIDS',
-    sourceQuote: 'In 2200, private detective Aline Ruby and her android partner Carlos Rivera are hired by a wealthy businessman to track down a notorious hacker.',
-    tags: ['machine exit', 'labour', 'corporate power']
+    id: 'mitchells-vs-machines', title: 'The Mitchells vs. the Machines', medium: 'film', year: '2021',
+    image: '/assets/ai-culture/screen/mitchells-vs-machines.jpg', imageSource: 'https://www.sonypicturesanimation.com/projects/films/themitchellsvsthemachines',
+    source: 'https://www.sonypicturesanimation.com/projects/films/themitchellsvsthemachines', sourceLabel: 'Sony Pictures Animation',
+    sourceQuote: '…all around the world, the electronic devices people love … decide it’s time to take over.',
+    tags: ['platform power', 'consumer AI', 'family']
   },
   {
     id: 'wall-e', title: 'WALL·E', medium: 'film', year: '2008',

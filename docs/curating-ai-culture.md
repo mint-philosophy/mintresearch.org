@@ -10,6 +10,11 @@ editorial source. Keep each quotation under 25 words, preserve its wording, and
 link directly to the page it came from. Do not replace these with generated
 synopses.
 
+The public collection is Seth's read-and-watched shelf. Confirm that Seth has
+read a book or watched a screen work before adding it. Relevance, library
+ownership, and visitor suggestions do not establish that condition by
+themselves.
+
 Complete series can be assigned a shared `series` value and listed in
 `bookSeries` in `ai-culture.js`. The site renders those books in a closed
 `details` stack, but continues to count and search each volume individually.
@@ -37,4 +42,6 @@ generated or voice-matched on his behalf.
 
 The form at the bottom submits suggestions to the existing MINT website form
 endpoint. Suggestions are moderated and never appear on the site automatically.
-Review the source, excerpt, cover, and tags before adding a new entry.
+Treat each suggestion as a reading or watch candidate. Add it only after Seth
+has read or watched it and asked for it to join the public collection; then
+review the source, excerpt, cover, and tags.
