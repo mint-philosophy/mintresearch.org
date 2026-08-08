@@ -59,6 +59,12 @@ versioned public renderer instead of copying either source. See
 `docs/shared-site-contracts.md` for the API, fallback markup, injected-paper
 workflow, and versioning policy.
 
+The shared main-site theme is light-first. Each consumer declares
+`data-theme="light"` on its `<html>` element, then uses a blocking head script
+to remove that attribute only when `mint-theme=dark` was explicitly stored.
+`public/assets/theme.js` owns the toggle and persistence. Keep the root default
+and head bootstrap together; `npm run check:theme` tests both first-load states.
+
 Public microsites share the main site's navigation hierarchy and typography
 roles, but not every microsite shares the full runtime theme. The presentation
 routes below use the shared main-site shell. The externally hosted Blind Refusal
