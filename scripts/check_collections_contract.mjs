@@ -52,27 +52,32 @@ const books = arraySource(cultureFile, 'const books = [', 'const screen = [');
 const screen = arraySource(cultureFile, 'const screen = [', 'function noteSlot');
 const bookIds = values(books, 'id');
 const screenIds = values(screen, 'id');
-assert.equal(bookIds.length, 51, 'The literature collection must contain 51 reviewed books');
+assert.equal(bookIds.length, 57, 'The literature collection must contain 57 reviewed books');
 assert.equal(screenIds.length, 7, 'The screen collection must contain 7 watched works');
 assertUnique([...bookIds, ...screenIds], 'Culture collection');
 
 const cultureQuotes = [...values(books, 'sourceQuote'), ...values(screen, 'sourceQuote')];
-assert.equal(cultureQuotes.length, 58, 'Every culture entry needs a source quotation');
+assert.equal(cultureQuotes.length, 64, 'Every culture entry needs a source quotation');
 cultureQuotes.forEach((quote) => {
   assert.ok(wordCount(quote) <= 25, `Source quotation exceeds 25 words: ${quote}`);
 });
-assert.equal(values(books, 'source').length + values(screen, 'source').length, 58, 'Every culture entry needs a source URL');
+assert.equal(values(books, 'source').length + values(screen, 'source').length, 64, 'Every culture entry needs a source URL');
 assert.ok(!books.includes('description:'), 'Book cards must not restore model-written descriptions');
 assert.ok(!screen.includes('description:'), 'Screen cards must not restore model-written descriptions');
-assert.equal(values(books, 'series').length, 16, 'The five complete series must retain all 16 volume assignments');
+assert.equal(values(books, 'series').length, 23, 'The six complete series must retain all 23 volume assignments');
+assert.ok(cultureFile && fs.readFileSync(cultureFile, 'utf8').includes("'murderbot-diaries': { title: 'The Murderbot Diaries', author: 'Martha Wells' }"), 'The Murderbot Diaries series metadata is missing');
+for (const id of ['all-systems-red', 'artificial-condition', 'rogue-protocol', 'exit-strategy', 'network-effect', 'fugitive-telemetry', 'system-collapse']) {
+  assert.match(books, new RegExp(`id: '${id}'[^\\n]+series: 'murderbot-diaries'`), `Murderbot series assignment is missing: ${id}`);
+}
 
 const coverPaths = values(books, 'cover');
-assert.equal(coverPaths.length, 51, 'Every book needs a cover');
+assert.equal(coverPaths.length, 57, 'Every book needs a cover');
 coverPaths.forEach((path) => assert.ok(fs.existsSync(`public${path}`), `Book cover is missing: ${path}`));
 assertImageFiles(screen, 'Screen');
 
 const notes = JSON.parse(fs.readFileSync('public/assets/collections/ai-culture-notes.json', 'utf8'));
 assert.deepEqual(Object.keys(notes).sort(), [...bookIds, ...screenIds].sort(), 'Curator-note keys must match culture entry IDs');
+assert.equal(notes.daemon, 'Look it’s kind of Michael Crichton-lite, and the model of AI is pretty deterministic. But there’s good stuff on meat robots and it’s a pretty fun read.', 'Seth’s Daemon note must remain verbatim');
 
 for (const [page, next] of [
   ['public/governing-with-agents/index.html', 'https://mintresearch.org/governing-with-agents/?submitted=1#suggest'],
@@ -113,4 +118,4 @@ for (const rejected of [
 assert.ok(fs.existsSync('public/assets/governing-with-agents/og-governing-with-agents.png'), 'Governance social card is missing');
 assert.ok(fs.existsSync('public/assets/ai-culture/og-ai-culture.png'), 'Culture social card is missing');
 
-console.log('MINT curated collections contract passed: 23 source-quoted governance cases, 58 source-quoted culture entries, local assets, notes, and moderated forms.');
+console.log('MINT curated collections contract passed: 23 source-quoted governance cases, 64 source-quoted culture entries, local assets, notes, and moderated forms.');

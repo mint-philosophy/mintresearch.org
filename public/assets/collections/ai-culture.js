@@ -1,6 +1,7 @@
 import { element, externalLink, setupGallery, showSubmissionReceipt, loadCuratorNotes } from './gallery.js';
 
 const bookSeries = {
+  'murderbot-diaries': { title: 'The Murderbot Diaries', author: 'Martha Wells' },
   wayfarers: { title: 'Wayfarers', author: 'Becky Chambers' },
   'zones-of-thought': { title: 'Zones of Thought', author: 'Vernor Vinge' },
   eschaton: { title: 'Eschaton', author: 'Charles Stross' },
@@ -34,12 +35,60 @@ const books = [
     tags: ['companionship', 'dignity', 'substitution']
   },
   {
-    id: 'all-systems-red', title: 'All Systems Red', author: 'Martha Wells', year: '2017',
+    id: 'all-systems-red', title: 'All Systems Red', author: 'Martha Wells', year: '2017', series: 'murderbot-diaries',
     cover: '/assets/ai-culture/covers/all-systems-red.webp',
     source: 'https://us.macmillan.com/books/9780765397539/allsystemsred/',
     sourceLabel: 'Macmillan / Tordotcom',
     sourceQuote: 'A murderous android discovers itself in All Systems Red, a tense science fiction adventure by Martha Wells…',
     tags: ['free will', 'labour', 'corporate power']
+  },
+  {
+    id: 'artificial-condition', title: 'Artificial Condition', author: 'Martha Wells', year: '2018', series: 'murderbot-diaries',
+    cover: '/assets/ai-culture/covers/artificial-condition.webp',
+    source: 'https://www.marthawells.com/murderbot2.htm',
+    sourceLabel: 'Martha Wells',
+    sourceQuote: 'It has a dark past -- one in which a number of humans were killed.',
+    tags: ['memory', 'identity', 'autonomy']
+  },
+  {
+    id: 'rogue-protocol', title: 'Rogue Protocol', author: 'Martha Wells', year: '2018', series: 'murderbot-diaries',
+    cover: '/assets/ai-culture/covers/rogue-protocol.webp',
+    source: 'https://www.marthawells.com/murderbot3.htm',
+    sourceLabel: 'Martha Wells',
+    sourceQuote: 'The case against the too-big-to-fail GrayCris Corporation is floundering…',
+    tags: ['corporate power', 'secrecy', 'autonomy']
+  },
+  {
+    id: 'exit-strategy', title: 'Exit Strategy', author: 'Martha Wells', year: '2018', series: 'murderbot-diaries',
+    cover: '/assets/ai-culture/covers/exit-strategy.webp',
+    source: 'https://www.marthawells.com/murderbot4.htm',
+    sourceLabel: 'Martha Wells',
+    sourceQuote: 'Murderbot wasn\'t programmed to care.',
+    tags: ['care', 'corporate power', 'loyalty']
+  },
+  {
+    id: 'network-effect', title: 'Network Effect', author: 'Martha Wells', year: '2020', series: 'murderbot-diaries',
+    cover: '/assets/ai-culture/covers/network-effect.webp',
+    source: 'https://www.marthawells.com/networkeffect.htm',
+    sourceLabel: 'Martha Wells',
+    sourceQuote: 'Murderbot must choose between inertia and drastic action. Drastic action it is, then.',
+    tags: ['autonomy', 'relationships', 'corporate power']
+  },
+  {
+    id: 'fugitive-telemetry', title: 'Fugitive Telemetry', author: 'Martha Wells', year: '2021', series: 'murderbot-diaries',
+    cover: '/assets/ai-culture/covers/fugitive-telemetry.webp',
+    source: 'https://www.marthawells.com/murderbot6.htm',
+    sourceLabel: 'Martha Wells',
+    sourceQuote: 'When Murderbot discovers a dead body on Preservation Station, it knows it is going to have to assist station security…',
+    tags: ['investigation', 'security', 'social order']
+  },
+  {
+    id: 'system-collapse', title: 'System Collapse', author: 'Martha Wells', year: '2023', series: 'murderbot-diaries',
+    cover: '/assets/ai-culture/covers/system-collapse.webp',
+    source: 'https://www.marthawells.com/murderbot7.htm',
+    sourceLabel: 'Martha Wells',
+    sourceQuote: 'But if there\'s an ethical corporation out there, Murderbot has yet to find it…',
+    tags: ['corporate power', 'colonialism', 'labour']
   },
   {
     id: 'autonomous', title: 'Autonomous', author: 'Annalee Newitz', year: '2017',
