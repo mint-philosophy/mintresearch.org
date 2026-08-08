@@ -91,6 +91,7 @@ an accessible button. Its public leaves are currently:
 - `Can Machines Reason Morally?` — `/lab-overview/`
 - `Evaluating LLM Normative Competence` — `/nc/`
 - `The AGI-Ready Policy Student` — `/FDC`
+- `Incoherent Values?` — `https://coherence.mintresearch.org/`
 
 Only add maintained, public, indexable project microsites. Do not expose
 private or deliberately unlisted surfaces such as `/proofeditor/`, `/camps/`,

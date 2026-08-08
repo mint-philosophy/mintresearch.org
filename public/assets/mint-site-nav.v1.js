@@ -97,7 +97,8 @@
         { id: 'blind-refusal', type: 'page', href: 'https://blindrefusal.mintresearch.org/', label: 'Blind Refusal' },
         { id: 'moral-reasoning', type: 'page', href: '/lab-overview/', label: 'Can Machines Reason Morally?' },
         { id: 'normative-competence', type: 'page', href: '/nc/', label: 'Evaluating LLM Normative Competence' },
-        { id: 'agi-policy-student', type: 'page', href: '/FDC', label: 'The AGI-Ready Policy Student' }
+        { id: 'agi-policy-student', type: 'page', href: '/FDC', label: 'The AGI-Ready Policy Student' },
+        { id: 'incoherent-values', type: 'page', href: 'https://coherence.mintresearch.org/', label: 'Incoherent Values?' }
       ]
     },
     { id: 'corpus-map', type: 'page', href: '/corpus-map/', label: 'Corpus Map', sections: [] },
