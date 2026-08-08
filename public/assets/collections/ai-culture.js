@@ -362,14 +362,6 @@ const books = [
     tags: ['catastrophe', 'survival', 'institution building']
   },
   {
-    id: 'fall-or-dodge-in-hell', title: 'Fall; or, Dodge in Hell', author: 'Neal Stephenson', year: '2019',
-    cover: '/assets/ai-culture/covers/fall-or-dodge-in-hell.webp',
-    source: 'https://www.nealstephenson.com/fall%2C-or-dodge-in-hell.html',
-    sourceLabel: 'Neal Stephenson',
-    sourceQuote: 'Dodge’s family has his brain scanned and its data structures uploaded and stored in the cloud, until it can eventually be revived.',
-    tags: ['uploads', 'digital afterlife', 'platform power']
-  },
-  {
     id: 'termination-shock', title: 'Termination Shock', author: 'Neal Stephenson', year: '2021',
     cover: '/assets/ai-culture/covers/termination-shock.webp',
     source: 'https://www.nealstephenson.com/termination-shock.html',
