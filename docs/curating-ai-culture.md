@@ -1,4 +1,4 @@
-# Curating AI in Literature & Popular Culture
+# Curating Lit AI (etc)
 
 The public collection lives at `public/ai-culture/index.html`. Its entries are
 defined in `public/assets/collections/ai-culture.js`; book-cover files live in

@@ -163,7 +163,7 @@ const ids = canonical.map((item) => item.id).filter(Boolean);
 assert.equal(new Set(ids).size, ids.length, 'canonical navigation ids must be unique');
 assert.ok(!canonical.some((item) => item.id === 'agent-reports'), 'Agent Reports must not occupy primary navigation');
 assert.ok(canonical.some((item) => item.id === 'governing-with-agents' && item.href === '/governing-with-agents/'), 'Governing with Agents must be listed under microsites');
-assert.ok(canonical.some((item) => item.id === 'ai-culture' && item.href === '/ai-culture/'), 'AI & Popular Culture must be listed under microsites');
+assert.ok(canonical.some((item) => item.id === 'ai-culture' && item.href === '/ai-culture/' && item.label === 'Lit AI (etc)'), 'Lit AI (etc) must be listed under microsites');
 assert.ok(canonical.some((item) => item.id === 'about-papers' && item.label === 'Papers'), 'homepage section must use Papers');
 assert.ok(!canonical.some((item) => item.href === '/reports/ai-in-war/'), 'primary navigation must not enumerate report leaves');
 assert.ok(!canonical.some((item) => /2026-\d\d-\d\d-weekly/.test(item.href || '')), 'primary navigation must not enumerate newsletter issues');

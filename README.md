@@ -86,7 +86,7 @@ microsite, opens automatically for the active microsite, and can be toggled as
 an accessible button. Its public leaves are currently:
 
 - `Governing with Agents` — `/governing-with-agents/`
-- `AI & Popular Culture` — `/ai-culture/`
+- `Lit AI (etc)` — `/ai-culture/`
 - `Blind Refusal` — `https://blindrefusal.mintresearch.org/`
 - `Can Machines Reason Morally?` — `/lab-overview/`
 - `Evaluating LLM Normative Competence` — `/nc/`

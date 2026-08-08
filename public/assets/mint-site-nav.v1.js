@@ -93,7 +93,7 @@
       label: 'Microsites',
       children: [
         { id: 'governing-with-agents', type: 'page', href: '/governing-with-agents/', label: 'Governing with Agents' },
-        { id: 'ai-culture', type: 'page', href: '/ai-culture/', label: 'AI & Popular Culture' },
+        { id: 'ai-culture', type: 'page', href: '/ai-culture/', label: 'Lit AI (etc)' },
         { id: 'blind-refusal', type: 'page', href: 'https://blindrefusal.mintresearch.org/', label: 'Blind Refusal' },
         { id: 'moral-reasoning', type: 'page', href: '/lab-overview/', label: 'Can Machines Reason Morally?' },
         { id: 'normative-competence', type: 'page', href: '/nc/', label: 'Evaluating LLM Normative Competence' },
