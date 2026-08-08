@@ -31,11 +31,11 @@ routes were removed, and hashed shared asset bundles remain in `public/_astro/`.
 
 The canonical primary-navigation hierarchy and renderer now live in
 `public/assets/mint-site-nav.v1.js`. This is deliberately primary navigation,
-not a literal copy of `sitemap.xml`: it includes the public Agent Reports index,
-but report pages and newsletter issues remain discoverable through their index
-pages. The homepage section is consistently named `Papers`.
+not a literal copy of `sitemap.xml`: report pages and newsletter issues remain
+discoverable through their index pages without occupying primary navigation.
+The homepage section is consistently named `Papers`.
 
-All seven main-site static pages load this renderer into a marked navigation
+All main-site static pages load this renderer into a marked navigation
 mount. Their existing HTML remains as a no-JavaScript fallback, but the shared
 contract replaces it at runtime, so labels, ordering, active state, and new
 top-level destinations come from one source:
@@ -48,6 +48,8 @@ public/cv/index.html
 public/data-dash/index.html
 public/guide/index.html
 public/newsletter/index.html
+public/governing-with-agents/index.html
+public/ai-culture/index.html
 ```
 
 Generated newsletter and report pages retain `src/data/navigation.ts` and
@@ -79,9 +81,12 @@ contracts. The command
 `npm run check:banner -- --check-blind-refusal` additionally inspects the
 deployed Blind Refusal source.
 
-`Microsites` is a non-clickable, always-expanded sidebar branch. Its public
-leaves are currently:
+`Microsites` is a collapsible sidebar branch. It stays collapsed away from a
+microsite, opens automatically for the active microsite, and can be toggled as
+an accessible button. Its public leaves are currently:
 
+- `Governing with Agents` — `/governing-with-agents/`
+- `AI & Popular Culture` — `/ai-culture/`
 - `Blind Refusal` — `https://blindrefusal.mintresearch.org/`
 - `Can Machines Reason Morally?` — `/lab-overview/`
 - `Evaluating LLM Normative Competence` — `/nc/`
@@ -91,6 +96,19 @@ Only add maintained, public, indexable project microsites. Do not expose
 private or deliberately unlisted surfaces such as `/proofeditor/`, `/camps/`,
 `/coquelin/`, the legacy direct FDC deck files, or the access-gated review
 service.
+
+The former `/agent-reports/` index is retained as an unlinked archival route;
+it is not part of primary navigation or the sitemap.
+
+## Curated collections
+
+`/governing-with-agents/` is a source-linked gallery of AI projects supporting
+public information, participation, law, administration, evaluation, and
+institutional experimentation. `/ai-culture/` is a source-linked bibliography
+of books, television, and film. Both use the shared collection layer under
+`public/assets/collections/` and submit moderated additions through the existing
+website form endpoint. See `docs/curating-ai-culture.md` for the separate
+editorial-note workflow.
 
 ## Presentation microsites
 

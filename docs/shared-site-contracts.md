@@ -12,9 +12,10 @@ should stay consistent without importing the main site's full theme.
 - `mint-site-nav.v1.js` is explicitly major-versioned in its filename and
   exposes `window.MintSiteNav.version`. Breaking data or markup changes require
   a `v2` asset; compatible additions stay in `v1`.
-- The navigation is primary navigation, not the XML sitemap. It contains all
-  maintained public destinations at the index level, including Agent Reports,
-  but not every generated report or newsletter issue.
+- The navigation is primary navigation, not the XML sitemap. It contains the
+  maintained public destinations that need routine discovery, but not the
+  archival Agent Reports index, generated reports, or individual newsletter
+  issues.
 - Shared scripts own data, generated markup, asset URLs, active states, and
   accessibility state. A consumer owns its sidebar shell, search UI, theme,
   status line, and page-local scroll-spy behaviour.
@@ -137,6 +138,12 @@ immediately by its local outline and then the canonical sibling microsites. Once
 the same stable ID is added to the canonical contract, it automatically reuses
 that entry rather than rendering a duplicate. Set `position: 'last'` on `local`
 only when the temporary paper should follow the registered microsites.
+
+The Microsites group is collapsed by default and expands automatically when one
+of its children is active. Its heading is a button with `aria-expanded` and
+`aria-controls`; consumers should preserve the button semantics and style it
+with `.nav-group`. Static no-JavaScript fallbacks may use a collapsed
+`<details class="nav-fallback-group">` with the same leaves.
 
 ### Direct API and events
 

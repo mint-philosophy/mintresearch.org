@@ -1,7 +1,7 @@
 (function (root, document) {
   'use strict';
 
-  var VERSION = '1.0.0';
+  var VERSION = '1.1.0';
   var scriptUrl = document.currentScript && document.currentScript.src
     ? document.currentScript.src
     : 'https://mintresearch.org/assets/mint-site-nav.v1.js';
@@ -91,15 +91,15 @@
       id: 'microsites',
       type: 'group',
       label: 'Microsites',
-      alwaysExpanded: true,
       children: [
+        { id: 'governing-with-agents', type: 'page', href: '/governing-with-agents/', label: 'Governing with Agents' },
+        { id: 'ai-culture', type: 'page', href: '/ai-culture/', label: 'AI & Popular Culture' },
         { id: 'blind-refusal', type: 'page', href: 'https://blindrefusal.mintresearch.org/', label: 'Blind Refusal' },
         { id: 'moral-reasoning', type: 'page', href: '/lab-overview/', label: 'Can Machines Reason Morally?' },
         { id: 'normative-competence', type: 'page', href: '/nc/', label: 'Evaluating LLM Normative Competence' },
         { id: 'agi-policy-student', type: 'page', href: '/FDC', label: 'The AGI-Ready Policy Student' }
       ]
     },
-    { id: 'agent-reports', type: 'page', href: '/agent-reports/', label: 'Agent Reports', sections: [] },
     { id: 'corpus-map', type: 'page', href: '/corpus-map/', label: 'Corpus Map', sections: [] },
     { id: 'data-dash', type: 'page', href: '/data-dash/', label: 'Data Dash', sections: [] }
   ];
@@ -349,27 +349,41 @@
 
   function renderGroup(group, context) {
     var fragment = document.createDocumentFragment();
-    var heading = document.createElement('div');
+    var active = (group.children || []).some(function (page) {
+      return context.currentId ? context.currentId === page.id : routeMatches(page.href, context.currentUrl, context.siteOrigin);
+    });
+    var expanded = Boolean(group.alwaysExpanded || active);
+    var heading = document.createElement('button');
+    heading.type = 'button';
     heading.className = 'nav-link nav-page nav-group';
-    heading.setAttribute('role', 'heading');
-    heading.setAttribute('aria-level', '2');
-    heading.setAttribute('aria-expanded', 'true');
-    heading.appendChild(mark('▾'));
+    heading.setAttribute('data-nav-id', group.id);
+    heading.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    var groupMark = mark(expanded ? '▾' : '▸');
+    heading.appendChild(groupMark);
     appendLabel(heading, group.label);
     fragment.appendChild(heading);
 
     renderCount += 1;
     var children = document.createElement('div');
     children.id = 'mint-nav-group-' + group.id + '-' + renderCount;
-    children.className = 'nav-sections nav-site-group expanded';
+    children.className = 'nav-sections nav-site-group' + (expanded ? ' expanded' : '');
     children.setAttribute('role', 'group');
     children.setAttribute('aria-label', group.label);
+    children.hidden = !expanded;
     addControlledId(heading, children.id);
     (group.children || []).forEach(function (page, index) {
       children.appendChild(renderPage(page, context, {
         child: true,
         last: index === group.children.length - 1
       }));
+    });
+    heading.addEventListener('click', function () {
+      expanded = !expanded;
+      heading.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      groupMark.textContent = expanded ? '▾' : '▸';
+      children.hidden = !expanded;
+      if (expanded) children.classList.add('expanded');
+      else children.classList.remove('expanded');
     });
     fragment.appendChild(children);
     return fragment;

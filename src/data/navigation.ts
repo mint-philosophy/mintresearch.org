@@ -91,19 +91,14 @@ export const siteNav: PageNav[] = [
     label: "Microsites",
     icon: "◇",
     groupOnly: true,
-    alwaysExpanded: true,
     sections: [
+      { href: "/governing-with-agents/", label: "Governing with Agents" },
+      { href: "/ai-culture/", label: "AI & Popular Culture" },
       { href: "https://blindrefusal.mintresearch.org/", label: "Blind Refusal" },
       { href: "/lab-overview/", label: "Can Machines Reason Morally?" },
       { href: "/nc/", label: "Evaluating LLM Normative Competence" },
       { href: "/FDC", label: "The AGI-Ready Policy Student" },
     ],
-  },
-  {
-    path: "/agent-reports/",
-    label: "Agent Reports",
-    icon: "▸",
-    sections: [],
   },
   {
     path: "/corpus-map/",

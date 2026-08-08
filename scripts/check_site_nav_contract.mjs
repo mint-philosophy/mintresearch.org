@@ -17,7 +17,9 @@ const staticPages = [
   'public/cv/index.html',
   'public/data-dash/index.html',
   'public/guide/index.html',
-  'public/newsletter/index.html'
+  'public/newsletter/index.html',
+  'public/governing-with-agents/index.html',
+  'public/ai-culture/index.html'
 ];
 for (const page of staticPages) {
   const html = fs.readFileSync(page, 'utf8');
@@ -90,6 +92,7 @@ class FakeElement extends FakeNode {
     this.hidden = false;
     this.href = '';
     this.id = '';
+    this.listeners = new Map();
   }
   setAttribute(name, value) {
     this.attributes.set(name, String(value));
@@ -100,6 +103,14 @@ class FakeElement extends FakeNode {
     this.events.push(event);
     event.target = this;
     return true;
+  }
+  addEventListener(name, handler) {
+    const handlers = this.listeners.get(name) || [];
+    handlers.push(handler);
+    this.listeners.set(name, handlers);
+  }
+  click() {
+    (this.listeners.get('click') || []).forEach((handler) => handler({ target: this }));
   }
 }
 
@@ -150,7 +161,9 @@ const flatten = (items) => items.flatMap((item) => [
 const canonical = flatten(api.items);
 const ids = canonical.map((item) => item.id).filter(Boolean);
 assert.equal(new Set(ids).size, ids.length, 'canonical navigation ids must be unique');
-assert.ok(canonical.some((item) => item.id === 'agent-reports' && item.href === '/agent-reports/'), 'Agent Reports must be primary navigation');
+assert.ok(!canonical.some((item) => item.id === 'agent-reports'), 'Agent Reports must not occupy primary navigation');
+assert.ok(canonical.some((item) => item.id === 'governing-with-agents' && item.href === '/governing-with-agents/'), 'Governing with Agents must be listed under microsites');
+assert.ok(canonical.some((item) => item.id === 'ai-culture' && item.href === '/ai-culture/'), 'AI & Popular Culture must be listed under microsites');
 assert.ok(canonical.some((item) => item.id === 'about-papers' && item.label === 'Papers'), 'homepage section must use Papers');
 assert.ok(!canonical.some((item) => item.href === '/reports/ai-in-war/'), 'primary navigation must not enumerate report leaves');
 assert.ok(!canonical.some((item) => /2026-\d\d-\d\d-weekly/.test(item.href || '')), 'primary navigation must not enumerate newsletter issues');
@@ -199,6 +212,21 @@ assert.ok(
     blindRefusalOrder.indexOf(firstLocalAnchor) < blindRefusalOrder.indexOf(siblingMicrosite),
   'the active paper outline must sit between its paper row and sibling microsites'
 );
+
+const regularMount = new FakeElement('div');
+api.render({
+  target: regularMount,
+  currentUrl: 'https://mintresearch.org/'
+});
+const micrositesButton = byAttribute(regularMount, 'data-nav-id', 'microsites')[0];
+assert.ok(micrositesButton, 'Microsites must be collapsed by default away from a microsite');
+assert.equal(micrositesButton.getAttribute('aria-expanded'), 'false', 'Microsites control must report its collapsed state');
+const micrositesPanelId = micrositesButton.getAttribute('aria-controls');
+const micrositesPanel = walk(regularMount).find((node) => node.id === micrositesPanelId);
+assert.equal(micrositesPanel.hidden, true, 'collapsed microsite children must be hidden');
+micrositesButton.click();
+assert.equal(micrositesButton.getAttribute('aria-expanded'), 'true', 'Microsites control must expand on click');
+assert.equal(micrositesPanel.hidden, false, 'expanded microsite children must be visible');
 
 const templateMount = new FakeElement('div');
 api.render({
