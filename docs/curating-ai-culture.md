@@ -10,6 +10,12 @@ editorial source. Keep each quotation under 25 words, preserve its wording, and
 link directly to the page it came from. Do not replace these with generated
 synopses.
 
+Complete series can be assigned a shared `series` value and listed in
+`bookSeries` in `ai-culture.js`. The site renders those books in a closed
+`details` stack, but continues to count and search each volume individually.
+Keep the books in reading order. A search match inside a closed stack opens it
+automatically.
+
 ## Adding Seth's comments
 
 `public/assets/collections/ai-culture-notes.json` is the editorial note layer.

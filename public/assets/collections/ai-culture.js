@@ -1,5 +1,13 @@
 import { element, externalLink, setupGallery, showSubmissionReceipt, loadCuratorNotes } from './gallery.js';
 
+const bookSeries = {
+  wayfarers: { title: 'Wayfarers', author: 'Becky Chambers' },
+  'zones-of-thought': { title: 'Zones of Thought', author: 'Vernor Vinge' },
+  eschaton: { title: 'Eschaton', author: 'Charles Stross' },
+  'arc-of-a-scythe': { title: 'Arc of a Scythe', author: 'Neal Shusterman' },
+  'mars-trilogy': { title: 'Mars trilogy', author: 'Kim Stanley Robinson' }
+};
+
 const books = [
   {
     id: 'daemon', title: 'Daemon', author: 'Daniel Suarez', year: '2006',
@@ -98,7 +106,39 @@ const books = [
     tags: ['institutional change', 'transition', 'future generations']
   },
   {
-    id: 'closed-and-common-orbit', title: 'A Closed and Common Orbit', author: 'Becky Chambers', year: '2016',
+    id: 'red-mars', title: 'Red Mars', author: 'Kim Stanley Robinson', year: '1992', series: 'mars-trilogy',
+    cover: '/assets/ai-culture/covers/red-mars.webp',
+    source: 'https://www.penguinrandomhouse.com/books/156201/red-mars-by-kim-stanley-robinson/paperback/',
+    sourceLabel: 'Penguin Random House / Del Rey',
+    sourceQuote: 'Discover the novel that launched one of science fiction’s most beloved, acclaimed, and awarded trilogies.',
+    tags: ['settlement', 'political economy', 'planetary change']
+  },
+  {
+    id: 'green-mars', title: 'Green Mars', author: 'Kim Stanley Robinson', year: '1993', series: 'mars-trilogy',
+    cover: '/assets/ai-culture/covers/green-mars.webp',
+    source: 'https://www.penguinrandomhouse.com/series/ZMS/mars-trilogy/',
+    sourceLabel: 'Penguin Random House / Del Rey',
+    sourceQuote: 'Kim Stanley Robinson’s classic trilogy depicting the colonization of Mars continues in a thrilling and timeless novel.',
+    tags: ['settlement', 'revolution', 'institution building']
+  },
+  {
+    id: 'blue-mars', title: 'Blue Mars', author: 'Kim Stanley Robinson', year: '1996', series: 'mars-trilogy',
+    cover: '/assets/ai-culture/covers/blue-mars.webp',
+    source: 'https://www.penguinrandomhouse.com/books/156194/blue-mars-by-kim-stanley-robinson/',
+    sourceLabel: 'Penguin Random House / Del Rey',
+    sourceQuote: 'Kim Stanley Robinson’s epic trilogy concludes with Blue Mars—a triumph of prodigious research and visionary storytelling.',
+    tags: ['settlement', 'constitutional order', 'long transition']
+  },
+  {
+    id: 'long-way-small-angry-planet', title: 'The Long Way to a Small, Angry Planet', author: 'Becky Chambers', year: '2014', series: 'wayfarers',
+    cover: '/assets/ai-culture/covers/long-way-small-angry-planet.webp',
+    source: 'https://www.hachette.co.uk/titles/becky-chambers/the-long-way-to-a-small-angry-planet/9781473619777/',
+    sourceLabel: 'Hachette / Hodder',
+    sourceQuote: 'The beloved debut novel that will restore your faith in humanity.',
+    tags: ['pluralism', 'cooperation', 'ordinary life']
+  },
+  {
+    id: 'closed-and-common-orbit', title: 'A Closed and Common Orbit', author: 'Becky Chambers', year: '2016', series: 'wayfarers',
     cover: '/assets/ai-culture/covers/closed-and-common-orbit.webp',
     source: 'https://www.hachette.co.uk/titles/becky-chambers/a-closed-and-common-orbit/9781473621459/',
     sourceLabel: 'Hachette / Hodder',
@@ -106,12 +146,100 @@ const books = [
     tags: ['embodiment', 'care', 'legal status']
   },
   {
-    id: 'a-fire-upon-the-deep', title: 'A Fire Upon the Deep', author: 'Vernor Vinge', year: '1992',
+    id: 'record-spaceborn-few', title: 'Record of a Spaceborn Few', author: 'Becky Chambers', year: '2018', series: 'wayfarers',
+    cover: '/assets/ai-culture/covers/record-spaceborn-few.webp',
+    source: 'https://www.hachette.co.uk/titles/becky-chambers/record-of-a-spaceborn-few/9781473647633/',
+    sourceLabel: 'Hachette / Hodder',
+    sourceQuote: 'Centuries after the last humans left Earth, the Exodus Fleet is a living relic, a place many are from but few outsiders have seen.',
+    tags: ['community', 'institutions', 'social change']
+  },
+  {
+    id: 'galaxy-ground-within', title: 'The Galaxy, and the Ground Within', author: 'Becky Chambers', year: '2021', series: 'wayfarers',
+    cover: '/assets/ai-culture/covers/galaxy-ground-within.webp',
+    source: 'https://www.hachette.co.uk/titles/becky-chambers/the-galaxy-and-the-ground-within/9781529358957/',
+    sourceLabel: 'Hachette / Hodder',
+    sourceQuote: 'Becky Chambers returns to the Galactic Commons in the final installment in her award-winning and critically acclaimed Wayfarers series.',
+    tags: ['pluralism', 'crisis', 'coexistence']
+  },
+  {
+    id: 'a-fire-upon-the-deep', title: 'A Fire Upon the Deep', author: 'Vernor Vinge', year: '1992', series: 'zones-of-thought',
     cover: '/assets/ai-culture/covers/a-fire-upon-the-deep.webp',
     source: 'https://us.macmillan.com/books/9781427209344/afireuponthedeep/',
     sourceLabel: 'Macmillan / Tor Books',
     sourceQuote: 'A gripping tale of galactic war told on a cosmic scale.',
     tags: ['superintelligence', 'takeoff', 'containment']
+  },
+  {
+    id: 'a-deepness-in-the-sky', title: 'A Deepness in the Sky', author: 'Vernor Vinge', year: '1999', series: 'zones-of-thought',
+    cover: '/assets/ai-culture/covers/a-deepness-in-the-sky.webp',
+    source: 'https://us.macmillan.com/books/9781250905970/adeepnessinthesky/',
+    sourceLabel: 'Macmillan / Tor Books',
+    sourceQuote: 'After thousands of years of searching, humans stand on the verge of first contact with an alien race.',
+    tags: ['first contact', 'authoritarianism', 'information control']
+  },
+  {
+    id: 'children-of-the-sky', title: 'The Children of the Sky', author: 'Vernor Vinge', year: '2011', series: 'zones-of-thought',
+    cover: '/assets/ai-culture/covers/children-of-the-sky.webp',
+    source: 'https://us.macmillan.com/books/9781429993364/thechildrenofthesky/',
+    sourceLabel: 'Macmillan / Tor Books',
+    sourceQuote: 'Ten years have passed on Tines World, and Ravna and the children have survived a war.',
+    tags: ['reconstruction', 'distributed minds', 'technology transfer']
+  },
+  {
+    id: 'singularity-sky', title: 'Singularity Sky', author: 'Charles Stross', year: '2003', series: 'eschaton',
+    cover: '/assets/ai-culture/covers/singularity-sky.webp',
+    source: 'https://www.hachette.co.uk/titles/charles-stross/singularity-sky/9781841493343/',
+    sourceLabel: 'Hachette / Orbit',
+    sourceQuote: 'In the twenty-first century man created the Eschaton, a sentient artificial intelligence.',
+    tags: ['posthumanity', 'technology shock', 'political order']
+  },
+  {
+    id: 'iron-sunrise', title: 'Iron Sunrise', author: 'Charles Stross', year: '2004', series: 'eschaton',
+    cover: '/assets/ai-culture/covers/iron-sunrise.webp',
+    source: 'https://www.hachette.co.uk/titles/charles-stross/iron-sunrise/9781841493367/',
+    sourceLabel: 'Hachette / Orbit',
+    sourceQuote: 'When the planet of New Moscow was brutally destroyed, its few survivors launched a counter-attack against the most likely culprit.',
+    tags: ['catastrophe', 'deterrence', 'posthumanity']
+  },
+  {
+    id: 'accelerando', title: 'Accelerando', author: 'Charles Stross', year: '2005',
+    cover: '/assets/ai-culture/covers/accelerando.webp',
+    source: 'https://www.penguinrandomhouse.com/books/294259/accelerando-by-charles-stross/',
+    sourceLabel: 'Penguin Random House / Ace',
+    sourceQuote: 'The Singularity. It is the era of the posthuman. Artificial intelligences have surpassed the limits of human intellect.',
+    tags: ['singularity', 'posthumanity', 'political economy']
+  },
+  {
+    id: 'scythe', title: 'Scythe', author: 'Neal Shusterman', year: '2016', series: 'arc-of-a-scythe',
+    cover: '/assets/ai-culture/covers/scythe.webp',
+    source: 'https://www.simonandschuster.com/books/Scythe/Neal-Shusterman/Arc-of-a-Scythe/9781442472433',
+    sourceLabel: 'Simon & Schuster',
+    sourceQuote: 'Two teens must learn the “art of killing” in this Printz Honor–winning book, the first in the chilling, New York Times bestselling series.',
+    tags: ['machine governance', 'mortality', 'institutional power']
+  },
+  {
+    id: 'thunderhead', title: 'Thunderhead', author: 'Neal Shusterman', year: '2018', series: 'arc-of-a-scythe',
+    cover: '/assets/ai-culture/covers/thunderhead.webp',
+    source: 'https://www.simonandschuster.com/books/Thunderhead/Neal-Shusterman/Arc-of-a-Scythe/9781442472457',
+    sourceLabel: 'Simon & Schuster',
+    sourceQuote: 'Rowan and Citra take opposite stances on the morality of the Scythedom, putting them at odds.',
+    tags: ['machine governance', 'legitimacy', 'institutional decay']
+  },
+  {
+    id: 'the-toll', title: 'The Toll', author: 'Neal Shusterman', year: '2019', series: 'arc-of-a-scythe',
+    cover: '/assets/ai-culture/covers/the-toll.webp',
+    source: 'https://www.simonandschuster.com/books/The-Toll/Neal-Shusterman/Arc-of-a-Scythe/9781481497060',
+    sourceLabel: 'Simon & Schuster',
+    sourceQuote: 'In the highly anticipated finale to the New York Times bestselling trilogy, dictators, prophets, and tensions rise.',
+    tags: ['machine governance', 'resistance', 'constitutional crisis']
+  },
+  {
+    id: 'gleanings', title: 'Gleanings', author: 'Neal Shusterman', year: '2022', series: 'arc-of-a-scythe',
+    cover: '/assets/ai-culture/covers/gleanings.webp',
+    source: 'https://www.simonandschuster.com/books/Gleanings/Neal-Shusterman/Arc-of-a-Scythe/9781534499973',
+    sourceLabel: 'Simon & Schuster',
+    sourceQuote: 'The New York Times bestselling Arc of a Scythe series continues with thrilling stories that span the time line.',
+    tags: ['machine governance', 'institutional history', 'mortality']
   },
   {
     id: 'gnomon', title: 'Gnomon', author: 'Nick Harkaway', year: '2017',
@@ -184,6 +312,70 @@ const books = [
     sourceLabel: 'Penguin Random House',
     sourceQuote: 'Vividly imagined, stunningly prophetic, and epic in scope, The Diamond Age is a major novel from one of the most visionary writers of our time.',
     tags: ['education', 'nanotechnology', 'social order']
+  },
+  {
+    id: 'snow-crash', title: 'Snow Crash', author: 'Neal Stephenson', year: '1992',
+    cover: '/assets/ai-culture/covers/snow-crash.webp',
+    source: 'https://www.penguinrandomhouse.com/books/172832/snow-crash-by-neal-stephenson/',
+    sourceLabel: 'Penguin Random House / Del Rey',
+    sourceQuote: 'A modern classic that predicted the metaverse and inspired generations of Silicon Valley innovators.',
+    tags: ['virtual worlds', 'private power', 'information hazards']
+  },
+  {
+    id: 'interface', title: 'Interface', author: 'Neal Stephenson and J. Frederick George', year: '1994',
+    cover: '/assets/ai-culture/covers/interface.webp',
+    source: 'https://www.penguinrandomhouse.com/books/172831/interface-by-neal-stephenson-and-j-frederick-george/',
+    sourceLabel: 'Penguin Random House / Spectra',
+    sourceQuote: 'A biochip implanted in his head hardwires him to a computerized polling system.',
+    tags: ['elections', 'political technology', 'public opinion']
+  },
+  {
+    id: 'cryptonomicon', title: 'Cryptonomicon', author: 'Neal Stephenson', year: '1999',
+    cover: '/assets/ai-culture/covers/cryptonomicon.webp',
+    source: 'https://www.nealstephenson.com/cryptonomicon.html',
+    sourceLabel: 'Neal Stephenson',
+    sourceQuote: 'During the Second World War, the Allies took elaborate measures to hide from the Nazis the fact that they had broken the Enigma code.',
+    tags: ['cryptography', 'state secrecy', 'infrastructure']
+  },
+  {
+    id: 'anathem', title: 'Anathem', author: 'Neal Stephenson', year: '2008',
+    cover: '/assets/ai-culture/covers/anathem.webp',
+    source: 'https://www.nealstephenson.com/anathem.html',
+    sourceLabel: 'Neal Stephenson',
+    sourceQuote: 'What if I only read the newspaper once a year? Once a decade? Once a century?',
+    tags: ['knowledge institutions', 'expertise', 'civilizational threat']
+  },
+  {
+    id: 'reamde', title: 'Reamde', author: 'Neal Stephenson', year: '2011',
+    cover: '/assets/ai-culture/covers/reamde.webp',
+    source: 'https://www.nealstephenson.com/reamde.html',
+    sourceLabel: 'Neal Stephenson',
+    sourceQuote: 'What if the virus infected the machine of an organized crime figure and caused him a significant financial loss?',
+    tags: ['platforms', 'cybersecurity', 'virtual economies']
+  },
+  {
+    id: 'seveneves', title: 'Seveneves', author: 'Neal Stephenson', year: '2015',
+    cover: '/assets/ai-culture/covers/seveneves.webp',
+    source: 'https://www.nealstephenson.com/seveneves.html',
+    sourceLabel: 'Neal Stephenson',
+    sourceQuote: 'The kernel around which the story nucleated was the space debris problem.',
+    tags: ['catastrophe', 'survival', 'institution building']
+  },
+  {
+    id: 'fall-or-dodge-in-hell', title: 'Fall; or, Dodge in Hell', author: 'Neal Stephenson', year: '2019',
+    cover: '/assets/ai-culture/covers/fall-or-dodge-in-hell.webp',
+    source: 'https://www.nealstephenson.com/fall%2C-or-dodge-in-hell.html',
+    sourceLabel: 'Neal Stephenson',
+    sourceQuote: 'Dodge’s family has his brain scanned and its data structures uploaded and stored in the cloud, until it can eventually be revived.',
+    tags: ['uploads', 'digital afterlife', 'platform power']
+  },
+  {
+    id: 'termination-shock', title: 'Termination Shock', author: 'Neal Stephenson', year: '2021',
+    cover: '/assets/ai-culture/covers/termination-shock.webp',
+    source: 'https://www.nealstephenson.com/termination-shock.html',
+    sourceLabel: 'Neal Stephenson',
+    sourceQuote: 'One man has a Big Idea for reversing global warming, a master plan perhaps best described as “elemental.”',
+    tags: ['geoengineering', 'private power', 'climate governance']
   },
   {
     id: 'neuromancer', title: 'Neuromancer', author: 'William Gibson', year: '1984',
@@ -339,8 +531,9 @@ function noteSlot(id) {
 function renderBook(item, index) {
   const card = element('article', 'culture-card');
   card.id = item.id;
+  if (item.series) card.dataset.series = item.series;
   card.dataset.filterValues = `book ${item.tags.map((tag) => tag.replace(/\s+/g, '-')).join(' ')}`;
-  card.dataset.search = [item.title, item.author, item.year, item.sourceQuote, ...item.tags].join(' ');
+  card.dataset.search = [item.title, item.author, item.year, bookSeries[item.series]?.title, item.sourceQuote, ...item.tags].filter(Boolean).join(' ');
 
   const coverLink = externalLink('', item.source, 'culture-cover-link');
   const image = element('img');
@@ -366,6 +559,39 @@ function renderBook(item, index) {
   body.appendChild(noteSlot(item.id));
   card.appendChild(body);
   return card;
+}
+
+function renderSeries(seriesId, items) {
+  const details = element('details', 'series-stack');
+  details.dataset.seriesId = seriesId;
+
+  const summary = element('summary', 'series-summary');
+  const covers = element('span', 'series-covers');
+  covers.setAttribute('aria-hidden', 'true');
+  items.slice(0, 4).forEach((item, index) => {
+    const image = element('img');
+    image.src = item.cover;
+    image.alt = '';
+    image.loading = 'lazy';
+    image.decoding = 'async';
+    image.style.setProperty('--series-cover-index', index);
+    covers.appendChild(image);
+  });
+  summary.appendChild(covers);
+
+  const summaryCopy = element('span', 'series-summary-copy');
+  summaryCopy.appendChild(element('span', 'series-label', 'Series'));
+  summaryCopy.appendChild(element('strong', '', bookSeries[seriesId].title));
+  summaryCopy.appendChild(element('span', 'series-author', bookSeries[seriesId].author));
+  summary.appendChild(summaryCopy);
+  summary.appendChild(element('span', 'series-count', `${items.length} books`));
+  summary.appendChild(element('span', 'series-disclosure', '↓'));
+  details.appendChild(summary);
+
+  const grid = element('div', 'series-grid');
+  items.forEach((item) => grid.appendChild(renderBook(item, books.indexOf(item))));
+  details.appendChild(grid);
+  return details;
 }
 
 function renderScreen(item) {
@@ -402,11 +628,37 @@ function renderScreen(item) {
 
 const bookGrid = document.querySelector('#book-grid');
 const screenGrid = document.querySelector('#screen-grid');
-books.forEach((item, index) => bookGrid?.appendChild(renderBook(item, index)));
+const renderedSeries = new Set();
+books.forEach((item, index) => {
+  if (!item.series) {
+    bookGrid?.appendChild(renderBook(item, index));
+    return;
+  }
+  if (renderedSeries.has(item.series)) return;
+  renderedSeries.add(item.series);
+  bookGrid?.appendChild(renderSeries(item.series, books.filter((candidate) => candidate.series === item.series)));
+});
 screen.forEach((item) => screenGrid?.appendChild(renderScreen(item)));
 
 const root = document.querySelector('#culture-items');
-function syncSections() {
+function syncSeriesStacks(query = '') {
+  document.querySelectorAll('.series-stack').forEach((stack) => {
+    const cards = Array.from(stack.querySelectorAll('.culture-card'));
+    const hasVisibleCard = cards.some((card) => !card.hidden);
+    stack.hidden = !hasVisibleCard;
+
+    if (query && hasVisibleCard) {
+      if (!stack.open) stack.dataset.openedBySearch = 'true';
+      stack.open = true;
+    } else if (!query && stack.dataset.openedBySearch === 'true') {
+      stack.open = false;
+      delete stack.dataset.openedBySearch;
+    }
+  });
+}
+
+function syncSections(event) {
+  syncSeriesStacks(event?.detail?.query || '');
   document.querySelectorAll('[data-culture-section]').forEach((section) => {
     const cards = Array.from(section.querySelectorAll('.culture-card, .screen-card'));
     section.hidden = cards.length > 0 && cards.every((card) => card.hidden);

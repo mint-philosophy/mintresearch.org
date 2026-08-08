@@ -52,21 +52,22 @@ const books = arraySource(cultureFile, 'const books = [', 'const screen = [');
 const screen = arraySource(cultureFile, 'const screen = [', 'function noteSlot');
 const bookIds = values(books, 'id');
 const screenIds = values(screen, 'id');
-assert.equal(bookIds.length, 28, 'The literature collection must contain 28 reviewed books');
+assert.equal(bookIds.length, 51, 'The literature collection must contain 51 reviewed books');
 assert.equal(screenIds.length, 14, 'The screen collection must contain 14 reviewed works');
 assertUnique([...bookIds, ...screenIds], 'Culture collection');
 
 const cultureQuotes = [...values(books, 'sourceQuote'), ...values(screen, 'sourceQuote')];
-assert.equal(cultureQuotes.length, 42, 'Every culture entry needs a source quotation');
+assert.equal(cultureQuotes.length, 65, 'Every culture entry needs a source quotation');
 cultureQuotes.forEach((quote) => {
   assert.ok(wordCount(quote) <= 25, `Source quotation exceeds 25 words: ${quote}`);
 });
-assert.equal(values(books, 'source').length + values(screen, 'source').length, 42, 'Every culture entry needs a human source URL');
+assert.equal(values(books, 'source').length + values(screen, 'source').length, 65, 'Every culture entry needs a source URL');
 assert.ok(!books.includes('description:'), 'Book cards must not restore model-written descriptions');
 assert.ok(!screen.includes('description:'), 'Screen cards must not restore model-written descriptions');
+assert.equal(values(books, 'series').length, 16, 'The five complete series must retain all 16 volume assignments');
 
 const coverPaths = values(books, 'cover');
-assert.equal(coverPaths.length, 28, 'Every book needs a cover');
+assert.equal(coverPaths.length, 51, 'Every book needs a cover');
 coverPaths.forEach((path) => assert.ok(fs.existsSync(`public${path}`), `Book cover is missing: ${path}`));
 assertImageFiles(screen, 'Screen');
 
@@ -82,8 +83,13 @@ for (const [page, next] of [
   assert.ok(html.includes(`name="_next" value="${next}"`), `${page} must return to its own receipt state`);
   assert.ok(html.includes('MINT reviews submissions before publication'), `${page} must state the moderation boundary`);
   assert.ok(html.includes('/assets/collections/collections.css'), `${page} must load the shared collection styles`);
-  assert.ok(html.includes('<dt>Card text</dt><dd>Quotations from linked sources</dd>'), `${page} must state the source-quotation rule explicitly`);
 }
+
+const governanceHtml = fs.readFileSync('public/governing-with-agents/index.html', 'utf8');
+const cultureHtml = fs.readFileSync('public/ai-culture/index.html', 'utf8');
+assert.ok(governanceHtml.includes('<dt>Card text</dt><dd>Quotations from linked sources</dd>'), 'The governance page must retain its source-quotation note');
+assert.ok(!cultureHtml.includes('class="collection-aside"'), 'The culture page must not expose an internal sourcing panel');
+assert.ok(!cultureHtml.toLowerCase().includes('human-written source'), 'Internal source-quality instructions must not appear on the culture page');
 
 const collectionCopy = [
   fs.readFileSync('public/governing-with-agents/index.html', 'utf8'),
@@ -105,4 +111,4 @@ for (const rejected of [
 assert.ok(fs.existsSync('public/assets/governing-with-agents/og-governing-with-agents.png'), 'Governance social card is missing');
 assert.ok(fs.existsSync('public/assets/ai-culture/og-ai-culture.png'), 'Culture social card is missing');
 
-console.log('MINT curated collections contract passed: 17 source-quoted governance cases, 42 source-quoted culture entries, local assets, notes, and moderated forms.');
+console.log('MINT curated collections contract passed: 17 source-quoted governance cases, 65 source-quoted culture entries, local assets, notes, and moderated forms.');
