@@ -52,22 +52,23 @@ const books = arraySource(cultureFile, 'const books = [', 'const screen = [');
 const screen = arraySource(cultureFile, 'const screen = [', 'function noteSlot');
 const bookIds = values(books, 'id');
 const screenIds = values(screen, 'id');
-assert.equal(bookIds.length, 16, 'The literature collection must contain 16 reviewed books');
+assert.equal(bookIds.length, 28, 'The literature collection must contain 28 reviewed books');
 assert.equal(screenIds.length, 14, 'The screen collection must contain 14 reviewed works');
 assertUnique([...bookIds, ...screenIds], 'Culture collection');
 
 const cultureQuotes = [...values(books, 'sourceQuote'), ...values(screen, 'sourceQuote')];
-assert.equal(cultureQuotes.length, 30, 'Every culture entry needs a source quotation');
+assert.equal(cultureQuotes.length, 42, 'Every culture entry needs a source quotation');
 cultureQuotes.forEach((quote) => {
   assert.ok(wordCount(quote) <= 25, `Source quotation exceeds 25 words: ${quote}`);
 });
-assert.equal(values(books, 'source').length + values(screen, 'source').length, 30, 'Every culture entry needs a human source URL');
+assert.equal(values(books, 'source').length + values(screen, 'source').length, 42, 'Every culture entry needs a human source URL');
 assert.ok(!books.includes('description:'), 'Book cards must not restore model-written descriptions');
 assert.ok(!screen.includes('description:'), 'Screen cards must not restore model-written descriptions');
 
 const coverPaths = values(books, 'cover');
-assert.equal(coverPaths.length, 16, 'Every book needs a cover');
+assert.equal(coverPaths.length, 28, 'Every book needs a cover');
 coverPaths.forEach((path) => assert.ok(fs.existsSync(`public${path}`), `Book cover is missing: ${path}`));
+assertImageFiles(screen, 'Screen');
 
 const notes = JSON.parse(fs.readFileSync('public/assets/collections/ai-culture-notes.json', 'utf8'));
 assert.deepEqual(Object.keys(notes).sort(), [...bookIds, ...screenIds].sort(), 'Curator-note keys must match culture entry IDs');
@@ -104,4 +105,4 @@ for (const rejected of [
 assert.ok(fs.existsSync('public/assets/governing-with-agents/og-governing-with-agents.png'), 'Governance social card is missing');
 assert.ok(fs.existsSync('public/assets/ai-culture/og-ai-culture.png'), 'Culture social card is missing');
 
-console.log('MINT curated collections contract passed: 17 source-quoted governance cases, 30 source-quoted culture entries, local assets, notes, and moderated forms.');
+console.log('MINT curated collections contract passed: 17 source-quoted governance cases, 42 source-quoted culture entries, local assets, notes, and moderated forms.');

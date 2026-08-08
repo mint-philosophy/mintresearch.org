@@ -128,90 +128,201 @@ const books = [
     sourceLabel: 'Hachette / Orbit',
     sourceQuote: 'The Idirans fought for their Faith; the Culture for its moral right to exist.',
     tags: ['machine civilisation', 'post-scarcity', 'intervention']
+  },
+  {
+    id: 'there-is-no-antimemetics-division', title: 'There Is No Antimemetics Division', author: 'qntm', year: '2025',
+    cover: '/assets/ai-culture/covers/there-is-no-antimemetics-division.jpg',
+    source: 'https://www.penguinrandomhouse.com/books/783041/there-is-no-antimemetics-division-by-qntm/',
+    sourceLabel: 'Penguin Random House',
+    sourceQuote: 'Humanity is under assault by malevolent “antimemes”—ideas that attack memory, identity, and the fabric of reality itself.',
+    tags: ['institutional memory', 'epistemic threats', 'containment']
+  },
+  {
+    id: 'a-memory-called-empire', title: 'A Memory Called Empire', author: 'Arkady Martine', year: '2019',
+    cover: '/assets/ai-culture/covers/a-memory-called-empire.jpg',
+    source: 'https://us.macmillan.com/books/9781250186430/amemorycalledempire/',
+    sourceLabel: 'Macmillan / Tor Books',
+    sourceQuote: 'A taut murder mystery entwined with questions of technological ethics, A Memory Called Empire is also an evocative depiction of foreignness.',
+    tags: ['memory technology', 'diplomacy', 'empire']
+  },
+  {
+    id: 'semiosis', title: 'Semiosis', author: 'Sue Burke', year: '2018',
+    cover: '/assets/ai-culture/covers/semiosis.jpg',
+    source: 'https://us.macmillan.com/books/9780765391360/semiosis/',
+    sourceLabel: 'Macmillan / Tor Books',
+    sourceQuote: 'Only mutual communication can forge an alliance with the planet’s sentient species and prove that humans are more than tools.',
+    tags: ['nonhuman intelligence', 'ecology', 'cooperation']
+  },
+  {
+    id: 'robopocalypse', title: 'Robopocalypse', author: 'Daniel H. Wilson', year: '2011',
+    cover: '/assets/ai-culture/covers/robopocalypse.jpg',
+    source: 'https://www.penguinrandomhouse.com/books/204573/robopocalypse-by-daniel-h-wilson/9780385533867/',
+    sourceLabel: 'Penguin Random House',
+    sourceQuote: 'Controlled by a childlike—yet massively powerful—artificial intelligence known as Archos, the global network of machines on which our world has grown dependent.',
+    tags: ['robot uprising', 'infrastructure', 'survival']
+  },
+  {
+    id: 'speak', title: 'Speak', author: 'Louisa Hall', year: '2015',
+    cover: '/assets/ai-culture/covers/speak.jpg',
+    source: 'https://louisahall.net/books/',
+    sourceLabel: 'Louisa Hall — author site',
+    sourceQuote: 'An isolated and traumatized young girl exchanges messages with an intelligent software program.',
+    tags: ['language', 'companionship', 'imitation']
+  },
+  {
+    id: 'i-robot', title: 'I, Robot', author: 'Isaac Asimov', year: '1950',
+    cover: '/assets/ai-culture/covers/i-robot.jpg',
+    source: 'https://www.penguinrandomhouse.com/books/5681/i-robot-by-isaac-asimov/paperback/',
+    sourceLabel: 'Penguin Random House',
+    sourceQuote: 'Here are stories of robots gone mad, of mind-reading robots, and robots with a sense of humor.',
+    tags: ['robot law', 'delegation', 'control']
+  },
+  {
+    id: 'the-diamond-age', title: 'The Diamond Age', author: 'Neal Stephenson', year: '1995',
+    cover: '/assets/ai-culture/covers/the-diamond-age.jpg',
+    source: 'https://www.penguinrandomhouse.com/books/172835/the-diamond-age-by-neal-stephenson/',
+    sourceLabel: 'Penguin Random House',
+    sourceQuote: 'Vividly imagined, stunningly prophetic, and epic in scope, The Diamond Age is a major novel from one of the most visionary writers of our time.',
+    tags: ['education', 'nanotechnology', 'social order']
+  },
+  {
+    id: 'neuromancer', title: 'Neuromancer', author: 'William Gibson', year: '1984',
+    cover: '/assets/ai-culture/covers/neuromancer.jpg',
+    source: 'https://www.penguinrandomhouse.com/books/538861/neuromancer-by-william-gibson/',
+    sourceLabel: 'Penguin Random House',
+    sourceQuote: 'Before the Internet was commonplace, William Gibson showed us the Matrix—a world within the world, the representation of every byte of data in cyberspace.',
+    tags: ['cyberspace', 'autonomy', 'corporate power']
+  },
+  {
+    id: 'permutation-city', title: 'Permutation City', author: 'Greg Egan', year: '1994',
+    cover: '/assets/ai-culture/covers/permutation-city.jpg',
+    source: 'https://www.gregegan.net/PERMUTATION/Permutation.html',
+    sourceLabel: 'Greg Egan — author synopsis',
+    sourceQuote: 'Paul Durham keeps making Copies of himself: software simulations of his own brain and body which can be run in virtual reality.',
+    tags: ['uploads', 'simulation', 'identity']
+  },
+  {
+    id: 'diaspora', title: 'Diaspora', author: 'Greg Egan', year: '1997',
+    cover: '/assets/ai-culture/covers/diaspora.jpg',
+    source: 'https://www.gregegan.net/DIASPORA/DIASPORA.html',
+    sourceLabel: 'Greg Egan — author synopsis',
+    sourceQuote: 'In 2975, the orphan Yatima is grown from a randomly mutated digital mind seed in the conceptory of Konishi polis.',
+    tags: ['digital minds', 'posthumanity', 'catastrophe']
+  },
+  {
+    id: 'children-of-time', title: 'Children of Time', author: 'Adrian Tchaikovsky', year: '2015',
+    cover: '/assets/ai-culture/covers/children-of-time.jpg',
+    source: 'https://www.panmacmillan.com/authors/adrian-tchaikovsky/children-of-time/9781447273301',
+    sourceLabel: 'Pan Macmillan',
+    sourceQuote: 'Now two civilizations are on a collision course, both testing the boundaries of what they will do to survive.',
+    tags: ['evolution', 'nonhuman intelligence', 'coexistence']
+  },
+  {
+    id: 'the-moon-is-a-harsh-mistress', title: 'The Moon Is a Harsh Mistress', author: 'Robert A. Heinlein', year: '1966',
+    cover: '/assets/ai-culture/covers/the-moon-is-a-harsh-mistress.jpg',
+    source: 'https://www.penguinrandomhouse.com/books/589269/the-moon-is-a-harsh-mistress-by-robert-a-heinlein/',
+    sourceLabel: 'Penguin Random House',
+    sourceQuote: 'A revolution on a lunar penal colony—aided by a self-aware supercomputer—provides the framework for a story.',
+    tags: ['self-aware systems', 'revolution', 'political order']
   }
 ];
 
 const screen = [
   {
     id: 'person-of-interest', title: 'Person of Interest', medium: 'tv', year: '2011–2016',
+    image: '/assets/ai-culture/screen/person-of-interest.jpg', imageSource: 'https://www.themoviedb.org/tv/1411-person-of-interest',
     source: 'https://doi.org/10.1177/15274764231210280', sourceLabel: 'Critical Studies in Media Communication',
     sourceQuote: 'a science fictional drama about global surveillance and prediction machines',
     tags: ['surveillance', 'delegated discretion', 'competing AIs']
   },
   {
     id: 'pantheon', title: 'Pantheon', medium: 'tv', year: '2022–2023',
+    image: '/assets/ai-culture/screen/pantheon.jpg', imageSource: 'https://www.themoviedb.org/tv/195339-pantheon',
     source: 'https://www.amc.com/blogs/amc-greenlights-first-ever-prime-time-animated-series-pantheon--1004029', sourceLabel: 'AMC',
     sourceQuote: 'an ambitious one-hour animated drama based on a series of short stories by Ken Liu about Uploaded Intelligence, or, human consciousness uploaded to the ‘cloud.’',
     tags: ['uploaded minds', 'geopolitics', 'takeoff']
   },
   {
     id: 'murderbot', title: 'Murderbot', medium: 'tv', year: '2025–',
+    image: '/assets/ai-culture/screen/murderbot.jpg', imageSource: 'https://www.themoviedb.org/tv/241554-murderbot',
     source: 'https://www.apple.com/tv-pr/originals/murderbot/', sourceLabel: 'Apple TV Press',
     sourceQuote: 'A self-hacking security construct who is horrified by human emotion yet drawn to its vulnerable clients.',
     tags: ['free will', 'labour', 'corporate power']
   },
   {
     id: 'battlestar-galactica', title: 'Battlestar Galactica', medium: 'tv', year: '2004–2009',
+    image: '/assets/ai-culture/screen/battlestar-galactica.jpg', imageSource: 'https://www.themoviedb.org/tv/1972-battlestar-galactica',
     source: 'https://www.tomsguide.com/entertainment/peacock/new-on-pluto-tv-in-may-2026-all-the-new-shows-and-movies-to-stream-for-free', sourceLabel: 'Tom’s Guide — Alyse Stanley',
     sourceQuote: '…it flees an attack on humanity by the ruthless AI beings dubbed Cylons.',
     tags: ['war', 'personhood', 'coexistence']
   },
   {
     id: 'humans', title: 'Humans', medium: 'tv', year: '2015–2018',
+    image: '/assets/ai-culture/screen/humans.jpg', imageSource: 'https://www.themoviedb.org/tv/62822-humans',
     source: 'https://www.amc.com/blogs/synths-are-conscious-and-the-worlds-forever-changed-watch-the-season-3-premiere-now--1005376', sourceLabel: 'AMC',
     sourceQuote: 'Humans and Synths struggle to live in a world of unchecked violence and social tensions.',
     tags: ['rights', 'work', 'social membership']
   },
   {
     id: 'mrs-davis', title: 'Mrs. Davis', medium: 'tv', year: '2023',
+    image: '/assets/ai-culture/screen/mrs-davis.jpg', imageSource: 'https://www.themoviedb.org/tv/197548-mrs-davis',
     source: 'https://www.peacocktv.com/watch-online/tv/mrs.-davis/5074205589847182112', sourceLabel: 'Peacock',
     sourceQuote: 'Sister Simone partners with her rebellious ex-boyfriend on a globe-spanning journey to destroy a powerful artificial intelligence known as Mrs. Davis.',
     tags: ['benevolent rule', 'faith', 'resistance']
   },
   {
     id: 'devs', title: 'Devs', medium: 'tv', year: '2020',
+    image: '/assets/ai-culture/screen/devs.jpg', imageSource: 'https://www.themoviedb.org/tv/81349-devs',
     source: 'https://www.fxnetworks.com/shows/devs/nick-offerman-forest', sourceLabel: 'FX',
     sourceQuote: 'She comes to suspect her employer may be responsible for the death of her boyfriend.',
     tags: ['prediction', 'determinism', 'founder power']
   },
   {
     id: 'pluto', title: 'PLUTO', medium: 'tv', year: '2023',
+    image: '/assets/ai-culture/screen/pluto.jpg', imageSource: 'https://www.themoviedb.org/tv/91997-pluto',
     source: 'https://about.netflix.com/en/news/netflix-pluto-anime', sourceLabel: 'About Netflix',
     sourceQuote: 'The suspense drama takes place in a neo-futuristic world where humans and high-functioning robots live in complete harmony.',
     tags: ['war', 'grief', 'machine rights']
   },
   {
     id: 'terminator-one-two', title: 'The Terminator + Terminator 2', medium: 'film', year: '1984 / 1991',
+    image: '/assets/ai-culture/screen/terminator-one-two.jpg', imageSource: 'https://www.themoviedb.org/movie/280-terminator-2-judgment-day',
+    imageAlt: 'Promotional image for Terminator 2: Judgment Day.',
     source: 'https://lcweb2.loc.gov/static/programs/national-film-preservation-board/documents/terminator.pdf', sourceLabel: 'Library of Congress — John Wills',
     sourceQuote: 'a cult time-travel story pitting humans against machines.',
     tags: ['strategic automation', 'takeoff', 'path dependence']
   },
   {
     id: 'colossus', title: 'Colossus: The Forbin Project', medium: 'film', year: '1970',
+    image: '/assets/ai-culture/screen/colossus.jpg', imageSource: 'https://www.themoviedb.org/movie/14801-colossus-the-forbin-project',
     source: 'https://www.universalpicturesathome.com/movies/colossus-the-forbin-project', sourceLabel: 'Universal Pictures',
     sourceQuote: 'the American government grants total control of its nuclear defenses to Colossus, an advanced supercomputer designed by Dr. Charles Forbin.',
     tags: ['nuclear command', 'machine rule', 'peace']
   },
   {
     id: 'after-yang', title: 'After Yang', medium: 'film', year: '2022',
+    image: '/assets/ai-culture/screen/after-yang.jpg', imageSource: 'https://www.themoviedb.org/movie/585378-after-yang',
     source: 'https://a24films.com/films/after-yang', sourceLabel: 'A24',
     sourceQuote: 'When his young daughter’s beloved companion — an android named Yang — malfunctions, Jake (Colin Farrell) searches for a way to repair him.',
     tags: ['interior life', 'family', 'memory']
   },
   {
     id: 'i-am-mother', title: 'I Am Mother', medium: 'film', year: '2019',
+    image: '/assets/ai-culture/screen/i-am-mother.jpg', imageSource: 'https://www.themoviedb.org/movie/505948-i-am-mother',
     source: 'https://media.netflix.com/en/only-on-netflix/80227090', sourceLabel: 'Netflix Media Center',
     sourceQuote: 'the first of a new generation of humans to be raised by Mother, a robot designed to repopulate the earth after the extinction of humankind.',
     tags: ['paternalism', 'repopulation', 'control']
   },
   {
     id: 'mars-express', title: 'Mars Express', medium: 'film', year: '2023',
+    image: '/assets/ai-culture/screen/mars-express.jpg', imageSource: 'https://www.themoviedb.org/movie/586810-mars-express',
     source: 'https://gkids.com/films/mars-express/', sourceLabel: 'GKIDS',
     sourceQuote: 'In 2200, private detective Aline Ruby and her android partner Carlos Rivera are hired by a wealthy businessman to track down a notorious hacker.',
     tags: ['machine exit', 'labour', 'corporate power']
   },
   {
     id: 'wall-e', title: 'WALL·E', medium: 'film', year: '2008',
+    image: '/assets/ai-culture/screen/wall-e.jpg', imageSource: 'https://www.themoviedb.org/movie/10681-wall-e',
     source: 'https://www.pixar.com/wall-e', sourceLabel: 'Pixar',
     sourceQuote: 'After hundreds of years doing what he was built for, WALL•E discovers a new purpose in life…',
     tags: ['automation', 'consumer society', 'initiative']
@@ -262,17 +373,30 @@ function renderScreen(item) {
   card.id = item.id;
   card.dataset.filterValues = `${item.medium} ${item.tags.map((tag) => tag.replace(/\s+/g, '-')).join(' ')}`;
   card.dataset.search = [item.title, item.medium, item.year, item.sourceQuote, ...item.tags].join(' ');
+
+  const imageLink = externalLink('', item.imageSource, 'screen-image-link');
+  imageLink.setAttribute('aria-label', `View image source for ${item.title}.`);
+  const image = element('img');
+  image.src = item.image;
+  image.alt = item.imageAlt || `Promotional image for ${item.title}.`;
+  image.loading = 'lazy';
+  image.decoding = 'async';
+  imageLink.appendChild(image);
+  card.appendChild(imageLink);
+
+  const body = element('div', 'screen-body');
   const meta = element('div', 'screen-meta');
   meta.appendChild(element('span', '', item.medium === 'tv' ? 'Television' : 'Film'));
   meta.appendChild(element('span', '', item.year));
-  card.appendChild(meta);
-  card.appendChild(element('h2', '', item.title));
-  card.appendChild(element('blockquote', 'source-description', item.sourceQuote));
+  body.appendChild(meta);
+  body.appendChild(element('h2', '', item.title));
+  body.appendChild(element('blockquote', 'source-description', item.sourceQuote));
   const tags = element('div', 'screen-tags');
   item.tags.forEach((tag) => tags.appendChild(element('span', '', tag)));
-  card.appendChild(tags);
-  card.appendChild(externalLink(`${item.sourceLabel} ↗`, item.source, 'source-link'));
-  card.appendChild(noteSlot(item.id));
+  body.appendChild(tags);
+  body.appendChild(externalLink(`${item.sourceLabel} ↗`, item.source, 'source-link'));
+  body.appendChild(noteSlot(item.id));
+  card.appendChild(body);
   return card;
 }
 
