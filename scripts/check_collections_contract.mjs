@@ -87,6 +87,8 @@ for (const [page, next] of [
 
 const governanceHtml = fs.readFileSync('public/governing-with-agents/index.html', 'utf8');
 const cultureHtml = fs.readFileSync('public/ai-culture/index.html', 'utf8');
+assert.ok(governanceHtml.includes('Tracking the ecosystem of civic AI'), 'The governance page must identify itself as an ecosystem tracker');
+assert.ok(governanceHtml.includes('Built by the organisations and teams named on each card'), 'The governance page must make third-party project ownership explicit');
 assert.ok(governanceHtml.includes('<dt>Card text</dt><dd>Quotations from linked sources</dd>'), 'The governance page must retain its source-quotation note');
 assert.ok(!cultureHtml.includes('class="collection-aside"'), 'The culture page must not expose an internal sourcing panel');
 assert.ok(!cultureHtml.toLowerCase().includes('human-written source'), 'Internal source-quality instructions must not appear on the culture page');

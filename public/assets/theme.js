@@ -1,7 +1,7 @@
 /* MINT Lab — theme toggle.
-   Dark is the default; 'light' is stored in localStorage as 'mint-theme'.
-   A tiny inline script in each page's <head> applies the stored theme
-   before first paint; this file just renders and wires the button.
+   Light is the default; an explicit choice is stored as 'mint-theme'.
+   A tiny inline script in each page's <head> applies the stored dark theme
+   before first paint; this file also enforces the default and wires the button.
    The banner is a separate contract and must be loaded explicitly. */
 (function () {
   var KEY = 'mint-theme';
@@ -10,12 +10,21 @@
     return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
   }
 
-  function apply(theme) {
+  function setDocumentTheme(theme) {
     if (theme === 'light') {
       document.documentElement.setAttribute('data-theme', 'light');
     } else {
       document.documentElement.removeAttribute('data-theme');
     }
+  }
+
+  function storedTheme() {
+    try { return localStorage.getItem(KEY) === 'dark' ? 'dark' : 'light'; }
+    catch (e) { return 'light'; }
+  }
+
+  function apply(theme) {
+    setDocumentTheme(theme);
     try { localStorage.setItem(KEY, theme); } catch (e) { /* private mode */ }
   }
 
@@ -48,6 +57,8 @@
       render(btn);
     });
   }
+
+  setDocumentTheme(storedTheme());
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
