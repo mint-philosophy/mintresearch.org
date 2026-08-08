@@ -93,7 +93,7 @@ export const siteNav: PageNav[] = [
     groupOnly: true,
     sections: [
       { href: "/governing-with-agents/", label: "Governing with Agents" },
-      { href: "/ai-culture/", label: "Lit AI (etc)" },
+      { href: "/ai-culture/", label: "AI (etc)" },
       { href: "https://blindrefusal.mintresearch.org/", label: "Blind Refusal" },
       { href: "/lab-overview/", label: "Can Machines Reason Morally?" },
       { href: "/nc/", label: "Evaluating LLM Normative Competence" },
