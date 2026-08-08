@@ -9,8 +9,9 @@ const cases = [
     status: 'live',
     statusLabel: 'Live platform',
     who: 'Michael Adams at CivLab',
-    goal: 'Make San Francisco government legible: its entities, relationships, oversight, budgets, meetings, and legal authority.',
-    method: 'Language models help aggregate and process the underlying records, then automate generation and maintenance of a navigable government graph.',
+    sourceLabel: 'SF Gov Graph',
+    sourceHref: 'https://sfgov.civlab.org/',
+    sourceQuote: 'We cannot govern systems we don’t understand, so we built the first complete data model of the San Francisco government.',
     image: '/assets/governing-with-agents/sf-government-graph.webp',
     imageAlt: 'The SF Government Graph interface showing connected public bodies and officials.',
     links: [
@@ -26,8 +27,9 @@ const cases = [
     status: 'research',
     statusLabel: 'Research prototype',
     who: 'Joshua P. Darr with Cleveland and Cuyahoga County Documenters notes',
-    goal: 'Test whether community-observed meeting records can produce better, more locally current answers than a generic chatbot.',
-    method: 'One hundred sets of public-meeting notes were loaded into a custom ChatGPT, restricted to that corpus, with answers required to cite the meeting and date.',
+    sourceLabel: 'Joshua P. Darr, Knight First Amendment Institute',
+    sourceHref: 'https://knightcolumbia.org/content/participatory-journalism-and-its-potential-in-ai-assisted-local-news',
+    sourceQuote: 'This data set includes three months of Documenters meeting notes from 2024, comprising 100 local government meetings.',
     image: '/assets/governing-with-agents/docgpt.webp',
     imageAlt: 'Knight First Amendment Institute article introducing participatory journalism and AI-assisted local news.',
     links: [
@@ -43,8 +45,9 @@ const cases = [
     status: 'live',
     statusLabel: 'Live platform',
     who: 'CalMatters, Cal Poly’s Institute for Advanced Technology and Public Policy, and 10up',
-    goal: 'Help journalists and the public follow what California legislators say, do, vote on, and receive from political interests.',
-    method: 'The platform joins hearing transcripts, bills, votes, campaign finance, gifts, travel, and district data. AI assists transcription and entity matching, with mandatory human review.',
+    sourceLabel: 'CalMatters methodology',
+    sourceHref: 'https://calmatters.digitaldemocracy.org/data-sources-methodology',
+    sourceQuote: 'Digital Democracy uses technology and human judgment to discern how these data points should be recorded and linked to other records.',
     image: '/assets/governing-with-agents/digital-democracy.webp',
     imageAlt: 'CalMatters Digital Democracy search interface.',
     links: [
@@ -60,8 +63,9 @@ const cases = [
     status: 'live',
     statusLabel: 'Live platform',
     who: 'Partners in Democracy–Education, originating at Northeastern NuLawLab with Code for Boston',
-    goal: 'Make Massachusetts legislation and public testimony easier to understand and participate in.',
-    method: 'GPT-4o generates bill summaries and topic tags from public legal materials; AssemblyAI transcribes hearings. Outputs remain attached to the relevant bills and sessions.',
+    sourceLabel: 'MAPLE',
+    sourceHref: 'https://www.mapletestimony.org/about/how-maple-uses-ai',
+    sourceQuote: 'We use Artificial Intelligence (AI) on MAPLE to help you quickly understand legislative information and navigate to policies that interest you.',
     image: '/assets/governing-with-agents/maple.webp',
     imageAlt: 'MAPLE legislative participation homepage.',
     links: [
@@ -77,8 +81,9 @@ const cases = [
     status: 'research',
     statusLabel: 'Studio prototype',
     who: 'Northwestern University’s Knight Lab, led by Nick Hagar',
-    goal: 'Speed up the early stages of reporting without surrendering editorial control or provenance.',
-    method: 'OpenAI o3 turns notes into proposed tasks and can use bounded tools for search, PDF extraction, and DuckDB queries. Results return as traceable notes for verification.',
+    sourceLabel: 'Knight Lab Studio',
+    sourceHref: 'https://studio.knightlab.com/projects/reporters-workbench/',
+    sourceQuote: 'Reporters Workbench: an agent‑augmented “notebook” that helps journalists turn raw notes into actionable tasks and evidence‑based insights.',
     image: '/assets/governing-with-agents/reporters-workbench.webp',
     imageAlt: 'Knight Lab page for Reporter’s Workbench AI.',
     links: [['Project page', 'https://studio.knightlab.com/projects/reporters-workbench/']]
@@ -91,8 +96,9 @@ const cases = [
     status: 'live',
     statusLabel: 'Deployed platform',
     who: 'The AI Objectives Institute; used in collaboration with Taiwan’s Ministry of Digital Affairs',
-    goal: 'Gather and represent public input at a scale that remains useful for deliberation and policymaking.',
-    method: 'Conversational surveys or imported transcripts become source-linked claims and themes, while retaining participant quotations, audit trails, and ways to correct interpretations.',
+    sourceLabel: 'Talk to the City',
+    sourceHref: 'https://talktothe.city/product',
+    sourceQuote: 'Talk to the City (T3C) is an open-source AI tool that reimagines how communities, institutions, and decision-makers gather and act on public input.',
     image: '/assets/governing-with-agents/talk-to-the-city.webp',
     imageAlt: 'Talk to the City product page.',
     links: [
@@ -109,8 +115,9 @@ const cases = [
     status: 'pilot',
     statusLabel: 'Small field pilot',
     who: 'Fair Count through Cooperative Impact Lab’s AI-for-organizing programme',
-    goal: 'Help canvassing organisations learn quickly from what constituents tell people in the field.',
-    method: 'A Mississippi pilot collected 120 short voice memos, transcribed them, and used Claude for sentiment analysis. A one-day hackathon then prototyped thematic reports.',
+    sourceLabel: 'Cooperative Impact Lab',
+    sourceHref: 'https://www.cooperativeimpactlab.org/ai4org',
+    sourceQuote: 'Community Voice is an application that enhances canvassing campaigns with real-time constituent sentiment analysis.',
     image: '/assets/governing-with-agents/community-voice.webp',
     imageAlt: 'Cooperative Impact Lab page for AI-assisted organising projects.',
     links: [['Programme case record', 'https://www.cooperativeimpactlab.org/ai4org']]
@@ -123,8 +130,9 @@ const cases = [
     status: 'live',
     statusLabel: 'Operational system',
     who: 'The UK government’s Incubator for AI, built within DSIT',
-    goal: 'Make very large public consultations tractable without handing policy judgment to a model.',
-    method: 'A model proposes themes, which officials may add, split, combine, edit, or discard. Responses are mapped only after the framework is approved, and remain searchable.',
+    sourceLabel: 'GOV.UK Algorithmic Transparency Record',
+    sourceHref: 'https://www.gov.uk/algorithmic-transparency-records/dsit-consult',
+    sourceQuote: 'Consult is a new internal tool offering civil service departments high-quality, assured AI topic modelling capabilities for consultation processing.',
     image: '/assets/governing-with-agents/consult.webp',
     imageAlt: 'UK government algorithmic transparency record for Consult.',
     links: [
@@ -140,8 +148,9 @@ const cases = [
     status: 'pilot',
     statusLabel: 'Completed process',
     who: 'A New Jersey AI Task Force working group, Citizens Foundation, and The GovLab',
-    goal: 'Let workers set priorities for the state’s response to AI’s workforce effects, then develop a broader evidence-backed option space.',
-    method: 'More than 2,200 workers made nearly 68,000 pairwise judgments. Agents researched 1,000-plus sources and generated options; experts and officials reduced them to five recommendations.',
+    sourceLabel: 'New Jersey AI Task Force report',
+    sourceHref: 'https://dspace.njstatelib.org/bitstreams/23f513ef-b2ad-43a5-9798-30d24e487c73/download',
+    sourceQuote: 'Policy Synth: An AI toolkit used by New Jersey’s AI Task Force Working Group to conduct large-scale automated research and generate evidence-based policy recommendations.',
     image: '/assets/governing-with-agents/policy-synth.webp',
     imageAlt: 'Policy Synth open-source repository.',
     links: [
@@ -157,8 +166,9 @@ const cases = [
     status: 'live',
     statusLabel: 'Live infrastructure',
     who: 'The Axiom Foundation',
-    goal: 'Publish tax and benefit rules as open, executable, time-aware code where every value and clause points back to governing legal text.',
-    method: 'An agentic encoder converts pinned statutes into RuleSpec files. Compilation, proof-tree checks, tests, external calculator comparisons, and signed manifests gate publication.',
+    sourceLabel: 'Axiom Foundation',
+    sourceHref: 'https://axiom.org/',
+    sourceQuote: 'The Axiom Foundation publishes that layer — statute by statute, citation by citation as rules as code — in the open, free for anyone to use.',
     image: '/assets/governing-with-agents/axiom.webp',
     imageAlt: 'Axiom Foundation homepage with the heading Computable law for all.',
     links: [
@@ -174,8 +184,9 @@ const cases = [
     status: 'pilot',
     statusLabel: 'Closed beta + enacted pilot',
     who: 'Faiz Surani, Lindsey Gailmard, Allison Casasola, Varun Magesh, Emily Robitschek, and Daniel Ho at Stanford RegLab',
-    goal: 'Find and annotate every statutory provision matching a legal criterion, rather than returning a convenient sample.',
-    method: 'STARA reconstructs code hierarchy, definitions, and cross-references before model classification. In San Francisco it found 528 mandated reports; a reviewed cleanup ordinance was enacted in July 2026.',
+    sourceLabel: 'Stanford RegLab',
+    sourceHref: 'https://reglab.github.io/stara/',
+    sourceQuote: 'STARA can dramatically reduce the time for discerning the law.',
     image: '/assets/governing-with-agents/stara.webp',
     imageAlt: 'STARA research paper page.',
     links: [
@@ -191,8 +202,9 @@ const cases = [
     status: 'research',
     statusLabel: 'Research infrastructure',
     who: 'Denis Peskoff, Joe Barrow, Christopher Vu, and Diag Davenport',
-    goal: 'Turn fragmented US municipal and county codes into a large, machine-readable research corpus.',
-    method: 'The team collected codes from 9,239 jurisdictions, using vision-language OCR, frontier-model labelling and comparisons, and smaller classifiers to construct the dataset.',
+    sourceLabel: 'LOCUS abstract',
+    sourceHref: 'https://arxiv.org/abs/2606.19334',
+    sourceQuote: 'The resulting raw corpus contains codes from 9,239 cities and counties.',
     image: '/assets/governing-with-agents/locus.webp',
     imageAlt: 'LOCUS research paper abstract on arXiv.',
     links: [
@@ -208,8 +220,9 @@ const cases = [
     status: 'pilot',
     statusLabel: 'Government pilot',
     who: 'Iceland’s Ministry of Higher Education, Industry and Innovation with Citizens Foundation',
-    goal: 'Find where Icelandic implementation adds requirements beyond the relevant European Union directive.',
-    method: 'The agent extracts, translates, and compares legal texts article by article, checks supporting documents, and drafts cited analyses. Multiple models run in parallel; humans decide.',
+    sourceLabel: 'Citizens Foundation',
+    sourceHref: 'https://citizens.is/impact/gold-plating-iceland/',
+    sourceQuote: 'Citizens Foundation built the system: a Policy Synth Gold-plating Research Agent that ingests the relevant EU directives alongside Icelandic laws and regulations…',
     image: '/assets/governing-with-agents/gold-plating.webp',
     imageAlt: 'Citizens Foundation case study about finding gold-plating in Icelandic law.',
     links: [
@@ -225,8 +238,9 @@ const cases = [
     status: 'pilot',
     statusLabel: 'Completed sandbox',
     who: 'Google with Singapore’s Cyber Security Agency, GovTech, and Infocomm Media Development Authority',
-    goal: 'Test where computer-use agents might help government—and what could go wrong before public deployment.',
-    method: 'Teams tested government-site quality assurance, chatbot safety testing, and social-assistance applications, using risk tiers and structured human oversight.',
+    sourceLabel: 'Cyber Security Agency of Singapore',
+    sourceHref: 'https://www.csa.gov.sg/news-events/press-releases/ai-agents--insights-from-the-singapore-government-and-google-sandbox-/',
+    sourceQuote: 'To ensure meaningful and well-rounded insights, participants prioritised three use cases spanning different levels of risk exposure.',
     image: '/assets/governing-with-agents/singapore-sandbox.webp',
     imageAlt: 'Cover of the Singapore government and Google AI Agents Sandbox report.',
     links: [
@@ -242,8 +256,9 @@ const cases = [
     status: 'live',
     statusLabel: 'Active open source',
     who: 'Developed through MATS and Anthropic Fellows; stewarded by Meridian Labs with UK AISI collaboration',
-    goal: 'Help evaluators discover risky model behaviour across many multi-turn scenarios.',
-    method: 'An auditor model interacts with a target model and simulated users or tools; judge models score retained transcripts for human inspection. It is exploratory auditing, not a benchmark.',
+    sourceLabel: 'Anthropic',
+    sourceHref: 'https://www.anthropic.com/research/donating-open-source-petri',
+    sourceQuote: 'In October 2025, we launched Petri, an open-source toolbox of alignment tests that can be applied to any large language model.',
     image: '/assets/governing-with-agents/inspect-petri.webp',
     imageAlt: 'Anthropic page announcing the open-source Petri auditing tool.',
     links: [
@@ -259,8 +274,9 @@ const cases = [
     status: 'research',
     statusLabel: 'Research & teaching tool',
     who: 'Ng Chong at United Nations University, built on Google DeepMind’s Concordia framework',
-    goal: 'Make multi-agent social simulations accessible for research, teaching, and exploratory institutional “wind-tunnelling.”',
-    method: 'Users give model-driven agents goals, memories, and traits; a Game Master resolves interactions; batch runs show how outcomes vary with assumptions. Outputs are not population forecasts.',
+    sourceLabel: 'United Nations University documentation',
+    sourceHref: 'https://c3.unu.edu/projects/ai/simulator/',
+    sourceQuote: 'A form-based interface for creating agent-based simulations powered by Google DeepMind’s Concordia framework. No coding required.',
     image: '/assets/governing-with-agents/concordia.webp',
     imageAlt: 'United Nations University Concordia Simulation Builder interface.',
     links: [
@@ -276,8 +292,9 @@ const cases = [
     status: 'research',
     statusLabel: 'Hackathon prototype',
     who: 'Nick Wagner, Dan Parshall, Emerson Brooking, Alex, and Dominique Ramsawak',
-    goal: 'Help funders inspect proposals without turning screening into an automated rejection system.',
-    method: 'The prototype checks citation integrity, solicitation fit, document overlap, tagging, and AI-generation signals, returning source-anchored evidence for human review.',
+    sourceLabel: 'SlopChecker README',
+    sourceHref: 'https://github.com/nawagner/SlopChecker',
+    sourceQuote: 'An open-source utility for funding orgs to screen incoming proposals for AI-generation signals, citation integrity, solicitation compliance, and tagging.',
     image: '/assets/governing-with-agents/slopchecker.webp',
     imageAlt: 'SlopChecker interface for inspecting a grant proposal.',
     links: [
@@ -296,7 +313,7 @@ const statusClass = {
 function renderCase(item, index) {
   const card = element('article', 'case-card');
   card.dataset.filterValues = `${item.category} ${item.status}`;
-  card.dataset.search = [item.title, item.categoryLabel, item.statusLabel, item.who, item.goal, item.method].join(' ');
+  card.dataset.search = [item.title, item.categoryLabel, item.statusLabel, item.who, item.sourceQuote].join(' ');
   card.id = item.id;
 
   const imageLink = externalLink('', item.links[0][1], 'case-image');
@@ -317,13 +334,16 @@ function renderCase(item, index) {
   meta.appendChild(element('span', '', item.categoryLabel));
   body.appendChild(meta);
   body.appendChild(element('h2', '', item.title));
-  body.appendChild(element('p', 'case-who', `Built by ${item.who}`));
-  body.appendChild(element('p', 'case-goal', item.goal));
+  const attribution = element('div', 'case-attribution');
+  attribution.appendChild(element('span', 'case-field-label', 'Organization / team'));
+  attribution.appendChild(element('p', 'case-who', item.who));
+  body.appendChild(attribution);
 
-  const details = element('details');
-  details.appendChild(element('summary', '', 'How it works'));
-  details.appendChild(element('p', 'case-method', item.method));
-  body.appendChild(details);
+  const source = element('div', 'case-source');
+  source.appendChild(element('span', 'case-field-label', 'Source quotation'));
+  source.appendChild(element('blockquote', 'source-description', item.sourceQuote));
+  source.appendChild(externalLink(`${item.sourceLabel} ↗`, item.sourceHref, 'source-link'));
+  body.appendChild(source);
 
   const links = element('div', 'case-links');
   item.links.forEach(([label, href]) => links.appendChild(externalLink(`${label} ↗`, href)));

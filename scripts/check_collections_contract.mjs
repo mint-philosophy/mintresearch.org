@@ -19,6 +19,10 @@ function assertUnique(items, label) {
   assert.equal(new Set(items).size, items.length, `${label} IDs must be unique`);
 }
 
+function wordCount(text) {
+  return text.trim().split(/\s+/).filter((token) => /[\p{L}\p{N}]/u.test(token)).length;
+}
+
 function assertImageFiles(source, label) {
   const paths = values(source, 'image');
   paths.forEach((path) => {
@@ -32,8 +36,15 @@ const governing = arraySource(governingFile, 'const cases = [', 'const statusCla
 const governingIds = values(governing, 'id');
 assert.equal(governingIds.length, 17, 'Governing with Agents must contain the 17 reviewed cases');
 assertUnique(governingIds, 'Governing with Agents');
-assert.equal(values(governing, 'goal').length, 17, 'Every governance case needs a goal');
-assert.equal(values(governing, 'method').length, 17, 'Every governance case needs a method');
+const governingQuotes = values(governing, 'sourceQuote');
+assert.equal(governingQuotes.length, 17, 'Every governance case needs a source quotation');
+assert.equal(values(governing, 'sourceLabel').length, 17, 'Every governance quotation needs a visible source label');
+assert.equal(values(governing, 'sourceHref').length, 17, 'Every governance quotation needs a source URL');
+governingQuotes.forEach((quote) => {
+  assert.ok(wordCount(quote) <= 25, `Governance source quotation exceeds 25 words: ${quote}`);
+});
+assert.ok(!governing.includes('goal:'), 'Governance cards must not restore model-written goal summaries');
+assert.ok(!governing.includes('method:'), 'Governance cards must not restore model-written method summaries');
 assertImageFiles(governing, 'Governance case');
 
 const cultureFile = 'public/assets/collections/ai-culture.js';
@@ -45,12 +56,14 @@ assert.equal(bookIds.length, 16, 'The literature collection must contain 16 revi
 assert.equal(screenIds.length, 14, 'The screen collection must contain 14 reviewed works');
 assertUnique([...bookIds, ...screenIds], 'Culture collection');
 
-const descriptions = [...values(books, 'description'), ...values(screen, 'description')];
-assert.equal(descriptions.length, 30, 'Every culture entry needs a source description');
-descriptions.forEach((description) => {
-  assert.ok(description.trim().split(/\s+/).length <= 25, `Source quotation exceeds 25 words: ${description}`);
+const cultureQuotes = [...values(books, 'sourceQuote'), ...values(screen, 'sourceQuote')];
+assert.equal(cultureQuotes.length, 30, 'Every culture entry needs a source quotation');
+cultureQuotes.forEach((quote) => {
+  assert.ok(wordCount(quote) <= 25, `Source quotation exceeds 25 words: ${quote}`);
 });
 assert.equal(values(books, 'source').length + values(screen, 'source').length, 30, 'Every culture entry needs a human source URL');
+assert.ok(!books.includes('description:'), 'Book cards must not restore model-written descriptions');
+assert.ok(!screen.includes('description:'), 'Screen cards must not restore model-written descriptions');
 
 const coverPaths = values(books, 'cover');
 assert.equal(coverPaths.length, 16, 'Every book needs a cover');
@@ -66,11 +79,29 @@ for (const [page, next] of [
   const html = fs.readFileSync(page, 'utf8');
   assert.ok(html.includes(`action="${formEndpoint}"`), `${page} must use the established form endpoint`);
   assert.ok(html.includes(`name="_next" value="${next}"`), `${page} must return to its own receipt state`);
-  assert.ok(html.includes('nothing is published automatically'), `${page} must state the moderation boundary`);
+  assert.ok(html.includes('MINT reviews submissions before publication'), `${page} must state the moderation boundary`);
   assert.ok(html.includes('/assets/collections/collections.css'), `${page} must load the shared collection styles`);
+  assert.ok(html.includes('<dt>Card text</dt><dd>Quotations from linked sources</dd>'), `${page} must state the source-quotation rule explicitly`);
+}
+
+const collectionCopy = [
+  fs.readFileSync('public/governing-with-agents/index.html', 'utf8'),
+  fs.readFileSync('public/ai-culture/index.html', 'utf8'),
+  governing
+].join('\n');
+for (const rejected of [
+  'Case files, not endorsements',
+  'Field notes for governing institutions',
+  'Make institutions visible',
+  'Hear more people without flattening them',
+  'A shelf for impossible futures',
+  'Stories are rehearsal spaces',
+  'What belongs here next?'
+]) {
+  assert.ok(!collectionCopy.includes(rejected), `Rejected collection copy returned: ${rejected}`);
 }
 
 assert.ok(fs.existsSync('public/assets/governing-with-agents/og-governing-with-agents.png'), 'Governance social card is missing');
 assert.ok(fs.existsSync('public/assets/ai-culture/og-ai-culture.png'), 'Culture social card is missing');
 
-console.log('MINT curated collections contract passed: 17 governance cases, 30 culture entries, local assets, human-source limits, notes, and moderated forms.');
+console.log('MINT curated collections contract passed: 17 source-quoted governance cases, 30 source-quoted culture entries, local assets, notes, and moderated forms.');
