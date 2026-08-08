@@ -87,6 +87,24 @@ const visible = records.filter(
 );
 assert.ok(visible.length > 0, "people CSV has no public homepage rows");
 
+const seth = visible.find((row) => row["Site: id"].trim() === "seth-lazar");
+assert.ok(seth, "people CSV is missing Seth Lazar's public record");
+assert.equal(
+  seth["Site: Affiliation"].trim(),
+  "Johns Hopkins University",
+  "Seth Lazar's public affiliation must identify Johns Hopkins University only",
+);
+assert.match(
+  seth["Site: Bio"],
+  /principal investigator of MINT Lab/i,
+  "Seth Lazar's public bio must identify his current MINT role",
+);
+assert.doesNotMatch(
+  seth["Site: Bio"],
+  /Australian National University|\bANU\b|founding director/i,
+  "Seth Lazar's public bio contains a stale current-role claim",
+);
+
 const ids = new Set();
 const counts = {};
 for (const section of SECTIONS) {

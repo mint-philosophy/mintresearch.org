@@ -13,8 +13,8 @@ export const teamMembers: PersonData[] = [
     name: 'Seth Lazar',
     role: 'Principal Investigator',
     disc: 'Philosophy',
-    affiliation: 'Johns Hopkins University · Australian National University',
-    bio: 'Professor at Johns Hopkins University School of Government and Policy and the Australian National University. Founding director of MINT Lab. Research focuses on the philosophy of AI and computing, and on the defence, reinvigoration, and redesign of liberal democratic institutions for the AI transition.',
+    affiliation: 'Johns Hopkins University',
+    bio: 'Professor at Johns Hopkins University School of Government and Policy and principal investigator of MINT Lab. Research focuses on the philosophy of AI and computing, and on the defence, reinvigoration, and redesign of liberal democratic institutions for the AI transition.',
     headshot: 'seth-lazar.jpg',
     links: [
       { label: 'CV', url: '/cv/' },
