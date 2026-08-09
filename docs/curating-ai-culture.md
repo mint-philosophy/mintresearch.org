@@ -21,6 +21,11 @@ Complete series can be assigned a shared `series` value and listed in
 Keep the books in reading order. A search match inside a closed stack opens it
 automatically.
 
+The horizontal bookshelf is generated from the same `books` array. Every title
+must appear once. Selecting a shelf item clears an incompatible filter or
+search, opens its series stack when necessary, and moves keyboard focus to the
+corresponding book card.
+
 ## Adding Seth's comments
 
 `public/assets/collections/ai-culture-notes.json` is the editorial note layer.

@@ -531,6 +531,7 @@ function noteSlot(id) {
 function renderBook(item, index) {
   const card = element('article', 'culture-card');
   card.id = item.id;
+  card.tabIndex = -1;
   if (item.series) card.dataset.series = item.series;
   card.dataset.filterValues = `book ${item.tags.map((tag) => tag.replace(/\s+/g, '-')).join(' ')}`;
   card.dataset.search = [item.title, item.author, item.year, bookSeries[item.series]?.title, item.sourceQuote, ...item.tags].filter(Boolean).join(' ');
@@ -640,6 +641,103 @@ books.forEach((item, index) => {
 });
 screen.forEach((item) => screenGrid?.appendChild(renderScreen(item)));
 
+function renderShelfBook(item, index) {
+  const link = element('a', 'shelf-book');
+  link.href = `#${item.id}`;
+  link.dataset.bookId = item.id;
+  link.setAttribute('aria-label', `${item.title} by ${item.author}`);
+
+  const cover = element('span', 'shelf-book-cover');
+  const image = element('img');
+  image.src = item.cover;
+  image.alt = `Cover of ${item.title} by ${item.author}.`;
+  image.loading = index < 8 ? 'eager' : 'lazy';
+  image.decoding = 'async';
+  cover.appendChild(image);
+  link.appendChild(cover);
+  link.appendChild(element('span', 'shelf-book-title', item.title));
+  link.appendChild(element('span', 'shelf-book-author', item.author));
+  return link;
+}
+
+const shelf = document.querySelector('#book-shelf');
+books.forEach((item, index) => shelf?.appendChild(renderShelfBook(item, index)));
+
+const shelfControls = Array.from(document.querySelectorAll('[data-shelf-direction]'));
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+function scrollShelf(direction) {
+  if (!shelf) return;
+  shelf.scrollBy({
+    left: direction * Math.max(280, shelf.clientWidth * 0.78),
+    behavior: reducedMotion.matches ? 'auto' : 'smooth'
+  });
+}
+
+function updateShelfControls() {
+  if (!shelf) return;
+  const maximum = Math.max(0, shelf.scrollWidth - shelf.clientWidth);
+  shelfControls.forEach((control) => {
+    const direction = Number(control.dataset.shelfDirection);
+    control.disabled = direction < 0 ? shelf.scrollLeft <= 2 : shelf.scrollLeft >= maximum - 2;
+  });
+}
+
+shelfControls.forEach((control) => {
+  control.addEventListener('click', () => scrollShelf(Number(control.dataset.shelfDirection)));
+});
+shelf?.addEventListener('scroll', updateShelfControls, { passive: true });
+shelf?.addEventListener('keydown', (event) => {
+  if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+  event.preventDefault();
+  scrollShelf(event.key === 'ArrowLeft' ? -1 : 1);
+});
+if (shelf && 'ResizeObserver' in window) new ResizeObserver(updateShelfControls).observe(shelf);
+window.requestAnimationFrame(updateShelfControls);
+
+function revealBook(id, options = {}) {
+  const item = books.find((candidate) => candidate.id === id);
+  const target = document.getElementById(id);
+  if (!item || !target) return;
+
+  const search = document.querySelector('#collection-search');
+  if (search?.value) {
+    search.value = '';
+    search.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  const activeFilter = document.querySelector('.filter-button[aria-pressed="true"]');
+  if (activeFilter && !['all', 'book'].includes(activeFilter.dataset.filterValue)) {
+    document.querySelector('.filter-button[data-filter-value="book"]')?.click();
+  }
+
+  const stack = target.closest('.series-stack');
+  if (stack) {
+    stack.hidden = false;
+    stack.open = true;
+    delete stack.dataset.openedBySearch;
+  }
+
+  if (options.updateHash !== false) history.pushState(null, '', `#${item.id}`);
+  window.requestAnimationFrame(() => {
+    target.scrollIntoView({
+      behavior: options.behavior || (reducedMotion.matches ? 'auto' : 'smooth'),
+      block: 'start'
+    });
+    target.focus({ preventScroll: true });
+    document.querySelectorAll('.culture-card.is-shelf-target').forEach((card) => card.classList.remove('is-shelf-target'));
+    target.classList.add('is-shelf-target');
+    window.setTimeout(() => target.classList.remove('is-shelf-target'), 1800);
+  });
+}
+
+shelf?.addEventListener('click', (event) => {
+  const link = event.target.closest('[data-book-id]');
+  if (!link) return;
+  event.preventDefault();
+  revealBook(link.dataset.bookId);
+});
+
 const root = document.querySelector('#culture-items');
 function syncSeriesStacks(query = '') {
   document.querySelectorAll('.series-stack').forEach((stack) => {
@@ -677,3 +775,10 @@ setupGallery({
 syncSections();
 showSubmissionReceipt();
 loadCuratorNotes('/assets/collections/ai-culture-notes.json');
+
+function revealBookFromHash() {
+  const id = decodeURIComponent(window.location.hash.slice(1));
+  if (books.some((item) => item.id === id)) revealBook(id, { updateHash: false, behavior: 'auto' });
+}
+window.addEventListener('hashchange', revealBookFromHash);
+window.requestAnimationFrame(revealBookFromHash);

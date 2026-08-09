@@ -78,6 +78,8 @@ assertImageFiles(screen, 'Screen');
 const notes = JSON.parse(fs.readFileSync('public/assets/collections/ai-culture-notes.json', 'utf8'));
 assert.deepEqual(Object.keys(notes).sort(), [...bookIds, ...screenIds].sort(), 'Curator-note keys must match culture entry IDs');
 assert.equal(notes.daemon, 'Look it’s kind of Michael Crichton-lite, and the model of AI is pretty deterministic. But there’s good stuff on meat robots and it’s a pretty fun read.', 'Seth’s Daemon note must remain verbatim');
+assert.equal(notes.exhalation, 'look it’s not as good as his current writing on AI is bad, but it’s pretty nicely-conceived, and especially the memory/recording one is thought provoking.', 'Seth’s Exhalation note must remain verbatim');
+assert.equal(notes['klara-and-the-sun'], 'Every bit as good as you’d expect, and pretty well on the nose for one near-term trajectory for AI. Poignant, lyrical, etc. Better written than one has a right to expect an interesting novel about AI to be.', 'Seth’s Klara and the Sun note must remain verbatim');
 
 for (const [page, next] of [
   ['public/governing-with-agents/index.html', 'https://mintresearch.org/governing-with-agents/?submitted=1#suggest'],
@@ -97,6 +99,11 @@ assert.ok(governanceHtml.includes('Built by the organisations and teams named on
 assert.ok(governanceHtml.includes('<dt>Card text</dt><dd>Quotations from linked sources</dd>'), 'The governance page must retain its source-quotation note');
 assert.ok(!cultureHtml.includes('class="collection-aside"'), 'The culture page must not expose an internal sourcing panel');
 assert.ok(!cultureHtml.toLowerCase().includes('human-written source'), 'Internal source-quality instructions must not appear on the culture page');
+assert.ok(cultureHtml.includes('id="book-shelf"'), 'The culture page must retain the horizontal bookshelf');
+assert.ok(cultureHtml.includes('data-shelf-direction="-1"') && cultureHtml.includes('data-shelf-direction="1"'), 'The bookshelf needs explicit left and right controls');
+const cultureScript = fs.readFileSync(cultureFile, 'utf8');
+assert.ok(cultureScript.includes('function revealBook'), 'The bookshelf must be able to reveal and focus an exact book');
+assert.ok(cultureScript.includes('stack.open = true'), 'Bookshelf navigation must open a collapsed series stack');
 
 const collectionCopy = [
   fs.readFileSync('public/governing-with-agents/index.html', 'utf8'),

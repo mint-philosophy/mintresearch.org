@@ -454,27 +454,130 @@ body {
   outline: none;
 }
 
+.book-shelf {
+  position: relative;
+  padding: 0 46px;
+  border-bottom: 5px solid var(--bg-4);
+}
+
 .culture-rail {
   display: flex;
   align-items: flex-end;
   gap: clamp(7px, 1.2vw, 14px);
-  min-height: 270px;
-  padding: 22px 8px 0;
-  border-bottom: 5px solid var(--bg-4);
-  overflow: hidden;
+  min-height: 292px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 22px 4px 14px;
+  scroll-padding-inline: 4px;
+  scroll-snap-type: x proximity;
+  scrollbar-color: var(--collection-rule) transparent;
+  scrollbar-width: thin;
+  overscroll-behavior-x: contain;
 }
 
-.culture-rail img {
-  width: clamp(76px, 8.7vw, 118px);
+.shelf-book {
+  flex: 0 0 clamp(96px, 10.2vw, 126px);
+  min-width: 0;
+  color: var(--text-2);
+  text-decoration: none;
+  scroll-snap-align: start;
+}
+
+.shelf-book-cover {
+  display: flex;
+  height: 205px;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.shelf-book img {
+  display: block;
+  width: auto;
+  max-width: 100%;
   height: auto;
-  max-height: 225px;
-  object-fit: cover;
+  max-height: 200px;
+  object-fit: contain;
   box-shadow: 8px 10px 0 rgba(0, 0, 0, 0.28);
   transform: rotate(var(--cover-turn, 0deg));
+  transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
-.culture-rail img:nth-child(2n) { --cover-turn: 1.1deg; }
-.culture-rail img:nth-child(3n) { --cover-turn: -1.2deg; }
+.shelf-book:nth-child(2n) { --cover-turn: 1.1deg; }
+.shelf-book:nth-child(3n) { --cover-turn: -1.2deg; }
+
+.shelf-book-title,
+.shelf-book-author {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shelf-book-title {
+  min-height: 2.6em;
+  margin-top: 12px;
+  color: var(--text-bright);
+  font-family: var(--font);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.shelf-book-author {
+  margin-top: 4px;
+  color: var(--text-3);
+  font-family: var(--font);
+  font-size: 8px;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.shelf-book:hover img,
+.shelf-book:focus-visible img {
+  box-shadow: 9px 13px 0 rgba(0, 0, 0, 0.34);
+  transform: translateY(-5px) rotate(var(--cover-turn, 0deg));
+}
+
+.shelf-book:hover .shelf-book-title,
+.shelf-book:focus-visible .shelf-book-title {
+  color: var(--accent);
+}
+
+.shelf-book:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 5px;
+}
+
+.book-shelf-control {
+  position: absolute;
+  z-index: 2;
+  top: 108px;
+  width: 34px;
+  height: 56px;
+  border: 1px solid var(--collection-rule);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--bg-1) 94%, transparent);
+  font-family: var(--font);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.book-shelf-control-previous { left: 0; }
+.book-shelf-control-next { right: 0; }
+
+.book-shelf-control:hover,
+.book-shelf-control:focus-visible {
+  border-color: var(--accent);
+  color: var(--text-bright);
+  outline: none;
+}
+
+.book-shelf-control:disabled {
+  opacity: 0.28;
+  cursor: default;
+}
 
 .collection-section-head {
   display: flex;
@@ -639,6 +742,15 @@ body {
   min-height: 252px;
   border: 1px solid var(--border);
   background: var(--bg-1);
+  scroll-margin-top: calc(var(--banner-h, 120px) + 86px);
+}
+
+.culture-card:target,
+.culture-card:focus-visible,
+.culture-card.is-shelf-target {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 36%, transparent);
+  outline: none;
 }
 
 .culture-cover-link {
@@ -945,6 +1057,12 @@ body {
   .collection-hero h1 { font-size: clamp(34px, 13vw, 54px); }
   .collection-index { grid-template-columns: 1fr; }
   .index-cell { min-height: 92px; }
+  .book-shelf { padding-inline: 34px; }
+  .culture-rail { min-height: 252px; gap: 10px; padding-top: 14px; }
+  .shelf-book { flex-basis: 96px; }
+  .shelf-book-cover { height: 168px; }
+  .shelf-book img { max-height: 164px; }
+  .book-shelf-control { top: 82px; width: 27px; height: 48px; }
   .case-body { padding: 17px; }
   .culture-card { grid-template-columns: 112px minmax(0, 1fr); min-height: 228px; }
   .culture-cover-link { min-height: 0; padding: 8px; }
@@ -973,6 +1091,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .case-card,
   .case-image img,
+  .shelf-book img,
   .series-disclosure { transition: none; }
   .case-card:hover,
   .case-card:hover .case-image img { transform: none; }
