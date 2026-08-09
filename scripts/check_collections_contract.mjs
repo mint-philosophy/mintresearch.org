@@ -54,7 +54,7 @@ const books = arraySource(cultureFile, 'const books = [', 'const screen = [');
 const screen = arraySource(cultureFile, 'const screen = [', 'function noteSlot');
 const bookIds = [...values(books, 'id'), ...kindleScienceFictionBooks.map((book) => book.id)];
 const screenIds = values(screen, 'id');
-assert.equal(bookIds.length, 115, 'The literature collection must contain 115 reviewed books');
+assert.equal(bookIds.length, 116, 'The literature collection must contain 116 reviewed books');
 assert.equal(screenIds.length, 7, 'The screen collection must contain 7 watched works');
 assertUnique([...bookIds, ...screenIds], 'Culture collection');
 
@@ -63,13 +63,13 @@ const cultureQuotes = [
   ...kindleScienceFictionBooks.map((book) => book.sourceQuote),
   ...values(screen, 'sourceQuote')
 ];
-assert.equal(cultureQuotes.length, 122, 'Every culture entry needs a source quotation');
+assert.equal(cultureQuotes.length, 123, 'Every culture entry needs a source quotation');
 cultureQuotes.forEach((quote) => {
   assert.ok(wordCount(quote) <= 25, `Source quotation exceeds 25 words: ${quote}`);
 });
 assert.equal(
   values(books, 'source').length + kindleScienceFictionBooks.filter((book) => book.source).length + values(screen, 'source').length,
-  122,
+  123,
   'Every culture entry needs a source URL'
 );
 assert.ok(!books.includes('description:'), 'Book cards must not restore model-written descriptions');
@@ -82,14 +82,14 @@ for (const id of ['all-systems-red', 'artificial-condition', 'rogue-protocol', '
 assert.equal(kindleScienceFictionSeries['le-guin'].kind, 'Author', 'Le Guin titles must use an author stack');
 assert.equal(kindleScienceFictionSeries['kim-stanley-robinson'].kind, 'Author', 'KSR titles must use an author stack');
 assert.equal(kindleScienceFictionBooks.filter((book) => book.series === 'le-guin').length, 7, 'The Le Guin author stack needs its seven added titles');
-assert.equal(kindleScienceFictionBooks.filter((book) => book.series === 'kim-stanley-robinson').length, 8, 'The KSR author stack needs its eight added titles');
+assert.equal(kindleScienceFictionBooks.filter((book) => book.series === 'kim-stanley-robinson').length, 9, 'The KSR author stack needs its nine added titles');
 assert.match(books, /id: 'the-dispossessed'[^\n]+series: 'le-guin'/, 'The Dispossessed must be included in the Le Guin author stack');
 for (const id of ['ministry-for-the-future', 'red-mars', 'green-mars', 'blue-mars']) {
   assert.match(books, new RegExp(`id: '${id}'[^\\n]+series: 'kim-stanley-robinson'`), `KSR author-stack assignment is missing: ${id}`);
 }
 
 const coverPaths = [...values(books, 'cover'), ...kindleScienceFictionBooks.map((book) => book.cover)];
-assert.equal(coverPaths.length, 115, 'Every book needs a cover');
+assert.equal(coverPaths.length, 116, 'Every book needs a cover');
 coverPaths.forEach((path) => assert.ok(fs.existsSync(`public${path}`), `Book cover is missing: ${path}`));
 assertImageFiles(screen, 'Screen');
 
@@ -98,6 +98,8 @@ assert.deepEqual(Object.keys(notes).sort(), [...bookIds, ...screenIds].sort(), '
 assert.equal(notes.daemon, 'It’s kind of Michael Crichton-lite, and the model of AI is pretty deterministic. But there’s good stuff on meat robots and it’s a pretty fun read.', 'Seth’s Daemon note must retain its approved wording');
 assert.equal(notes.exhalation, 'Look, it’s not as good as his current writing on AI is bad, but it’s pretty nicely conceived; the memory/recording one is especially thought-provoking.', 'Seth’s Exhalation note must retain its approved wording');
 assert.equal(notes['klara-and-the-sun'], 'Every bit as good as you’d expect, and pretty well on the nose for one near-term trajectory for AI. Poignant, lyrical, etc. Better written than one has a right to expect an interesting novel about AI to be.', 'Seth’s Klara and the Sun note must remain verbatim');
+assert.equal(notes.speak, 'Very few sci-fi writers anticipated language being quite so central to AI progress; this book does so nicely, and it is pretty well written too. Very focused on the companions side of things; I reckon it’s a bit pessimistic about the human appetite for non-digital connection. But good.', 'Seth’s Speak note must retain its approved wording');
+assert.equal(notes['red-mars'], 'KSR was just not into AI at this time, so it figures in a very minimal, “universal interface” kind of way. Everything else about the trilogy is wicked, though, especially the whole constitutional convention dimension. Also, the later reflections on the cognitive and social implications of much-extended lives.', 'Seth’s Mars trilogy note must retain its approved wording');
 
 for (const [page, next] of [
   ['public/governing-with-agents/index.html', 'https://mintresearch.org/governing-with-agents/?submitted=1#suggest'],
@@ -143,4 +145,4 @@ for (const rejected of [
 assert.ok(fs.existsSync('public/assets/governing-with-agents/og-governing-with-agents.png'), 'Governance social card is missing');
 assert.ok(fs.existsSync('public/assets/ai-culture/og-ai-culture.png'), 'Culture social card is missing');
 
-console.log('MINT curated collections contract passed: 23 source-quoted governance cases, 122 source-quoted culture entries, local assets, notes, and moderated forms.');
+console.log('MINT curated collections contract passed: 23 source-quoted governance cases, 123 source-quoted culture entries, local assets, notes, and moderated forms.');

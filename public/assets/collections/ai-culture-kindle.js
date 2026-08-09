@@ -160,6 +160,12 @@ export const kindleScienceFictionBooks = [
     ['generation ship', 'ecology', 'machine intelligence']
   ),
   book(
+    'shaman', 'Shaman', 'Kim Stanley Robinson', '2013', 'kim-stanley-robinson', null,
+    'An extraordinary portrayal of life in the Palaeolithic era, 30,000 years into our past',
+    ['prehistory', 'social cooperation', 'adaptation'],
+    'https://www.hachette.co.uk/titles/kim-stanley-robinson/shaman/9780748126453/', 'Hachette / Orbit'
+  ),
+  book(
     'the-city-in-the-middle-of-the-night', 'The City in the Middle of the Night', 'Charlie Jane Anders', '2019', null, 'OL20749104W',
     'Would you give up everything to change the world?',
     ['climate', 'social order', 'nonhuman intelligence']
