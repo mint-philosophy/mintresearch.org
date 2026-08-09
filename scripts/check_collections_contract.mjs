@@ -77,8 +77,8 @@ assertImageFiles(screen, 'Screen');
 
 const notes = JSON.parse(fs.readFileSync('public/assets/collections/ai-culture-notes.json', 'utf8'));
 assert.deepEqual(Object.keys(notes).sort(), [...bookIds, ...screenIds].sort(), 'Curator-note keys must match culture entry IDs');
-assert.equal(notes.daemon, 'Look it’s kind of Michael Crichton-lite, and the model of AI is pretty deterministic. But there’s good stuff on meat robots and it’s a pretty fun read.', 'Seth’s Daemon note must remain verbatim');
-assert.equal(notes.exhalation, 'look it’s not as good as his current writing on AI is bad, but it’s pretty nicely-conceived, and especially the memory/recording one is thought provoking.', 'Seth’s Exhalation note must remain verbatim');
+assert.equal(notes.daemon, 'It’s kind of Michael Crichton-lite, and the model of AI is pretty deterministic. But there’s good stuff on meat robots and it’s a pretty fun read.', 'Seth’s Daemon note must retain its approved wording');
+assert.equal(notes.exhalation, 'Look, it’s not as good as his current writing on AI is bad, but it’s pretty nicely conceived; the memory/recording one is especially thought-provoking.', 'Seth’s Exhalation note must retain its approved wording');
 assert.equal(notes['klara-and-the-sun'], 'Every bit as good as you’d expect, and pretty well on the nose for one near-term trajectory for AI. Poignant, lyrical, etc. Better written than one has a right to expect an interesting novel about AI to be.', 'Seth’s Klara and the Sun note must remain verbatim');
 
 for (const [page, next] of [
