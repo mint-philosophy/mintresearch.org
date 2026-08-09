@@ -341,6 +341,12 @@ export const kindleScienceFictionBooks = [
     ['machine civilisation', 'post-scarcity', 'games']
   ),
   book(
+    'the-hydrogen-sonata', 'The Hydrogen Sonata', 'Iain M. Banks', '2012', 'culture', null,
+    'The Scavenger species are circling. It is, truly, the End Days for the Gzilt civilisation.',
+    ['sublimation', 'civilisational transition', 'post-scarcity'],
+    'https://www.hachette.co.uk/titles/iain-m-banks-3/the-hydrogen-sonata/9781405512848/', 'Hachette / Orbit'
+  ),
+  book(
     'the-expert-systems-champion', 'The Expert System’s Champion', 'Adrian Tchaikovsky', '2021', null, null,
     'Sometimes the ones you hate are the only ones that can save you.',
     ['distributed expertise', 'ecology', 'social order'],

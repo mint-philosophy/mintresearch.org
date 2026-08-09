@@ -54,7 +54,7 @@ const books = arraySource(cultureFile, 'const books = [', 'const screen = [');
 const screen = arraySource(cultureFile, 'const screen = [', 'function noteSlot');
 const bookIds = [...values(books, 'id'), ...kindleScienceFictionBooks.map((book) => book.id)];
 const screenIds = values(screen, 'id');
-assert.equal(bookIds.length, 116, 'The literature collection must contain 116 reviewed books');
+assert.equal(bookIds.length, 117, 'The literature collection must contain 117 reviewed books');
 assert.equal(screenIds.length, 7, 'The screen collection must contain 7 watched works');
 assertUnique([...bookIds, ...screenIds], 'Culture collection');
 
@@ -63,13 +63,13 @@ const cultureQuotes = [
   ...kindleScienceFictionBooks.map((book) => book.sourceQuote),
   ...values(screen, 'sourceQuote')
 ];
-assert.equal(cultureQuotes.length, 123, 'Every culture entry needs a source quotation');
+assert.equal(cultureQuotes.length, 124, 'Every culture entry needs a source quotation');
 cultureQuotes.forEach((quote) => {
   assert.ok(wordCount(quote) <= 25, `Source quotation exceeds 25 words: ${quote}`);
 });
 assert.equal(
   values(books, 'source').length + kindleScienceFictionBooks.filter((book) => book.source).length + values(screen, 'source').length,
-  123,
+  124,
   'Every culture entry needs a source URL'
 );
 assert.ok(!books.includes('description:'), 'Book cards must not restore model-written descriptions');
@@ -83,13 +83,14 @@ assert.equal(kindleScienceFictionSeries['le-guin'].kind, 'Author', 'Le Guin titl
 assert.equal(kindleScienceFictionSeries['kim-stanley-robinson'].kind, 'Author', 'KSR titles must use an author stack');
 assert.equal(kindleScienceFictionBooks.filter((book) => book.series === 'le-guin').length, 7, 'The Le Guin author stack needs its seven added titles');
 assert.equal(kindleScienceFictionBooks.filter((book) => book.series === 'kim-stanley-robinson').length, 9, 'The KSR author stack needs its nine added titles');
+assert.equal(kindleScienceFictionBooks.filter((book) => book.series === 'culture').length, 2, 'The Culture stack needs its two added titles');
 assert.match(books, /id: 'the-dispossessed'[^\n]+series: 'le-guin'/, 'The Dispossessed must be included in the Le Guin author stack');
 for (const id of ['ministry-for-the-future', 'red-mars', 'green-mars', 'blue-mars']) {
   assert.match(books, new RegExp(`id: '${id}'[^\\n]+series: 'kim-stanley-robinson'`), `KSR author-stack assignment is missing: ${id}`);
 }
 
 const coverPaths = [...values(books, 'cover'), ...kindleScienceFictionBooks.map((book) => book.cover)];
-assert.equal(coverPaths.length, 116, 'Every book needs a cover');
+assert.equal(coverPaths.length, 117, 'Every book needs a cover');
 coverPaths.forEach((path) => assert.ok(fs.existsSync(`public${path}`), `Book cover is missing: ${path}`));
 assertImageFiles(screen, 'Screen');
 
@@ -145,4 +146,4 @@ for (const rejected of [
 assert.ok(fs.existsSync('public/assets/governing-with-agents/og-governing-with-agents.png'), 'Governance social card is missing');
 assert.ok(fs.existsSync('public/assets/ai-culture/og-ai-culture.png'), 'Culture social card is missing');
 
-console.log('MINT curated collections contract passed: 23 source-quoted governance cases, 123 source-quoted culture entries, local assets, notes, and moderated forms.');
+console.log('MINT curated collections contract passed: 23 source-quoted governance cases, 124 source-quoted culture entries, local assets, notes, and moderated forms.');
