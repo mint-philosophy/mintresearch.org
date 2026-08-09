@@ -1,4 +1,5 @@
 import { element, externalLink, setupGallery, showSubmissionReceipt, loadCuratorNotes } from './gallery.js';
+import { kindleScienceFictionBooks, kindleScienceFictionSeries } from './ai-culture-kindle.js';
 
 const bookSeries = {
   'murderbot-diaries': { title: 'The Murderbot Diaries', author: 'Martha Wells' },
@@ -6,7 +7,7 @@ const bookSeries = {
   'zones-of-thought': { title: 'Zones of Thought', author: 'Vernor Vinge' },
   eschaton: { title: 'Eschaton', author: 'Charles Stross' },
   'arc-of-a-scythe': { title: 'Arc of a Scythe', author: 'Neal Shusterman' },
-  'mars-trilogy': { title: 'Mars trilogy', author: 'Kim Stanley Robinson' }
+  ...kindleScienceFictionSeries
 };
 
 const books = [
@@ -107,7 +108,7 @@ const books = [
     tags: ['distributed minds', 'identity', 'empire']
   },
   {
-    id: 'too-like-the-lightning', title: 'Too Like the Lightning', author: 'Ada Palmer', year: '2016',
+    id: 'too-like-the-lightning', title: 'Too Like the Lightning', author: 'Ada Palmer', year: '2016', series: 'terra-ignota',
     cover: '/assets/ai-culture/covers/too-like-the-lightning.webp',
     source: 'https://us.macmillan.com/books/9780765378019',
     sourceLabel: 'Macmillan / Tor Books',
@@ -123,7 +124,7 @@ const books = [
     tags: ['democracy', 'information power', 'elections']
   },
   {
-    id: 'the-dispossessed', title: 'The Dispossessed', author: 'Ursula K. Le Guin', year: '1974',
+    id: 'the-dispossessed', title: 'The Dispossessed', author: 'Ursula K. Le Guin', year: '1974', series: 'le-guin',
     cover: '/assets/ai-culture/covers/the-dispossessed.webp',
     source: 'https://www.orionbooks.co.uk/titles/ursula-k-le-guin/the-dispossessed/9781857988826/',
     sourceLabel: 'Orion / Gollancz',
@@ -147,7 +148,7 @@ const books = [
     tags: ['consciousness', 'alien cognition', 'intelligence']
   },
   {
-    id: 'three-body-problem', title: 'The Three-Body Problem', author: 'Cixin Liu, translated by Ken Liu', year: '2014',
+    id: 'three-body-problem', title: 'The Three-Body Problem', author: 'Cixin Liu, translated by Ken Liu', year: '2014', series: 'remembrance-of-earths-past',
     cover: '/assets/ai-culture/covers/three-body-problem.webp',
     source: 'https://us.macmillan.com/books/9780765382030/thethreebodyproblem/',
     sourceLabel: 'Macmillan / Tor Books',
@@ -155,7 +156,7 @@ const books = [
     tags: ['civilizational threat', 'strategy', 'opacity']
   },
   {
-    id: 'ministry-for-the-future', title: 'The Ministry for the Future', author: 'Kim Stanley Robinson', year: '2020',
+    id: 'ministry-for-the-future', title: 'The Ministry for the Future', author: 'Kim Stanley Robinson', year: '2020', series: 'kim-stanley-robinson',
     cover: '/assets/ai-culture/covers/ministry-for-the-future.webp',
     source: 'https://www.hachette.co.uk/titles/kim-stanley-robinson/the-ministry-for-the-future/9780356508832/',
     sourceLabel: 'Hachette / Orbit',
@@ -163,7 +164,7 @@ const books = [
     tags: ['institutional change', 'transition', 'future generations']
   },
   {
-    id: 'red-mars', title: 'Red Mars', author: 'Kim Stanley Robinson', year: '1992', series: 'mars-trilogy',
+    id: 'red-mars', title: 'Red Mars', author: 'Kim Stanley Robinson', year: '1992', series: 'kim-stanley-robinson',
     cover: '/assets/ai-culture/covers/red-mars.webp',
     source: 'https://www.penguinrandomhouse.com/books/156201/red-mars-by-kim-stanley-robinson/paperback/',
     sourceLabel: 'Penguin Random House / Del Rey',
@@ -171,7 +172,7 @@ const books = [
     tags: ['settlement', 'political economy', 'planetary change']
   },
   {
-    id: 'green-mars', title: 'Green Mars', author: 'Kim Stanley Robinson', year: '1993', series: 'mars-trilogy',
+    id: 'green-mars', title: 'Green Mars', author: 'Kim Stanley Robinson', year: '1993', series: 'kim-stanley-robinson',
     cover: '/assets/ai-culture/covers/green-mars.webp',
     source: 'https://www.penguinrandomhouse.com/series/ZMS/mars-trilogy/',
     sourceLabel: 'Penguin Random House / Del Rey',
@@ -179,7 +180,7 @@ const books = [
     tags: ['settlement', 'revolution', 'institution building']
   },
   {
-    id: 'blue-mars', title: 'Blue Mars', author: 'Kim Stanley Robinson', year: '1996', series: 'mars-trilogy',
+    id: 'blue-mars', title: 'Blue Mars', author: 'Kim Stanley Robinson', year: '1996', series: 'kim-stanley-robinson',
     cover: '/assets/ai-culture/covers/blue-mars.webp',
     source: 'https://www.penguinrandomhouse.com/books/156194/blue-mars-by-kim-stanley-robinson/',
     sourceLabel: 'Penguin Random House / Del Rey',
@@ -307,7 +308,7 @@ const books = [
     tags: ['surveillance', 'state power', 'resistance']
   },
   {
-    id: 'consider-phlebas', title: 'Consider Phlebas', author: 'Iain M. Banks', year: '1987',
+    id: 'consider-phlebas', title: 'Consider Phlebas', author: 'Iain M. Banks', year: '1987', series: 'culture',
     cover: '/assets/ai-culture/covers/consider-phlebas.webp',
     source: 'https://www.hachette.co.uk/titles/iain-m-banks-3/consider-phlebas/9780748109999/',
     sourceLabel: 'Hachette / Orbit',
@@ -323,7 +324,7 @@ const books = [
     tags: ['institutional memory', 'epistemic threats', 'containment']
   },
   {
-    id: 'a-memory-called-empire', title: 'A Memory Called Empire', author: 'Arkady Martine', year: '2019',
+    id: 'a-memory-called-empire', title: 'A Memory Called Empire', author: 'Arkady Martine', year: '2019', series: 'teixcalaan',
     cover: '/assets/ai-culture/covers/a-memory-called-empire.jpg',
     source: 'https://us.macmillan.com/books/9781250186430/amemorycalledempire/',
     sourceLabel: 'Macmillan / Tor Books',
@@ -331,7 +332,7 @@ const books = [
     tags: ['memory technology', 'diplomacy', 'empire']
   },
   {
-    id: 'semiosis', title: 'Semiosis', author: 'Sue Burke', year: '2018',
+    id: 'semiosis', title: 'Semiosis', author: 'Sue Burke', year: '2018', series: 'semiosis-trilogy',
     cover: '/assets/ai-culture/covers/semiosis.jpg',
     source: 'https://us.macmillan.com/books/9780765391360/semiosis/',
     sourceLabel: 'Macmillan / Tor Books',
@@ -465,7 +466,8 @@ const books = [
     sourceLabel: 'Penguin Random House',
     sourceQuote: 'A revolution on a lunar penal colony—aided by a self-aware supercomputer—provides the framework for a story.',
     tags: ['self-aware systems', 'revolution', 'political order']
-  }
+  },
+  ...kindleScienceFictionBooks
 ];
 
 const screen = [
@@ -581,9 +583,10 @@ function renderSeries(seriesId, items) {
   summary.appendChild(covers);
 
   const summaryCopy = element('span', 'series-summary-copy');
-  summaryCopy.appendChild(element('span', 'series-label', 'Series'));
-  summaryCopy.appendChild(element('strong', '', bookSeries[seriesId].title));
-  summaryCopy.appendChild(element('span', 'series-author', bookSeries[seriesId].author));
+  const series = bookSeries[seriesId];
+  summaryCopy.appendChild(element('span', 'series-label', series.kind || 'Series'));
+  summaryCopy.appendChild(element('strong', '', series.title));
+  if (series.author) summaryCopy.appendChild(element('span', 'series-author', series.author));
   summary.appendChild(summaryCopy);
   summary.appendChild(element('span', 'series-count', `${items.length} books`));
   summary.appendChild(element('span', 'series-disclosure', '↓'));

@@ -1,7 +1,8 @@
 # Curating AI (etc)
 
 The public collection lives at `public/ai-culture/index.html`. Its entries are
-defined in `public/assets/collections/ai-culture.js`; book-cover files live in
+defined in `public/assets/collections/ai-culture.js` and the imported
+`public/assets/collections/ai-culture-kindle.js`; book-cover files live in
 `public/assets/ai-culture/covers/`.
 
 Every public description must remain a short quotation from the linked human
@@ -16,10 +17,12 @@ ownership, and visitor suggestions do not establish that condition by
 themselves.
 
 Complete series can be assigned a shared `series` value and listed in
-`bookSeries` in `ai-culture.js`. The site renders those books in a closed
-`details` stack, but continues to count and search each volume individually.
-Keep the books in reading order. A search match inside a closed stack opens it
-automatically.
+`bookSeries` in `ai-culture.js` or `kindleScienceFictionSeries` in
+`ai-culture-kindle.js`. Use `kind: 'Author'` when Seth has explicitly asked to
+group an author rather than a series. The site renders grouped books in a
+closed `details` stack, but continues to count and search each volume
+individually. Keep series in reading order. A search match inside a closed
+stack opens it automatically.
 
 The horizontal bookshelf is generated from the same `books` array. Every title
 must appear once. Selecting a shelf item clears an incompatible filter or
