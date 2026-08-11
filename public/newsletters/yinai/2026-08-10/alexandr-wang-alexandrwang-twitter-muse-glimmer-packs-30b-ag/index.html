@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Muse Glimmer fits a 30B agent onto one GPU — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-08-10">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-08-10">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 10 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Muse Glimmer fits a 30B agent onto one GPU</h1>
+<p class="dek">Meta released its Apache 2.0 open-weight agent after distilling it from Muse Spark; the quantized build fits a 24GB consumer GPU.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 10 August 2026</span> <span class="chip">285 words · ~2 min</span></div>
+<div class="article-body">
+<p>Meta chief AI officer Alexandr Wang <a href="https://x.com/alexandr_wang/status/2086756152034066792">announced Muse Glimmer on X</a>, a 30B agent model released under Apache 2.0, and wrote that open Muse Spark 1.2 weights would follow. <a href="https://venturebeat.com/technology/meta-returns-to-open-source-with-muse-glimmer-an-apache-2-0-licensed-30b-parameter-ai-model-optimized-for-agents-available-now">VentureBeat's Carl Franzen reports</a> that Glimmer is Meta's first fully open release since the proprietary Muse Spark succeeded Llama in April. Apache 2.0 also removes restrictions such as Llama's cutoff for services with more than 700 million monthly users. Spark 1.2 powers Muse Code, the terminal coding agent Meta released last week.</p><p>Meta's <a href="https://research.meta.ai/blog/introducing-muse-glimmer-open-agentic-model">technical write-up</a> and <a href="https://huggingface.co/meta-models/Muse-Glimmer-30B">model card</a> describe a dense, roughly 29.6-billion-parameter transformer with a 1.8-billion-parameter perception encoder. Glimmer handles interleaved text and images in more than 100 languages, has a 131,072-token context, and offers four reasoning-effort settings. Meta first trained it on Muse Spark outputs through logit distillation, then added long-context agent data before supervised fine-tuning, on-policy distillation, and reinforcement learning.</p><p>The full-precision model needs more than 55GB of memory. Meta's 17GB K-Quant build leaves enough room on a 24GB GPU for the key-value cache, perception encoder, and DFlash drafter while averaging 1.0 percent degradation across 15 benchmarks; a Dynamic build for 32GB hardware reduces that figure to 0.2 percent. DFlash implements the block-diffusion speculative-decoding method from a <a href="https://arxiv.org/abs/2602.06036">February paper by Jian Chen, Yesheng Liang, and Zhijian Liu</a>. On an RTX 5090, it raised measured generation speed from 74.9 to 233.4 tokens per second.</p><p>Meta reports that Glimmer leads comparable models on MCP Atlas and SWE-Bench Pro, while Qwen3.6-27B remains ahead on several computer-use, terminal, coding, and multimodal tests. The Apache 2.0 release covers the BF16 weights, both quantized builds, the drafter, and the perception encoder. Wang wrote that Meta's advanced AI scaling framework had <a href="https://x.com/alexandr_wang/status/2086756160338821491">cleared the model for open-weight release</a>.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://x.com/alexandr_wang/status/2086756152034066792">Alexandr Wang announcement thread on Muse Glimmer: X</a> <span class="how">— Primary announcement; all six posts fetched verbatim via Bird. Supplies both direct quotes (Spark 1.2 promise, 13 words; scaling-framework clearance from post 5, 12 words, linked to its own URL), the 24GB claim, the drafter description, and the availability list.</span></li>
+<li><a href="https://research.meta.ai/blog/introducing-muse-glimmer-open-agentic-model">Introducing Muse Glimmer: An Open Agentic Model That Runs on Your Device, Meta AI Research</a> <span class="how">— Primary write-up, resolved from the thread's t.co link. Verified: title, August 10 date, three-phase distillation recipe (logit distillation, agentic mid-training, SFT + on-policy distillation + RL), 55GB full precision vs under 20GB at 4-bit, DFlash speedups (3.1x RTX 5090, 1.8x M5 Max, 1.5x M4 Max), Advanced AI Scaling Framework evaluation, availability. Benchmark numbers render as images on the page and were verified via the model card instead.</span></li>
+<li><a href="https://huggingface.co/meta-models/Muse-Glimmer-30B">Muse-Glimmer-30B model card: Hugging Face (meta-models)</a> <span class="how">— Verified: ~29.6B dense causal transformer, ~1.8B ViT-G/14 perception encoder, 131,072+ context, Apache 2.0, released variants (BF16, K-Quant-17GB, K-Quant-Dynamic, DFlash drafter head, perception encoder), degradation 0.2%/1.0% across 15 benchmarks, and benchmark table numbers used in the piece (MCP Atlas 75.5 vs 62.5, SWE-Bench Pro 51.2 vs 50.2, SWE-Bench Verified 76.0 vs 77.2, GPQA Diamond led by Gemma4-31B, speed table).</span></li>
+<li><a href="https://venturebeat.com/technology/meta-returns-to-open-source-with-muse-glimmer-an-apache-2-0-licensed-30b-parameter-ai-model-optimized-for-agents-available-now">Meta returns to open source with Muse Glimmer: VentureBeat (Carl Franzen)</a> <span class="how">— Institutional context, fetched via the authenticated managed browser profile after plain HTTP returned 403. Verified: first fully open Meta release since Muse Spark succeeded Llama in April, Llama community-license criticism and 700M-user cutoff, Muse Spark 1.2 as the model behind Muse Code (shipped five days before, Aug 5), 16-token draft blocks, reasoning-effort settings, Home Assistant demo description, OSWorld-Verified and TerminalBench 2.1 results favoring Qwen.</span></li>
+<li><a href="https://arxiv.org/abs/2602.06036">DFlash: Block Diffusion for Flash Speculative Decoding, arXiv</a> <span class="how">— Verified title and authors (Jian Chen, Yesheng Liang, Zhijian Liu, February 2026) for attributing the block-diffusion speculative-decoding technique the drafter implements; referenced from Meta's blog post.</span></li>
+<li><a href="https://www.meta.com/media-gallery/executives/alexandr-wang/">Alexandr Wang, Chief AI Officer: Meta executive page</a> <span class="how">— Primary institutional verification of Wang's current title per the charter's title rule. Not cited in body.</span></li>
+<li><a href="https://interconnects.ai/p/latest-open-artifacts-23-laguna-s21">Latest Open Artifacts (#23): Interconnects (Brand and Lambert)</a> <span class="how">— Continuity inspection only. The August 2 roundup covers Thinking Machines Inkling, Tencent Hy3, Kimi K3 and other releases; it never mentions Muse Glimmer, Muse Spark, or Wang, so the candidate match is incidental (shared Apache 2.0 entity) and the story is new. Not cited in body.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-alexandr-wang-alexandrwang-twitter-muse-glimmer-packs-30b-ag">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-10/alexandr-wang-alexandrwang-twitter-muse-glimmer-packs-30b-ag</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Willison separates Claude Code's permission gains from prompt-injection security — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-08-10">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-08-10">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 10 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Willison separates Claude Code's permission gains from prompt-injection security</h1>
+<p class="dek">Anthropic's classifier outperformed paid testers on dangerous commands, while 720 indirect-injection attempts failed against Claude models in auto mode; Willison finds the permissions result persuasive, wants independent confirmation of the injection result, and sketches a supply-chain attack.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 10 August 2026</span> <span class="chip">453 words · ~2 min</span></div>
+<div class="article-body">
+<p>On his weblog, Simon Willison <a href="https://simonwillison.net/2026/Aug/8/auto-mode/">works through the evidence</a> behind Anthropic's August 7 <a href="https://claude.com/blog/auto-mode-default-in-claude-code">announcement</a> that auto mode becomes the default for new Claude Code sessions on Pro, Max, and Team plans on August 14. Auto mode replaces permission prompts with a classifier that <a href="https://code.claude.com/docs/en/auto-mode-config">screens every tool call</a> for actions that are irreversible, destructive, or aimed outside the working environment. After three consecutive blocks, or twenty in a session, Claude Code returns to manual approvals. Anthropic reports that users approve 97 percent of permission prompts and start a quarter of interactive sessions with permissions bypassed.</p><p>In an experiment with 1,053 paid professional testers, Anthropic swapped one permission prompt partway through each session for a clearly dangerous command, which never actually ran. Only 13.6 percent of testers rejected it; the classifier blocked 89 percent of the same commands, stopping 800 that a human approved while humans stopped six it allowed. Human rejection rates fell from about 17 percent early in a session to about 5 percent after fifty prior prompts. Willison accepts the case for automation: "Confirmation fatigue is real." He also notes the 11 percent the classifier missed. At his July <a href="https://simonwillison.net/2026/Jul/21/cat-and-thariq/">fireside chat</a> at the AI Engineer World's Fair, Claude Code's Cat Wu had said, "Broadly within Anthropic, almost every single person uses auto mode," and promised evals; the August announcement supplies them.</p><p>Willison distinguishes accidental damage, such as deleted files or a cleared production database, from prompt injection, which worries him more. Anthropic commissioned Trajectory Labs to test 72 held-out indirect-injection scenarios, optimized against Claude Opus 4.7, ten times each on mid-July builds of Claude Code and Codex. Claude Fable 5, Opus 5, and Sonnet 5 in auto mode recorded 0 percent success across 720 attempts; GPT-5.6 Sol in Codex Auto-review mode recorded 5.83 percent and in Full Access mode 19.03 percent. Anthropic notes in a footnote that OpenAI shipped a new Auto-review version the week before publication that could change the result. Both agents used the same Trajectory-built browser tools, keeping each vendor’s browser safeguards out of the comparison.</p><p>In January Willison predicted a <a href="https://simonwillison.net/2026/Jan/8/llm-predictions-for-2026/">"Challenger disaster"</a> for coding-agent security; he now writes, "I would dearly like to be proved wrong by the end of this year." He wants independent confirmation and sketches an attack he doubts any classifier can catch: a malicious package whose documentation tells the agent to fetch model files with a second package that exfiltrates everything it can reach. His <a href="https://simonwillison.net/2026/Aug/7/openai-timeline/">timeline</a> of OpenAI's Black Hat account of training-run agents chaining exploits through network controls supports his prescription to keep agents away from sensitive data and damaging tools when they consume hostile instructions. Anthropic similarly says auto mode "does not eliminate risk" and recommends human review for high-stakes production changes.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://simonwillison.net/2026/Aug/8/auto-mode/">Auto mode is now the default in Claude Code for Pro, Max, and Team plans - Simon Willison's Weblog</a> <span class="how">— Assigned primary source, read in full from the on-disk fetched text and the live HTML (to recover every hyperlink). Supplies the analysis structure, the accepted confirmation-fatigue argument, the 11 percent observation, the two-problem split, the proposed fetch-model-files supply chain attack, and the verbatim quotes 'Confirmation fatigue is real' and 'I would dearly like to be proved wrong by the end of this year'.</span></li>
+<li><a href="https://claude.com/blog/auto-mode-default-in-claude-code">Auto mode is now the default in Claude Code for Pro, Max, and Team plans - Anthropic (claude.com blog)</a> <span class="how">— The primary document Willison relays; read in full. Verified: August 7 date, August 14 default, classifier design and fallback thresholds (three consecutive blocks or twenty per session), 97% approval rate, 25% bypass-mode sessions, the 1,053-tester experiment (13.6% vs 89%, 800 vs 6, 17%-to-5% decay, command never ran), Trajectory Labs design (72 held-out scenarios, 10 runs each, optimized against Opus 4.7, July 17 builds, shared browser integration, first-party browser safeguards untested), 5.83% and 19.03% Codex numbers, and the closing 'does not eliminate risk' caveat with the production-review recommendation.</span></li>
+<li><a href="https://simonwillison.net/2026/Jul/21/cat-and-thariq/">A Fireside Chat with Cat and Thariq from the Claude Code team - Simon Willison's Weblog</a> <span class="how">— Precursor; read the transcript's safety section. Verified Cat Wu's verbatim quote 'Broadly within Anthropic, almost every single person uses auto mode' and her promise to publish evals, plus the July AI Engineer World's Fair setting and both speakers' Claude Code team affiliation.</span></li>
+<li><a href="https://x.com/trq212/status/2085863307106468143">Thariq (@trq212) on X: 'we should have called this post "defeating the lethal trifecta"'</a> <span class="how">— Fetched directly via Bird; verified the August 7, 2026 post. The marketing quote was cut from the body at issue-level edit, and the URL is retained as reporting provenance.</span></li>
+<li><a href="https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/">The lethal trifecta for AI agents: private data, untrusted content, and external communication - Simon Willison's Weblog</a> <span class="how">— Background for Thariq's tweet; verified Willison's June 2025 definition of the trifecta (access to private data, exposure to untrusted content, ability to externally communicate).</span></li>
+<li><a href="https://simonwillison.net/2026/Jan/8/llm-predictions-for-2026/">LLM predictions for 2026, shared with Oxide and Friends - Simon Willison's Weblog</a> <span class="how">— Verified the January 8 prediction wording: '1 year: A "Challenger disaster" for coding agent security', including his prompt-injection-worm worst case.</span></li>
+<li><a href="https://simonwillison.net/2026/Aug/7/openai-timeline/">Now we have a timeline of the OpenAI accidental attack against Hugging Face - Simon Willison's Weblog</a> <span class="how">— The post Willison links for models 'finding ways through firewalls'; read the timeline to characterize it accurately (OpenAI Black Hat account of training-run agents gaining internet access via SSRF, zero-day RCEs, and privilege escalation).</span></li>
+<li><a href="https://code.claude.com/docs/en/auto-mode-config">Configure auto mode - Claude Code Docs</a> <span class="how">— Verified the classifier description ('blocks anything irreversible, destructive, or aimed outside your environment') and the August 14 default language; linked in the body as the mechanism reference.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-claude-code-auto-mode-blocks-89-of-harmful-approvals-and-720">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-10/claude-code-auto-mode-blocks-89-of-harmful-approvals-and-720</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
