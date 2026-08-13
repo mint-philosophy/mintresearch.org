@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Stephen Casper’s six-layer case for closed-model safety — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-08-12">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-08-12">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 12 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Stephen Casper’s six-layer case for closed-model safety</h1>
+<p class="dek">Casper combines specifications, filtered data, adversarial training, classifiers, probes, and user monitoring to argue that a narrowly defined technical problem is solved.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 12 August 2026</span> <span class="chip">338 words · ~2 min</span></div>
+<div class="article-body">
+<p><a href="https://x.com/StephenLCasper/status/2087636239642165710">On X, Stephen Casper argues</a> that technical safety for closed-weight AI is “solved” only in a bounded sense: a well-intentioned deployer using state-of-the-art tools should cause orders of magnitude fewer major incidents than malicious operators or organizations that implement the tools badly. He defines the problem as writing a sound safety specification and robustly aligning behavior to it; state of practice can lag, and open weights and governance remain outside the claim.</p><p>Casper asks deployers to write specifications that admit utility-safety trade-offs; filter hazardous and dual-use training data; adversarially safety-fine-tune at scale; combine constitutional classifiers with trajectory monitoring; run activation probes for harmful cognition; and monitor or restrict suspicious users. Each cited study tests one component, not all six as a combined system. Kyle O’Brien, Casper, and colleagues’ <a href="https://deepignorance.ai/">Deep Ignorance</a> models filtered biorisk data without notable general-performance loss and stayed below an unfiltered baseline after 300 million tokens of adversarial fine-tuning, although staged fine-tuning plus in-context retrieval defeated every tested defense.</p><p><a href="https://deploymentsafety.openai.com/gpt-5-6/introduction">OpenAI’s GPT-5.6 system card</a> reports more than 700,000 A100e GPU hours spent finding universal jailbreaks; one attack’s success rate fell from 10% to zero after mitigations. Anthropic’s <a href="https://arxiv.org/pdf/2601.04603">Constitutional Classifiers++</a> reports 1,736 cumulative human red-team hours, one high-risk vulnerability, no jailbreak that answered all eight CBRN targets at half an undefended model’s detail, and a 0.05% production-traffic refusal rate. UK AISI’s <a href="https://arxiv.org/abs/2602.15001">Boundary Point Jailbreaking</a> demonstrates automated black-box universal jailbreaks against Constitutional Classifiers and GPT-5’s input classifier. The attacks needed hundreds of thousands of queries and produced enough flags that the authors recommend batch-level monitoring; their GPT-5 accounts were exempt from normal banning that would likely interrupt such an attack.</p><p><a href="https://x.com/usmananwar391/status/2087645033637847144">Usman Anwar replied</a> that safeguards do not exhaust technical safety. <a href="https://x.com/StephenLCasper/status/2087647420100272206">Casper restated his narrow definition</a> and said the thread argues against further machine-learning-centered work on closed-model risk. Others asked for <a href="https://x.com/taziksh/status/2087646847368409240">a failure-probability estimate</a>, <a href="https://x.com/ultima_shifl/status/2087737684055765178">whether the stack survives rising capabilities</a>, and <a href="https://x.com/Every1IsaGenius/status/2087705721303335216">whether catastrophic technical failure remains possible</a>. Casper did not answer those questions in the thread, so his argument redirects the research agenda without estimating catastrophic risk.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://x.com/StephenLCasper/status/2087636239642165710">Stephen Casper's closed-weight technical safety thread on X</a> <span class="how">— Primary assigned source, read from the on-disk full-thread capture and checked against the live conversation. Supplies the bounded claim, six elements, and shift toward open weights and governance.</span></li>
+<li><a href="https://deepignorance.ai/">Deep Ignorance: Filtering Pretraining Data Builds Tamper-Resistant Safeguards into Open-Weight LLMs</a> <span class="how">— Primary project page read for the filtered-data results, 300 million token adversarial fine-tuning test, general-performance finding, and staged-attack limitation.</span></li>
+<li><a href="https://deploymentsafety.openai.com/gpt-5-6/introduction">GPT-5.6 System Card</a> <span class="how">— Primary OpenAI deployment record read for the 700,000 A100e GPU-hour automated red-team figure and mitigation result.</span></li>
+<li><a href="https://arxiv.org/pdf/2601.04603">Constitutional Classifiers++: Efficient Production-Grade Defenses against Universal Jailbreaks</a> <span class="how">— Primary Anthropic paper read for the red-team duration, vulnerability result, CBRN target criterion, and 0.05% refusal rate.</span></li>
+<li><a href="https://arxiv.org/abs/2602.15001">Boundary Point Jailbreaking of Black-Box LLMs</a> <span class="how">— Primary UK AISI paper read for the classifier bypasses, query burden, flagging behavior, batch-monitoring recommendation, and account-enforcement limitation.</span></li>
+<li><a href="https://x.com/usmananwar391/status/2087645033637847144">Usman Anwar's definitional reply on X</a> <span class="how">— Primary reply raising the distinction between safeguards and technical safety.</span></li>
+<li><a href="https://x.com/StephenLCasper/status/2087647420100272206">Stephen Casper's reply to Usman Anwar on X</a> <span class="how">— Primary reply clarifying the thread's narrow definition and research-agenda implication.</span></li>
+<li><a href="https://x.com/taziksh/status/2087646847368409240">Tazik's reliability question on X</a> <span class="how">— Primary reply asking Casper to quantify residual safeguard failure.</span></li>
+<li><a href="https://x.com/ultima_shifl/status/2087737684055765178">singularvessel's capability-scaling question on X</a> <span class="how">— Primary reply asking whether the proposed safeguards remain adequate as capabilities rise.</span></li>
+<li><a href="https://x.com/Every1IsaGenius/status/2087705721303335216">Tom Goldie's catastrophic-risk reply on X</a> <span class="how">— Primary reply observing that Casper's definition does not rule out catastrophic technical failure.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-six-layer-closed-model-safety-stack-shifts-bottleneck-from-s">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-12/six-layer-closed-model-safety-stack-shifts-bottleneck-from-s</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

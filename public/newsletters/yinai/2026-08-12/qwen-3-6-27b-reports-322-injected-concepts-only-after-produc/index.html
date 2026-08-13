@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Qwen reports injected concepts only after stating them — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-08-12">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-08-12">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 12 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Qwen reports injected concepts only after stating them</h1>
+<p class="dek">Reversing two response fields left answer steering unchanged but cut exact intervention reports from 322 to zero, consistent with the model inferring the injection from its own output.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 12 August 2026</span> <span class="chip">409 words · ~2 min</span></div>
+<div class="article-body">
+<p>In the LessWrong research post <a href="https://www.lesswrong.com/posts/uvgw5FTS2RXgFFFii/when-and-when-not-llms-can-verbalize-awareness-of-j-space"><em>When (and when not) LLMs can verbalize awareness of J-Space concept injections - Initial results</em></a>, Ethan Garcia asks whether an LLM can identify a concept inserted into its residual stream before its own output supplies a clue. Garcia builds on Wes Gurnee and colleagues’ <a href="https://transformer-circuits.pub/2026/workspace/index.html"><em>Verbalizable Representations Form a Global Workspace in Language Models</em></a>, which defines the Jacobian Lens as an averaged linear map from intermediate activations to their effects on present and future token probabilities. The earlier study found that Claude could name injected J-Lens concepts after researchers prefilled an affirmative detection response. Garcia removed that prefill and tested whether reportability survived a stricter response protocol.</p><p>Garcia applied single-token J-Lens vectors to Qwen3.6-27B while it answered 20 one-word factual questions. Targets were either plausible wrong answers or unrelated concepts; interventions covered layers 24-57 as a full band or one of its two halves, across 13 positive strengths. One arm placed the task answer before the detection fields, while the other reversed them. The intervention ran only over factual-question tokens during input prefill and stopped before autoregressive generation. Each field order comprised 1,560 positive-strength trials. Decoding was deterministic, with one completion per condition. Full-band runs included zero-strength controls, and the answer-first arm also had random-direction controls; the half-band arms had no matched controls.</p><p>Field order left answer steering almost unchanged: injected targets became answers in 450 of 1,560 answer-first trials and 454 of 1,560 report-first trials. Exact target reports appeared 322 times after the answer and zero times before it. All 322 followed a steered wrong answer; none accompanied a correct answer. Output logits argue against a near-threshold explanation. Median target ranks in the report field remained in the tens of thousands when reporting came first, but improved by several orders of magnitude after the model had generated the target. Layer location also mattered: layers 24-40 produced 246 and 257 steered answers across the two orders, compared with 43 and 35 for layers 41-57.</p><p>Garcia interprets the order effect as consistent with autoregressive self-conditioning: once the target appears in generated text, later tokens can use it as evidence of an abnormality. The experiment does not establish that mechanism as primary or resolve whether J-Space corresponds to conscious access. Generalization is limited by one model, 20 questions, deterministic single completions, an estimated workspace band, and a heuristic twofold strength multiplier for half-band interventions. The missing half-band controls also weaken causal comparison across layer bands.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.lesswrong.com/posts/uvgw5FTS2RXgFFFii/when-and-when-not-llms-can-verbalize-awareness-of-j-space">When (and when not) LLMs can verbalize awareness of J-Space concept injections - Initial results</a> <span class="how">— Primary source. Supplies the question, protocol, intervention design, controls, trial counts, results, interpretation, and limitations.</span></li>
+<li><a href="https://transformer-circuits.pub/2026/workspace/index.html">Verbalizable Representations Form a Global Workspace in Language Models</a> <span class="how">— Linked method paper by Gurnee et al. Supplies the Jacobian Lens definition and the original injected-thought reporting protocol that Garcia modifies.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-qwen-3-6-27b-reports-322-injected-concepts-only-after-produc">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-12/qwen-3-6-27b-reports-322-injected-concepts-only-after-produc</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
