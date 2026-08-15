@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Constitutional reflections shape model values from the first pretraining token — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-08-14">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-08-14">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 14 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Constitutional reflections shape model values from the first pretraining token</h1>
+<p class="dek">Julian Minder and colleagues added constitution-derived reflections to a tenth of pretraining documents. Their 3B models ranked truthfulness and justice highest, while cooldown-only exposure left value priorities unchanged.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 14 August 2026</span> <span class="chip">460 words · ~2 min</span></div>
+<div class="article-body">
+<p>In the arXiv paper <a href="https://arxiv.org/abs/2608.13482">“Synthetic Persona Pretraining: Alignment from Token Zero”</a>, a team co-led by Julian Minder, Viktor Moskvoretskii, and Raghav Singhal asks whether an assistant’s values can be installed from the first pretraining token. The authors argue that alignment applied only during post-training may remain “a thin overlay” on corpus-derived priors. Their intervention adds short, first-person moral reflections derived from a constitution modeled closely on Claude’s to every document flagged as harmful and an equal benign sample. Together, those documents make up 10% of a 500-billion-token Dolma 3 subsample. The generator places reflections averaging 53 tokens behind an assistant marker, adding about 0.55% to the training mix. Post-training on 300,000 conversations rewritten in the same voice then binds the assistant to that persona. The intervention changes the corpus while keeping model architecture, token budget, and post-training data matched across conditions. That control lets the authors attribute differences to when the synthetic persona enters training.</p><p>Minder and colleagues compare data-matched 3B models trained with reflections throughout pretraining, only during cooldown, during both stages, or never. Models exposed from the start followed the constitution best, selected risky options less often on out-of-distribution AIRiskDilemmas, and ranked Truthfulness and Justice above Learning and Creativity. Cooldown-only exposure matched their jailbreak robustness across eight benchmarks but left value priorities unchanged. The token-zero model’s value rankings alone overlapped flagship assistants such as GPT-4.1 above chance, while general capabilities remained intact. Scale strengthened the difference: its advantage on dilemma misalignment grew from about 4 points at 1.7B parameters to 19 at 3B, and its gain on the hard constitution split doubled to 14 points.</p><p>A holdout test traced those values from pretraining into assistant behavior. After the researchers removed every post-training example citing a given constitutional article, the token-zero model still cited held-out articles at 21% of its usual rate; the vanilla model never did. Persona binding remained fragile. Generic dialogue post-training erased most dilemma gains, showing that pretraining alone did not determine the deployed assistant. Removing the refusal direction stripped jailbreak robustness from every variant. Continued training also eroded alignment unless safety data were replayed, although token-zero models retained the strongest value alignment throughout the experiment.</p><p><a href="https://arxiv.org/abs/2504.16980">SafeLM, by Pratyush Maini and colleagues</a>, supplied the safety classifier and an intervention based on filtering, rephrasing, and tagging harmful data. SafeLM refused more benign prompts in a 1.7B comparison but achieved lower attack success. The authors interpret their results through Anthropic’s <a href="https://alignment.anthropic.com/2026/psm/">persona selection model</a>, in which post-training selects an assistant from personas learned earlier. The full paper scales up the group’s <a href="https://www.lesswrong.com/posts/3xQQK9i8mhJDE2uMg/synthetic-persona-pretraining-alignment-from-token-zero">May preliminary results</a> and releases code, data, and checkpoints. Frontier-scale behavior and survival under reinforcement learning remain untested. <a href="https://x.com/jkminder/status/2088252982643110172">Minder wrote on X</a>, “I always believed early training matters, but didn’t expect effects this strong.”</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2608.13482">Synthetic Persona Pretraining: Alignment from Token Zero — Minder, Moskvoretskii, Singhal et al., arXiv</a> <span class="how">— Primary source. Full HTML read with math values re-extracted from LaTeX alttext (plain extraction drops numerals). Supplies method (10% of documents, 53-token reflections, 0.55% token overhead, 300k SP-SFT conversations, SafeLM classifier, Qwen3.5-35B-A3B generator, constitution written with AI agents and closely inspired by Claude's Constitution), the five data-matched variants, all results and ablation numbers (4-to-19 point scaling gain, hard-split doubling to 14, 21% held-out citation retention, over-refusal 13.6-17.2% vs SafeLM 33.2% at the 1.7B ablation scale), fragility findings, limitations, and the 'a thin overlay' quote (abstract, verbatim).</span></li>
+<li><a href="https://x.com/jkminder/status/2088252980457783678">Julian Minder announcement thread — X</a> <span class="how">— Canonical assigned source; full thread fetched via Bird. Supplies the announcement, links to paper and project page, and the verbatim 12-word quote 'I always believed early training matters, but didn't expect effects this strong.' from status 2088252982643110172 (linked in body). A reply exchange confirms RL interaction is untested.</span></li>
+<li><a href="https://modelraising.ai/spp/">Synthetic Persona Pretraining project page — modelraising.ai</a> <span class="how">— Verified code (github.com/epfl-dlab/spp) and model (huggingface.co/dlab-spp) releases, equal-contribution co-leads, EPFL-centered attribution, and headline results including the 4-to-19 point scaling figure.</span></li>
+<li><a href="https://www.lesswrong.com/posts/3xQQK9i8mhJDE2uMg/synthetic-persona-pretraining-alignment-from-token-zero">Synthetic Persona Pretraining: Alignment from Token Zero — LessWrong (May 20, 2026)</a> <span class="how">— Precursor: preliminary 1.7B/100B results posted May 20 with 'scaling runs to 3B parameters and 500B tokens in progress'; the paper delivers those runs. Linked in body as background.</span></li>
+<li><a href="https://alignment.anthropic.com/2026/psm/">The Persona Selection Model — Marks, Lindsey, Olah, Anthropic Alignment Science Blog</a> <span class="how">— Verified: February 23, 2026 post by Sam Marks, Jack Lindsey, and Christopher Olah; PSM holds that pretraining teaches many personas and post-training refines one into the Assistant. The SPP paper cites it as the framework its results empirically support.</span></li>
+<li><a href="https://arxiv.org/abs/2504.16980">Safety Pretraining: Toward the Next Generation of Safe AI — Maini et al., arXiv</a> <span class="how">— Verified from its abstract: authors and the filter/rephrase/native-refusal/tag interventions summarized in the body as 'filtered, rephrased, and tagged harmful data'. The head-to-head numbers (lower ASR, 33.2% over-refusal) come from the SPP paper's ablation section, which also notes SafeLM was pretrained on 10x the ablation-run tokens.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-julian-minder-jkminder-twitter-constitution-derived-reflecti">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-14/julian-minder-jkminder-twitter-constitution-derived-reflecti</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
