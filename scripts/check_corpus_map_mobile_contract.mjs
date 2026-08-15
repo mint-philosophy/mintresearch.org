@@ -27,7 +27,7 @@ for (const marker of [
   "setFilterPanelOpen(false)",
   "if (usesMobileLayout) setMode('areas')",
   "window.self !== window.top && usesMobileLayout",
-  "Search papers",
+  "Search corpus",
   "#paper-panel",
   "paper-panel-close",
   "Click-to-show info panel",

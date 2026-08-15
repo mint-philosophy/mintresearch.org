@@ -46,7 +46,9 @@ if (fs.existsSync(snapshotPath)) {
     ["generatedAt", snapshot.generatedAt],
     ["fleet.services", snapshot.fleet?.services?.length],
     ["models.daemonDefault", snapshot.models?.daemonDefault],
-    ["corpus.paperCount", snapshot.corpus?.paperCount],
+    ["corpus.documentCount", snapshot.corpus?.documentCount],
+    ["corpus.pdfCount", snapshot.corpus?.pdfCount],
+    ["corpus.nativeSourceCount", snapshot.corpus?.nativeSourceCount],
     ["newsletter.enabledSubscribers", snapshot.newsletter?.enabledSubscribers],
     ["github.repositoryCount", snapshot.github?.repositoryCount],
   ];
