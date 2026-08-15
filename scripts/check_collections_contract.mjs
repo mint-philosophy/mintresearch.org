@@ -102,13 +102,17 @@ assert.equal(notes['klara-and-the-sun'], 'Every bit as good as you’d expect, a
 assert.equal(notes.speak, 'Very few sci-fi writers anticipated language being quite so central to AI progress; this book does so nicely, and it is pretty well written too. Very focused on the companions side of things; I reckon it’s a bit pessimistic about the human appetite for non-digital connection. But good.', 'Seth’s Speak note must retain its approved wording');
 assert.equal(notes['red-mars'], 'KSR was just not into AI at this time, so it figures in a very minimal, “universal interface” kind of way. Everything else about the trilogy is wicked, though, especially the whole constitutional convention dimension. Also, the later reflections on the cognitive and social implications of much-extended lives.', 'Seth’s Mars trilogy note must retain its approved wording');
 
-for (const [page, next] of [
-  ['public/governing-with-agents/index.html', 'https://mintresearch.org/governing-with-agents/?submitted=1#suggest'],
-  ['public/ai-culture/index.html', 'https://mintresearch.org/ai-culture/?submitted=1#suggest']
+for (const [page, pageUrl, next, subject] of [
+  ['public/governing-with-agents/index.html', 'https://mintresearch.org/governing-with-agents/', 'https://mintresearch.org/governing-with-agents/?submitted=1#suggest', 'Suggestion for Governing with Agents'],
+  ['public/ai-culture/index.html', 'https://mintresearch.org/ai-culture/', 'https://mintresearch.org/ai-culture/?submitted=1#suggest', 'Suggestion for AI (etc)']
 ]) {
   const html = fs.readFileSync(page, 'utf8');
   assert.ok(html.includes(`action="${formEndpoint}"`), `${page} must use the established form endpoint`);
+  assert.ok(html.includes(`name="_subject" value="${subject}"`), `${page} must retain its mailbox subject`);
+  assert.ok(html.includes('name="_captcha" value="false"'), `${page} must submit directly without an untested CAPTCHA handoff`);
   assert.ok(html.includes(`name="_next" value="${next}"`), `${page} must return to its own receipt state`);
+  assert.ok(html.includes(`name="_url" value="${pageUrl}"`), `${page} must identify its exact public form URL`);
+  assert.ok(html.includes('name="_honey"'), `${page} must retain its spam honeypot`);
   assert.ok(html.includes('MINT reviews submissions before publication'), `${page} must state the moderation boundary`);
   assert.ok(html.includes('/assets/collections/collections.css'), `${page} must load the shared collection styles`);
 }
