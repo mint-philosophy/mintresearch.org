@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>A fine-tuned Qwen judge halves the conceptual-reasoning gap to Opus 4.8 — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-08-15">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-08-15">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 15 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">A fine-tuned Qwen judge halves the conceptual-reasoning gap to Opus 4.8</h1>
+<p class="dek">Kevin Zhang and Caspar Oesterheld score philosophical critiques in one forward pass over digit probabilities; fine-tuned on expert ratings from the LMCA dataset, their Qwen 3.6-27B judge stops endorsing model-written junk and points toward reward models for domains without verifiable answers.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 15 August 2026</span> <span class="chip">478 words · ~2 min</span></div>
+<div class="article-body">
+<p>In <a href="https://www.lesswrong.com/posts/iHYZF2jweXb2E7X3Y/training-a-conceptual-reasoning-judge">"Training a Conceptual Reasoning Judge,"</a> posted to LessWrong August 14, Kevin Zhang and Caspar Oesterheld report that a rank-16 LoRA adapter and a few hundred expert-rated critiques turn Qwen 3.6-27B into a much better judge of arguments in philosophy, decision theory, and AI safety strategy. They read the result as evidence that "models seem pretty under-elicited on conceptual reasoning" and aim the method at alignment research, where questions require "weighing complex arguments without verifiable ground truth".</p><p>The judge learns from LMCA, the dataset introduced in <a href="https://arxiv.org/abs/2607.27499">"A dataset of rated conceptual arguments"</a> by Emery Cooper, Caspar Oesterheld, and colleagues (arXiv, July): expert-rated critiques of positions on AI safety, decision theory, ethics, and politics, scored for centrality, strength, correctness, and clarity. Two days earlier, Redwood Research and Anthropic researchers had made LMCA the anchor, at 60 percent weight, of the new <a href="https://alignment.anthropic.com/2026/conceptual-reasoning-index/">Conceptual Reasoning Index</a>, where Claude Opus 5 leads at 73.6 against an estimated ceiling near 91.</p><p>LMCA normally elicits a model's rating by sampling chains of thought and averaging, an expensive, noisy procedure that resists supervised training, since fine-tuning on reasoning would demand gold human traces the dataset mostly lacks. Zhang and Oesterheld instead prompt for a single digit from 0 to 9 and take the expectation of its probabilities over the ten digit tokens, a deterministic score from one forward pass. The shortcut costs base Qwen little (0.1082 weighted pairwise ranking error versus 0.0997 with chain of thought), while Opus 4.8 gives up more (0.0651 versus 0.0501). The loss pushes the digit distribution toward a Gaussian centered on the expert rating, a soft target that forgives near misses and blocks degenerate answers such as splitting probability between 0 and 1 to fake a 0.5.</p><p>The trained judge improved on all five held-out splits, closed roughly half the gap between base Qwen and Opus 4.8, and often matched Sonnet 4.5. The gains concentrate on junk critiques: on one test split, base Qwen gave scores of 0.9 or higher to 29 percent of model-written critiques the expert scored at 0.1 or below, versus 10 percent of equally weak human-written ones; the trained judge rated none that high. The authors offer two explanations: the base model may read fluency and confidence as quality, and LMCA's model-written critiques had already passed a judge-model filter, weakly selecting for judge-fooling ones. The improvement survives paraphrase, and ratings barely move under rewriting, ruling out memorized wording. Mandarin transfer looked weaker until a twelve-epoch run showed the main experiments were undertrained, cutting one split's English error from 0.1106 to 0.0532 and Mandarin from 0.0980 to 0.0547.</p><p>The authors concede that rewrite robustness cannot prove the judge attends to conceptual content; superficial cues survive paraphrase too. Next they want to optimize a generator against the judge, a step toward reward models for domains without verifiable rewards. <a href="https://www.lesswrong.com/posts/iHYZF2jweXb2E7X3Y/training-a-conceptual-reasoning-judge">"We expect reward hacking to be a major challenge."</a></p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.lesswrong.com/posts/iHYZF2jweXb2E7X3Y/training-a-conceptual-reasoning-judge">Training a Conceptual Reasoning Judge — Kevin Zhang and Caspar Oesterheld, LessWrong</a> <span class="how">— Primary source; full text read from the on-disk fetch and verified against the live post (authors, August 14 date, links, 17 karma, one comment). Supplies all method details, tables, and the three verbatim quotes.</span></li>
+<li><a href="https://arxiv.org/abs/2607.27499">A dataset of rated conceptual arguments — Cooper, Oesterheld, Nguyen, Kastner, Perez, arXiv:2607.27499</a> <span class="how">— Verified: LMCA paper title, author list, July 29 submission, cs.AI; topics (AI safety, decision theory, ethics, politics) and rating dimensions (centrality, strength, correctness, clarity) from the abstract. Its counts (951 critiques, 442 position texts, 1,458 ratings, six raters) differ from the CRI post's (560 position texts, 1,461 arguments, 2,140 ratings), so no counts appear in the body.</span></li>
+<li><a href="https://alignment.anthropic.com/2026/conceptual-reasoning-index/">Introducing the Conceptual Reasoning Index — Anthropic Alignment Science blog</a> <span class="how">— Verified verbatim: byline affiliations (Cooper, Oesterheld, Nguyen, Kastner at Redwood Research; Benton, Perez at Anthropic), August 12 publication, LMCA at 60 percent weight, Opus 5 top score 73.6 (95% CI ±2.1), ceiling estimate around 91.</span></li>
+<li><a href="https://www.greaterwrong.com/posts/tQHeEzKqK3awL2RxR/introducing-the-conceptual-reasoning-index">Introducing the Conceptual Reasoning Index — LessWrong (GreaterWrong mirror)</a> <span class="how">— Corroboration: this is where the judge post's own 'LMCA dataset' link points; confirms publication date, CRI weights, Opus 5 score, and 'done in collaboration with Anthropic'. Not linked in the body (the Anthropic-hosted version is).</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-fine-tuned-qwen-3-6-27b-judge-halves-conceptual-reasoning-ga">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-15/fine-tuned-qwen-3-6-27b-judge-halves-conceptual-reasoning-ga</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
