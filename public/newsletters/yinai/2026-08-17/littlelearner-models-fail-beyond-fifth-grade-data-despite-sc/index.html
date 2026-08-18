@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>LittleLearner stays inside its elementary curriculum — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-08-17">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-08-17">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 17 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">LittleLearner stays inside its elementary curriculum</h1>
+<p class="dek">A 5B model trained on an 88-billion-token elementary curriculum improves within that curriculum as scale, post-training, and examples change, but its tested capability ceiling remains tied to pretraining exposure.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 17 August 2026</span> <span class="chip">413 words · ~2 min</span></div>
+<div class="article-body">
+<p>In the August 13 arXiv preprint <a href="https://arxiv.org/abs/2608.13545">"LittleLearner: Language Models Under Pedagogically Controlled Knowledge Exposure"</a>, Fanfei Li and colleagues at the Max Planck Institute for Intelligent Systems and the ELLIS Institute in T&uuml;bingen study knowledge acquisition with a controlled pretraining boundary. Their LittleCurriculum filters FineWeb-Edu into 88 billion tokens of U.S. elementary school text. Five stages combine word age-of-acquisition scores with classifiers aligned to Common Core State Standards. Labeling the whole corpus with Gemini Flash would cost an estimated $46 million, so FastText and ModernBERT classifiers trained on a judged subset perform most of the filtering. On held-out graded texts, the filter retains nearly no documents above fifth grade and keeps 35 to 42 percent of elementary material. The team pretrained a 5-billion-parameter Qwen3-architecture model for 100 hours on eight B200 GPUs and trained a matched control on unfiltered FineWeb-Edu.</p><p>On Jeopardy science questions labeled by Next Generation Science Standards level, LittleLearner shows <a href="https://arxiv.org/html/2608.13545v1">"a sudden drop in factual knowledge beyond its exposure horizon"</a>; the control remains steady. Scaling from 0.6 to 1.3 and 5 billion parameters brings substantial gains within the curriculum. The smallest LittleLearner even beats its unfiltered counterpart on elementary math, while overlap with elementary arithmetic yields partial gains in grades 6 and 7. Grade 8 stays at floor across model sizes. With 1,024 sampled attempts per problem, LittleLearner still <a href="https://arxiv.org/html/2608.13545v1">"solves fewer than half as many questions as Unfiltered"</a>. Supervised fine-tuning followed by GRPO reinforcement learning improves elementary performance as the advanced gap grows; within the tested budgets, reinforcement training on out-of-scope data does not recover out-of-scope capability. Hand-authored chain-of-thought examples steer response style and modestly improve elementary results, with no measured gain beyond the boundary.</p><p>The authors call the controlled ceiling <a href="https://arxiv.org/html/2608.13545v1">"a starting point"</a> for studying whether reward signals, verifiers, self-play, or search can push a bounded model toward higher-grade mathematics. Unlike BabyLM's quantity constraint or concurrent training on pre-1931 English, LittleCurriculum imposes a conceptual boundary at LLM scale. The <a href="https://littlelearner-ll.github.io/">released corpus and model checkpoints</a> provide a sandbox for experiments on genuine discovery. The paper warns against treating LittleLearner as a model of a human child; for example, its grasp of multi-digit division exceeds its performance on a single-digit prerequisite. In the Bluesky thread that circulated the paper, computational microbiologist Alex Crits-Christoph wrote that failure to cross such boundaries within a few years <a href="https://bsky.app/profile/acritschristoph.bsky.social/post/3mt7erozgfk2h">"does not bode very well for superintelligence goals of the very large companies"</a>, while allowing that present models may still combine existing knowledge impressively.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2608.13545">LittleLearner: Language Models Under Pedagogically Controlled Knowledge Exposure, Fanfei Li et al.</a> <span class="how">— Primary source for the title, authors, submission date, release statement, and lead-author affiliations.</span></li>
+<li><a href="https://arxiv.org/html/2608.13545v1">LittleLearner full text, arXiv HTML v1</a> <span class="how">— Supplies the corpus method, cost estimate, retention rates, model training, benchmark design, scaling, GRPO and in-context-learning findings, comparisons, caveat, and quotations.</span></li>
+<li><a href="https://littlelearner-ll.github.io/">LittleLearner project page</a> <span class="how">— Verifies the public release of LittleCurriculum, three model sizes, and matched unfiltered controls.</span></li>
+<li><a href="https://bsky.app/profile/acritschristoph.bsky.social/post/3mt7erozgfk2h">Alex Crits-Christoph on Bluesky</a> <span class="how">— Assigned relay source for the August 16 circulation context, superintelligence quotation, and qualification about combining existing knowledge.</span></li>
+<li><a href="https://alexcrits-christoph.com/">Alex Crits-Christoph personal site</a> <span class="how">— Verifies his description as a computational microbiologist.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-littlelearner-models-fail-beyond-fifth-grade-data-despite-sc">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-17/littlelearner-models-fail-beyond-fifth-grade-data-despite-sc</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

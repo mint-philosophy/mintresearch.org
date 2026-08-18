@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Inherent's Faraday scores above frontier agents on paper-replication tasks — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-08-17">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-08-17">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 17 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Inherent's Faraday scores above frontier agents on paper-replication tasks</h1>
+<p class="dek">Using reinforcement learning against auto-generated rubrics, the 27B Qwen-based agent reconstructs deleted figures from 100 papers and scores above Claude Opus 4.8 and GPT-5.5 on held-out tasks, with GPT-5.5 serving as its coding tool.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 17 August 2026</span> <span class="chip">490 words · ~2 min</span></div>
+<div class="article-body">
+<p>In <a href="https://arxiv.org/abs/2608.13331">“Training AI Scientists to Replicate Research”</a>, posted to arXiv on August 13, Inherent reports that its rubric judge scores a post-trained 27-billion-parameter agent, Faraday, above Claude Opus 4.8 and GPT-5.5 at re-running experiments from published papers. The London lab, founded by the DeepMind alumni Tantum Collins, Edward Hughes and Louis Kirsch, <a href="https://tech.eu/2026/05/29/london-based-ai-lab-inherent-emerges-from-stealth-with-50m-raise/">left stealth in May with a $50 million seed round</a> co-led by Index Ventures and Radical Ventures. Damon Falck and Samer Sabri are joint first authors, and the company <a href="https://x.com/inherent_labs/status/2088290794092298655">introduced Faraday on X</a> as adding “a layer of scientific intuition” to coding agents.</p><p>The paper’s task space, Replica, converts 100 machine learning and AI-for-science papers from 1990 to 2026 into 310 replication tasks. Three Gemini 2.5 Pro vision stages find each results figure and irreversibly delete it from the PDF; given the redacted paper, the caption, one seventh of an H200 GPU and 60 minutes, the agent must rebuild the missing plot by actually running the experiment, scaling down faithfully when the original demanded more compute.</p><p>Because replication has no pass-fail check, the authors manufacture one. Claude Opus 4.7 writes a grading rubric for each task without seeing the original plot, and a judge built on Codex scores every attempt on visual match, claim support, faithful implementation, budget use and scientific integrity; two samples of the judge agree at Kendall tau 0.66, two human experts at 0.30. Faraday itself is Qwen3.6-27B, post-trained with a turn-level-credit variant of GRPO to drive the Codex command-line agent as a tool: the small model plans and interprets, the frontier model writes code.</p><p>By that judge’s scoring, Faraday beats both Claude Opus 4.8 and GPT-5.5, each run in its own harness at extra-high thinking effort, on 73% of in-distribution tasks and 60% of held-out AI-for-science tasks; on the test split it averages 6% above Claude and 8% above Codex while using GPT-5.5 as its own coding tool. An optimized instruction set for Codex only marginally narrowed the gap, and every agent scores worse the newer the paper. Humans preferred Faraday’s work in 29 of 41 rollouts selected where the judge saw a strong Faraday advantage; on eight full-scale replications with up to eight hours and eight B300 GPUs, Faraday led Claude on five. Authors of four source papers reviewed its replications: “part b and c look very good” in one, “unnecessarily convoluted code” in another. Inherent also notes Faraday failed to replicate several results it is confident were obtained rigorously.</p><p>The discussion frames replication as training for discovery: the skills that let Faraday fill in unstated details “may be the very same skills” needed to design new experiments, and the conclusion claims “an intelligence layer with a modicum of research taste”. In <a href="https://importai.substack.com/p/import-ai-469-science-ai-rsi-simulator">Import AI</a>, Jack Clark describes the design, a small open-weight supervisor steering a frontier model, as in some ways “a capabilities-centric version of the scalable oversight problem”, and links progress on such systems to the odds of recursive self-improvement.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2608.13331">Training AI Scientists to Replicate Research, Falck, Sabri, et al., Inherent</a> <span class="how">— Primary source for Replica's construction, compute limits, rubric judge, Faraday's training, task results, human checks, full-scale trials, author feedback, and discussion.</span></li>
+<li><a href="https://www.alphaxiv.org/abs/2608.13331v1">Training AI Scientists to Replicate Research on alphaXiv</a> <span class="how">— Assigned canonical source; supplies the lead, abstract, and embedded company announcement. Its generated overview was not used for factual claims.</span></li>
+<li><a href="https://x.com/inherent_labs/status/2088290794092298655">Inherent introduces Faraday on X</a> <span class="how">— Company announcement for the description of Faraday as adding scientific intuition to coding agents.</span></li>
+<li><a href="https://tech.eu/2026/05/29/london-based-ai-lab-inherent-emerges-from-stealth-with-50m-raise/">London-based AI lab Inherent emerges from stealth with $50m raise, Tech.eu</a> <span class="how">— Verifies the London base, May emergence from stealth, funding, investors, and founders' DeepMind background.</span></li>
+<li><a href="https://inherentlabs.ai/">Inherent Labs company site</a> <span class="how">— Confirms the named team and company mission.</span></li>
+<li><a href="https://importai.substack.com/p/import-ai-469-science-ai-rsi-simulator">Import AI 469: Science AI; RSI simulator; and Zuck's technological pessimism, Jack Clark</a> <span class="how">— Supplies Clark's scalable-oversight comparison and recursive-self-improvement framing.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-faraday-27b-surpasses-claude-opus-4-8-and-gpt-5-5-on-310-rep">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-17/faraday-27b-surpasses-claude-opus-4-8-and-gpt-5-5-on-310-rep</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
