@@ -98,6 +98,7 @@ export const siteNav: PageNav[] = [
       { href: "/lab-overview/", label: "Can Machines Reason Morally?" },
       { href: "/nc/", label: "Evaluating LLM Normative Competence" },
       { href: "/FDC", label: "The AGI-Ready Policy Student" },
+      { href: "/navigating/", label: "Navigating the AGI Reckoning" },
       { href: "https://coherence.mintresearch.org/", label: "Incoherent Values?" },
     ],
   },

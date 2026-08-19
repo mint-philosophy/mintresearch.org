@@ -97,6 +97,7 @@ an accessible button. Its public leaves are currently:
 - `Can Machines Reason Morally?` — `/lab-overview/`
 - `Evaluating LLM Normative Competence` — `/nc/`
 - `The AGI-Ready Policy Student` — `/FDC`
+- `Navigating the AGI Reckoning` — `/navigating/`
 - `Incoherent Values?` — `https://coherence.mintresearch.org/`
 
 Only add maintained, public, indexable project microsites. Do not expose
@@ -135,9 +136,8 @@ public/FDC.html                -> public/FDC-deck.html
 public/navigating/index.html   -> public/navigating/deck.html
 ```
 
-`/navigating/` is a separately shared, unlisted presentation. It uses the same
-shell and responsive fitting contract, but remains `noindex` and is deliberately
-absent from the primary navigation and sitemap.
+`/navigating/` uses the same shell and responsive fitting contract and is listed
+under `Microsites` in the primary navigation and sitemap.
 
 Keep deck code isolated inside its iframe so deck-specific keyboard controls,
 scaling, styles, and animations cannot conflict with the site shell. The deck

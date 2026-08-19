@@ -1,7 +1,7 @@
 (function (root, document) {
   'use strict';
 
-  var VERSION = '1.1.0';
+  var VERSION = '1.2.0';
   var scriptUrl = document.currentScript && document.currentScript.src
     ? document.currentScript.src
     : 'https://mintresearch.org/assets/mint-site-nav.v1.js';
@@ -98,6 +98,7 @@
         { id: 'moral-reasoning', type: 'page', href: '/lab-overview/', label: 'Can Machines Reason Morally?' },
         { id: 'normative-competence', type: 'page', href: '/nc/', label: 'Evaluating LLM Normative Competence' },
         { id: 'agi-policy-student', type: 'page', href: '/FDC', label: 'The AGI-Ready Policy Student' },
+        { id: 'navigating-agi-reckoning', type: 'page', href: '/navigating/', label: 'Navigating the AGI Reckoning' },
         { id: 'incoherent-values', type: 'page', href: 'https://coherence.mintresearch.org/', label: 'Incoherent Values?' }
       ]
     },

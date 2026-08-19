@@ -54,7 +54,7 @@ assert.ok(deck.includes("event.data === 'mint-presentation-resize'"), 'shell res
 assert.ok(deck.includes('window.refitPresentationSlides = fitSlides'), 'deck must expose a generic refit hook');
 assert.ok(deck.includes('window.refitFdcSlides = fitSlides'), 'deck must retain the shared-shell compatibility hook');
 
-assert.ok(wrapper.includes('<meta name="robots" content="noindex, nofollow">'), 'unlisted wrapper must remain noindex');
+assert.ok(!/<meta name="robots" content="[^"]*noindex/.test(wrapper), 'listed wrapper must remain indexable');
 assert.ok(wrapper.includes('data-presentation-path="/navigating/"'), 'wrapper must publish its canonical path to the shell');
 assert.ok(wrapper.includes('src="deck.html?v=20260819.2"'), 'wrapper must bypass stale deck caches');
 assert.ok(shellScript.includes('frame.contentWindow.refitFdcSlides?.()'), 'shared shell must call the compatibility refit hook');
