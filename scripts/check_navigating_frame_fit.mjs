@@ -11,6 +11,13 @@ assert.ok(deck.includes('Navigating the AGI Reckoning'), 'deck must use the edit
 assert.ok(deck.includes('A different kind of applied philosophy.'), 'deck must include the edited closing claim');
 assert.ok(deck.includes('Into this comes <span class="highlight"><strong>math that wakes sand up.</strong></span>'), 'slide two must keep the highlighted phrase inline with its sentence');
 assert.ok(!deck.includes('<p class="fi d3"><span class="highlight"><strong>math that wakes sand up.</strong></span></p>'), 'slide two must not force the highlighted phrase into a standalone paragraph');
+assert.ok(deck.includes('<h3>Mechanistic/Cognitive</h3>'), 'slide three must use the edited mechanistic/cognitive heading');
+assert.ok(deck.includes('<h3>Capabilities</h3>'), 'slide three must use the edited capabilities heading');
+assert.ok(deck.includes('<h3>Outcomes</h3>'), 'slide three must use the edited outcomes heading');
+assert.ok(deck.includes('overall impact on society, e.g. Transformative AI'), 'slide three must include the edited outcomes example');
+assert.ok(!deck.includes('<h3>Internalist AGI</h3>'), 'slide three must not retain the superseded internalist heading');
+assert.ok(!deck.includes('<h3>Behavioural AGI</h3>'), 'slide three must not retain the superseded behavioural heading');
+assert.ok(!deck.includes('<h3>Transformative AI</h3>'), 'slide three must not retain the superseded transformative heading');
 assert.ok(deck.includes('--teal: #2DD4BF'), 'deck must use the approved teal accent');
 assert.ok(!deck.includes('--yellow'), 'navigating deck must not retain the old yellow token');
 assert.ok(!deck.includes('The AGI-Ready Policy Student'), 'navigating deck must not retain the old title');
@@ -44,7 +51,7 @@ assert.ok(deck.includes('window.refitFdcSlides = fitSlides'), 'deck must retain 
 
 assert.ok(wrapper.includes('<meta name="robots" content="noindex, nofollow">'), 'unlisted wrapper must remain noindex');
 assert.ok(wrapper.includes('data-presentation-path="/navigating/"'), 'wrapper must publish its canonical path to the shell');
-assert.ok(wrapper.includes('src="deck.html?v=20260818.2"'), 'wrapper must bypass stale deck caches');
+assert.ok(wrapper.includes('src="deck.html?v=20260819.1"'), 'wrapper must bypass stale deck caches');
 assert.ok(shellScript.includes('frame.contentWindow.refitFdcSlides?.()'), 'shared shell must call the compatibility refit hook');
 
 console.log('Navigating frame-fit contract passed: corrected chrome, responsive layout, semantic navigation, and bounded text fitting.');
