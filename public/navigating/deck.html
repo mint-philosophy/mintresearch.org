@@ -142,11 +142,13 @@ blockquote cite { display: block; font-style: normal; font-family: var(--mono); 
 nav {
   position: fixed; bottom: 0; left: 0; width: 100%; height: var(--nav-h);
   background: var(--cream); border-top: var(--border);
-  display: flex; align-items: center; justify-content: space-between;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  column-gap: 16px; align-items: center;
   padding: 0 24px; z-index: 100;
   font-family: var(--mono); font-size: 16px; text-transform: uppercase; letter-spacing: 2px;
 }
-.nav-dots { display: flex; align-items: center; gap: 2px; }
+.nav-counter { justify-self: start; color: var(--mid); font-weight: 700; white-space: nowrap; }
+.nav-dots { display: flex; align-items: center; justify-self: center; gap: 2px; }
 .nav-dot {
   appearance: none; width: 20px; height: 24px; padding: 0; border: 0;
   background-color: transparent;
@@ -160,7 +162,9 @@ nav {
 .nav-dot.active { filter: none; opacity: 1; transform: scale(1.08); }
 .nav-dot:focus-visible { outline: 2px solid var(--black); outline-offset: 1px; opacity: 0.8; }
 .nav-dot.active:focus-visible { opacity: 1; }
-.nav-section { color: var(--mid); margin-left: 12px; }
+.nav-tail { min-width: 0; display: flex; align-items: center; gap: 12px; }
+.nav-section { flex: 1 1 auto; min-width: 0; color: var(--mid); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav-controls { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; }
 .nav-right { color: var(--light); }
 .nav-right kbd { border: 1px solid var(--mid); padding: 2px 6px; font-family: var(--mono); font-size: 15px; }
 
@@ -295,11 +299,10 @@ nav {
   code { font-size: 0.8em; }
 
   /* Nav */
-  nav { height: var(--nav-h); padding: 0 14px; font-size: 13px; }
-  nav > div:first-child { flex: 0 0 auto; white-space: nowrap; }
-  nav > div:nth-child(2) { min-width: 0; }
+  nav { height: var(--nav-h); padding: 0 14px; column-gap: 4px; font-size: 13px; }
   .nav-dot { width: 15px; height: 18px; background-size: 14px 14px; }
   .nav-dots { gap: 1px; }
+  .nav-tail { gap: 4px; }
   .nav-section { display: none; }
   .nav-right { font-size: 12px; }
   .nav-right kbd { font-size: 12px; padding: 1px 4px; }
@@ -315,6 +318,13 @@ nav {
 
   /* Closing slide contact */
   .slide:last-child .dim { font-size: 14px !important; }
+}
+@media (max-width: 360px) {
+  nav { padding: 0 8px; }
+  .nav-dot { width: 12px; height: 16px; background-size: 12px 12px; }
+  .nav-dots { gap: 1px; }
+  .nav-controls { gap: 4px; }
+  .nav-btn { width: 40px; height: 40px; }
 }
 </style>
 </head>
@@ -536,12 +546,15 @@ nav {
 
 
 <nav>
-  <div style="color:var(--mid);font-weight:700;"><span id="slide-counter">1 / 10</span></div>
-  <div style="display:flex;align-items:center;"><div class="nav-dots" id="nav-dots"></div><div class="nav-section"><span id="section-name">Title</span></div></div>
-  <div style="display:flex;align-items:center;gap:8px;">
-    <button class="nav-btn" id="nav-prev" aria-label="Previous slide">‹</button>
-    <button class="nav-btn" id="nav-next" aria-label="Next slide">›</button>
-    <span class="nav-right nav-keys"><kbd>←</kbd> <kbd>→</kbd></span>
+  <div class="nav-counter"><span id="slide-counter">1 / 10</span></div>
+  <div class="nav-dots" id="nav-dots"></div>
+  <div class="nav-tail">
+    <div class="nav-section"><span id="section-name">Title</span></div>
+    <div class="nav-controls">
+      <button class="nav-btn" id="nav-prev" aria-label="Previous slide">‹</button>
+      <button class="nav-btn" id="nav-next" aria-label="Next slide">›</button>
+      <span class="nav-right nav-keys"><kbd>←</kbd> <kbd>→</kbd></span>
+    </div>
   </div>
 </nav>
 
