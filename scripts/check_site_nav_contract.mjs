@@ -33,7 +33,8 @@ for (const page of staticPages) {
 const presentationPages = [
   'public/lab-overview/index.html',
   'public/nc/index.html',
-  'public/FDC.html'
+  'public/FDC.html',
+  'public/navigating/index.html'
 ];
 for (const page of presentationPages) {
   const html = fs.readFileSync(page, 'utf8');

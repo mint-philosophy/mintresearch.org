@@ -132,7 +132,12 @@ The canonical wrappers and their isolated deck sources are:
 public/lab-overview/index.html -> public/lab-overview/deck.html
 public/nc/index.html           -> public/nc/deck.html
 public/FDC.html                -> public/FDC-deck.html
+public/navigating/index.html   -> public/navigating/deck.html
 ```
+
+`/navigating/` is a separately shared, unlisted presentation. It uses the same
+shell and responsive fitting contract, but remains `noindex` and is deliberately
+absent from the primary navigation and sitemap.
 
 Keep deck code isolated inside its iframe so deck-specific keyboard controls,
 scaling, styles, and animations cannot conflict with the site shell. The deck

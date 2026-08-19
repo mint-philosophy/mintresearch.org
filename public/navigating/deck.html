@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<title>Navigating the AGI Reckoning — Seth Lazar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&amp;display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #FFFAED; --teal: #2DD4BF; --orange: #ee7a44;
+  --black: #161300; --ink: #1a1a1a; --mid: #555; --light: #999;
+  --blue: #5299F2; --green: #259344; --red: #BF4E30;
+  --border: 2px dashed var(--black); --border-dot: 2px dotted var(--black);
+  --mono: 'JetBrains Mono', monospace; --serif: 'Newsreader', Georgia, serif;
+  --ticker-h: 40px;
+  --nav-h: 64px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--cream); }
+body { font-family: var(--serif); background: var(--cream); color: var(--black); line-height: 1.5; font-size: 34px; -webkit-font-smoothing: antialiased; overflow: hidden; height: 100vh; width: 100vw; }
+
+.slides { position: fixed; inset: var(--ticker-h) 0 var(--nav-h); width: 100vw; height: auto; overflow: hidden; }
+.slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity 0.35s ease, transform 0.35s ease; pointer-events: none; overflow-y: auto; }
+.slide.active { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: all; }
+.slide.fit-measuring { transform: none; transition: none; overflow: hidden; }
+
+.slide.fit-contained { overflow: hidden; }
+.slide.fit-scroll-fallback { overflow: auto; }
+
+/* Layouts — use more screen */
+.full { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 48px 10vw; }
+.split { display: grid; grid-template-columns: 1fr 1fr; width: 100%; height: 100%; }
+.split.wide-left { grid-template-columns: 1.2fr 0.8fr; }
+.split.wide-right { grid-template-columns: 0.8fr 1.2fr; }
+.split-left, .split-right { display: flex; flex-direction: column; justify-content: center; padding: 48px 8%; }
+.split-left { border-right: var(--border); }
+.teal-bg { background: var(--teal); }
+.black-bg { background: var(--black); color: var(--cream); }
+.black-bg .label { color: rgba(255,250,237,0.5); }
+.black-bg blockquote { border-left-color: var(--teal); }
+.black-bg blockquote cite { color: rgba(255,250,237,0.5); }
+.black-bg .tip { border-color: rgba(255,250,237,0.15); color: rgba(255,250,237,0.7); }
+.black-bg .tip:hover { background: rgba(255,250,237,0.08); color: var(--cream); }
+
+.vlabel {
+  position: absolute; inset: 0 auto 0 0; width: 40px;
+  display: flex; align-items: center; justify-content: center;
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  font-family: var(--mono); font-size: 16px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 3px; color: var(--mid); white-space: nowrap;
+}
+.black-bg .vlabel { color: rgba(255,250,237,0.25); }
+
+/* Typography — Zoom-readable on 14" shared screen */
+h1 { font-family: var(--serif); font-size: 69px; font-weight: 700; line-height: 1.05; letter-spacing: -1px; margin-bottom: 14px; }
+h1.mega { font-size: 76px; }
+h2 { font-family: var(--mono); font-size: 21px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 18px; }
+h3 { font-family: var(--serif); font-size: 46px; font-weight: 500; line-height: 1.2; margin-bottom: 8px; }
+p { font-size: 34px; line-height: 1.5; margin-bottom: 10px; }
+p.big { font-size: 39px; line-height: 1.45; }
+p.dim { color: var(--mid); font-size: 28px; }
+strong { font-weight: 600; }
+code { font-family: var(--mono); font-size: 0.85em; background: rgba(0,0,0,0.06); padding: 2px 5px; }
+
+.highlight { background: var(--teal); padding: 2px 6px; }
+.black-bg .highlight { background: var(--orange); color: var(--cream); }
+.label { font-family: var(--mono); font-size: 21px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--mid); }
+
+blockquote { border-left: 4px solid var(--black); padding: 14px 20px; margin: 18px 0; font-style: italic; font-size: 34px; line-height: 1.5; }
+blockquote cite { display: block; font-style: normal; font-family: var(--mono); font-size: 18px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--mid); margin-top: 8px; }
+
+/* Tooltips */
+.tip {
+  display: inline-block; border-bottom: 2px dashed var(--mid); cursor: help;
+}
+/* tiptext spans are hidden in the DOM; the #tooltip-overlay displays content */
+.tip .tiptext { display: none; }
+#tooltip-overlay {
+  display: none;
+  position: absolute; top: 0; left: 0; z-index: 99999;
+  width: 630px; max-width: 80vw; padding: 20px 24px;
+  background: var(--black); color: var(--cream);
+  font-family: var(--serif); font-size: 20px; font-style: normal; line-height: 1.5;
+  border: 3px solid var(--teal);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+/* Domain cards */
+.domain-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; }
+.domain-card { border: var(--border); padding: 18px 20px; margin: -1px; transition: background 0.15s; position: relative; }
+.domain-card:hover { background: var(--teal); }
+.domain-card .dc-label { font-family: var(--mono); font-size: 21px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
+.domain-card .dc-text { font-size: 28px; line-height: 1.4; }
+
+/* Obstacle items */
+.obstacle-item { padding: 14px 0; border-bottom: var(--border-dot); font-size: 32px; line-height: 1.45; display: flex; gap: 14px; }
+.obstacle-item:last-child { border-bottom: none; }
+.obstacle-item .arrow { font-family: var(--mono); font-size: 28px; color: var(--mid); flex-shrink: 0; }
+
+/* Competency cards */
+.comp-stack { margin: 12px 0; }
+.comp-card { display: flex; gap: 18px; padding: 16px 0; border-bottom: var(--border); align-items: baseline; }
+.comp-card:last-child { border-bottom: none; }
+.comp-number { font-family: var(--serif); font-size: 60px; font-weight: 300; line-height: 1; min-width: 70px; }
+.comp-body .comp-title { font-family: var(--serif); font-size: 39px; font-weight: 500; margin-bottom: 2px; }
+.comp-body .comp-desc { font-size: 28px; line-height: 1.4; color: var(--ink); }
+
+/* Verification items */
+.verif-item { display: flex; gap: 16px; padding: 12px 0; border-bottom: 1px dotted var(--black); align-items: baseline; }
+.verif-item:last-child { border-bottom: none; }
+.verif-label { font-family: var(--mono); font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; min-width: 260px; flex-shrink: 0; }
+.verif-text { font-size: 28px; line-height: 1.4; }
+
+/* Capacity cards */
+.cap-card { border: var(--border); padding: 18px 20px; margin-bottom: -2px; transition: background 0.15s; }
+.cap-card:hover { background: var(--teal); }
+.cap-card .cap-label { font-family: var(--mono); font-size: 21px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
+.cap-card .cap-text { font-size: 28px; line-height: 1.45; }
+
+/* Curriculum items */
+.cur-item { padding: 14px 0; border-bottom: var(--border-dot); }
+.cur-item:last-child { border-bottom: none; }
+.cur-item .cur-title { font-family: var(--serif); font-size: 36px; font-weight: 500; margin-bottom: 3px; }
+.cur-item .cur-text { font-size: 28px; line-height: 1.4; color: var(--ink); }
+
+/* Ticker */
+.ticker {
+  position: fixed; top: 0; left: 0; width: 100%; height: var(--ticker-h);
+  background: var(--teal); border-bottom: var(--border);
+  overflow: hidden; z-index: 200; display: flex; align-items: center;
+}
+.ticker-track {
+  display: flex; gap: 40px; white-space: nowrap;
+  font-family: var(--mono); font-size: 16px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  animation: scroll-ticker 55s linear infinite;
+}
+.ticker-track span { opacity: 0.6; }
+.ticker-track span::after { content: ' · '; opacity: 0.3; margin: 0 12px; }
+@keyframes scroll-ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+nav {
+  position: fixed; bottom: 0; left: 0; width: 100%; height: var(--nav-h);
+  background: var(--cream); border-top: var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; z-index: 100;
+  font-family: var(--mono); font-size: 16px; text-transform: uppercase; letter-spacing: 2px;
+}
+.nav-dots { display: flex; gap: 4px; }
+.nav-dot { appearance: none; width: 14px; height: 14px; padding: 0; border: 2px solid var(--black); background: transparent; cursor: pointer; transition: background 0.15s; }
+.nav-dot:hover { background: var(--teal); }
+.nav-dot.active { background: var(--black); }
+.nav-section { color: var(--mid); margin-left: 12px; }
+.nav-right { color: var(--light); }
+.nav-right kbd { border: 1px solid var(--mid); padding: 2px 6px; font-family: var(--mono); font-size: 15px; }
+
+.progress { position: fixed; top: var(--ticker-h); left: 0; width: 100%; height: 3px; z-index: 150; }
+.progress-fill { height: 100%; background: var(--black); width: 0%; transition: width 0.35s ease; }
+
+.fi { opacity: 1; transform: none; transition: none; }
+.slide.active .fi { opacity: 1; transform: translateY(0); }
+
+.dotted-bg {
+  background-image: radial-gradient(circle, rgba(22,19,0,0.07) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Nav buttons */
+.nav-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px;
+  border: 2px solid var(--black); background: var(--cream);
+  font-family: var(--serif); font-size: 24px; font-weight: 700;
+  cursor: pointer; transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-btn:hover, .nav-btn:active { background: var(--teal); }
+.nav-keys { display: none; }
+
+/* ── Tablet ── */
+@media (max-width: 900px) {
+  body { font-size: 26px; }
+  /* Responsive source layout also serves as the readable scroll fallback. */
+  .slide { display: block; -webkit-overflow-scrolling: touch; }
+  .split, .split.wide-left, .split.wide-right { grid-template-columns: 1fr; height: auto; min-height: 100%; }
+  .full { height: auto; min-height: 100%; justify-content: flex-start; }
+  .split-left, .split-right { justify-content: flex-start; }
+  .split-left { border-right: none; border-bottom: var(--border); }
+  h1 { font-size: 50px !important; } h1.mega { font-size: 56px !important; }
+  h3 { font-size: 36px !important; }
+  p { font-size: 26px; } p.big { font-size: 30px; } p.dim { font-size: 22px; }
+  .full { padding: 48px 28px calc(var(--nav-h) + 48px) !important; }
+  .split-left, .split-right { padding: 36px 28px; }
+  /* Bottom clearance so content isn't hidden behind fixed nav */
+  .split-right { padding-bottom: calc(var(--nav-h) + 48px); }
+  .domain-grid { grid-template-columns: 1fr 1fr; }
+  .vlabel { display: none; }
+  blockquote { font-size: 26px; }
+  .comp-number { font-size: 46px; min-width: 54px; }
+  .comp-body .comp-title { font-size: 30px; }
+  .comp-body .comp-desc { font-size: 22px; }
+  .verif-label { min-width: auto; font-size: 17px; }
+  .verif-text { font-size: 22px; }
+  .cap-card .cap-label { font-size: 17px; }
+  .cap-card .cap-text { font-size: 22px; }
+  .cur-item .cur-title { font-size: 28px; }
+  .cur-item .cur-text { font-size: 22px; }
+  .obstacle-item { font-size: 24px; }
+  .dc-label { font-size: 17px; }
+  .dc-text { font-size: 22px; }
+  .label { font-size: 17px; }
+  h2 { font-size: 17px; }
+  /* Override inline font-sizes on AGI-type cards */
+  .agi-grid h3 { font-size: 30px !important; }
+  .agi-grid p { font-size: 22px !important; }
+  .agi-grid { grid-template-columns: 1fr !important; }
+  .cur-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ── Phone ── */
+@media (max-width: 600px) {
+  :root { --ticker-h: 32px; --nav-h: 54px; }
+  body { font-size: 18px; }
+  h1 { font-size: 32px !important; } h1.mega { font-size: 36px !important; }
+  h2 { font-size: 14px; letter-spacing: 2px; }
+  h3 { font-size: 26px !important; }
+  p { font-size: 18px; } p.big { font-size: 21px; } p.dim { font-size: 16px; }
+  .full { padding: 36px 18px calc(var(--nav-h) + 56px) !important; }
+  .split-left, .split-right { padding: 28px 18px; }
+  .split-right { padding-bottom: calc(var(--nav-h) + 56px); }
+  /* For slides with only split-left (closing slide) */
+  .slide:last-child .split-left { padding-bottom: calc(var(--nav-h) + 56px); }
+  /* Ticker */
+  .ticker { height: var(--ticker-h); }
+  .ticker-track { font-size: 12px; letter-spacing: 1.5px; gap: 24px; }
+
+  /* Progress bar */
+  .progress { top: var(--ticker-h); }
+
+  /* All multi-column grids become single column */
+  .domain-grid { grid-template-columns: 1fr; }
+  .agi-grid { grid-template-columns: 1fr !important; }
+  .agi-grid h3 { font-size: 22px !important; }
+  .agi-grid p { font-size: 17px !important; }
+  .agi-grid .label { font-size: 12px; }
+  .cur-grid { grid-template-columns: 1fr !important; }
+
+  /* Domain cards */
+  .domain-card { padding: 14px 16px; }
+  .domain-card .dc-label { font-size: 14px; letter-spacing: 1.5px; margin-bottom: 4px; }
+  .domain-card .dc-text { font-size: 17px; }
+
+  /* Competencies */
+  .comp-card { gap: 12px; padding: 12px 0; }
+  .comp-number { font-size: 36px; min-width: 42px; }
+  .comp-body .comp-title { font-size: 24px; }
+  .comp-body .comp-desc { font-size: 16px; }
+
+  /* Verification — stack label above text */
+  .verif-item { flex-direction: column; gap: 4px; padding: 10px 0; }
+  .verif-label { min-width: auto; font-size: 14px; }
+  .verif-text { font-size: 17px; }
+
+  /* Capacity cards */
+  .cap-card { padding: 14px 16px; }
+  .cap-card .cap-label { font-size: 14px; letter-spacing: 1.5px; }
+  .cap-card .cap-text { font-size: 17px; }
+
+  /* Obstacle items */
+  .obstacle-item { font-size: 18px; gap: 10px; padding: 10px 0; }
+  .obstacle-item .arrow { font-size: 18px; }
+
+  /* Curriculum */
+  .cur-item .cur-title { font-size: 22px; }
+  .cur-item .cur-text { font-size: 16px; }
+
+  /* Labels */
+  .label { font-size: 14px; letter-spacing: 1.5px; }
+
+  /* Blockquotes */
+  blockquote { font-size: 18px; padding: 10px 14px; margin: 12px 0; }
+  blockquote cite { font-size: 14px; }
+
+  /* Code */
+  code { font-size: 0.8em; }
+
+  /* Nav */
+  nav { height: var(--nav-h); padding: 0 14px; font-size: 13px; }
+  nav > div:first-child { flex: 0 0 auto; white-space: nowrap; }
+  nav > div:nth-child(2) { min-width: 0; }
+  .nav-dot { width: 10px; height: 10px; }
+  .nav-dots { gap: 3px; }
+  .nav-section { display: none; }
+  .nav-right { font-size: 12px; }
+  .nav-right kbd { font-size: 12px; padding: 1px 4px; }
+
+  /* Tooltip */
+  #tooltip-overlay { width: 90vw !important; max-width: 90vw; font-size: 16px; padding: 14px 16px; }
+
+  /* Slide 1 title subtitle */
+  .slide:first-child .split-right > div { max-width: none !important; }
+
+  /* Nav buttons — larger tap targets on phone */
+  .nav-btn { width: 44px; height: 44px; font-size: 28px; }
+
+  /* Closing slide contact */
+  .slide:last-child .dim { font-size: 14px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation: none; }
+  .slide, .progress-fill, .nav-dot { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<div id="tooltip-overlay" role="tooltip"></div>
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span>Background Assumptions</span><span>Definitions of AGI</span><span>Concrete Waypoints</span><span>Core Question</span><span>Steering the Transition</span><span>Moral Competence</span><span>Decentralisation</span><span>Societal Adaptation</span><span>Applied Philosophy</span>
+    <span>Background Assumptions</span><span>Definitions of AGI</span><span>Concrete Waypoints</span><span>Core Question</span><span>Steering the Transition</span><span>Moral Competence</span><span>Decentralisation</span><span>Societal Adaptation</span><span>Applied Philosophy</span>
+  </div>
+</div>
+
+<div class="progress"><div class="progress-fill" id="progress-fill" style="width: 0%;"></div></div>
+
+<div class="slides">
+
+<!-- 1. TITLE -->
+<div class="slide active" data-name="Title">
+  <div class="split">
+    <div class="split-left teal-bg" style="position:relative;">
+      <div class="vlabel">JHU School of Government &amp; Policy</div>
+      <h2 class="fi">Seth Lazar</h2>
+      <h1 class="mega fi d1">Navigating the AGI Reckoning</h1>
+      <div style="width:80px;height:4px;background:var(--black);margin:16px 0;" class="fi d2"></div>
+      <p class="dim fi d3" style="font-family:var(--mono);font-size:21px;text-transform:uppercase;letter-spacing:1.5px;">Professor, JHU SGP</p>
+    </div>
+    <div class="split-right dotted-bg" style="align-items:center;">
+      <div style="max-width:760px;" class="fi d4">
+        <p class="big" style="font-weight:600;">An Overview of the Machine Intelligence and Normative Theory Lab’s work</p>
+        <p class="dim" style="margin-top:10px;">AGI Alignment, Governance, and Adaptation</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. BACKGROUND ASSUMPTIONS -->
+<div class="slide" data-name="Background Assumptions">
+  <div class="split">
+    <div class="split-left" style="position:relative;">
+      <div class="vlabel">01 — Background Assumptions</div>
+      <h2 class="fi">Background Assumptions</h2>
+      <h1 class="fi d1">Institutional decline<br>meets transformative<br>AI</h1>
+      <p class="fi d2">250-year-old liberal democratic institutions are sliding into a basin of mutually reinforcing crises. Into this comes</p>
+      <p class="fi d3"><span class="highlight"><strong>math that wakes sand up.</strong></span></p>
+      <p class="fi d4">The variance of possible outcomes is very high. By the end of the 2030s we could no longer be able to use networked computers; AI-enabled authoritarianism might dominate the world; even worse outcomes can’t be ruled out. Or AI may be our best hope for escaping the civilisational basin we’re currently in.</p>
+    </div>
+    <div class="split-right black-bg" style="position:relative;">
+      <div class="vlabel">Key Framing</div>
+      <h1 class="fi" style="font-size:58px;">This is a reckoning for humanity, literally and figuratively</h1>
+      <p class="big fi d1" style="margin-top:20px;">Entirely unclear whether we’ll make it through the transition with our values and institutions intact. But a reckoning is also about figuring out who owes what to whom. AGI will change that too.</p>
+    </div>
+  </div>
+</div>
+
+<!-- 3. DEFINITIONS OF AGI -->
+<div class="slide" data-name="Definitions of AGI">
+  <div class="full" style="position:relative;padding:44px 72px;">
+    <div class="vlabel">02 — Defining AGI</div>
+    <h2 class="fi">Definitions of AGI</h2>
+    <p class="fi d1">People tie themselves up in knots over terminology and definitions. I say: just spell it out up front. But there are some useful distinctions to draw.</p>
+    <div class="agi-grid fi d2" style="display:grid;grid-template-columns:1fr 1fr 1fr;margin:18px 0;">
+      <div style="padding:22px;border:var(--border);margin:-1px;background:var(--teal);">
+        <div class="label">Hassabis’ version</div>
+        <h3>Internalist AGI</h3>
+        <p style="font-size:30px;">≥ Human level at all cognitive functions, e.g. Language, perception, planning, reasoning, memory, commonsense, social/moral cognition, metacognition etc</p>
+        <p class="dim" style="font-style:italic;">“Jagged frontier” but progress on all fronts</p>
+      </div>
+      <div style="padding:22px;border:var(--border);margin:-1px;">
+        <div class="label">Legg and co</div>
+        <h3>Behavioural AGI</h3>
+        <p style="font-size:30px;">Focus on behaviours not cognitive capacities. Domain-general, ≥expert human level, autonomous (able to succeed at its goals w/o human supervision)</p>
+        <p class="dim" style="font-style:italic;">More about what AGI can do than what it is</p>
+      </div>
+      <div style="padding:22px;border:var(--border);margin:-1px;">
+        <div class="label">Outcomes</div>
+        <h3>Transformative AI</h3>
+        <p style="font-size:30px;">Alternative approach looks not at what individual systems can do but at the overall impact on society</p>
+        <p class="dim" style="font-style:italic;">Maybe too ambiguous?</p>
+      </div>
+    </div>
+    <p class="fi d3">What about “normal technology”. Not remotely plausible to describe AI itself as an intrinsically normal technology. Nothing else has ever come close. We are investing dumb matter with spirit. But will the societal impacts of AI, like any other technology, be determined by social and human factors, as well as the raw power of the technology? Yes for sure.</p>
+  </div>
+</div>
+
+<!-- 4. CONCRETE WAYPOINTS -->
+<div class="slide" data-name="Concrete Waypoints">
+  <div class="full" style="position:relative;padding:44px 72px;">
+    <div class="vlabel">03 — Concrete Waypoints</div>
+    <h2 class="fi">Concrete Waypoints</h2>
+    <p class="fi d1">Let’s actually take stock. If you showed anyone back in 2022 Codex or Claude Code, they’d call it AGI. We’ve come a very long way.</p>
+    <div class="agi-grid fi d2" style="display:grid;grid-template-columns:1fr 1fr 1fr;margin:18px 0;">
+      <div style="padding:22px;border:var(--border);margin:-1px;background:var(--teal);">
+        <div class="label">Locked in</div>
+        <h3>Agents</h3>
+        <p style="font-size:30px;">Behavioural AGI is very close. Most capable models + harnesses are able to do significant proportion of computer-based work. Note also multi-agent progress.</p>
+        <p class="dim"><span class="tip"><em>Key ongoing defects: memory and creativity</em><span class="tiptext">Essentially a solved problem — Needs only good RL environments and reward signals. There's still a threshold in competence/insight/judgment, but (a) that threshold is higher than most entry-level employees, and (b) every reason to think it will be crossed.</span></span></p>
+      </div>
+      <div style="padding:22px;border:var(--border);margin:-1px;">
+        <div class="label">On the horizon</div>
+        <h3>Science</h3>
+        <p style="font-size:30px;">Within-paradigm progress from AI in many different fields (AI research, mathematics, biology) already feasible. Paradigm-shifting not yet.</p>
+        <p class="dim"><span class="tip"><em>Creativity again the key bottleneck</em><span class="tiptext">Early signs — AI for math is the canary in the coal mine. Modest RSI is already happening — Anthropic's engineers barely write code themselves — but as yet it is a “lossy” form of self-improvement. <a href="https://www.interconnects.ai/p/lossy-self-improvement" target="_blank" rel="noopener" style="color:inherit;">Source</a></span></span></p>
+      </div>
+      <div style="padding:22px;border:var(--border);margin:-1px;">
+        <div class="label">Can’t rule out</div>
+        <h3>Independent ASI</h3>
+        <p style="font-size:30px;">Autonomous superintelligence. Plausibly beyond current architectures, but don't bet against it.</p>
+        <p class="dim"><span class="tip"><em>Surprisingly few Rubicons remain</em><span class="tiptext">Between AI-for-science and ASI there may be surprisingly few remaining Rubicons. Embodied AI (robotics) is a separate path, also worth watching. Worth factoring into models but should not be the focus.</span></span></p>
+      </div>
+    </div>
+    <p class="fi d3">Where we are now: GPT-4 was the first inflection point. o1 the next. Opus 4.5 the third. Perhaps the Hugging Face incident was the fourth, for multi-agent systems? I’ve left robotics out here because a software singularity would be enough to motivate everything else in this talk. But physical autonomous systems will also be part of this story. Is *verifiability* the bottleneck? Massive progress is being made in areas where only “soft” verification is possible (e.g. moral and legal reasoning). But this is an open question.</p>
+  </div>
+</div>
+
+<!-- 5. CORE QUESTION -->
+<div class="slide" data-name="Core Question">
+  <div class="split">
+    <div class="split-left teal-bg" style="position:relative;">
+      <div class="vlabel">04 — Core Question</div>
+      <h2 class="fi">MINT Lab’s Research</h2>
+      <h1 class="fi d1">What if AGI doesn’t kill us all?</h1>
+    </div>
+    <div class="split-right black-bg">
+      <h1 class="fi" style="font-size:58px;">AGI might kill us all. Do not downplay that possibility because it seems sci-fi. We are living in sci-fi</h1>
+      <p class="big fi d1" style="margin-top:20px;">On the governance side, preventing this outcome is mostly about implementation and political will. Totally feasible; likely to be stuffed up. Not so interesting for a philosopher (technical AGI alignment, on the other hand, very interesting)</p>
+    </div>
+  </div>
+</div>
+
+<!-- 6. STEERING THE TRANSITION -->
+<div class="slide" data-name="Steering the Transition">
+  <div class="split wide-right">
+    <div class="split-left teal-bg" style="position:relative;">
+      <div class="vlabel">05 — Steering the Transition</div>
+      <h2 class="fi">MINT Lab’s Research</h2>
+      <h1 class="fi d1">Steering the Transition</h1>
+    </div>
+    <div class="split-right">
+      <div class="comp-stack fi d2">
+        <div class="comp-card"><div class="comp-number">1</div><div class="comp-body"><div class="comp-title">Alignment</div><div class="comp-desc">What reasons should an AI agent comply with? How can we train models that both understand and are motivated to act on the reasons that apply to them?</div></div></div>
+        <div class="comp-card"><div class="comp-number">2</div><div class="comp-body"><div class="comp-title">Governance</div><div class="comp-desc">How can laws and other societal institutions that take AI as their object be changed so as to preserve liberal democratic values in the age of AGI?</div></div></div>
+        <div class="comp-card"><div class="comp-number">3</div><div class="comp-body"><div class="comp-title">Adaptation</div><div class="comp-desc">AGI will affect everything; we’ll need to adapt many institutions (etc) that *don’t* take AI as their explicit object. What principles should guide that adaptation? How can we get started in practice?</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 7. MORAL COMPETENCE -->
+<div class="slide" data-name="Moral Competence">
+  <div class="split wide-right">
+    <div class="split-left black-bg" style="position:relative;">
+      <div class="vlabel">06 — Moral Competence</div>
+      <div class="label" style="color:var(--teal);">Alignment</div>
+      <h1 class="fi">Moral Competence for AGI Alignment</h1>
+      <p class="big fi d1">A safe superintelligence will, necessarily, be able to robustly understand and abide by the moral reasons that apply to it. Can we get there by leveraging existing LLMs’ analytical moral understanding?</p>
+    </div>
+    <div class="split-right">
+      <div class="cap-card fi d2"><div class="cap-label">Today’s LLMs have a profound understanding of morality</div><div class="cap-text">We’ve done philosophy—driven LLM evaluations on this; it’s undeniable. Give an LLM any moral problem and its moral analysis of that problem will be human expert level or better.</div></div>
+      <div class="cap-card fi d3"><div class="cap-label">But local ≠ global; analytical ≠ behavioural; individual ≠ collective alignment</div><div class="cap-text">Responses to some particular problem are one thing. But to trust an agent operating in open-ended environments, their judgments need to fit together sensibly. That coherence is currently lacking. Understanding morality is not the same as behaving morally! Agents demonstrably depart from norms they understand. And individually competent agents might be jointly incompetent. All that needs to change</div></div>
+      <div class="cap-card fi d4"><div class="cap-label">Training for coherence and knowhow</div><div class="cap-text">We can do something about both. Coherence can be a target of optimisation; analytical competence can potentially be translated into practical competence with the right training regime; and we have plans to leverage political philosophy, cognitive science, and cultural evolution to support collective alignment</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 8. DECENTRALISATION -->
+<div class="slide" data-name="Decentralisation">
+  <div class="split wide-left">
+    <div class="split-left" style="position:relative;">
+      <div class="vlabel">07 — Decentralisation</div>
+      <div class="label">Governance</div>
+      <h1 class="fi">Building a Safe, Decentralised, AI Agent Economy</h1>
+      <p class="big fi d1">The transition to powerful AI involves many risks; addressing those risks incentivises centralising authority; if we do so we might successfully avoid AGI’s worst risks, at the expense of acutely undermining core liberal democratic values.</p>
+    </div>
+    <div class="split-right teal-bg">
+      <div class="obstacle-item fi"><span class="arrow">→</span><span>I don’t do much straight-up AI policy. I *do* care a lot about AI governance that preserves core liberal values</span></div>
+      <div class="obstacle-item fi d1"><span class="arrow">→</span><span>Supporting delegated agent access is crucial for this, so is supporting access to open weights models</span></div>
+      <div class="obstacle-item fi d2"><span class="arrow">→</span><span>Regulatory proposals must be weighed in part for how much they contribute to concentration of power</span></div>
+      <div class="obstacle-item fi d3"><span class="arrow">→</span><span>AI models themselves must be designed to attend to this; they should act as genuine advocates for users asserting their core liberal rights.</span></div>
+      <p class="fi d4" style="margin-top:16px;"><strong>Our key projects in this area: technical and policy interventions that support building agent advocates, and avoiding platform agents</strong></p>
+    </div>
+  </div>
+</div>
+
+<!-- 9. SOCIETAL ADAPTATION -->
+<div class="slide" data-name="Societal Adaptation">
+  <div class="full" style="position:relative;padding:44px 72px;">
+    <div class="vlabel">08 — Societal Adaptation</div>
+    <h2 class="fi">Societal Adaptation</h2>
+    <div class="fi d1 cur-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:0;">
+      <div class="cur-item" style="padding:18px 24px;border:var(--border);margin:-1px;background:var(--teal);"><div class="cur-title">Post-AGI Political Philosophy</div><div class="cur-text">AGI reckoning = accounting for who owes what to whom. AGI will change both contents and grounds of our mutual obligations. Big questions: should we build it? How ought it behave? How should we treat it? How does what we owe to each other change?</div></div>
+      <div class="cur-item" style="padding:18px 24px;border:var(--border);margin:-1px;"><div class="cur-title">Obstacle-Mapping</div><div class="cur-text">Institutional sclerosis has asymmetric effects: it won't slow the most serious risks, but it will block many of the benefits. Can we identify those obstacles ahead of time and clear the path for powerful AI to actually benefit us?</div></div>
+      <div class="cur-item" style="padding:18px 24px;border:var(--border);margin:-1px;"><div class="cur-title">Vulnerability-Scanning</div><div class="cur-text">We’re deploying powerful new agents into systems that were designed for humans, with a specific set of capabilities and limitations. We know systemic risks inevitable; where will they land first?</div></div>
+      <div class="cur-item" style="padding:18px 24px;border:var(--border);margin:-1px;"><div class="cur-title">Capacity-Building</div><div class="cur-text">If AI were used to massively improve bureaucracies and core service delivery, many democratic concerns about AI would dissipate. Promising avenues: evals and RL environments for public service agents; agentic support for participatory decision-making</div></div>
+    </div>
+    <h1 class="fi d2" style="font-size:54px;margin-top:22px;">Societal Adaptation / Alignment’s Complement</h1>
+  </div>
+</div>
+
+<!-- 10. CLOSING -->
+<div class="slide" data-name="Applied Philosophy">
+  <div class="split">
+    <div class="split-left teal-bg" style="position:relative;">
+      <div class="vlabel">09 — Applied Philosophy</div>
+      <h1 class="fi" style="font-size:64px;">A different kind of applied philosophy.</h1>
+      <div style="width:80px;height:4px;background:var(--black);margin:16px 0;" class="fi d1"></div>
+    </div>
+    <div class="split-right dotted-bg">
+      <p class="big fi d2" style="font-weight:400;">Applied philosophy usually = taking one’s philosophical understanding and applying it to some practical problem.</p>
+      <p class="fi d3" style="margin-top:12px;">We do some of that. But philosophy is also about understanding; the best way to use, test, and advance your understanding of X is to build a better X.</p>
+      <p class="fi d4" style="margin-top:12px;">AGI itself enables new kinds of agents, and new kinds of social institutions. No better test for your theories of morality or of justice than the challenge of steering safely into the AGI transition.</p>
+      <p class="dim fi d4" style="margin-top:20px;font-family:var(--mono);font-size:20px;text-transform:uppercase;letter-spacing:1.5px;">Seth Lazar · slazar@jhu.edu<br>JHU SGP · MINT Research Lab</p>
+    </div>
+  </div>
+</div>
+
+</div>
+
+
+
+<nav>
+  <div style="color:var(--mid);font-weight:700;"><span id="slide-counter">1 / 10</span></div>
+  <div style="display:flex;align-items:center;"><div class="nav-dots" id="nav-dots"></div><div class="nav-section"><span id="section-name">Title</span></div></div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="nav-btn" id="nav-prev" aria-label="Previous slide">‹</button>
+    <button class="nav-btn" id="nav-next" aria-label="Next slide">›</button>
+    <span class="nav-right nav-keys"><kbd>←</kbd> <kbd>→</kbd></span>
+  </div>
+</nav>
+
+<script>
+// ── Slide engine ──
+const slides=document.querySelectorAll('.slide'),total=slides.length;let cur=0;
+const dots=document.getElementById('nav-dots'),prog=document.getElementById('progress-fill'),counter=document.getElementById('slide-counter'),secName=document.getElementById('section-name');
+for(let i=0;i<total;i++){
+  const d=document.createElement('button');
+  d.type='button';
+  d.className='nav-dot'+(i===0?' active':'');
+  d.setAttribute('aria-label','Go to slide '+(i+1));
+  d.setAttribute('aria-current',i===0?'true':'false');
+  d.onclick=()=>go(i);
+  dots.appendChild(d);
+}
+function hideTooltip(){overlay.style.display='none';activeTip=null;}
+function go(n){if(n<0||n>=total||n===cur)return;hideTooltip();slides[cur].classList.remove('active');cur=n;slides[cur].classList.add('active');document.querySelectorAll('.nav-dot').forEach((d,i)=>{const active=i===n;d.classList.toggle('active',active);d.setAttribute('aria-current',active?'true':'false');});prog.style.width=((n/(total-1))*100)+'%';counter.textContent=(n+1)+' / '+total;secName.textContent=slides[n].dataset.name||'';fitSlides();}
+document.addEventListener('click',e=>{if(!e.target.closest('.tip')&&!e.target.closest('#tooltip-overlay'))hideTooltip();});
+document.addEventListener('keydown',e=>{
+  // In edit mode, don't hijack arrow keys (needed for text cursor)
+  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(cur+1);}
+  else if(e.key==='ArrowLeft'){e.preventDefault();go(cur-1);}
+  else if(e.key==='Home'){e.preventDefault();go(0);}
+  else if(e.key==='End'){e.preventDefault();go(total-1);}
+  });
+// Horizontal swipe navigation (only triggers when swipe is more horizontal than vertical)
+let tx=0,ty=0;
+document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].screenX;ty=e.changedTouches[0].screenY;});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].screenX-tx, dy=e.changedTouches[0].screenY-ty;
+  if(Math.abs(dx)>60 && Math.abs(dx)>Math.abs(dy)*1.5){
+    if(dx<0)go(cur+1); else go(cur-1);
+    slides[cur]&&(slides[cur].scrollTop=0);
+  }
+});
+// Nav buttons (scroll to top on mobile when navigating)
+document.getElementById('nav-prev').onclick=()=>{go(cur-1);slides[cur]&&(slides[cur].scrollTop=0);};
+document.getElementById('nav-next').onclick=()=>{go(cur+1);slides[cur]&&(slides[cur].scrollTop=0);};
+
+// ── Tooltip system ──
+// Single overlay div positioned absolutely on <body>, content copied from .tiptext spans
+const overlay = document.getElementById('tooltip-overlay');
+let activeTip = null;
+
+function positionOverlay(triggerEl) {
+  const r = triggerEl.getBoundingClientRect();
+  const gutter = window.innerWidth * 0.1;
+  const w = Math.min(630, window.innerWidth - gutter * 2);
+  overlay.style.width = w + 'px';
+  overlay.style.display = 'block';
+
+  // Measure height
+  const h = overlay.offsetHeight;
+  const rootStyles = getComputedStyle(document.documentElement);
+  const tickerH = parseFloat(rootStyles.getPropertyValue('--ticker-h')) || 40;
+  const navH = parseFloat(rootStyles.getPropertyValue('--nav-h')) || 64;
+
+  // Vertical: prefer above trigger, then below, then center
+  let top;
+  if (r.top - h - 12 > tickerH) {
+    top = r.top - h - 12 + window.scrollY;
+  } else if (r.bottom + h + 12 < window.innerHeight - navH) {
+    top = r.bottom + 12 + window.scrollY;
+  } else {
+    top = (window.innerHeight - tickerH - navH - h) / 2 + tickerH + window.scrollY;
+  }
+
+  // Horizontal: center on trigger, clamp within gutters
+  let left = r.left + r.width / 2 - w / 2 + window.scrollX;
+  left = Math.max(gutter, Math.min(left, window.innerWidth - w - gutter));
+
+  overlay.style.top = top + 'px';
+  overlay.style.left = left + 'px';
+}
+
+const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+document.querySelectorAll('.tip').forEach(tip => {
+  const src = tip.querySelector('.tiptext');
+  if (!src) return;
+
+  if (!isTouch) {
+    // Desktop: hover to show/hide
+    tip.addEventListener('mouseenter', () => {
+      overlay.innerHTML = src.innerHTML;
+      activeTip = tip;
+      positionOverlay(tip);
+    });
+    tip.addEventListener('mouseleave', () => {
+      overlay.style.display = 'none'; activeTip = null;
+    });
+  }
+
+  // Tap toggle (works on both, but primary input on touch)
+  tip.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (activeTip === tip) {
+      hideTooltip();
+    } else {
+      overlay.innerHTML = src.innerHTML;
+      activeTip = tip;
+      positionOverlay(tip);
+    }
+  });
+});
+
+const MIN_FIT_SCALE = 0.05;
+const FIT_SEARCH_ITERATIONS = 10;
+const FRAME_INSET = 6;
+const BODY_FLOOR_SELECTOR = [
+  'p:not(.dim)', 'blockquote', '.dc-text', '.obstacle-item', '.comp-title',
+  '.comp-desc', '.verif-text', '.cap-text', '.cur-title', '.cur-text'
+].join(',');
+let fitFrame = null;
+const FIT_DEBUG = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
+
+if (FIT_DEBUG) {
+  secName.textContent = 'FIT BOOT';
+  window.addEventListener('error', (event) => {
+    secName.textContent = `FIT ERROR ${event.message}`;
+  });
+  window.addEventListener('unhandledrejection', (event) => {
+    secName.textContent = `FIT REJECTION ${event.reason?.message || event.reason}`;
+  });
+}
+
+window.__fdcFit = {
+  status: 'pending',
+  runs: 0,
+  slides: []
+};
+
+function updateFitDebug(index) {
+  if (!FIT_DEBUG) return;
+  const diagnostic = window.__fdcFit.slides[index];
+  if (!diagnostic) return;
+  secName.textContent = [
+    slides[index].dataset.name || '',
+    `s${diagnostic.scale}`,
+    diagnostic.contained ? 'FIT' : (diagnostic.fits ? 'SCROLL' : 'OVER'),
+    `x${diagnostic.contentLeft}:${diagnostic.contentRight}/${diagnostic.viewportWidth}`,
+    `y${diagnostic.contentTop}:${diagnostic.contentBottom}/${diagnostic.viewportHeight}`
+  ].join(' ');
+}
+
+function visibleText(element) {
+  const clone = element.cloneNode(true);
+  clone.querySelectorAll('.tiptext, [hidden], [aria-hidden="true"]').forEach((node) => node.remove());
+  return clone.textContent.replace(/\s+/g, ' ').trim();
+}
+
+function preferredReadableScale(slide) {
+  let floor = 0;
+  slide.querySelectorAll(BODY_FLOOR_SELECTOR).forEach((element) => {
+    if (visibleText(element)) floor = Math.max(floor, 24 / parseFloat(getComputedStyle(element).fontSize));
+  });
+  return Math.min(1, Math.ceil(floor * 100) / 100);
+}
+
+function frameScaleForSlide(slide) {
+  return slide.clientWidth && slide.clientHeight ? 1 : MIN_FIT_SCALE;
+}
+
+function applySlideScale(slide, scale) {
+  const content = slide.firstElementChild;
+  if (!content) return;
+  content.style.flex = '0 0 auto';
+  content.style.transformOrigin = 'top left';
+  content.style.transform = `scale(${scale})`;
+  content.style.width = `${100 / scale}%`;
+  content.style.height = `${100 / scale}%`;
+}
+
+function prepareScaleMeasurement(slide, scale) {
+  const content = slide.firstElementChild;
+  if (!content) return;
+  content.style.flex = '0 0 auto';
+  content.style.transformOrigin = 'top left';
+  content.style.transform = 'none';
+  content.style.width = `${100 / scale}%`;
+  content.style.height = `${100 / scale}%`;
+}
+
+function resetSlideScale(slide) {
+  slide.classList.remove('fit-contained', 'fit-scroll-fallback');
+  const content = slide.firstElementChild;
+  if (!content) return;
+  content.style.flex = '0 0 auto';
+  content.style.transformOrigin = 'top left';
+  content.style.transform = 'scale(1)';
+  content.style.width = '100%';
+  content.style.height = '100%';
+}
+
+function visibleContentBounds(slide) {
+  const slideRect = slide.getBoundingClientRect();
+  const initialBounds = {
+    top: slideRect.bottom,
+    right: slideRect.left,
+    bottom: slideRect.top,
+    left: slideRect.right
+  };
+  const includeRect = (bounds, rect) => {
+    if (!rect.width || !rect.height) return bounds;
+    return {
+      top: Math.min(bounds.top, rect.top),
+      right: Math.max(bounds.right, rect.right),
+      bottom: Math.max(bounds.bottom, rect.bottom),
+      left: Math.min(bounds.left, rect.left)
+    };
+  };
+  const walker = document.createTreeWalker(slide, NodeFilter.SHOW_TEXT);
+  const range = document.createRange();
+  let bounds = initialBounds;
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    if (!node.textContent.trim() || node.parentElement?.closest('.tiptext')) continue;
+    const style = getComputedStyle(node.parentElement);
+    if (style.display === 'none' || style.visibility === 'hidden') continue;
+    range.selectNodeContents(node);
+    for (const rect of range.getClientRects()) bounds = includeRect(bounds, rect);
+  }
+  range.detach();
+  return bounds;
+}
+
+function projectedTextBounds(slide, scale) {
+  const frame = slide.getBoundingClientRect();
+  const origin = slide.firstElementChild?.getBoundingClientRect() || frame;
+  const content = visibleContentBounds(slide);
+  const projected = {
+    top: origin.top + (content.top - origin.top) * scale,
+    right: origin.left + (content.right - origin.left) * scale,
+    bottom: origin.top + (content.bottom - origin.top) * scale,
+    left: origin.left + (content.left - origin.left) * scale
+  };
+  return {
+    bounds: projected,
+    fits: projected.top >= frame.top
+      && projected.right <= frame.right - FRAME_INSET
+      && projected.bottom <= frame.bottom - FRAME_INSET
+      && projected.left >= frame.left
+  };
+}
+
+function measureScale(slide, scale) {
+  prepareScaleMeasurement(slide, scale);
+  return projectedTextBounds(slide, scale);
+}
+
+function fitSlideWithinFrame(slide, frameScale) {
+  const probe = frameScale;
+
+  const probeResult = measureScale(slide, probe);
+  const probeFits = probeResult.fits;
+  let lower = MIN_FIT_SCALE;
+  let upper = probeFits ? frameScale : probe;
+  let best = probeFits ? probe : null;
+
+  if (!probeFits) {
+    const minimumResult = measureScale(slide, MIN_FIT_SCALE);
+    if (!minimumResult.fits) {
+      applySlideScale(slide, MIN_FIT_SCALE);
+      return { scale: MIN_FIT_SCALE, fits: false, bounds: minimumResult.bounds };
+    }
+    best = MIN_FIT_SCALE;
+  } else {
+    lower = probe;
+  }
+
+  for (let iteration = 0; iteration < FIT_SEARCH_ITERATIONS && upper - lower > 0.001; iteration += 1) {
+    const candidate = Math.round(((lower + upper) / 2) * 1000) / 1000;
+    const candidateResult = measureScale(slide, candidate);
+    if (candidateResult.fits) {
+      best = candidate;
+      lower = candidate;
+    } else {
+      upper = candidate;
+    }
+  }
+
+  const scale = best ?? MIN_FIT_SCALE;
+  const finalResult = measureScale(slide, scale);
+  applySlideScale(slide, scale);
+  return { scale, fits: finalResult.fits, bounds: finalResult.bounds };
+}
+
+function fitCurrentSlide() {
+  if (FIT_DEBUG) secName.textContent = 'FITTING';
+  const index = cur;
+  const slide = slides[index];
+  resetSlideScale(slide);
+  slide.classList.add('fit-measuring');
+  try {
+    const preferredFloor = preferredReadableScale(slide);
+    const frameScale = frameScaleForSlide(slide);
+    const result = fitSlideWithinFrame(slide, frameScale);
+    const { scale, fits, bounds } = result;
+    const responsiveStack = matchMedia('(max-width: 900px)').matches;
+    const contained = fits && (!responsiveStack || scale >= preferredFloor);
+    slide.dataset.fitScale = scale.toFixed(2);
+    const frame = slide.getBoundingClientRect();
+    const diagnostic = {
+      name: slide.dataset.name || '',
+      scale: Number(scale.toFixed(2)),
+      frameScale,
+      preferredFloor,
+      belowPreferredFloor: scale < preferredFloor,
+      fits,
+      contained,
+      viewportWidth: slide.clientWidth,
+      viewportHeight: slide.clientHeight,
+      clientWidth: slide.clientWidth,
+      clientHeight: slide.clientHeight,
+      scrollWidth: slide.scrollWidth,
+      scrollHeight: slide.scrollHeight,
+      contentTop: Math.round(bounds.top - frame.top),
+      contentRight: Math.round(bounds.right - frame.left),
+      contentBottom: Math.round(bounds.bottom - frame.top),
+      contentLeft: Math.round(bounds.left - frame.left)
+    };
+
+    if (contained) {
+      slide.classList.add('fit-contained');
+      window.__fdcFit.status = 'fitted';
+    } else {
+      resetSlideScale(slide);
+      slide.classList.add('fit-scroll-fallback');
+      window.__fdcFit.status = 'scroll-fallback';
+    }
+    window.__fdcFit.runs += 1;
+    window.__fdcFit.slides[index] = diagnostic;
+    updateFitDebug(index);
+  } catch (error) {
+    resetSlideScale(slide);
+    slide.classList.add('fit-scroll-fallback');
+    window.__fdcFit.status = 'fit-error';
+    console.error('slide fitting failed', error);
+    if (FIT_DEBUG) secName.textContent = `FIT ERROR ${error.message}`;
+  } finally {
+    slide.classList.remove('fit-measuring');
+  }
+}
+
+function fitSlides() {
+  fitCurrentSlide();
+}
+window.refitPresentationSlides = fitSlides;
+window.refitFdcSlides = fitSlides; // shared-shell compatibility
+
+function scheduleFit() {
+  hideTooltip();
+  if (fitFrame !== null) return;
+  fitFrame = requestAnimationFrame(() => {
+    fitFrame = null;
+    fitSlides();
+  });
+}
+
+function initialiseSlideFitting() {
+  fitSlides();
+  if (!document.fonts) return;
+  document.fonts.ready.then(fitSlides).catch((error) => {
+    console.warn('font readiness failed', error);
+  });
+  document.fonts.addEventListener?.('loadingdone', fitSlides);
+}
+window.addEventListener('resize', scheduleFit);
+window.addEventListener('message', (event) => {
+  if (event.origin === location.origin && event.data === 'mint-presentation-resize') scheduleFit();
+});
+initialiseSlideFitting();
+
+
+</script>
+
+
+</body></html>
