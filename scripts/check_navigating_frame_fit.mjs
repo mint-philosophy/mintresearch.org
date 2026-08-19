@@ -37,6 +37,10 @@ assert.ok(deck.includes('.vlabel { display: none; }'), 'side labels must disappe
 assert.ok(deck.includes("document.createElement('button')"), 'slide dots must be semantic buttons');
 assert.ok(deck.includes("d.setAttribute('aria-label','Go to slide '+(i+1))"), 'slide dots must have accessible labels');
 assert.ok(deck.includes("d.setAttribute('aria-current',active?'true':'false')"), 'slide dots must expose current state');
+assert.ok(deck.includes("background-image: url('/favicon-32x32.png');"), 'slide location buttons must use the canonical Minty favicon squid');
+assert.ok(deck.includes('filter: grayscale(1) saturate(0);'), 'inactive Minty slide markers must be desaturated');
+assert.ok(deck.includes('.nav-dot.active { filter: none; opacity: 1; transform: scale(1.08); }'), 'the current-slide Minty marker must be fully saturated');
+assert.ok(deck.includes('.nav-dot:focus-visible'), 'Minty slide markers must retain a visible keyboard focus treatment');
 assert.ok(deck.includes('animation: scroll-ticker 55s linear infinite;'), 'the authored chyron must retain its continuous scrolling animation');
 assert.ok(!deck.includes('.ticker-track { animation: none; }'), 'the navigating conversion must not suppress the authored chyron');
 assert.ok(!deck.includes('.slide, .progress-fill, .nav-dot { transition: none; }'), 'the navigating conversion must not suppress the authored navigation effects');
@@ -58,7 +62,7 @@ assert.ok(deck.includes('window.refitFdcSlides = fitSlides'), 'deck must retain 
 
 assert.ok(!/<meta name="robots" content="[^"]*noindex/.test(wrapper), 'listed wrapper must remain indexable');
 assert.ok(wrapper.includes('data-presentation-path="/navigating/"'), 'wrapper must publish its canonical path to the shell');
-assert.ok(wrapper.includes('src="deck.html?v=20260819.3"'), 'wrapper must bypass stale deck caches');
+assert.ok(wrapper.includes('src="deck.html?v=20260819.4"'), 'wrapper must bypass stale deck caches');
 assert.ok(shellScript.includes('frame.contentWindow.refitFdcSlides?.()'), 'shared shell must call the compatibility refit hook');
 
 console.log('Navigating frame-fit contract passed: corrected chrome, responsive layout, semantic navigation, and bounded text fitting.');

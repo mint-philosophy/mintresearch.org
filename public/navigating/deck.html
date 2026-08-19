@@ -146,10 +146,20 @@ nav {
   padding: 0 24px; z-index: 100;
   font-family: var(--mono); font-size: 16px; text-transform: uppercase; letter-spacing: 2px;
 }
-.nav-dots { display: flex; gap: 4px; }
-.nav-dot { appearance: none; width: 14px; height: 14px; padding: 0; border: 2px solid var(--black); background: transparent; cursor: pointer; transition: background 0.15s; }
-.nav-dot:hover { background: var(--teal); }
-.nav-dot.active { background: var(--black); }
+.nav-dots { display: flex; align-items: center; gap: 2px; }
+.nav-dot {
+  appearance: none; width: 20px; height: 24px; padding: 0; border: 0;
+  background-color: transparent;
+  background-image: url('/favicon-32x32.png');
+  background-repeat: no-repeat; background-position: center; background-size: 18px 18px;
+  filter: grayscale(1) saturate(0); opacity: 0.32; transform: scale(0.94);
+  cursor: pointer;
+  transition: filter 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
+}
+.nav-dot:hover { opacity: 0.65; transform: scale(1); }
+.nav-dot.active { filter: none; opacity: 1; transform: scale(1.08); }
+.nav-dot:focus-visible { outline: 2px solid var(--black); outline-offset: 1px; opacity: 0.8; }
+.nav-dot.active:focus-visible { opacity: 1; }
 .nav-section { color: var(--mid); margin-left: 12px; }
 .nav-right { color: var(--light); }
 .nav-right kbd { border: 1px solid var(--mid); padding: 2px 6px; font-family: var(--mono); font-size: 15px; }
@@ -288,8 +298,8 @@ nav {
   nav { height: var(--nav-h); padding: 0 14px; font-size: 13px; }
   nav > div:first-child { flex: 0 0 auto; white-space: nowrap; }
   nav > div:nth-child(2) { min-width: 0; }
-  .nav-dot { width: 10px; height: 10px; }
-  .nav-dots { gap: 3px; }
+  .nav-dot { width: 15px; height: 18px; background-size: 14px 14px; }
+  .nav-dots { gap: 1px; }
   .nav-section { display: none; }
   .nav-right { font-size: 12px; }
   .nav-right kbd { font-size: 12px; padding: 1px 4px; }
