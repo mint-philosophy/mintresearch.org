@@ -18,6 +18,11 @@ assert.ok(deck.includes('overall impact on society, e.g. Transformative AI'), 's
 assert.ok(!deck.includes('<h3>Internalist AGI</h3>'), 'slide three must not retain the superseded internalist heading');
 assert.ok(!deck.includes('<h3>Behavioural AGI</h3>'), 'slide three must not retain the superseded behavioural heading');
 assert.ok(!deck.includes('<h3>Transformative AI</h3>'), 'slide three must not retain the superseded transformative heading');
+assert.equal((deck.match(/<div class="cap-card fi d\d">/g) || []).length, 4, 'slide seven must contain four editable-source capacity panels');
+assert.ok(deck.includes('<div class="cap-label">What should we align to?!</div>'), 'slide seven must include the new alignment-question panel heading');
+assert.ok(deck.includes('A whole new field of normative ethics beckons.'), 'slide seven must include the saved PowerPoint panel text');
+assert.ok(!deck.includes('LOREM IPSUM'), 'slide seven must not retain the placeholder panel heading');
+assert.ok(!deck.includes('Lorem ipsum dolor sit amet'), 'slide seven must not retain placeholder panel text');
 assert.ok(deck.includes('--teal: #2DD4BF'), 'deck must use the approved teal accent');
 assert.ok(!deck.includes('--yellow'), 'navigating deck must not retain the old yellow token');
 assert.ok(!deck.includes('The AGI-Ready Policy Student'), 'navigating deck must not retain the old title');
@@ -51,7 +56,7 @@ assert.ok(deck.includes('window.refitFdcSlides = fitSlides'), 'deck must retain 
 
 assert.ok(wrapper.includes('<meta name="robots" content="noindex, nofollow">'), 'unlisted wrapper must remain noindex');
 assert.ok(wrapper.includes('data-presentation-path="/navigating/"'), 'wrapper must publish its canonical path to the shell');
-assert.ok(wrapper.includes('src="deck.html?v=20260819.1"'), 'wrapper must bypass stale deck caches');
+assert.ok(wrapper.includes('src="deck.html?v=20260819.2"'), 'wrapper must bypass stale deck caches');
 assert.ok(shellScript.includes('frame.contentWindow.refitFdcSlides?.()'), 'shared shell must call the compatibility refit hook');
 
 console.log('Navigating frame-fit contract passed: corrected chrome, responsive layout, semantic navigation, and bounded text fitting.');
