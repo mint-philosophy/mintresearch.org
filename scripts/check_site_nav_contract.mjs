@@ -60,6 +60,21 @@ for (const page of fallbackPages) {
   assert.equal((html.match(/href="\/navigating\/"/g) || []).length, 1, `${page} fallback must list Navigating the AGI Reckoning once`);
   assert.equal((html.match(/Navigating the AGI Reckoning/g) || []).length, 1, `${page} fallback must use the current Navigating title once`);
 }
+const aiCultureFallbackPages = [
+  'public/agent-reports/index.html',
+  'public/ai-culture/index.html',
+  'public/corpus-map/index.html',
+  'public/cv/index.html',
+  'public/data-dash/index.html',
+  'public/governing-with-agents/index.html',
+  'public/guide/index.html',
+  'public/index.html',
+  'public/newsletter/index.html'
+];
+for (const page of aiCultureFallbackPages) {
+  const html = fs.readFileSync(page, 'utf8');
+  assert.equal((html.match(/AI \(etc\) in Culture/g) || []).length, 1, `${page} fallback must use the current AI culture menu label once`);
+}
 const presentationShell = fs.readFileSync('public/assets/presentation-shell.js', 'utf8');
 assert.ok(presentationShell.includes('data-mint-site-nav'), 'presentation shell must expose the shared-navigation mount');
 assert.ok(presentationShell.includes('<div class="top-banner" aria-label="MINT Lab masthead"></div>'), 'presentation shell must use an empty shared-banner mount');
@@ -182,7 +197,7 @@ const ids = canonical.map((item) => item.id).filter(Boolean);
 assert.equal(new Set(ids).size, ids.length, 'canonical navigation ids must be unique');
 assert.ok(!canonical.some((item) => item.id === 'agent-reports'), 'Agent Reports must not occupy primary navigation');
 assert.ok(canonical.some((item) => item.id === 'governing-with-agents' && item.href === '/governing-with-agents/'), 'Governing with Agents must be listed under microsites');
-assert.ok(canonical.some((item) => item.id === 'ai-culture' && item.href === '/ai-culture/' && item.label === 'AI (etc)'), 'AI (etc) must be listed under microsites');
+assert.ok(canonical.some((item) => item.id === 'ai-culture' && item.href === '/ai-culture/' && item.label === 'AI (etc) in Culture'), 'AI (etc) in Culture must be listed under microsites');
 assert.ok(canonical.some((item) => item.id === 'navigating-agi-reckoning' && item.href === '/navigating/' && item.label === 'Navigating the AGI Reckoning'), 'Navigating the AGI Reckoning must be listed under microsites');
 assert.ok(canonical.some((item) => item.id === 'about-papers' && item.label === 'Papers'), 'homepage section must use Papers');
 assert.ok(!canonical.some((item) => item.href === '/reports/ai-in-war/'), 'primary navigation must not enumerate report leaves');
