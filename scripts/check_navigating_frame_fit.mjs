@@ -9,6 +9,8 @@ assert.equal((deck.match(/<div class="slide(?: active)?" data-name=/g) || []).le
 assert.equal((deck.match(/<div class="slide active" data-name=/g) || []).length, 1, 'exactly one slide must be active initially');
 assert.ok(deck.includes('Navigating the AGI Reckoning'), 'deck must use the edited title');
 assert.ok(deck.includes('A different kind of applied philosophy.'), 'deck must include the edited closing claim');
+assert.ok(deck.includes('Into this comes <span class="highlight"><strong>math that wakes sand up.</strong></span>'), 'slide two must keep the highlighted phrase inline with its sentence');
+assert.ok(!deck.includes('<p class="fi d3"><span class="highlight"><strong>math that wakes sand up.</strong></span></p>'), 'slide two must not force the highlighted phrase into a standalone paragraph');
 assert.ok(deck.includes('--teal: #2DD4BF'), 'deck must use the approved teal accent');
 assert.ok(!deck.includes('--yellow'), 'navigating deck must not retain the old yellow token');
 assert.ok(!deck.includes('The AGI-Ready Policy Student'), 'navigating deck must not retain the old title');
@@ -42,7 +44,7 @@ assert.ok(deck.includes('window.refitFdcSlides = fitSlides'), 'deck must retain 
 
 assert.ok(wrapper.includes('<meta name="robots" content="noindex, nofollow">'), 'unlisted wrapper must remain noindex');
 assert.ok(wrapper.includes('data-presentation-path="/navigating/"'), 'wrapper must publish its canonical path to the shell');
-assert.ok(wrapper.includes('src="deck.html?v=20260818.1"'), 'wrapper must bypass stale deck caches');
+assert.ok(wrapper.includes('src="deck.html?v=20260818.2"'), 'wrapper must bypass stale deck caches');
 assert.ok(shellScript.includes('frame.contentWindow.refitFdcSlides?.()'), 'shared shell must call the compatibility refit hook');
 
 console.log('Navigating frame-fit contract passed: corrected chrome, responsive layout, semantic navigation, and bounded text fitting.');
