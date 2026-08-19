@@ -23,6 +23,10 @@ assert.ok(deck.includes('<div class="cap-label">What should we align to?!</div>'
 assert.ok(deck.includes('A whole new field of normative ethics beckons.'), 'slide seven must include the saved PowerPoint panel text');
 assert.ok(!deck.includes('LOREM IPSUM'), 'slide seven must not retain the placeholder panel heading');
 assert.ok(!deck.includes('Lorem ipsum dolor sit amet'), 'slide seven must not retain placeholder panel text');
+assert.ok(deck.includes('First big question: ought we build it at all? Obvious but under-examined; less so now the backlash has begun'), 'slide eight must include the saved PowerPoint build-it question');
+assert.ok(deck.includes('How can we advance safely towards AGI without excessively concentrating power?'), 'slide eight must include the saved PowerPoint decentralisation question');
+assert.ok(!deck.includes('Supporting delegated agent access is crucial for this, so is supporting access to open weights models'), 'slide eight must not retain the superseded delegated-access text');
+assert.ok(!deck.includes('Regulatory proposals must be weighed in part for how much they contribute to concentration of power'), 'slide eight must not retain the superseded regulatory-proposals text');
 assert.ok(deck.includes('--teal: #2DD4BF'), 'deck must use the approved teal accent');
 assert.ok(!deck.includes('--yellow'), 'navigating deck must not retain the old yellow token');
 assert.ok(!deck.includes('The AGI-Ready Policy Student'), 'navigating deck must not retain the old title');
@@ -74,7 +78,7 @@ assert.ok(deck.includes('window.refitFdcSlides = fitSlides'), 'deck must retain 
 
 assert.ok(!/<meta name="robots" content="[^"]*noindex/.test(wrapper), 'listed wrapper must remain indexable');
 assert.ok(wrapper.includes('data-presentation-path="/navigating/"'), 'wrapper must publish its canonical path to the shell');
-assert.ok(wrapper.includes('src="deck.html?v=20260819.6"'), 'wrapper must bypass stale deck caches');
+assert.ok(wrapper.includes('src="deck.html?v=20260819.7"'), 'wrapper must bypass stale deck caches');
 assert.ok(shellScript.includes('frame.contentWindow.refitFdcSlides?.()'), 'shared shell must call the compatibility refit hook');
 
 console.log('Navigating frame-fit contract passed: corrected chrome, responsive layout, semantic navigation, and bounded text fitting.');
