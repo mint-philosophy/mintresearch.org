@@ -135,8 +135,16 @@ blockquote cite { display: block; font-style: normal; font-family: var(--mono); 
   text-transform: uppercase; letter-spacing: 2px;
   animation: scroll-ticker 55s linear infinite;
 }
-.ticker-track span { opacity: 0.6; }
-.ticker-track span::after { content: ' · '; opacity: 0.3; margin: 0 12px; }
+.ticker-link {
+  appearance: none; flex: 0 0 auto; padding: 2px 0; border: 0;
+  background: transparent; color: inherit; font: inherit;
+  text-transform: inherit; letter-spacing: inherit;
+  opacity: 0.6; cursor: pointer;
+}
+.ticker-link::after { content: ' · '; opacity: 0.3; margin: 0 12px; }
+.ticker-link:hover { opacity: 1; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.ticker-link:focus-visible { opacity: 1; outline: 2px solid var(--black); outline-offset: 2px; }
+.ticker:hover .ticker-track, .ticker:focus-within .ticker-track { animation-play-state: paused; }
 @keyframes scroll-ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
 nav {
@@ -331,10 +339,10 @@ nav {
 <body>
 
 <div id="tooltip-overlay" role="tooltip"></div>
-<div class="ticker" aria-hidden="true">
+<div class="ticker" role="navigation" aria-label="Slide topics">
   <div class="ticker-track">
-    <span>Background Assumptions</span><span>Definitions of AGI</span><span>Concrete Waypoints</span><span>Core Question</span><span>Steering the Transition</span><span>Moral Competence</span><span>Decentralisation</span><span>Societal Adaptation</span><span>Applied Philosophy</span>
-    <span>Background Assumptions</span><span>Definitions of AGI</span><span>Concrete Waypoints</span><span>Core Question</span><span>Steering the Transition</span><span>Moral Competence</span><span>Decentralisation</span><span>Societal Adaptation</span><span>Applied Philosophy</span>
+    <button type="button" class="ticker-link" data-slide="1" aria-label="Go to slide 2: Background Assumptions">Background Assumptions</button><button type="button" class="ticker-link" data-slide="2" aria-label="Go to slide 3: Definitions of AGI">Definitions of AGI</button><button type="button" class="ticker-link" data-slide="3" aria-label="Go to slide 4: Concrete Waypoints">Concrete Waypoints</button><button type="button" class="ticker-link" data-slide="4" aria-label="Go to slide 5: Core Question">Core Question</button><button type="button" class="ticker-link" data-slide="5" aria-label="Go to slide 6: Steering the Transition">Steering the Transition</button><button type="button" class="ticker-link" data-slide="6" aria-label="Go to slide 7: Moral Competence">Moral Competence</button><button type="button" class="ticker-link" data-slide="7" aria-label="Go to slide 8: Decentralisation">Decentralisation</button><button type="button" class="ticker-link" data-slide="8" aria-label="Go to slide 9: Societal Adaptation">Societal Adaptation</button><button type="button" class="ticker-link" data-slide="9" aria-label="Go to slide 10: Applied Philosophy">Applied Philosophy</button>
+    <button type="button" class="ticker-link" data-slide="1" aria-label="Go to slide 2: Background Assumptions">Background Assumptions</button><button type="button" class="ticker-link" data-slide="2" aria-label="Go to slide 3: Definitions of AGI">Definitions of AGI</button><button type="button" class="ticker-link" data-slide="3" aria-label="Go to slide 4: Concrete Waypoints">Concrete Waypoints</button><button type="button" class="ticker-link" data-slide="4" aria-label="Go to slide 5: Core Question">Core Question</button><button type="button" class="ticker-link" data-slide="5" aria-label="Go to slide 6: Steering the Transition">Steering the Transition</button><button type="button" class="ticker-link" data-slide="6" aria-label="Go to slide 7: Moral Competence">Moral Competence</button><button type="button" class="ticker-link" data-slide="7" aria-label="Go to slide 8: Decentralisation">Decentralisation</button><button type="button" class="ticker-link" data-slide="8" aria-label="Go to slide 9: Societal Adaptation">Societal Adaptation</button><button type="button" class="ticker-link" data-slide="9" aria-label="Go to slide 10: Applied Philosophy">Applied Philosophy</button>
   </div>
 </div>
 
@@ -573,8 +581,15 @@ for(let i=0;i<total;i++){
 }
 function hideTooltip(){overlay.style.display='none';activeTip=null;}
 function go(n){if(n<0||n>=total||n===cur)return;hideTooltip();slides[cur].classList.remove('active');cur=n;slides[cur].classList.add('active');document.querySelectorAll('.nav-dot').forEach((d,i)=>{const active=i===n;d.classList.toggle('active',active);d.setAttribute('aria-current',active?'true':'false');});prog.style.width=((n/(total-1))*100)+'%';counter.textContent=(n+1)+' / '+total;secName.textContent=slides[n].dataset.name||'';fitSlides();}
+document.querySelectorAll('.ticker-link').forEach((button)=>{
+  button.addEventListener('click',(event)=>{
+    go(Number(button.dataset.slide));
+    if(event.detail>0)button.blur();
+  });
+});
 document.addEventListener('click',e=>{if(!e.target.closest('.tip')&&!e.target.closest('#tooltip-overlay'))hideTooltip();});
 document.addEventListener('keydown',e=>{
+  if(e.target.closest('button, a, input, textarea, select'))return;
   // In edit mode, don't hijack arrow keys (needed for text cursor)
   if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(cur+1);}
   else if(e.key==='ArrowLeft'){e.preventDefault();go(cur-1);}

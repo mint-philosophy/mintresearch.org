@@ -46,6 +46,15 @@ assert.ok(deck.includes('<div class="nav-tail">'), 'the changing section title a
 assert.ok(deck.includes('text-overflow: ellipsis;'), 'long footer titles must shrink without displacing the Minty markers');
 assert.ok(deck.includes('animation: scroll-ticker 55s linear infinite;'), 'the authored chyron must retain its continuous scrolling animation');
 assert.ok(!deck.includes('.ticker-track { animation: none; }'), 'the navigating conversion must not suppress the authored chyron');
+assert.equal((deck.match(/class="ticker-link"/g) || []).length, 18, 'both visual chyron cycles must expose all nine slide-topic buttons');
+for (let slide = 1; slide <= 9; slide += 1) {
+  assert.equal((deck.match(new RegExp(`data-slide="${slide}"`, 'g')) || []).length, 2, `slide ${slide + 1} must be linked from both chyron cycles`);
+}
+assert.ok(deck.includes('role="navigation" aria-label="Slide topics"'), 'the interactive chyron must be exposed as slide navigation');
+assert.ok(deck.includes('.ticker:hover .ticker-track, .ticker:focus-within .ticker-track { animation-play-state: paused; }'), 'the chyron must pause while a person is targeting a topic');
+assert.ok(deck.includes("document.querySelectorAll('.ticker-link').forEach"), 'every chyron topic must receive slide navigation behavior');
+assert.ok(deck.includes('if(event.detail>0)button.blur();'), 'pointer activation must release focus so the chyron resumes after hover');
+assert.ok(deck.includes("if(e.target.closest('button, a, input, textarea, select'))return;"), 'deck-level keyboard shortcuts must not override interactive controls');
 assert.ok(!deck.includes('.slide, .progress-fill, .nav-dot { transition: none; }'), 'the navigating conversion must not suppress the authored navigation effects');
 assert.equal((deck.match(/class="tiptext"/g) || []).length, 3, 'only the three source-grounded waypoint tooltips should be live');
 
@@ -65,7 +74,7 @@ assert.ok(deck.includes('window.refitFdcSlides = fitSlides'), 'deck must retain 
 
 assert.ok(!/<meta name="robots" content="[^"]*noindex/.test(wrapper), 'listed wrapper must remain indexable');
 assert.ok(wrapper.includes('data-presentation-path="/navigating/"'), 'wrapper must publish its canonical path to the shell');
-assert.ok(wrapper.includes('src="deck.html?v=20260819.5"'), 'wrapper must bypass stale deck caches');
+assert.ok(wrapper.includes('src="deck.html?v=20260819.6"'), 'wrapper must bypass stale deck caches');
 assert.ok(shellScript.includes('frame.contentWindow.refitFdcSlides?.()'), 'shared shell must call the compatibility refit hook');
 
 console.log('Navigating frame-fit contract passed: corrected chrome, responsive layout, semantic navigation, and bounded text fitting.');
