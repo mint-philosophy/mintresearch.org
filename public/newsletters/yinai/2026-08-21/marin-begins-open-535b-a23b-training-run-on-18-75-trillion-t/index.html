@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Marin puts a 535B training run in public view — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-08-21">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-08-21">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 21 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Marin puts a 535B training run in public view</h1>
+<p class="dek">Percy Liang's open lab has begun a roughly three-month mixture-of-experts run on Blackwell GPUs, publishing its run plan, model specification, data inventory, scaling forecasts, and live telemetry.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 21 August 2026</span> <span class="chip">300 words · ~2 min</span></div>
+<div class="article-body">
+<p>On X, <a href="https://x.com/percyliang/status/2090918065634684997">Percy Liang announced</a> that Marin has started its largest training run: a 535 billion parameter mixture-of-experts model with 23 billion parameters active per token. The roughly three-month run will process 18.75 trillion tokens on eleven NVIDIA GB200 NVL72 systems, each containing <a href="https://www.nvidia.com/en-us/data-center/gb200-nvl72/">72 Blackwell GPUs</a>, for about 2.7 × 10<sup>24</sup> FLOPs. Marin plans to devote 80 percent of the compute to pretraining and 20 percent to midtraining, followed by post-training.</p><p>A public <a href="https://github.com/marin-community/marin/issues/8435">GitHub issue</a> gives the engineering plan. Sequence length begins at 4,000 tokens, rises to 8,000 halfway through pretraining and about 65,000 near its end, then reaches a targeted 262,000-token long-context phase. The 48-layer model routes each token through 8 of 384 experts and two shared experts. Marin wrote its own expert-parallel implementation for JAX on GPUs and uses a Muon-variant optimizer on most weight matrices.</p><p>Before launch, the team trained a four-rung scaling ladder, from 1.6B-A61M on 48 billion tokens to 27.7B-A1.2B on 926 billion. The ladder cost about 1 percent of the full run's compute and forecast loss and evaluations for intermediate checkpoints. On an earlier run, it exposed gradient norms rising above 4 as training length increased; a logit z-loss prevented the high-batch-size runs from failing and now forms part of the 535B model's loss. A public <a href="https://wandb.ai/marin-community/marin_moe/reports/535B-A23B-18T-Token-Hero-Run-Scaling-Ladder--VmlldzoxNzc2MDM5Ng">Weights &amp; Biases report</a> streams throughput, token dropping, gradient norms, and loss.</p><p><a href="https://marin.community/">Marin</a> also published a <a href="https://storage.googleapis.com/marin-public/held/harrier-k40-cluster-overview/2026.08.18/index.html?revision=uniform-sampling">dashboard for the Harrier candidate store</a>: 23.11 trillion tokens divided among forty semantic domains and five quality buckets, with sampling shares and decoded examples open to inspection. Marin's earlier models trained on Google TPU Research Cloud hardware; a <a href="https://opensource.googleblog.com/2025/12/training-marin-32b-what-an-open-lab-can-build-with-tpus-jax-and-a-little-persistence.html">Google retrospective</a> describes the 32B run on preemptible TPU slices. The new run moves the lab's JAX stack onto Blackwell GPUs while retaining the public-development model Marin <a href="https://marin.community/blog/2025/05/19/announcement/">announced in 2025</a>.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://x.com/percyliang/status/2090918065634684997">Marin 535B-A23B started training this week: Percy Liang on X</a> <span class="how">— Primary announcement; supplies the model scale, token horizon, compute split, hardware count, duration, FLOPs, and scaling-ladder sizes.</span></li>
+<li><a href="https://github.com/marin-community/marin/issues/8435">[Hero Run] 535B-A23B on 18T tokens: marin-community/marin issue #8435</a> <span class="how">— Supplies the run plan, sequence schedule, model specification, optimizer, expert-parallel implementation, scaling-ladder rationale, gradient-norm finding, and z-loss fix.</span></li>
+<li><a href="https://wandb.ai/marin-community/marin_moe/reports/535B-A23B-18T-Token-Hero-Run-Scaling-Ladder--VmlldzoxNzc2MDM5Ng">535B-A23B 18T Token Hero Run + Scaling Ladder: Weights &amp; Biases</a> <span class="how">— Verifies the public telemetry surface and its throughput, token-dropping, gradient-norm, and loss charts.</span></li>
+<li><a href="https://storage.googleapis.com/marin-public/held/harrier-k40-cluster-overview/2026.08.18/index.html?revision=uniform-sampling">Harrier candidate store, K40 x Q5 domain and quality overview</a> <span class="how">— Verifies the 23.11-trillion-token candidate store, forty domains, five quality buckets, sampling shares, and decoded examples.</span></li>
+<li><a href="https://marin.community/blog/2025/05/19/announcement/">Introducing Marin: An Open Lab for Building Foundation Models</a> <span class="how">— Verifies Marin's 2025 launch and its public-development model.</span></li>
+<li><a href="https://marin.community/">Marin homepage</a> <span class="how">— Verifies Marin's public releases and open-lab description.</span></li>
+<li><a href="https://opensource.googleblog.com/2025/12/training-marin-32b-what-an-open-lab-can-build-with-tpus-jax-and-a-little-persistence.html">Training Marin 32B: What an open lab can build with TPUs, JAX, and a little persistence</a> <span class="how">— Verifies the earlier 32B model's use of TPU Research Cloud hardware and preemptible TPU slices.</span></li>
+<li><a href="https://www.nvidia.com/en-us/data-center/gb200-nvl72/">NVIDIA GB200 NVL72</a> <span class="how">— Verifies that each NVL72 system contains 72 Blackwell GPUs.</span></li>
+<li><a href="https://profiles.stanford.edu/percy-liang">Percy Liang: Stanford Profiles</a> <span class="how">— Verifies Liang's directorship of Stanford's Center for Research on Foundation Models.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-marin-begins-open-535b-a23b-training-run-on-18-75-trillion-t">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-21/marin-begins-open-535b-a23b-training-run-on-18-75-trillion-t</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

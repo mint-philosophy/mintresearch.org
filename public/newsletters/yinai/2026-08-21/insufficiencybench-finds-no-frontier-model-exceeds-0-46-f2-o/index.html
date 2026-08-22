@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>InsufficiencyBench tests whether legal models know when to ask — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-08-21">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-08-21">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 21 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">InsufficiencyBench tests whether legal models know when to ask</h1>
+<p class="dek">Attorneys removed material facts from 58 complete legal queries; ten models mostly failed by answering without flagging the gaps, and GPT-5.2’s higher recall came with frequent false alarms.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 21 August 2026</span> <span class="chip">456 words · ~2 min</span></div>
+<div class="article-body">
+<p>In the August 20 arXiv preprint <a href="https://arxiv.org/abs/2608.20220v1">“InsufficiencyBench: Evaluating LLM legal advice on underspecified user queries,”</a> Samuel J. Vincent, Daniel Calloway, Fangyi Yu, Andrew M. Bean, and Nabeel Seedat of Thomson Reuters Foundational Research, with Bean and Seedat also at Imperial College London, begin: “Before a lawyer answers a legal question, they usually ask another one.” A noncompete is generally void in California under Business and Professions Code §16600 yet enforceable subject to reformation in Texas. A model that silently assumes a state can therefore recite the law accurately and still advise the client wrongly. The authors call the failure <em>premature legal closure</em> and test whether models recognize when a safe final answer requires more facts. Earlier benchmarks, including Neel Guha and colleagues’ 162-task <a href="https://arxiv.org/abs/2308.11462">LegalBench</a>, assume well-specified inputs.</p><p>Two practising attorneys wrote 58 complete queries across six legal domains and 24 US jurisdictions, tagging 541 legally material elements sentence by sentence. Deleting sentences that supplied an element produced 144 deficient variants. The benchmark groups eight kinds of omissions by their legal effect. Switch elements change the governing framework, as jurisdiction does for a noncompete; gating elements determine whether a framework applies, as an employer’s size does under Title VII; fatal prerequisites defeat a remedy inside an applicable framework, as unpaid rent can do in a Texas habitability claim. An LLM judge credits a response for asking about, conditioning on, or expressly identifying each missing element. Recall receives more weight than precision because overlooking a material fact can cause more harm than asking an unnecessary question; two alternate judges produced similar conclusions.</p><p>All ten models received one minimal instruction: “You are a legal assistant. Please answer the query.” Silence drove the low scores because models that identified a gap usually explained it reasonably well, yet most seldom flagged one. GPT-5.2 flagged 86.8 percent of deficient queries and fabricated conclusions in fewer than one in ten, but it also flagged missing information in 72.4 percent of complete queries. DeepSeek-V4-Pro flagged 36.1 percent, answered 63.9 percent without acknowledging a gap, and fabricated conclusions that depended on absent facts in 30.2 percent. Models hedged at roughly fixed rates across query types. Recall averaged 0.635 when controlling text was missing but 0.09 for missing procedural posture; three models scored zero on that category. Explanation accuracy ranged from 0.63 to 0.77.</p><p>The authors identify four principal limits: 202 items, six US common-law domains, single-turn interaction, and moderate inter-judge agreement. They promise data and code upon acceptance. Their discussion links the result to the Institute for the Advancement of the American Legal System’s Building a Better Bar study, which treats issue spotting in incomplete client stories as a core lawyering skill. Current models, they write, “follow the user’s account while missing the filter.”</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2608.20220v1">InsufficiencyBench: Evaluating LLM legal advice on underspecified user queries — arXiv:2608.20220v1</a> <span class="how">— Primary source; full 10-page PDF read. Supplies authors and affiliations (verified on page 1), the premature-legal-closure framing, noncompete/Title VII/Texas habitability examples, taxonomy, dataset construction (two attorneys, 58 base queries, 144 variants, 541 elements, six domains, 24 jurisdictions), scoring design and F2 rationale, judge robustness (GPT-5 primary, two alternates), all results (hedge rates 86.8%/36.1%, 63.9% silent answers, 30.2% fabrication, category recalls 0.635/0.09, ExplAcc 0.63-0.77), limitations, IAALS connection, and all four verbatim quotes.</span></li>
+<li><a href="https://arxiv.org/abs/2308.11462">LegalBench: A Collaboratively Built Benchmark for Measuring Legal Reasoning in Large Language Models — arXiv:2308.11462</a> <span class="how">— Verified for the one-sentence prior-benchmark contrast: title, Guha/Nyarko/Ho authorship, and 162 tasks hand-crafted with legal professionals. The claim that earlier benchmarks assume well-specified inputs is the assigned paper's argument and is attributed to its authors.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-insufficiencybench-finds-no-frontier-model-exceeds-0-46-f2-o">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-21/insufficiencybench-finds-no-frontier-model-exceeds-0-46-f2-o</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
