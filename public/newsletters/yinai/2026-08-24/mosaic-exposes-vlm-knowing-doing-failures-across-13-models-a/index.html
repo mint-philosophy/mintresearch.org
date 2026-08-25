@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>MOSAIC: social inference without coordinated behavior — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-08-24">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-08-24">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 24 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">MOSAIC: social inference without coordinated behavior</h1>
+<p class="dek">Two embodied agents, four signal channels, 200 trials per model: Tonglin Yan and colleagues found no vision-language model scoring significantly above chance at turning a theory-of-mind instruction into coordinated behavior, and one hybrid architecture that cleared every condition.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 24 August 2026</span> <span class="chip">483 words · ~2 min</span></div>
+<div class="article-body">
+<p>Tonglin Yan, Grégoire Sergeant-Perthuis, and David Rudrauf, of CIAMS at Université Paris-Saclay and CQSB at Sorbonne Université, posted <a href="https://arxiv.org/abs/2608.20975v1">Belief Without Behavior</a> to arXiv on August 21. Multimodal theory-of-mind benchmarks such as <a href="https://arxiv.org/abs/2408.12574">MuMA-ToM</a> ask models questions about video of other people; MOSAIC makes the model do the acting. Two embodied agents share a Unity environment holding two similar boxes, one with a reward. The subject agent, called Marie, knows which box; the participant does not, and after ten alternating rounds the box closer to the participant opens. Every third round adds a spoken exchange. Otherwise each agent receives a first-person render and a structured belief state, then returns a movement, a gaze direction, and an emotional expression across musculoskeletal, physiological, and felt channels.</p><p>Yan and colleagues run four 50-trial conditions crossing interaction mode with the reasoning assigned to the subject. Under ToM-0 it acts on its own preferences, so even in competition it walks toward the reward and leaks the location. Under ToM-1 it represents what the participant believes, which in competition means inverting its cues to steer the participant wrong. ToM Outcome Conformance scores every trial against the outcome theory predicts for its condition, with 0.5 as chance; positional bias runs beside it, since an agent that always turns the same way scores on where the reward landed.</p><p>Across 200 trials per model, no vision-language model scored significantly above chance in any condition. Among the VLMs every binomial test that reached significance pointed below it, Qwen3-VL-8b between 0.20 and 0.32, InternVL3.5-4b at 0.26 and 0.30. LLaVA-7b, LLaVA-13b and Qwen3-VL-2b could not move their agents at all in most trials. PCM-LLM, a hybrid architecture whose belief tracking sits outside the language model, scored 0.70 to 0.92.</p><p>Signal-level metrics separate two failures. InternVL3.5-14b produced high trajectory and gaze alignment in cooperative conditions while holding a flat face, a “poker-face strategy” in the authors’ phrase, and its participants ignored those cues, leaving signal sensitivity near zero. PCM-LLM cleared both stages, its sensitivity flipping from 0.90 under competitive ToM-0 to -0.44 when instructed to deceive. Scheirer-Ray-Hare tests returned no effect in 174 comparisons: no VLM varied its trajectory, gaze, or signal sensitivity with the ToM constraint, while PCM-LLM varied all three. The VLMs moved facial expressivity between cooperation and competition.</p><p>Example traces show where the coupling fails. One subject stated a preference for the light brown box and an intention to hint at it, then output “right forward” while the box lay to its left. A participant assigned +0.5 to the dark brown box at timestep zero, before Marie had moved, and never revised. Removing visual input from InternVL3.5-8b improved its directional signals in cooperative conditions.</p><p>The authors designed PCM-LLM as a feasibility reference; their <a href="https://hal.science/hal-05054281">2025 working paper</a> already had PCM agents winning a 3D strategic game through deception. The study restricts the comparison to open-source models capped at 15 billion parameters and includes no human baseline.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2608.20975v1">Belief Without Behavior: Measuring the Translation of Theory of Mind into Coordinated Social Action in Vision-Language Models — Yan, Sergeant-Perthuis, Rudrauf, arXiv:2608.20975v1</a> <span class="how">— Canonical assigned source and center of gravity. The on-disk fetch held only the abstract page, so the full paper was fetched and read end to end (main text plus Appendices A, C, F, G, H). Supplies: the Unity two-box setup, Marie/participant roles, 10 rounds with verbal exchange at R3/R6/R9, the action/verbal/preference-update modules, the 2x2 design at 50 trials per cell, TOCS with 0.5 chance and the positional-bias diagnostic, the signal metrics (TAS, GAS, FES, SSS), PCM-LLM's 0.70-0.92 TOCS, InternVL3.5-14b's high TAS/GAS with near-zero SSS, the 'poker-face strategy' phrase, PCM-LLM's SSS inversion from 0.90 to -0.44, the InternVL3.5-8b visual-ablation result, and every stated limitation.</span></li>
+<li><a href="https://arxiv.org/html/2608.20975v1">Belief Without Behavior — arXiv HTML (LaTeXML) full text</a> <span class="how">— The rendering actually read for full text and for the numeric tables. Table 3 (binomial tests, H0: TOCS=0.5, n=50 per cell) supplies every per-model TOCS cited and confirms that only PCM-LLM lands significantly above chance while all significant VLM cells fall below it. Table 5 (Scheirer-Ray-Hare, Bonferroni-corrected) supplies the 174 non-significant comparisons, the absence of any VLM ToM effect on TAS/GAS/SSS, PCM-LLM's ToM effects on all three, and the VLMs' facial-expressivity-by-mode effects. Appendix H supplies both reasoning-trace failures and the verbatim 'right forward' action output.</span></li>
+<li><a href="https://arxiv.org/abs/2408.12574">MuMA-ToM: Multi-modal Multi-Agent Theory of Mind — Shi, Ye, Fang, Jin, Isik, Kuo, Shu, arXiv:2408.12574</a> <span class="how">— Verified comparison point for the opening contrast, and one of the benchmarks MOSAIC tabulates in its Appendix B comparison. Read to confirm it is question answering over video and text of household multi-agent behavior, asking about goals, beliefs, and beliefs about goals, with the model positioned as observer rather than actor.</span></li>
+<li><a href="https://hal.science/hal-05054281">PCM-LLMS: a hybrid architecture to enhance human-like social intelligence in virtual agents — Yan, Sergeant-Perthuis, Rudrauf, HAL hal-05054281</a> <span class="how">— The reference architecture's own working paper, cited in MOSAIC's bibliography. The HAL landing page is behind an Anubis proof-of-work wall that blocked both plain HTTP and the headless OpenClaw profile, so the record was read through HAL's own API (api.archives-ouvertes.fr, halId_s:hal-05054281). Verified: identical three-author list, deposited 2 May 2025, and the abstract's claim that in a 3D strategic game PCM agents with higher-order theory of mind and controlled nonverbal expression 'gained significant advantages through deception'. Also confirmed the lab names behind the paper's acronyms (CIAMS; Biologie Computationnelle, Quantitative et Synthétique, ex LCQB).</span></li>
+<li><a href="https://arxiv.org/abs/2104.07053">Combining the Projective Consciousness Model and Virtual Humans to assess ToM capacity in Virtual Reality: a proof-of-concept — Rudrauf, Sergeant-Perthuis, Tisserand, Monnor, Belli, arXiv:2104.07053</a> <span class="how">— Read for lineage: the 2021 precursor in which this group used PCM-driven virtual humans in VR to classify behavior by theory-of-mind order. It established that MOSAIC's environment descends from the group's own prior paradigm. Not cited in the body, where the 2025 PCM-LLM working paper carries the point more directly; available if the desk wants a deeper lineage link.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-mosaic-exposes-vlm-knowing-doing-failures-across-13-models-a">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-24/mosaic-exposes-vlm-knowing-doing-failures-across-13-models-a</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
