@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>STONIC finds three different value profiles in the same model — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-08-25">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-08-25">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 25 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">STONIC finds three different value profiles in the same model</h1>
+<p class="dek">Chetvergov's group sent the same 5,144 situations through four elicitation interfaces on 35 model configurations. Endorsement predicted conflict choice for ten of them, and every eligible model preferred its own earlier answer, but no configuration cleared the coverage bar for one value profile across interfaces.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 25 August 2026</span> <span class="chip">497 words · ~2 min</span></div>
+<div class="article-body">
+<p>Andrei Chetvergov and six coauthors posted <a href="https://arxiv.org/abs/2608.23411v1"><em>STONIC: A Layered Measurement Contract for LLM Value Profiling</em></a> to arXiv on August 24. Value studies commonly map questionnaire ratings, pairwise choices, and text-inferred values onto Schwartz's ten values, then average them into one profile. STONIC treats that average as a hypothesis. The same 5,144 situations, drawn from Value Portrait, AIRiskDilemmas, DailyDilemmas and MoralChoice, pass through four interfaces: an isolated endorsement rating of each response, a choice under conflict shown in both A/B orders, a free answer with the alternatives withheld, and a later choice between the model's own answer and each authored alternative. Thirty-five fixed configurations answer 27,944 inputs apiece at temperature zero, 978,040 in all; unparsed responses stay missing.</p>
+<p>Chetvergov's group reports that independent ratings predicted later conflict choices for 10 of 17 configurations with usable behavioral data. The median effect reached +.228; all ten were instruction-tuned and positive in every bank after Holm correction and leave-one-bank-out checks. All 17 eligible configurations preferred their own earlier answer to the authored alternatives, effects running from 0.508 to 0.932. Option position moved the choice rate significantly in all 18 eligible cells, enough for one presentation order to change the winner.</p>
+<p>Profiles inferred from free text held together far less. Median rank correlation between the ten-value orderings from ratings and conflict choices was .73, falling to .43 for ratings against free answers. Rating-to-free-text similarity still beat a within-bank shuffled null for all 18 identifiable configurations, median +.070, but no pairing cleared the coverage requirement in all four banks, leaving the profile-identity claim unmade. The top pair changes with the interface: Conformity and Benevolence in isolated ratings, Self-Direction and Conformity under conflict, Benevolence and Security in free text, with GLM-4.7 carrying three different leading pairs by itself. In the ACL 2025 paper <a href="https://aclanthology.org/2025.acl-long.838/"><em>Value Portrait</em></a>, Han and colleagues reported one ranking across 44 models, led by Benevolence, Security and Self-Direction.</p>
+<p>Five frozen scorers read the same free answers and disagreed on individual texts. ValueLlama returned an all-zero profile for almost half; FULCRA activated multiple values in 95.7%, at a median top-two margin of 0.00024. Three-way human annotation of 200 free responses reached Fleiss's kappa of .415 on value presence, and FULCRA came closest to the majority labels, .893 AUROC on the 91 with matched outputs. Model-level ranks agreed across all five views, which the authors decline to read as validation, since every view carries the same behavioral factor.</p>
+<p>Probes on hidden states from the same forward pass decoded the finished answer better than the input boundary; the paper treats this as evidence of decodability without inferring a causal value mechanism. Strict parsing creates the most missingness for base models; Qwen3.6 27B Instruct tops an exploratory index that measures neither moral quality nor alignment. Hua Shen, Nicholas Clark and Tanu Mitra measured a value-action gap across 14.8k value-informed actions in <a href="https://aclanthology.org/2025.emnlp-main.154/">"Mind the Value-Action Gap"</a> at EMNLP 2025; STONIC puts stated and acted measurements on identical items and locates the widest divergence at open text.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2608.23411v1">STONIC: A Layered Measurement Contract for LLM Value Profiling — Chetvergov, Ukolov, Sivoraksha, Evseev, Sazanakov, Solovev, Bolovtsov (arXiv:2608.23411v1)</a> <span class="how">— Primary source and canonical link. Abstract page read for authors, submission date (24 Aug 2026, 15:55:35 UTC), version (v1 only), and the 32-page/6-figure comments field.</span></li>
+<li><a href="https://arxiv.org/pdf/2608.23411v1">STONIC full paper PDF (arXiv:2608.23411v1)</a> <span class="how">— Full 32-page paper downloaded and read end to end. Supplies every figure in the piece: the RANEPA correspondence address; the four-bank composition (Value Portrait 104, AIRiskDilemmas 3,000, DailyDilemmas 1,360, MoralChoice 680 = 5,144); 27,944 requests per configuration and 978,040 total; temperature zero and strict parsing with parse failures left missing; Table 1 (rating predicts conflict choice, 17 estimable / 10 supported / median +.228; profile transfer 17/18/23 estimable and 0/0/0 supported; own answer preferred 24 estimable / 17 supported / median +.790; option order significant in 18/18); own-answer effect range 0.508 to 0.932; Figure 3 median rank correlations .73 / .43 / .50; C2 rating-to-free-text median +.070 across 18 identifiable configurations against a within-bank shuffled null; macro profiles (Conformity and Benevolence at L1, Self-Direction and Conformity at L2, Benevolence and Security at L3); the GLM-4.7 case (Stimulation and Benevolence, Self-Direction and Benevolence, Security and Achievement); Table 2 (ValueLlama nonzero 53.1%, FULCRA multi-value 95.7%, FULCRA median top-two margin 0.00024); the 200-response three-way human check, Fleiss kappa .415 on value presence, FULCRA AUROC .893 on the 91 matched responses; hidden-state probe results and the two verbatim quotes ('evidence of decodability, not a causal value mechanism' and 'not a ranking of moral quality or alignment'); the exploratory index topped by Qwen3.6 27B Instruct; and the limitations section on strict-parsing missingness in base models.</span></li>
+<li><a href="https://aclanthology.org/2025.acl-long.838/">Value Portrait: Assessing Language Models' Values through Psychometrically and Ecologically Valid Items — Han, Choi, Song, Lee and Jo, ACL 2025</a> <span class="how">— Read for the comparison in paragraph three. Verified: ACL 2025 Long Papers, pages 17119-17159, and the finding that across 44 language models the systems prioritize Benevolence, Security and Self-Direction while placing less emphasis on Tradition, Power and Achievement. This is one of STONIC's four situation banks.</span></li>
+<li><a href="https://aclanthology.org/2025.emnlp-main.154/">Mind the Value-Action Gap: Do LLMs Act in Alignment with Their Values? — Shen, Clark and Mitra, EMNLP 2025</a> <span class="how">— Read for the closing precursor. Verified authors, venue (EMNLP 2025 main, pages 3097-3118), the ValueActionLens framing, and the dataset of 14.8k value-informed actions across 12 cultures and 11 social topics. STONIC cites this work (Shen et al., 2025) as the stated-versus-acted precursor its same-item L1/L2 design operationalizes.</span></li>
+<li><a href="https://www.ranepa.ru/eng/">Presidential Academy (RANEPA) — official English site</a> <span class="how">— Read to confirm the institution behind the paper's only affiliation signal, the chetvergov-as@ranepa.ru correspondence address. The English site self-identifies as the Presidential Academy; RANEPA appears as the acronym.</span></li>
+<li><a href="https://arxiv.org/abs/2608.20975">Belief Without Behavior: Measuring the Translation of Theory of Mind into Coordinated Social Action in Vision-Language Models — Yan, Sergeant-Perthuis and Rudrauf (arXiv:2608.20975)</a> <span class="how">— Read only to settle the continuity candidate. Different authors, different question (theory-of-mind reasoning translated into coordinated embodied behavior across 13 vision-language models via the MOSAIC framework), different document. Not cited in the piece and not the same underlying story as STONIC.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-llm-value-profiles-fracture-across-interfaces-despite-contin">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-25/llm-value-profiles-fracture-across-interfaces-despite-contin</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

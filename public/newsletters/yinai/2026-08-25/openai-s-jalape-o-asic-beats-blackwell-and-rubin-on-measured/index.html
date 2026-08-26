@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>SemiAnalysis checked OpenAI's Jalapeño numbers in the lab — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-08-25">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-08-25">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 25 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">SemiAnalysis checked OpenAI's Jalapeño numbers in the lab</h1>
+<p class="dek">OpenAI supplied every figure and SemiAnalysis watched the InferenceX runs on A0 silicon, then reset the comparison from Blackwell to Vera Rubin, where Jalapeño still leads on tokens per megawatt and ties on cost per token.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 25 August 2026</span> <span class="chip">472 words · ~2 min</span></div>
+<div class="article-body">
+<p>OpenAI invited SemiAnalysis into its labs to watch the InferenceX suite run on A0 engineering silicon, and Bryan Shan, Myron Xie, Jordan Nanos and three colleagues <a href="https://newsletter.semianalysis.com/p/openai-jalapeno-better-than-nvidia">published their account</a> on August 25. On the throughput-per-megawatt chart they write that Jalape&ntilde;o &ldquo;smokes every other chip&rdquo;, then qualify it: &ldquo;all numbers are provided to us by OpenAI&rdquo;. They witnessed the runs, did not execute the full suite themselves, and saw nothing from <a href="https://newsletter.semianalysis.com/p/agentx-inferencexv3-does-cuda-moat">AgentX</a>, the multi-turn long-context coding benchmark they released a day earlier and treat as their preferred instrument for comparing accelerators.</p><p>SemiAnalysis calls the Blackwell comparison &ldquo;somewhat incomplete and unfair&rdquo;. OpenAI&rsquo;s <a href="https://openai.com/index/jalapeno-first-results/">published appendix</a> normalizes against a GB200 rated at 1,200 watts for GPT-OSS 120B and a GB300 at 1,400 watts for DeepSeek R1 and Kimi K2.5, against Jalape&ntilde;o&rsquo;s 700-watt rating and a measured sustained draw at or below 550 watts. Nvidia&rsquo;s Vera Rubin also uses HBM4 and is already shipping to customers, so SemiAnalysis restages the contest against Rubin&rsquo;s July figures from Nvidia and CoreWeave. Jalape&ntilde;o&rsquo;s single-token-prediction output per megawatt still clears them, and Rubin&rsquo;s came from multi-token prediction. On tokens per dollar the two land head to head, with Rubin&rsquo;s number already carrying speculative decoding, which SemiAnalysis values at more than 3x on cost per token and OpenAI has yet to implement.</p><p>The benchmarked A0 silicon is already superseded in the fab, SemiAnalysis reports, by a B0 stepping worth roughly 25% more performance per watt at 13.4 PFLOPs of MXFP4 on one reticle-sized TSMC N3P die, against 17.5 PFLOPs of dense NVFP4 on a comparable Rubin die at the same node drawing 900 to 1,150 watts. The 15.4 TB/s per package implies HBM4 pin speeds of 10 Gbps where Rubin manages 9.6. OpenAI and Broadcom <a href="https://openai.com/index/openai-broadcom-jalapeno-inference-chip">unveiled the program in June</a>; SemiAnalysis dates it to a mid-2024 hiring push and about 16 months to the November 2025 tapeout of the CoWoS design, a month behind Rubin&rsquo;s. Nvidia has not let them benchmark and publish on comparable terms.</p><p>OpenAI wrote no MLA attention kernels until the DeepSeek run demanded them, and SemiAnalysis reports that Codex produced working ones without the kernel engineering team touching them, which prompts their conclusion: &ldquo;The CUDA moat is potentially dead&rdquo;. The chips serve one homogeneous pool with no prefill-decode disaggregation, a decision SemiAnalysis calls a surprise and explains by workload drift, since a fixed split between prefill and decode silicon strands hardware whenever the traffic mix moves.</p><p>SemiAnalysis saw only single-turn runs with 8k input and 1k output, a workload it calls much easier to tune; the tested models trail the open frontier that Nvidia and AMD now publish AgentX results against. Production ramps gradually through 2027, with 100 megawatts the next goal, and <a href="https://techcrunch.com/2026/08/25/openais-jalapeno-chip-is-built-for-fast-inference-at-scale-benchmarks-show/">TechCrunch reports</a> that Richard Ho, OpenAI&rsquo;s head of hardware, put the start of deployment at the end of 2026 in &ldquo;very small volumes&rdquo;.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://newsletter.semianalysis.com/p/openai-jalapeno-better-than-nvidia">OpenAI Jalapeño: Better Than Nvidia Blackwell — Bryan Shan, Myron Xie, Jordan Nanos and three others, SemiAnalysis</a> <span class="how">— Canonical assigned source and centre of gravity. Free portion (~5,100 words, through the paywall break) read in full from the on-disk pipeline fetch at daemons/pipeline/data/fetch_runs/20260825-121156/classified/tw_twitter_2092267891898917275.json. Supplies the lab-access account, the 'smokes every other chip' and 'all numbers are provided to us by OpenAI' lines, the 'somewhat incomplete and unfair' Blackwell judgment, the Rubin restaging against July Nvidia/CoreWeave figures, STP-versus-MTP throughput per MW, tokens-per-dollar parity and the 3x-plus speculative-decoding gap, the B0 stepping and its ~25% perf/W gain, 13.4 PFLOPs MXFP4 on N3P versus 17.5 PFLOPs dense NVFP4 Rubin at 900-1,150W, 15.4 TB/s and 10Gbps versus 9.6Gbps HBM4 pin speeds, the November 2025 CoWoS tapeout a month after Rubin's, Nvidia declining comparable benchmark access, the missing MLA kernels written by Codex, 'The CUDA moat is potentially dead', the no-prefill-decode-disaggregation choice and its workload-drift rationale, the 8k1k and open-frontier caveats, the mid-2024 hiring start and ~16-month tapeout, the 2027 production ramp and the 100MW target.</span></li>
+<li><a href="https://openai.com/index/jalapeno-first-results/">Jalapeño's first results show industry-leading speed and efficiency in AI inference — OpenAI</a> <span class="how">— Primary OpenAI announcement, read in full including the appendix from the on-disk pipeline fetch at daemons/pipeline/data/fetch_runs/20260825-121156/duplicates/tw_twitter_2092282000300515647_twitter_item.json (openai.com returns 403 to direct fetching). Verified the comparison systems and their normalisation power ratings: GB200 at 1,200W for GPT-OSS 120B, GB300 at 1,400W for DeepSeek R1 670B and Kimi K2.5 1T, Jalapeño rated 700W with measured sustained draw at or below 550W. Also verified the 1.5-1.9x per-watt and 1.7-3.6x latency ranges, the nine-months-to-tapeout claim, and the end-of-year deployment and multigenerational roadmap language.</span></li>
+<li><a href="https://newsletter.semianalysis.com/p/agentx-inferencexv3-does-cuda-moat">AgentX - InferenceXv3: Does CUDA Moat Hold up in Agentic Inferencing? — SemiAnalysis</a> <span class="how">— Verified the existence, August 24 date and description of the benchmark SemiAnalysis says it did not get Jalapeño results for and calls its preferred suite for comparing chip performance: multi-turn, long-context agentic coding sessions with shared prefixes and KV-cache reuse. Used only for that one clause; no numbers taken from it.</span></li>
+<li><a href="https://techcrunch.com/2026/08/25/openais-jalapeno-chip-is-built-for-fast-inference-at-scale-benchmarks-show/">OpenAI's Jalapeño chip is built for fast inference at scale, benchmarks show — TechCrunch</a> <span class="how">— Verified that Richard Ho, described as OpenAI's head of hardware, presented the results at Hot Chips on August 25 and put deployment at the end of 2026 in 'very small volumes', with a larger rollout in 2027. Source of that four-word verbatim quote.</span></li>
+<li><a href="https://www.optica.org/events/industry_events/2026/optica_executive_forum_at_ofc/speakers/richard_ho/">Richard Ho speaker biography — Optica Executive Forum at OFC 2026</a> <span class="how">— Second, independent confirmation of the title used in the piece: the bio line reads 'OpenAI, Head of Hardware'. Consulted because openai.com could not be fetched to confirm the title on a first-party page and his LinkedIn headline reads 'VP Hardware'.</span></li>
+<li><a href="https://openai.com/index/openai-broadcom-jalapeno-inference-chip">OpenAI and Broadcom unveil LLM-optimized inference chip — OpenAI</a> <span class="how">— Continuity link. This is the primary URL the June 25 Yesterday in AI digest carried under 'OpenAI announced its first custom inference accelerator' (verified in daemons/yesterday-in-ai/data/digest_history.json, entry index 90). Linked in the piece as the June unveiling with Broadcom; that framing is corroborated by the SemiAnalysis article's own 'In June, OpenAI unveiled the chip program in partnership with Broadcom'. The page itself returns 403 to direct fetching and no claims are drawn from its text.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-openai-s-jalape-o-asic-beats-blackwell-and-rubin-on-measured">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-25/openai-s-jalape-o-asic-beats-blackwell-and-rubin-on-measured</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
