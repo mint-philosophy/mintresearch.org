@@ -7,12 +7,14 @@ const sources = [
 const entries = new Map();
 let pretext = null;
 let resizeFrame = null;
+let suspended = false;
 
 function setStatus(state, label) {
   status.dataset.state = state;
   status.textContent = label;
   document.documentElement.dataset.pretextStatus = state;
   if (window.__shouldWeBuildAgi) window.__shouldWeBuildAgi.pretext = state;
+  window.dispatchEvent(new CustomEvent('agi-pretext-state', { detail: { state } }));
 }
 
 async function loadPretext() {
@@ -101,7 +103,7 @@ function applyLayouts(layouts) {
 }
 
 function relayout() {
-  if (!pretext) return;
+  if (!pretext || suspended) return;
   try {
     const reads = readLayouts();
     const layouts = computeLayouts(reads);
@@ -123,6 +125,7 @@ function scheduleRelayout() {
 
 async function initialise() {
   setStatus('loading', 'Text layout…');
+  await window.__agiEditorReady?.catch(() => undefined);
   pretext = await loadPretext();
   if (!pretext) {
     setStatus('fallback', 'Browser text layout');
@@ -142,6 +145,28 @@ async function initialise() {
   window.addEventListener('agi-frame-resize', scheduleRelayout);
   window.addEventListener('agi-slide-change', scheduleRelayout);
   document.fonts.addEventListener?.('loadingdone', scheduleRelayout);
+
+  window.__agiPretext = {
+    suspend() {
+      suspended = true;
+      for (const [element, entry] of entries) {
+        element.textContent = entry.source;
+        element.style.whiteSpace = '';
+        element.style.textWrap = '';
+        delete element.dataset.pretextLines;
+      }
+    },
+    resume() {
+      for (const [element, entry] of entries) {
+        entry.source = element.textContent.trim().replace(/[ \t\r\n\f]+/g, ' ');
+        entry.signature = null;
+        entry.prepared = null;
+      }
+      suspended = false;
+      relayout();
+    },
+    relayout,
+  };
 }
 
 initialise().catch((error) => {

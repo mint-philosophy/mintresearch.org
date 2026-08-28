@@ -6,8 +6,9 @@ const deckPath = 'public/should-we-build-agi/deck.html';
 const cssPath = 'public/should-we-build-agi/deck.css';
 const deckScriptPath = 'public/should-we-build-agi/deck.js';
 const pretextPath = 'public/should-we-build-agi/pretext-layout.js';
+const editorPath = 'public/should-we-build-agi/inline-editor.js';
 
-for (const path of [wrapperPath, deckPath, cssPath, deckScriptPath, pretextPath]) {
+for (const path of [wrapperPath, deckPath, cssPath, deckScriptPath, pretextPath, editorPath]) {
   assert.ok(fs.existsSync(path), `${path} must exist`);
 }
 
@@ -16,6 +17,7 @@ const deck = fs.readFileSync(deckPath, 'utf8');
 const css = fs.readFileSync(cssPath, 'utf8');
 const deckScript = fs.readFileSync(deckScriptPath, 'utf8');
 const pretext = fs.readFileSync(pretextPath, 'utf8');
+const editor = fs.readFileSync(editorPath, 'utf8');
 const sitemap = fs.readFileSync('public/sitemap.xml', 'utf8');
 const nav = fs.readFileSync('public/assets/mint-site-nav.v1.js', 'utf8');
 
@@ -39,6 +41,8 @@ assert.match(pretext, /function inlineInsets\(style\)[\s\S]*paddingLeft[\s\S]*pa
 assert.match(pretext, /getBoundingClientRect\(\)\.width - inlineInsets\(style\)/, 'Pretext line width must exclude inline padding and borders');
 assert.match(pretext, /replace\(\/\[ \\t\\r\\n\\f\]\+\/g, ' '\)/, 'Pretext source normalisation must preserve non-breaking spaces');
 assert.match(pretext, /document\.documentElement\.dataset\.pretextStatus/, 'Pretext state must use a root status attribute');
+assert.match(pretext, /await window\.__agiEditorReady/, 'Pretext must wait until saved text overrides have been applied');
+assert.match(pretext, /window\.__agiPretext = \{[\s\S]*suspend\(\)[\s\S]*resume\(\)/, 'Pretext must expose safe editing suspension and resumption');
 assert.doesNotMatch(pretext, /document\.documentElement\.dataset\.pretext\s*=/, 'root must not match the text-layout selector');
 assert.doesNotMatch(pretext, /Pretext ·/, 'layout diagnostics must not be visible to participants');
 assert.match(css, /\.pretext-state \{[\s\S]*clip: rect\(0 0 0 0\);/, 'layout status must remain visually hidden');
@@ -72,18 +76,28 @@ assert.match(deckScript, /data-reason-dialog[\s\S]*showModal\(\)/, 'reason cards
 assert.match(deckScript, /reason-dialog-close[\s\S]*dialog\.close\(\)/, 'reason dialogs must expose a close control');
 assert.match(deckScript, /querySelector\('\.reason-dialog\[open\]'\)/, 'slide navigation must pause while a reason dialog is open');
 assert.match(css, /\.reason-dialog::backdrop/, 'reason dialogs must have a legible modal backdrop');
+assert.match(deck, /id="inlineEditorToolbar" hidden/, 'the editor toolbar must remain hidden until the server authorizes the client IP');
+assert.match(deck, /id="inlineEditorEdit">Edit</, 'the authorized editor must expose an Edit button');
+assert.match(deck, /id="inlineEditorSave" hidden>Save</, 'the authorized editor must expose a Save button only in edit mode');
+assert.match(editor, /https:\/\/agi-editor\.mintresearch\.org\/v1\/decks\/should-we-build-agi/, 'the deck must use the server-gated editor endpoint');
+assert.match(editor, /contenteditable', 'plaintext-only'/, 'inline editing must accept plain text rather than HTML');
+assert.match(editor, /method: 'PUT'/, 'Save must persist through the editor service');
+assert.match(editor, /element\.textContent = values\[field\.key\]/, 'saved values must be applied as text, never HTML');
+assert.doesNotMatch(editor, /ALLOWED_IPS|CF-Connecting-IP/, 'the client bundle must not contain or attempt to enforce the IP allowlist');
+assert.match(css, /html\[data-editor-mode="editing"\] \[data-editor-key\]/, 'edit mode must visibly identify editable text');
 assert.match(css, /@media \(max-width: 600px\) and \(orientation: portrait\)[\s\S]*\.ledger-table thead th:first-child \{ width: 40%; \}[\s\S]*\.ledger-table tbody th \{ padding-inline: 10px; font-size: 12px; white-space: nowrap; \}/, 'phone ledger labels must remain inside the first column divider');
-assert.match(wrapper, /deck\.html\?v=20260828\.14/, 'wrapper must cache-bust the slide 3 wording correction');
-assert.match(deck, /deck\.css\?v=20260828\.9/, 'deck must cache-bust the reason-dialog layout');
-assert.match(deck, /deck\.js\?v=20260828\.7/, 'deck must cache-bust reason-dialog interactions');
-assert.match(deck, /pretext-layout\.js\?v=20260828\.7/, 'deck must cache-bust non-breaking Pretext line balancing');
+assert.match(wrapper, /deck\.html\?v=20260828\.15/, 'wrapper must cache-bust the inline editor');
+assert.match(deck, /deck\.css\?v=20260828\.10/, 'deck must cache-bust inline-editor styling');
+assert.match(deck, /deck\.js\?v=20260828\.8/, 'deck must cache-bust edit-aware interactions');
+assert.match(deck, /inline-editor\.js\?v=20260828\.1/, 'deck must load the inline editor');
+assert.match(deck, /pretext-layout\.js\?v=20260828\.8/, 'deck must cache-bust editor-aware Pretext layout');
 assert.equal((css.match(/\.ledger-table \{ min-width: 0;/g) || []).length, 2, 'ledger must fit responsive portrait and short-landscape frames without horizontal scrolling');
 assert.equal((deck.match(/<td aria-label="Blank"><\/td>/g) || []).length, 8, 'ledger must expose eight blank cells without overflow-prone hidden text');
 assert.match(deckScript, /touchstart/, 'deck must support touch navigation');
 assert.match(
   deckScript,
-  /addEventListener\('touchstart',[\s\S]*?event\.target instanceof Element && event\.target\.closest\('\.table-scroll, \.ledger-scroll'\)[\s\S]*?\}, \{ passive: true \}\);/,
-  'touch navigation must leave horizontally scrollable tables in control of gestures that begin inside them',
+  /addEventListener\('touchstart',[\s\S]*?event\.target instanceof Element && event\.target\.closest\('\.table-scroll, \.ledger-scroll, \[contenteditable="plaintext-only"\], \.inline-editor-toolbar'\)[\s\S]*?\}, \{ passive: true \}\);/,
+  'touch navigation must leave scrollable tables and inline editing controls in control of their gestures',
 );
 assert.match(deckScript, /ArrowRight/, 'deck must support keyboard navigation');
 assert.match(css, /@media \(max-width: 900px\)/, 'deck must include tablet layout');

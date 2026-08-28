@@ -525,6 +525,62 @@ button { color: inherit; }
 
 .swipe-hint { display: none; }
 
+/* IP-gated inline editor */
+.inline-editor-toolbar {
+  position: fixed;
+  top: calc(var(--ticker-h) + 10px);
+  right: 14px;
+  z-index: 1000;
+  max-width: calc(100vw - 28px);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px;
+  border: 1.5px solid var(--ink);
+  border-radius: 9px;
+  background: var(--paper);
+  background: color-mix(in srgb, var(--paper) 94%, transparent);
+  box-shadow: 0 8px 28px rgba(22, 19, 0, 0.18);
+  font: 700 10px/1 var(--mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+}
+.inline-editor-toolbar[hidden], .inline-editor-button[hidden] { display: none !important; }
+.inline-editor-button {
+  appearance: none;
+  min-width: 56px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 5px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+.inline-editor-button:hover, .inline-editor-button:focus-visible { background: var(--blue); color: var(--paper); outline: 0; }
+.inline-editor-button:disabled { cursor: wait; opacity: 0.55; }
+.inline-editor-save { background: var(--blue); color: var(--paper); }
+.inline-editor-cancel { color: var(--muted); }
+.inline-editor-status { max-width: 250px; overflow: hidden; color: var(--blue); text-overflow: ellipsis; white-space: nowrap; }
+
+html[data-editor-mode="editing"] [data-editor-key] {
+  min-height: 1em;
+  outline: 2px dashed var(--paper);
+  outline-offset: 1px;
+  box-shadow: 0 0 0 4px var(--blue);
+  cursor: text;
+  user-select: text;
+  white-space: normal !important;
+  text-wrap: wrap !important;
+}
+html[data-editor-mode="editing"] [data-editor-key]:focus {
+  outline-style: solid;
+  background: rgba(255, 250, 240, 0.16);
+}
+
 /* Medium presentation frames */
 @media (max-width: 1180px) and (min-width: 901px) {
   body { font-size: 18px; }
@@ -720,6 +776,9 @@ button { color: inherit; }
   .deck-nav { font-size: 8px; }
   .nav-section { display: none; }
   .swipe-hint { display: none; }
+  .inline-editor-toolbar { right: 9px; max-width: calc(100vw - 18px); gap: 5px; padding: 5px; }
+  .inline-editor-button { min-width: 50px; height: 30px; padding-inline: 9px; font-size: 9px; }
+  .inline-editor-status { max-width: 120px; font-size: 8px; }
 }
 
 /* Short landscape frames keep the authored grids and compress their rhythm.
@@ -833,6 +892,9 @@ button { color: inherit; }
   .ledger-table tbody th { font-size: 10px; }
 
   .deck-nav { grid-template-columns: minmax(135px, 1fr) auto minmax(135px, 1fr); gap: 8px; padding-inline: 12px; font-size: 8px; }
+  .inline-editor-toolbar { top: calc(var(--ticker-h) + 5px); right: 8px; padding: 4px; }
+  .inline-editor-button { min-width: 46px; height: 26px; padding-inline: 7px; font-size: 8px; }
+  .inline-editor-status { max-width: 150px; font-size: 7px; }
   .nav-status { gap: 8px; }
   .nav-dot { width: 15px; height: 20px; background-size: 13px 13px; }
   .nav-button { width: 30px; height: 30px; font-size: 21px; }

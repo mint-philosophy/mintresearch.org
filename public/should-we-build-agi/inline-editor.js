@@ -1,0 +1,191 @@
+const endpoint = 'https://agi-editor.mintresearch.org/v1/decks/should-we-build-agi';
+const fields = [];
+const savedValues = new Map();
+let revision = 'base';
+let editing = false;
+
+const excluded = [
+  '[aria-hidden="true"]',
+  '.prompt-number',
+  '.definition-number',
+  '.state-number',
+  '.short-rule',
+  '.reason-dialog-close',
+  '.reason-card-action',
+  '.ellipsis-row *',
+].join(',');
+
+function normaliseText(value) {
+  return String(value || '').trim().replace(/[ \t\r\n\f]+/g, ' ');
+}
+
+function hashText(value) {
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(16).padStart(8, '0');
+}
+
+function editableLeaves() {
+  const duplicates = new Map();
+  document.querySelectorAll('.slide').forEach((slide, slideIndex) => {
+    slide.querySelectorAll('h1, h2, h3, p, li, th, td, span, small, div').forEach((element) => {
+      if (element.matches(excluded) || element.closest('[aria-hidden="true"]')) return;
+      if (element.children.length > 0) return;
+      const source = normaliseText(element.textContent);
+      if (!source) return;
+
+      const classes = [...element.classList].filter((name) => name !== 'active').sort().join('.');
+      const descriptor = `${slideIndex + 1}|${element.tagName}|${classes}|${source}`;
+      const duplicateNumber = (duplicates.get(descriptor) || 0) + 1;
+      duplicates.set(descriptor, duplicateNumber);
+      const key = `s${String(slideIndex + 1).padStart(2, '0')}-${hashText(descriptor)}-${String(duplicateNumber).padStart(2, '0')}`;
+
+      element.dataset.editorKey = key;
+      fields.push({ element, key, slide: slideIndex + 1 });
+      savedValues.set(key, source);
+    });
+  });
+}
+
+function applyValues(values) {
+  for (const field of fields) {
+    if (Object.hasOwn(values, field.key) && typeof values[field.key] === 'string') {
+      field.element.textContent = values[field.key];
+      savedValues.set(field.key, values[field.key]);
+    }
+  }
+}
+
+function setToolbarMode(mode, message = '') {
+  const edit = document.getElementById('inlineEditorEdit');
+  const save = document.getElementById('inlineEditorSave');
+  const cancel = document.getElementById('inlineEditorCancel');
+  const status = document.getElementById('inlineEditorStatus');
+  edit.hidden = mode !== 'view';
+  save.hidden = mode !== 'edit';
+  cancel.hidden = mode !== 'edit';
+  save.disabled = mode === 'saving';
+  cancel.disabled = mode === 'saving';
+  status.textContent = message;
+}
+
+function makePlainTextPaste(event) {
+  event.preventDefault();
+  const text = normaliseText(event.clipboardData?.getData('text/plain'));
+  const selection = window.getSelection();
+  if (!selection?.rangeCount) return;
+  const range = selection.getRangeAt(0);
+  range.deleteContents();
+  const node = document.createTextNode(text);
+  range.insertNode(node);
+  range.setStartAfter(node);
+  range.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+
+function enterEditMode() {
+  editing = true;
+  window.__agiPretext?.suspend();
+  document.documentElement.dataset.editorMode = 'editing';
+  for (const field of fields) {
+    field.element.setAttribute('contenteditable', 'plaintext-only');
+    field.element.setAttribute('spellcheck', 'true');
+    field.element.addEventListener('paste', makePlainTextPaste);
+  }
+  setToolbarMode('edit', 'Editing — click any outlined text');
+}
+
+function leaveEditMode({ restore = false } = {}) {
+  if (restore) {
+    for (const field of fields) field.element.textContent = savedValues.get(field.key) ?? '';
+  }
+  for (const field of fields) {
+    field.element.removeAttribute('contenteditable');
+    field.element.removeAttribute('spellcheck');
+    field.element.removeEventListener('paste', makePlainTextPaste);
+  }
+  editing = false;
+  delete document.documentElement.dataset.editorMode;
+  window.__agiPretext?.resume();
+}
+
+function currentValues() {
+  return Object.fromEntries(fields.map(({ element, key }) => [key, normaliseText(element.textContent)]));
+}
+
+async function save() {
+  setToolbarMode('saving', 'Saving…');
+  try {
+    const response = await fetch(endpoint, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ revision, fields: currentValues() }),
+      credentials: 'omit',
+    });
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(body.error || `Save failed (${response.status})`);
+
+    revision = body.revision;
+    applyValues(body.fields || {});
+    leaveEditMode();
+    setToolbarMode('view', 'Saved live');
+  } catch (error) {
+    setToolbarMode('edit', error.message || 'Save failed');
+  }
+}
+
+function waitForPretextBeforeReveal(toolbar) {
+  const state = document.documentElement.dataset.pretextStatus;
+  if (state === 'ready' || state === 'fallback') {
+    toolbar.hidden = false;
+    return;
+  }
+  window.addEventListener('agi-pretext-state', () => { toolbar.hidden = false; }, { once: true });
+}
+
+async function initialiseEditor() {
+  editableLeaves();
+  const toolbar = document.getElementById('inlineEditorToolbar');
+  const edit = document.getElementById('inlineEditorEdit');
+  const saveButton = document.getElementById('inlineEditorSave');
+  const cancel = document.getElementById('inlineEditorCancel');
+  if (!toolbar || !edit || !saveButton || !cancel) return;
+
+  edit.addEventListener('click', enterEditMode);
+  saveButton.addEventListener('click', save);
+  cancel.addEventListener('click', () => {
+    leaveEditMode({ restore: true });
+    setToolbarMode('view', 'Changes discarded');
+  });
+  document.addEventListener('keydown', (event) => {
+    if (!editing || event.key !== 'Enter' || !(event.target instanceof Element) || !event.target.closest('[contenteditable="plaintext-only"]')) return;
+    event.preventDefault();
+    event.target.blur();
+  });
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 2_500);
+  try {
+    const response = await fetch(endpoint, {
+      headers: { Accept: 'application/json' },
+      credentials: 'omit',
+      signal: controller.signal,
+    });
+    if (!response.ok) return;
+    const state = await response.json();
+    revision = state.revision || 'base';
+    applyValues(state.fields || {});
+    if (state.canEdit === true) waitForPretextBeforeReveal(toolbar);
+  } catch {
+    // The static deck remains the safe fallback if the private editor is down.
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+window.__agiEditorReady = initialiseEditor();
+window.__agiEditor = { endpoint, fields, get editing() { return editing; } };
