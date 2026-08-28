@@ -45,13 +45,18 @@ function letterSpacing(style) {
   return Number.isFinite(value) ? value : 0;
 }
 
+function inlineInsets(style) {
+  return [style.paddingLeft, style.paddingRight, style.borderLeftWidth, style.borderRightWidth]
+    .reduce((total, value) => total + (parseFloat(value) || 0), 0);
+}
+
 function readLayouts() {
   return Array.from(entries.entries()).map(([element, entry]) => {
     const style = getComputedStyle(element);
     return {
       element,
       entry,
-      width: Math.max(1, element.getBoundingClientRect().width),
+      width: Math.max(1, element.getBoundingClientRect().width - inlineInsets(style)),
       font: fontSpec(style),
       lineHeight: lineHeight(style),
       letterSpacing: letterSpacing(style),
