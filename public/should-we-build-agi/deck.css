@@ -535,8 +535,8 @@ button { color: inherit; }
   .ledger-table tbody th { font-size: 13px; }
 }
 
-/* Tablet and phone: readable scrolling source layout. */
-@media (max-width: 900px) {
+/* Portrait tablet and phone: readable scrolling source layout. */
+@media (max-width: 900px) and (orientation: portrait) {
   :root { --ticker-h: 32px; --nav-h: 56px; }
   body { font-size: 20px; }
   .ticker-track { animation: none; padding-left: 14px; }
@@ -570,7 +570,7 @@ button { color: inherit; }
   .numbered-prompt { grid-template-columns: 36px 1fr; gap: 14px; }
   .numbered-prompt h3 { font-size: 24px; }
   .numbered-prompt p { font-size: 18px; }
-  .slide-pad { padding: 42px 28px 86px; }
+  .slide-pad { padding: 36px 28px 52px; }
   .slide-heading-row, .three-way-heading { grid-template-columns: 1fr; align-items: start; gap: 22px; }
   .wide-heading { font-size: 38px; }
   .stat-grid, .state-grid, .three-way-grid { grid-template-columns: 1fr; }
@@ -590,39 +590,43 @@ button { color: inherit; }
   .state-number { margin-bottom: 22px; }
   .state-card h3 { font-size: 28px; }
   .state-card p { font-size: 18px; }
-  .liberty-question { min-height: 46%; padding: 48px 34px; }
+  .liberty-question { min-height: 40%; padding: 36px 34px; }
   .liberty-question h2 { font-size: 38px; }
-  .blue-note { margin-top: 30px; }
-  .liberty-spectrum { min-height: 54%; grid-template-columns: 52px minmax(0, 1fr); padding: 0 28px 84px; }
+  .blue-note { margin-top: 22px; }
+  .liberty-spectrum { min-height: 60%; grid-template-columns: 52px minmax(0, 1fr); padding: 0 28px 24px; }
   .liberty-table li { min-height: 0; padding: 17px 18px; font-size: 18px; }
   .reasons-grid { grid-template-columns: 1fr; gap: 12px; }
-  .reason-feature { min-height: 300px; padding: 42px 30px; }
+  .reason-feature { min-height: 260px; padding: 38px 30px; }
   .reason-feature h2 { font-size: 44px; }
   .reason-feature p { font-size: 25px; }
   .reason-stack { display: block; }
-  .reason-card { min-height: 150px; padding: 28px 24px; border-bottom: 0; }
+  .reason-card { min-height: 132px; padding: 26px 24px; border-bottom: 0; }
   .reason-card h3, .credibility-grid .reason-card h3 { font-size: 28px; }
   .reason-card p { font-size: 18px; }
   .reasons-footer { margin-top: 26px; font-size: 28px; }
   .feature-centered h2 { font-size: 46px; }
-  .agi-asi-title { min-height: 46%; padding: 52px 34px; }
+  .agi-asi-title { min-height: 43%; padding: 44px 34px; }
   .agi-asi-title h2 { font-size: 42px; }
-  .agi-asi-options { min-height: 54%; display: block; padding-bottom: 70px; }
+  .agi-asi-options { min-height: 57%; display: block; padding-bottom: 16px; }
   .agi-asi-option { min-height: 180px; padding: 30px; }
   .agi-asi-option p:last-child { font-size: 19px; }
-  .slide-synthesis { padding: 0 0 84px; }
-  .synthesis-questions, .ledger-wrap { min-height: 50%; padding: 48px 30px; }
+  .slide-synthesis { padding: 0 0 8px; }
+  .synthesis-questions, .ledger-wrap { min-height: 50%; padding: 36px 30px; }
   .synthesis-questions h2 { font-size: 38px; }
   .hurdles li { font-size: 19px; }
   .ledger-wrap { border-top: 1px dashed rgba(255, 250, 240, 0.65); }
   .ledger-table { min-width: 620px; }
+  .ledger-wrap > h3 { margin-bottom: 12px; padding-bottom: 12px; }
+  .ledger-table { border-spacing: 0 5px; }
+  .ledger-table thead th { height: 44px; }
+  .ledger-table tbody tr > * { height: 64px; }
   .deck-nav { grid-template-columns: minmax(0, 1fr) auto; padding-inline: 12px; }
   .nav-dots { display: none; }
   .nav-status { gap: 9px; }
   .swipe-hint { display: block; position: fixed; right: 95px; bottom: 20px; z-index: 125; color: var(--muted); font: 700 8px/1 var(--mono); letter-spacing: 0.04em; text-transform: uppercase; pointer-events: none; }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 600px) and (orientation: portrait) {
   body { font-size: 17px; }
   .title-panel { padding: 38px 22px; }
   .title-fellowship { font-size: 35px; }
@@ -639,7 +643,7 @@ button { color: inherit; }
   .numbered-prompt { grid-template-columns: 30px 1fr; gap: 10px; }
   .numbered-prompt h3 { font-size: 21px; }
   .numbered-prompt p { font-size: 16px; }
-  .slide-pad { padding: 34px 18px 76px; }
+  .slide-pad { padding: 34px 18px 52px; }
   .wide-heading { font-size: 31px; }
   .stat-body, .stats-conclusion, .definition-column p, .state-card p { font-size: 16px; }
   .stat-card, .definition-column, .state-card { padding-inline: 20px; }
@@ -673,6 +677,139 @@ button { color: inherit; }
   .deck-nav { font-size: 8px; }
   .nav-section { display: none; }
   .swipe-hint { display: none; }
+}
+
+/* Short landscape frames keep the authored grids and compress their rhythm.
+   Scrolling is reserved for content that still cannot fit legibly. */
+@media (max-height: 600px) and (orientation: landscape) {
+  :root { --ticker-h: 28px; --nav-h: 42px; }
+  body { font-size: 16px; }
+  .ticker-track { padding-left: 14px; }
+  .ticker-link { font-size: 8px; }
+  .ticker-link::after { margin-inline: 10px; }
+  .section-index { font-size: 9px; }
+  .eyebrow { margin-top: 5px; font-size: 8px; }
+  .short-rule { width: 60px; height: 3px; margin-top: 14px; }
+
+  .title-panel { padding: 4% 5%; }
+  .vertical-label { left: 8px; font-size: 8px; }
+  .kicker { margin-bottom: 11px; font-size: 11px; }
+  .title-fellowship { font-size: 34px; }
+  .utility-line { margin-top: 13px; font-size: 9px; }
+  .title-question { font-size: 30px; }
+  .title-subtitle { margin-top: 38px; font-size: 14px; }
+
+  .section-break-inner { padding: 5%; }
+  .section-title { margin-top: 16px; font-size: 40px; }
+  .section-break-split { gap: 5%; }
+  .section-summary, .section-questions p { font-size: 17px; }
+  .section-questions { gap: 14px; padding-left: 22px; }
+
+  .split-panel { padding: 4% 5%; }
+  .display-question { margin-top: 16px; font-size: 33px; }
+  .claim-primary { font-size: 22px; }
+  .claim-secondary { margin-top: 28px; font-size: 13px; }
+  .prompt-list { padding-block: 2%; }
+  .numbered-prompt { grid-template-columns: 26px 1fr; gap: 12px; padding: 6px 0 8px; }
+  .prompt-number { font-size: 24px; }
+  .numbered-prompt h3 { margin-bottom: 3px; font-size: 18px; }
+  .numbered-prompt p { font-size: 13px; line-height: 1.28; }
+
+  .slide-pad { padding: 3%; }
+  .slide-heading-row { gap: 3%; margin-bottom: 12px; }
+  .compact-heading-row { margin-bottom: 10px; }
+  .wide-heading { font-size: 27px; }
+
+  .stat-card { min-height: 0; padding: 13px 14px 11px; }
+  .stat-source { font-size: 8px; }
+  .stat-number { margin: 9px 0 5px; font-size: 27px; }
+  .stat-body { font-size: 13px; line-height: 1.25; }
+  .stat-foot { padding-top: 9px; font-size: 7px; }
+  .stats-conclusion { margin-top: 11px; font-size: 12px; line-height: 1.3; }
+
+  .three-way-heading { padding: 10px 3% 12px; }
+  .three-way-heading h2 { font-size: 28px; }
+  .definition-column { padding: 16px 3%; }
+  .definition-number { margin-bottom: 9px; font-size: 11px; }
+  .definition-column h3 { margin-bottom: 7px; font-size: 19px; }
+  .definition-column p { font-size: 12px; line-height: 1.28; }
+
+  .values-table { min-width: 720px; }
+  .values-table th, .values-table td { padding: 6px 8px; }
+  .values-table thead th { font-size: 8px; }
+  .values-table thead small { margin-top: 3px; font-size: 6px; }
+  .values-table tbody th, .values-table tbody td { font-size: 10px; }
+
+  .state-card { min-height: 0; padding: 14px; }
+  .state-number { margin-bottom: 15px; font-size: 9px; }
+  .state-card h3 { margin-bottom: 9px; font-size: 19px; }
+  .state-card p { font-size: 12px; line-height: 1.28; }
+
+  .slide-liberty { padding: 3%; gap: 2.5%; }
+  .liberty-question h2 { margin: 14px 0; font-size: 27px; }
+  .blue-note { font-size: 9px; }
+  .liberty-spectrum { grid-template-columns: 50px minmax(0, 1fr); }
+  .spectrum-label { right: 14px; font-size: 6px; }
+  .spectrum-dot { right: -4px; width: 7px; height: 7px; }
+  .liberty-table { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr); }
+  .liberty-table h3 { padding: 9px 11px; font-size: 8px; }
+  .liberty-table ol { min-height: 0; display: grid; grid-template-rows: repeat(6, minmax(0, 1fr)); }
+  .liberty-table li { min-height: 0; padding: 5px 10px; font-size: 11px; line-height: 1.18; }
+
+  .blue-strip { padding: 8px 10px; font-size: 8px; }
+  .reasons-grid { gap: 1.5%; margin-top: 5px; }
+  .reason-feature { padding: 3.5%; }
+  .reason-feature h2 { margin-bottom: 12px; font-size: 29px; }
+  .reason-feature p { font-size: 16px; }
+  .reason-card { padding: 8px 11px; }
+  .reason-card h3, .credibility-grid .reason-card h3 { margin-bottom: 4px; font-size: 16px; }
+  .reason-card p { font-size: 11px; line-height: 1.25; }
+  .reasons-footer { margin-top: 7px; font-size: 17px; }
+  .feature-centered h2 { font-size: 30px; }
+
+  .agi-asi-title { padding: 4%; }
+  .agi-asi-title h2 { margin-top: 16px; font-size: 30px; }
+  .agi-asi-option { padding: 11px 17px; }
+  .option-label { margin-bottom: 7px; font-size: 7px; }
+  .agi-asi-option p:last-child { font-size: 12px; line-height: 1.25; }
+
+  .slide-synthesis { padding: 2.5%; gap: 3%; }
+  .synthesis-questions h2 { margin: 14px 0; font-size: 27px; }
+  .hurdles { gap: 8px; }
+  .hurdles li { font-size: 12px; line-height: 1.25; }
+  .net-question { margin-top: 12px; font-size: 14px; }
+  .ledger-wrap > h3 { margin-bottom: 7px; padding-bottom: 7px; font-size: 8px; }
+  .ledger-table { min-width: 470px; border-spacing: 0 3px; }
+  .ledger-table thead th { height: 30px; padding: 5px; font-size: 8px; }
+  .ledger-table tbody tr > * { height: 42px; padding: 6px 8px; }
+  .ledger-table tbody th { font-size: 10px; }
+
+  .deck-nav { grid-template-columns: minmax(135px, 1fr) auto minmax(135px, 1fr); gap: 8px; padding-inline: 12px; font-size: 8px; }
+  .nav-status { gap: 8px; }
+  .nav-dot { width: 15px; height: 20px; background-size: 13px 13px; }
+  .nav-button { width: 30px; height: 30px; font-size: 21px; }
+}
+
+@media (max-height: 420px) and (orientation: landscape) {
+  .reasons-pad { padding-block: 2%; }
+  .slide-liberty { grid-template-columns: 0.3fr 0.7fr; gap: 2%; padding: 1.5% 2.5%; }
+  .liberty-question h2 { margin: 10px 0; font-size: 24px; }
+  .blue-note { font-size: 8px; }
+  .liberty-spectrum { grid-template-columns: 44px minmax(0, 1fr); }
+  .spectrum-label { right: 12px; font-size: 5.5px; }
+  .liberty-table h3 { padding: 6px 8px; font-size: 7px; }
+  .liberty-table li { padding: 2px 8px; font-size: 10px; line-height: 1.12; }
+  .reasons-footer { margin-top: 4px; font-size: 15px; }
+}
+
+@media (max-width: 600px) and (max-height: 420px) and (orientation: landscape) {
+  .slide-liberty { grid-template-columns: 0.27fr 0.73fr; gap: 1.5%; padding: 1% 1.5%; }
+  .liberty-question h2 { font-size: 20px; }
+  .liberty-spectrum { grid-template-columns: 38px minmax(0, 1fr); }
+  .spectrum-label { right: 10px; font-size: 5px; }
+  .liberty-table h3 { font-size: 6px; }
+  .liberty-table li { font-size: 9px; }
+  .agi-asi-option { padding: 8px 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

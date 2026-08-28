@@ -39,9 +39,14 @@ assert.match(pretext, /document\.documentElement\.dataset\.pretextStatus/, 'Pret
 assert.doesNotMatch(pretext, /document\.documentElement\.dataset\.pretext\s*=/, 'root must not match the text-layout selector');
 assert.doesNotMatch(pretext, /Pretext ·/, 'layout diagnostics must not be visible to participants');
 assert.match(css, /\.pretext-state \{[\s\S]*clip: rect\(0 0 0 0\);/, 'layout status must remain visually hidden');
-assert.match(css, /@media \(max-width: 900px\)[\s\S]*\.liberty-spectrum \{ min-height: 54%; grid-template-columns: 52px minmax\(0, 1fr\);/, 'the vertical liberty spectrum must survive the stacked layout');
+assert.match(css, /@media \(max-width: 900px\) and \(orientation: portrait\)[\s\S]*\.liberty-spectrum \{ min-height: 60%; grid-template-columns: 52px minmax\(0, 1fr\);/, 'the vertical liberty spectrum must survive the portrait layout');
 assert.doesNotMatch(css, /\.spectrum-rail \{ display: none; \}/, 'the vertical liberty spectrum must remain visible at narrow widths');
 assert.doesNotMatch(css, /\.liberty-table li:nth-child\([^)]*\)::before/, 'spectrum labels must stay on the vertical rail, not flatten into rows');
+assert.doesNotMatch(css, /@media \(max-width: 900px\) \{/, 'width alone must not force short landscape frames into tall stacked layouts');
+assert.match(css, /@media \(max-height: 600px\) and \(orientation: landscape\)/, 'short landscape frames need a compact no-scroll layout');
+assert.match(css, /\.liberty-table ol \{ min-height: 0; display: grid; grid-template-rows: repeat\(6, minmax\(0, 1fr\)\); \}/, 'compact liberty rows must share the available height');
+assert.match(wrapper, /deck\.html\?v=20260828\.4/, 'wrapper must cache-bust the compact responsive deck');
+assert.match(deck, /deck\.css\?v=20260828\.4/, 'deck must cache-bust the compact responsive stylesheet');
 assert.equal((deck.match(/<td aria-label="Blank"><\/td>/g) || []).length, 8, 'ledger must expose eight blank cells without overflow-prone hidden text');
 assert.match(deckScript, /touchstart/, 'deck must support touch navigation');
 assert.match(deckScript, /ArrowRight/, 'deck must support keyboard navigation');
