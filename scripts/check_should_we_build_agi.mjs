@@ -51,7 +51,12 @@ assert.doesNotMatch(css, /\.spectrum-rail \{ display: none; \}/, 'the vertical l
 assert.doesNotMatch(css, /\.liberty-table li:nth-child\([^)]*\)::before/, 'spectrum labels must stay on the vertical rail, not flatten into rows');
 assert.doesNotMatch(css, /@media \(max-width: 900px\) \{/, 'width alone must not force short landscape frames into tall stacked layouts');
 assert.match(css, /@media \(max-height: 600px\) and \(orientation: landscape\)/, 'short landscape frames need a compact no-scroll layout');
-assert.match(css, /\.liberty-table ol \{ min-height: 0; display: grid; grid-template-rows: repeat\(6, minmax\(0, 1fr\)\); \}/, 'compact liberty rows must share the available height');
+assert.match(css, /\.liberty-spectrum \{[^}]*grid-template-rows: auto minmax\(0, 1fr\);/, 'the liberty heading and scale body must occupy separate aligned grid rows');
+assert.match(css, /\.spectrum-rail \{[^}]*grid-row: 2;[^}]*grid-template-rows: repeat\(6, minmax\(0, 1fr\)\);/, 'the liberty scale must share the table body\'s six-row grid');
+assert.match(css, /\.liberty-table ol \{[^}]*grid-row: 2;[^}]*grid-template-rows: repeat\(6, minmax\(0, 1fr\)\);/, 'all six liberty rows must share the available height');
+for (const [position, dot, row] of [['libertarian', 'one', 1], ['political', 'three', 3], ['classical', 'five', 5], ['majoritarian', 'six', 6]]) {
+  assert.match(css, new RegExp(`\\.spectrum-${position}, \\.dot-${dot} \\{ grid-row: ${row}; \\}`), `${position} must align with liberty row ${row}`);
+}
 assert.match(css, /\.liberty-question h2 \{ margin: 28px 0; font-size: 33px;/, 'desktop slide-11 title must use the balanced four-line measure');
 assert.match(css, /@media \(max-width: 600px\) and \(orientation: portrait\)[\s\S]*\.liberty-question h2 \{ font-size: 27px; \}[\s\S]*\.liberty-table li \{ display: block; padding: 14px 12px; font-size: 15px; \}/, 'phone slide-11 title and rows must preserve readable phrase-level wrapping');
 assert.match(css, /@media \(max-width: 340px\) and \(orientation: portrait\) \{[\s\S]*\.liberty-question h2 \{ font-size: 22px; \}/, 'small-phone slide-11 title must retain the four-line measure');
@@ -88,8 +93,8 @@ assert.doesNotMatch(editor, /ALLOWED_IPS|CF-Connecting-IP/, 'the client bundle m
 assert.doesNotMatch(editor, /element\.closest\('\[aria-hidden="true"\]'\)/, 'inactive slides must remain represented in the editable field map');
 assert.match(css, /html\[data-editor-mode="editing"\] \[data-editor-key\]/, 'edit mode must visibly identify editable text');
 assert.match(css, /@media \(max-width: 600px\) and \(orientation: portrait\)[\s\S]*\.ledger-table thead th:first-child \{ width: 40%; \}[\s\S]*\.ledger-table tbody th \{ padding-inline: 10px; font-size: 12px; white-space: nowrap; \}/, 'phone ledger labels must remain inside the first column divider');
-assert.match(wrapper, /deck\.html\?v=20260828\.17/, 'wrapper must cache-bust the DNS-resilient inline editor');
-assert.match(deck, /deck\.css\?v=20260828\.10/, 'deck must cache-bust inline-editor styling');
+assert.match(wrapper, /deck\.html\?v=20260828\.18/, 'wrapper must cache-bust the aligned liberty table');
+assert.match(deck, /deck\.css\?v=20260828\.11/, 'deck must cache-bust aligned liberty-table styling');
 assert.match(deck, /deck\.js\?v=20260828\.8/, 'deck must cache-bust edit-aware interactions');
 assert.match(deck, /inline-editor\.js\?v=20260828\.3/, 'deck must load the DNS-resilient all-slide inline editor');
 assert.match(deck, /pretext-layout\.js\?v=20260828\.8/, 'deck must cache-bust editor-aware Pretext layout');

@@ -355,18 +355,18 @@ button { color: inherit; }
 .liberty-question { min-width: 0; display: flex; flex-direction: column; justify-content: center; }
 .liberty-question h2 { margin: 28px 0; font-size: 33px; line-height: 1.08; }
 .blue-note { margin-top: auto; color: var(--blue); font-size: 13px; text-transform: none; }
-.liberty-spectrum { min-width: 0; display: grid; grid-template-columns: 64px 1fr; align-items: stretch; }
-.spectrum-rail { position: relative; border-right: 1.5px solid var(--rule); }
-.spectrum-label { position: absolute; right: 19px; transform: translateY(-50%) rotate(180deg); writing-mode: vertical-rl; font: 700 8px/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
-.spectrum-dot { position: absolute; right: -5px; width: 9px; height: 9px; border: 1px solid var(--ink); border-radius: 50%; background: var(--blue); transform: translateY(-50%); }
-.spectrum-libertarian, .dot-one { top: 18%; }
-.spectrum-political, .dot-three { top: 43%; }
-.spectrum-classical, .dot-five { top: 69%; }
-.spectrum-majoritarian, .dot-six { top: 91%; }
-.liberty-table { min-width: 0; border: 1.5px solid var(--ink); }
-.liberty-table h3 { margin: 0; padding: 16px 18px; background: var(--ink); color: var(--paper); font: 700 11px/1.25 var(--mono); }
-.liberty-table ol { list-style: none; margin: 0; padding: 0; }
-.liberty-table li { min-height: 62px; display: flex; align-items: center; margin: 0; padding: 10px 16px; border-bottom: 1px solid var(--rule); font-size: 16px; line-height: 1.25; }
+.liberty-spectrum { min-width: 0; min-height: 0; display: grid; grid-template-columns: 64px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); align-items: stretch; }
+.spectrum-rail { position: relative; grid-column: 1; grid-row: 2; display: grid; grid-template-rows: repeat(6, minmax(0, 1fr)); min-height: 0; margin-bottom: 1.5px; border-right: 1.5px solid var(--rule); }
+.spectrum-label { position: relative; grid-column: 1; align-self: center; justify-self: end; margin-right: 19px; transform: rotate(180deg); writing-mode: vertical-rl; font: 700 8px/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+.spectrum-dot { position: relative; right: -5px; grid-column: 1; align-self: center; justify-self: end; width: 9px; height: 9px; border: 1px solid var(--ink); border-radius: 50%; background: var(--blue); }
+.spectrum-libertarian, .dot-one { grid-row: 1; }
+.spectrum-political, .dot-three { grid-row: 3; }
+.spectrum-classical, .dot-five { grid-row: 5; }
+.spectrum-majoritarian, .dot-six { grid-row: 6; }
+.liberty-table { display: contents; }
+.liberty-table h3 { grid-column: 2; grid-row: 1; box-sizing: border-box; margin: 0; padding: 16px 18px; border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper); font: 700 11px/1.25 var(--mono); }
+.liberty-table ol { grid-column: 2; grid-row: 2; min-height: 0; display: grid; grid-template-rows: repeat(6, minmax(0, 1fr)); list-style: none; margin: 0; padding: 0; border: 1.5px solid var(--ink); border-top: 0; border-left: 0; }
+.liberty-table li { min-height: 0; display: flex; align-items: center; margin: 0; padding: 10px 16px; border-bottom: 1px solid var(--rule); font-size: 16px; line-height: 1.25; }
 .liberty-table li:nth-child(even) { background: var(--pale-blue); }
 .liberty-table li:last-child { border-bottom: 0; }
 
@@ -746,7 +746,7 @@ html[data-editor-mode="editing"] [data-editor-key]:focus {
   .liberty-question { padding: 40px 22px; }
   .liberty-question h2 { font-size: 27px; }
   .liberty-spectrum { grid-template-columns: 44px minmax(0, 1fr); padding-inline: 10px; }
-  .spectrum-label { right: 13px; font-size: 7px; }
+  .spectrum-label { margin-right: 13px; font-size: 7px; }
   .liberty-table li { display: block; padding: 14px 12px; font-size: 15px; }
   .blue-strip { font-size: 10px; }
   .reason-feature { min-height: 260px; padding: 34px 22px; }
@@ -851,11 +851,9 @@ html[data-editor-mode="editing"] [data-editor-key]:focus {
   .liberty-question h2 { margin: 14px 0; font-size: 22px; }
   .blue-note { font-size: 9px; }
   .liberty-spectrum { grid-template-columns: 50px minmax(0, 1fr); }
-  .spectrum-label { right: 14px; font-size: 6px; }
+  .spectrum-label { margin-right: 14px; font-size: 6px; }
   .spectrum-dot { right: -4px; width: 7px; height: 7px; }
-  .liberty-table { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr); }
   .liberty-table h3 { padding: 9px 11px; font-size: 8px; }
-  .liberty-table ol { min-height: 0; display: grid; grid-template-rows: repeat(6, minmax(0, 1fr)); }
   .liberty-table li { min-height: 0; padding: 5px 10px; font-size: 11px; line-height: 1.18; }
 
   .blue-strip { padding: 8px 10px; font-size: 8px; }
@@ -906,7 +904,7 @@ html[data-editor-mode="editing"] [data-editor-key]:focus {
   .liberty-question h2 { margin: 10px 0; font-size: 21px; }
   .blue-note { font-size: 8px; }
   .liberty-spectrum { grid-template-columns: 44px minmax(0, 1fr); }
-  .spectrum-label { right: 12px; font-size: 5.5px; }
+  .spectrum-label { margin-right: 12px; font-size: 5.5px; }
   .liberty-table h3 { padding: 6px 8px; font-size: 7px; }
   .liberty-table li { padding: 2px 8px; font-size: 10px; line-height: 1.12; }
   .reasons-footer { margin-top: 4px; font-size: 15px; }
@@ -916,7 +914,7 @@ html[data-editor-mode="editing"] [data-editor-key]:focus {
   .slide-liberty { grid-template-columns: 0.27fr 0.73fr; gap: 1.5%; padding: 1% 1.5%; }
   .liberty-question h2 { font-size: 14px; }
   .liberty-spectrum { grid-template-columns: 38px minmax(0, 1fr); }
-  .spectrum-label { right: 10px; font-size: 5px; }
+  .spectrum-label { margin-right: 10px; font-size: 5px; }
   .liberty-table h3 { font-size: 6px; }
   .liberty-table li { font-size: 9px; }
   .agi-asi-option { padding: 8px 12px; }
