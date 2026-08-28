@@ -378,15 +378,45 @@ button { color: inherit; }
 .reason-feature h2 { margin: 0 0 42px; font-size: 46px; line-height: 1.05; }
 .reason-feature p { max-width: 620px; margin: 0; font-size: 27px; line-height: 1.25; }
 .reason-stack { min-width: 0; display: grid; grid-template-rows: repeat(3, 1fr); }
+.reason-stack-four { grid-template-rows: repeat(4, 1fr); }
 .reason-card { min-width: 0; display: flex; flex-direction: column; justify-content: center; padding: 18px 22px; border: var(--dash); border-bottom: 0; }
 .reason-card:last-child { border-bottom: var(--dash); }
 .reason-card-pale { background: var(--pale-blue); }
 .reason-card h3 { margin: 0 0 10px; font-size: 28px; line-height: 1.08; }
 .reason-card p { margin: 0; font-size: 17px; line-height: 1.35; }
+.reason-card-button { position: relative; width: 100%; appearance: none; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.reason-card-button.reason-card-pale { background: var(--pale-blue); }
+.reason-card-button:hover { border-color: var(--blue); box-shadow: inset 0 0 0 1px var(--blue); }
+.reason-card-button:focus-visible { z-index: 1; outline: 3px solid var(--blue); outline-offset: -3px; }
+.reason-stack-four .reason-card-button { padding: 12px 18px; }
+.reason-card-heading { display: block; margin: 0 0 7px; padding-right: 84px; font-size: 23px; font-weight: 650; line-height: 1.05; }
+.reason-card-copy { display: block; margin: 0; font-size: 14px; line-height: 1.28; }
+.reason-card-action { position: absolute; top: 14px; right: 14px; color: var(--blue); font: 700 8px/1 var(--mono); letter-spacing: 0.04em; text-transform: uppercase; }
 .reasons-footer { flex: 0 0 auto; margin: 20px 0 0; font-size: 28px; line-height: 1.16; }
 .feature-centered { justify-content: center; }
 .feature-centered h2 { margin: 0; font-size: 52px; }
 .credibility-grid .reason-card h3 { margin: 0; font-size: 27px; line-height: 1.14; }
+
+.reason-dialog {
+  width: min(560px, calc(100vw - 36px));
+  max-height: calc(100dvh - 36px);
+  padding: 0;
+  overflow: auto;
+  border: 1.5px solid var(--ink);
+  border-radius: 14px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 22px 70px rgba(17, 16, 0, 0.34);
+}
+.reason-dialog::backdrop { background: rgba(17, 16, 0, 0.72); backdrop-filter: blur(3px); }
+.reason-dialog-card { position: relative; padding: 34px 38px 38px; border-top: 10px solid var(--blue); }
+.reason-dialog-close { position: absolute; top: 16px; right: 16px; width: 34px; height: 34px; border: 1.5px solid var(--ink); border-radius: 50%; background: var(--paper); font: 500 24px/1 var(--mono); cursor: pointer; }
+.reason-dialog-close:hover, .reason-dialog-close:focus-visible { background: var(--blue); color: var(--paper); }
+.reason-dialog-kicker { margin: 0 48px 18px 0; color: var(--blue); font: 700 10px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
+.reason-dialog h3 { margin: 0 42px 18px 0; font-size: 36px; line-height: 1.05; }
+.reason-dialog p:not(.reason-dialog-kicker), .reason-dialog li { font-size: 20px; line-height: 1.38; }
+.reason-dialog p:not(.reason-dialog-kicker) { margin: 0; }
+.reason-dialog ul { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; }
 
 /* AGI / ASI */
 .slide-agi-asi { display: grid; grid-template-columns: 0.41fr 0.59fr; }
@@ -407,6 +437,7 @@ button { color: inherit; }
 .hurdles { margin: 0; padding-left: 1.3em; display: grid; gap: 22px; }
 .hurdles li { padding-left: 6px; font-size: 18px; line-height: 1.34; }
 .net-question { margin: 30px 0 0; font-size: 20px; }
+.rigour-note { max-width: 36ch; margin: 14px 0 0; color: var(--blue); font: 700 14px/1.45 var(--mono); letter-spacing: 0.02em; }
 .ledger-wrap { min-width: 0; display: flex; flex-direction: column; justify-content: center; }
 .ledger-wrap > h3 { margin: 0 0 18px; padding-bottom: 18px; border-bottom: 1px dashed var(--rule); color: var(--blue); font-size: 12px; }
 .ledger-scroll { overflow: auto; outline: 0; }
@@ -526,6 +557,8 @@ button { color: inherit; }
   .reason-feature p { font-size: 23px; }
   .reason-card h3, .credibility-grid .reason-card h3 { font-size: 23px; }
   .reason-card p { font-size: 15px; }
+  .reason-card-heading { font-size: 20px; }
+  .reason-card-copy { font-size: 12px; }
   .reasons-footer { font-size: 24px; }
   .feature-centered h2 { font-size: 44px; }
   .agi-asi-title h2 { font-size: 40px; }
@@ -605,6 +638,8 @@ button { color: inherit; }
   .reason-card { min-height: 132px; padding: 26px 24px; border-bottom: 0; }
   .reason-card h3, .credibility-grid .reason-card h3 { font-size: 28px; }
   .reason-card p { font-size: 18px; }
+  .reason-card-heading { font-size: 25px; }
+  .reason-card-copy { font-size: 17px; }
   .reasons-footer { margin-top: 26px; font-size: 28px; }
   .feature-centered h2 { font-size: 46px; }
   .agi-asi-title { min-height: 43%; padding: 44px 34px; }
@@ -664,6 +699,9 @@ button { color: inherit; }
   .reason-card { min-height: 132px; padding: 24px 20px; }
   .reason-card h3, .credibility-grid .reason-card h3 { font-size: 23px; }
   .reason-card p { font-size: 16px; }
+  .reason-card-heading { font-size: 22px; }
+  .reason-card-copy { font-size: 15px; }
+  .reason-card-action { top: 12px; right: 12px; }
   .reasons-footer { font-size: 23px; }
   .feature-centered h2 { font-size: 38px; }
   .agi-asi-title { padding: 44px 24px; }
@@ -675,6 +713,7 @@ button { color: inherit; }
   .hurdles { gap: 18px; }
   .hurdles li { font-size: 16px; }
   .net-question { font-size: 18px; }
+  .rigour-note { font-size: 13px; }
   .ledger-wrap > h3 { font-size: 10px; }
   .ledger-table thead th:first-child { width: 40%; }
   .ledger-table tbody th { padding-inline: 10px; font-size: 12px; white-space: nowrap; }
@@ -768,6 +807,10 @@ button { color: inherit; }
   .reason-card { padding: 8px 11px; }
   .reason-card h3, .credibility-grid .reason-card h3 { margin-bottom: 4px; font-size: 16px; }
   .reason-card p { font-size: 11px; line-height: 1.25; }
+  .reason-stack-four .reason-card-button { padding: 6px 9px; }
+  .reason-card-heading { margin-bottom: 3px; padding-right: 58px; font-size: 13px; }
+  .reason-card-copy { font-size: 9px; line-height: 1.18; }
+  .reason-card-action { top: 7px; right: 7px; font-size: 5.5px; }
   .reasons-footer { margin-top: 7px; font-size: 17px; }
   .feature-centered h2 { font-size: 30px; }
 
@@ -782,6 +825,7 @@ button { color: inherit; }
   .hurdles { gap: 8px; }
   .hurdles li { font-size: 12px; line-height: 1.25; }
   .net-question { margin-top: 12px; font-size: 14px; }
+  .rigour-note { margin-top: 7px; font-size: 10px; line-height: 1.3; }
   .ledger-wrap > h3 { margin-bottom: 7px; padding-bottom: 7px; font-size: 8px; }
   .ledger-table { min-width: 0; border-spacing: 0 3px; }
   .ledger-table thead th { height: 30px; padding: 5px; font-size: 8px; }
