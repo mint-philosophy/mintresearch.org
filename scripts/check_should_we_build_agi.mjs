@@ -84,12 +84,13 @@ assert.match(editor, /contenteditable', 'plaintext-only'/, 'inline editing must 
 assert.match(editor, /method: 'PUT'/, 'Save must persist through the editor service');
 assert.match(editor, /element\.textContent = values\[field\.key\]/, 'saved values must be applied as text, never HTML');
 assert.doesNotMatch(editor, /ALLOWED_IPS|CF-Connecting-IP/, 'the client bundle must not contain or attempt to enforce the IP allowlist');
+assert.doesNotMatch(editor, /element\.closest\('\[aria-hidden="true"\]'\)/, 'inactive slides must remain represented in the editable field map');
 assert.match(css, /html\[data-editor-mode="editing"\] \[data-editor-key\]/, 'edit mode must visibly identify editable text');
 assert.match(css, /@media \(max-width: 600px\) and \(orientation: portrait\)[\s\S]*\.ledger-table thead th:first-child \{ width: 40%; \}[\s\S]*\.ledger-table tbody th \{ padding-inline: 10px; font-size: 12px; white-space: nowrap; \}/, 'phone ledger labels must remain inside the first column divider');
-assert.match(wrapper, /deck\.html\?v=20260828\.15/, 'wrapper must cache-bust the inline editor');
+assert.match(wrapper, /deck\.html\?v=20260828\.16/, 'wrapper must cache-bust the all-slide inline editor correction');
 assert.match(deck, /deck\.css\?v=20260828\.10/, 'deck must cache-bust inline-editor styling');
 assert.match(deck, /deck\.js\?v=20260828\.8/, 'deck must cache-bust edit-aware interactions');
-assert.match(deck, /inline-editor\.js\?v=20260828\.1/, 'deck must load the inline editor');
+assert.match(deck, /inline-editor\.js\?v=20260828\.2/, 'deck must load the all-slide inline editor');
 assert.match(deck, /pretext-layout\.js\?v=20260828\.8/, 'deck must cache-bust editor-aware Pretext layout');
 assert.equal((css.match(/\.ledger-table \{ min-width: 0;/g) || []).length, 2, 'ledger must fit responsive portrait and short-landscape frames without horizontal scrolling');
 assert.equal((deck.match(/<td aria-label="Blank"><\/td>/g) || []).length, 8, 'ledger must expose eight blank cells without overflow-prone hidden text');

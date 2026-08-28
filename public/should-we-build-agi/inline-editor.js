@@ -32,7 +32,7 @@ function editableLeaves() {
   const duplicates = new Map();
   document.querySelectorAll('.slide').forEach((slide, slideIndex) => {
     slide.querySelectorAll('h1, h2, h3, p, li, th, td, span, small, div').forEach((element) => {
-      if (element.matches(excluded) || element.closest('[aria-hidden="true"]')) return;
+      if (element.matches(excluded)) return;
       if (element.children.length > 0) return;
       const source = normaliseText(element.textContent);
       if (!source) return;
