@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>AVERI tested Gemini on prompts Google was never allowed to see — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-08-27">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-08-27">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 27 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">AVERI tested Gemini on prompts Google was never allowed to see</h1>
+<p class="dek">The joint technical report explains how allowlisted code redactions and hardware attestation kept each side's assets hidden, what the pilot could not verify, and where Google still sits inside the trust chain.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 27 August 2026</span> <span class="chip">946 words · ~5 min</span></div>
+<div class="article-body">
+<p>A joint technical report released on August 27, <a href="https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/piloting-the-worlds-first-double-blind-ai-evaluations/double-blind-evaluations-technical-report.pdf">"Double Blind Evals: Resolving the Dual Confidentiality Dilemma in AI Safety Auditing"</a>, sets out the mechanics behind the run. Andrew Trask of OpenMined leads its thirty authors, and they describe a bind: evaluators who test a proprietary model through its owner's API hand over their benchmark prompts in plaintext, and the alternative of receiving weights almost never happens. To the authors' knowledge, no external evaluator has ever been given frontier model weights in the clear for the purpose of protecting a benchmark. The live evaluation ran Gemini 2.5 Flash-Lite, which Google's developer blog described on release as the <a href="https://developers.googleblog.com/en/gemini-25-flash-lite-is-now-stable-and-generally-available/">fastest and lowest cost model</a> in the 2.5 family, against prompts drawn from the reserve set of MLCommons's AILuminate reserve set, inside a Google Cloud A3 confidential VM with Intel TDX host memory encryption and a single NVIDIA H100 80GB confidential GPU running OpenMined's PySyft v0.10.x. A second evaluation, run with Singapore's AI Safety Institute, used a private prompt set built around harmful content elicitation in Singapore's context.</p>
+<p>Hardware encryption on its own does not produce a double-blind evaluation, and the report's middle sections explain why. An enclave protects a single user against an untrustworthy cloud provider, guaranteeing privacy, since the provider cannot read data held in RAM, and veracity, since the provider cannot substitute different code for the one it promised to run. A double-blind evaluation needs both guarantees to hold between two users of the same machine. The authors bridge that gap with the millionaires' problem, where two parties learn who is richer by agreeing in advance on open source code the enclave will execute. Agreement breaks down once each side must contribute code of its own, since the model owner's inference code and the evaluator's grading code carry trade secrets neither will show. The report answers by decomposing each codebase into units too elementary to contain proprietary IP, then constraining what redacted sections may call: only allowlisted methods with no route to the network, checked at submission by OpenMined's syft-restrict. An evaluator can approve inference code it cannot read while knowing that code has no way to carry its prompts out. PySyft handles submission and dual approval, the enclave runs only once both parties sign off, and the parties fix in advance who receives the result.</p>
+<p>The report names where the pilot fell short of that design. Running Gemini 2.5 Flash-Lite entirely on layers present in open source libraries proved too large an engineering task, so proprietary method implementations remained and "not all code could be inspected or allowlisted"; AVERI was informed and accepted the setup. Google Cloud's Confidential Space guest OS publishes reference values and its build process is externally validated, yet individual builds take private signing keys as inputs and cannot be independently reproduced, and Google's own services sign and verify the attestation report, which places Google inside the verification path. The report puts compute overhead under 5%, citing NVIDIA's H100 measurements, and locates the expense instead in "the procedural overhead and human coordination required for legal agreements and code review". The authors want attestation to eventually feel like the browser lock icon, and name encrypted multi-node H100 and B200 clusters as the next milestone, since this pilot fit on one GPU.</p>
+<p>No score for Gemini 2.5 Flash-Lite reached the public; the collaboration published the method alone. OpenMined's <a href="https://openmined.org/blog/secure-enclaves-for-ai-evaluation/">2024 demonstration</a> with Anthropic and the UK AI Security Institute had substituted GPT-2 for a frontier model and a five-row sample of the CAMEL-bio dataset for a confidential biosecurity benchmark, with the secure computation itself taking just over a minute. MLCommons described AILuminate in <a href="https://mlcommons.org/2026/04/continuous-prompt-stewardship/">April</a> as privately administered and "built with reserve prompt sets to allow for prompt rotation". In an accompanying <a href="https://deepmind.google/blog/piloting-the-worlds-first-double-blind-ai-evaluations/">post</a>, Google DeepMind's William Isaac, Sol Messing and Kristian Lum write that "Google cannot see the evaluator's test prompts", and point to evaluations for cybersecurity or by government bodies as the setting where that guarantee will matter most.</p>
+<p>AVERI launched in January 2026 under Miles Brundage, who led the policy research and AGI readiness teams at OpenAI. Its <a href="https://mintresearch.org/newsletters/yinai/2026-07-13/#story-frontier-ai-auditing-third-party-framework">founding framework</a>, published as <a href="https://arxiv.org/abs/2601.11699">"Frontier AI Auditing"</a> with 47 co-authors, defined four AI Assurance Levels and argued that credible audits depend on deep, secure access to non-public information. The pilot demonstrates one way to provide that access as it becomes a legal obligation. AVERI endorsed the Illinois bill that became SB 315, signed by Governor JB Pritzker on July 6, which from January 1, 2028 will require frontier developers above $500 million in annual revenue to commission independent third-party compliance audits and publish summaries; AVERI also notes that the EU's General-Purpose AI Code of Practice already requires signatories to ensure qualified independent evaluators get adequate access, information and time. Writing on AVERI's site, Carly Tryens argues that such rules demand security and privacy in audits while saying little about how to achieve them, and that policymakers should be ambitious in requiring deep, secure access. She describes the enclave as structured transparency, "a well-defined, technology-enabled middle ground between 'share everything' and 'share nothing'".</p>
+<p>Asked on X by Varun Godbole whether DeepMind paid for the audit, Brundage replied that "AVERI didn't take any compensation for this work", and pointed to AVERI's policy of refusing cash from frontier AI companies and their executives while accepting API credits from Amazon, Anthropic, Google DeepMind, Microsoft, OpenAI and Thinking Machines Lab. On how auditing should be financed at scale, he raised pooled industry funding and a rule under which "auditees can pay but not select", and said his most confident view is that an explicit policy beats drifting toward auditee money and weak standards, with financial auditing as the warning.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/piloting-the-worlds-first-double-blind-ai-evaluations/double-blind-evaluations-technical-report.pdf">Double Blind Evals: Resolving the Dual Confidentiality Dilemma in AI Safety Auditing (joint technical report, Trask et al.)</a> <span class="how">— Primary source; full 8-page PDF downloaded and read end to end. Supplies the 30-author list and affiliations (AVERI, Google, Singapore AISI, OpenMined, MLCommons), the API-versus-weights bind, the 'no external evaluator has received frontier weights in the clear' claim, the privacy/veracity distinction, the millionaires'-problem bridge, the allowlist/redaction scheme and syft-restrict, the PySyft seven-step procedure, the experimental setup (GCP A3 confidential VM, Intel TDX, NVIDIA H100 80GB confidential GPU, PySyft v0.10.x, AILuminate reserve set), the second Singapore AISI evaluation, all three named limitations, the sub-5% overhead figure (cited to Apsey et al. 2023 for NVIDIA H100), the legal-agreement/code-review bottleneck quote, the HTTPS-lock-icon goal, and the H100/B200 cluster next step.</span></li>
+<li><a href="https://www.averi.org/ourwork/averi-pilot-report-the-worlds-first-double-blind-eval">AVERI Pilot Report: The World's First Double-Blind Evaluation of a Proprietary Language Model (Carly Tryens, AVERI)</a> <span class="how">— Primary source; full page text extracted and read. Supplies the structured-transparency quote, the July-August 2026 timing, the confidential-report-to-Google detail, the hazard-domain footnote, the EU GPAI Code of Practice and Illinois SB 315 framing, the policy ask to be ambitious about deep secure access, and the 2024 pilot summary including the just-over-a-minute computation time.</span></li>
+<li><a href="https://deepmind.google/blog/piloting-the-worlds-first-double-blind-ai-evaluations/">Piloting the world's first double-blind AI evaluations (William Isaac, Sol Messing, Kristian Lum, Google DeepMind)</a> <span class="how">— Primary source; full page text extracted and read. Supplies the August 27 date, the three named authors, the verbatim 'Google cannot see the evaluator's test prompts', the Confidential Space attribution, the Singapore AI Safety Institute partnership, and the cybersecurity/government-body framing.</span></li>
+<li><a href="https://x.com/AVERIorg/status/2092967933651665153">AVERI on X announcing the pilot (canonical assigned source)</a> <span class="how">— Assigned canonical URL, fetched in full with Bird along with its 12 replies. Treated as a pointer to the blog post and technical report, which were read directly. Its own added content (per-party roles, SB 315 and EU Code of Practice framing, flywheel strategy) duplicates the blog post; nothing is attributed to the post itself in the piece.</span></li>
+<li><a href="https://x.com/Miles_Brundage/status/2093002183281414554">Miles Brundage on X, replying about who paid for the audit</a> <span class="how">— Verified by fetching the full post: 'AVERI didn't take any compensation for this work', the pooled-funding and 'auditees can pay but not select' proposals, and the warning about drifting toward auditee money and lax standards with financial auditing as the analogue.</span></li>
+<li><a href="https://x.com/VarunGodbole/status/2092978914150723658">Varun Godbole on X asking how the audit was funded</a> <span class="how">— The question Brundage answered; verified verbatim, including 'Did DeepMind pay you for this audit? How was it funded?'</span></li>
+<li><a href="https://developers.googleblog.com/en/gemini-25-flash-lite-is-now-stable-and-generally-available/">Gemini 2.5 Flash-Lite is now stable and generally available (Google Developers Blog, July 22, 2025)</a> <span class="how">— Verified Google's own description of Flash-Lite as its fastest and lowest cost model in the Gemini 2.5 family, used to locate the tested model in Google's lineup.</span></li>
+<li><a href="https://arxiv.org/abs/2504.20879">The Leaderboard Illusion (Singh, Nan et al., NeurIPS 2025 Datasets and Benchmarks Track)</a> <span class="how">— Checked the paper itself rather than the technical report's paraphrase. Verified the exact claim: '27 private LLM variants tested by Meta in the lead-up to the Llama-4 release.' The report described this as an unnamed frontier lab; Meta is named here from the primary paper.</span></li>
+<li><a href="https://arxiv.org/abs/2404.18824">Benchmarking Benchmark Leakage in Large Language Models (Ruijie Xu, Zengzhi Wang, Run-Ze Fan, Pengfei Liu)</a> <span class="how">— Checked the abstract, which states 31 LLMs analyzed in the context of mathematical reasoning and 'substantial instances' of misuse without giving a fraction. The 'roughly half' figure is the technical report's reading, so the piece attributes it to the report's authors rather than to Xu et al.</span></li>
+<li><a href="https://arxiv.org/abs/2601.04301">Quantifying the Effect of Test Set Contamination on Generative Evaluations (Schaeffer, Kazdan, Abbasi et al., January 7, 2026)</a> <span class="how">— Verified title, first authors, January 2026 date, and the abstract finding that 'performance improves with contamination and model size.'</span></li>
+<li><a href="https://openmined.org/blog/secure-enclaves-for-ai-evaluation/">Secure Enclaves for AI Evaluation (OpenMined, with UK AISI and Anthropic, 2024)</a> <span class="how">— The precursor pilot. Verified GPT-2 as the stand-in model, the five-row CAMEL-bio sample, H100 GPU with AMD SEV-SNP on Azure, and the 1 minute 11 second asset-transfer-and-execution window (reported by AVERI as just over a minute).</span></li>
+<li><a href="https://mlcommons.org/2026/04/continuous-prompt-stewardship/">Fresh Benchmarks, Reliable Scores: Introducing Continuous Prompt Stewardship for AI Risk Evaluation (MLCommons, April 20, 2026)</a> <span class="how">— Verified that AILuminate is privately administered and 'built with reserve prompt sets to allow for prompt rotation', which is why an unused reserve set existed for this pilot.</span></li>
+<li><a href="https://arxiv.org/abs/2601.11699">Frontier AI Auditing: Toward Rigorous Third-Party Assessment of Safety and Security Practices at Leading AI Companies (Brundage, Dreksler et al., arXiv:2601.11699)</a> <span class="how">— AVERI's founding paper and the desk's earlier coverage anchor. Verified 48 total authors, January 16 2026 submission, and the four AI Assurance Levels plus the deep-secure-access definition of frontier AI auditing.</span></li>
+<li><a href="https://www.averi.org/about">About | AVERI (mission, funding and independence policy)</a> <span class="how">— Verified the no-cash-from-frontier-companies policy, the API-credit donor list (Amazon, Anthropic, Google DeepMind, Microsoft, OpenAI, Thinking Machines Lab), and AVERI's statement that it endorsed the legislation that became Illinois SB 315. This is the page Brundage linked in his reply.</span></li>
+<li><a href="https://www.averi.org/team">Team | AVERI</a> <span class="how">— Verified current titles against AVERI's own institutional page: Brundage as Executive Director who previously led the Policy Research and AGI Readiness teams at OpenAI, and Carly Tryens as head of Executive Operations.</span></li>
+<li><a href="https://www.crowell.com/en/insights/client-alerts/illinois-imposes-transparency-and-safety-obligations-on-frontier-ai-systems">Illinois Imposes Transparency and Safety Obligations on Frontier AI Systems (Crowell &amp; Moring client alert)</a> <span class="how">— Verified SB 315 specifics independently of AVERI's summary: signed July 6, 2026, annual independent third-party audits from January 1, 2028, the $500 million revenue threshold, and the requirement to publish a high-level audit summary.</span></li>
+<li><a href="https://thenewstack.io/google-double-blind-evaluation/">Google found a way to test Gemini without seeing the questions (Amanda Caswell, The New Stack, August 27, 2026)</a> <span class="how">— Read in full for follow-up reporting. Independently corroborates the Confidential Space and H100/TDX setup, the sub-5% overhead and coordination bottleneck, the reproducibility and attestation-path limitations, and the two prompt sources (MLCommons and Singapore AISI). Nothing is sourced to it exclusively in the piece.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-07-13/#story-frontier-ai-auditing-third-party-framework">A 48-author framework for auditing frontier AI companies — Yesterday in AI, July 13, 2026</a> <span class="how">— Continuity link to the earlier account of AVERI's founding framework and auditor-funding problem.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-secure-enclave-audit-double-blinds-gemini-2-5-flash-lite-on">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-27/secure-enclave-audit-double-blinds-gemini-2-5-flash-lite-on</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
