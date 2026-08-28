@@ -60,6 +60,8 @@ assert.match(deck, /<p data-pretext>How much depends on our choices\? Institutio
 assert.match(css, /\.section-summary p \+ p \{ margin-top: 1em; \}/, 'the separate agency paragraph must remain visibly distinct');
 assert.match(deck, /<h2 data-pretext>Mapping the Reasons<\/h2>/, 'the final slide must be titled Mapping the Reasons');
 assert.doesNotMatch(deck, /Technological or Institutional Pessimism or Optimism\?/, 'the final slide must not retain its superseded title');
+assert.match(deck, /This is implausibly fatalistic\./, 'slide 3 must characterize inevitability as implausibly fatalistic');
+assert.doesNotMatch(deck, /“AGI is inevitable” is implausibly deterministic\./, 'slide 3 must not retain the superseded deterministic wording');
 assert.match(deck, /Promise must be subject to same level of rigour as peril\./, 'the final accounting must apply the same rigour to promise and peril');
 assert.equal((deck.match(/data-reason-dialog="/g) || []).length, 4, 'slide 12 must offer four interactive kinds of reasons');
 assert.equal((deck.match(/<dialog class="reason-dialog"/g) || []).length, 4, 'each kind of reason must have an illustrative dialog');
@@ -71,7 +73,7 @@ assert.match(deckScript, /reason-dialog-close[\s\S]*dialog\.close\(\)/, 'reason 
 assert.match(deckScript, /querySelector\('\.reason-dialog\[open\]'\)/, 'slide navigation must pause while a reason dialog is open');
 assert.match(css, /\.reason-dialog::backdrop/, 'reason dialogs must have a legible modal backdrop');
 assert.match(css, /@media \(max-width: 600px\) and \(orientation: portrait\)[\s\S]*\.ledger-table thead th:first-child \{ width: 40%; \}[\s\S]*\.ledger-table tbody th \{ padding-inline: 10px; font-size: 12px; white-space: nowrap; \}/, 'phone ledger labels must remain inside the first column divider');
-assert.match(wrapper, /deck\.html\?v=20260828\.13/, 'wrapper must cache-bust the interactive reason examples');
+assert.match(wrapper, /deck\.html\?v=20260828\.14/, 'wrapper must cache-bust the slide 3 wording correction');
 assert.match(deck, /deck\.css\?v=20260828\.9/, 'deck must cache-bust the reason-dialog layout');
 assert.match(deck, /deck\.js\?v=20260828\.7/, 'deck must cache-bust reason-dialog interactions');
 assert.match(deck, /pretext-layout\.js\?v=20260828\.7/, 'deck must cache-bust non-breaking Pretext line balancing');
