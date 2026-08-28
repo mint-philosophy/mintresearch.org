@@ -1,4 +1,9 @@
-const endpoint = 'https://agi-editor.mintresearch.org/v1/decks/should-we-build-agi';
+const endpoints = [
+  'https://agi-editor.mintresearch.org/v1/decks/should-we-build-agi',
+  'https://mint-agi-inline-editor.mintlabjhu.workers.dev/v1/decks/should-we-build-agi',
+  'https://agi-inline-editor.mintresearch.org/v1/decks/should-we-build-agi',
+];
+let endpoint = endpoints[0];
 const fields = [];
 const savedValues = new Map();
 let revision = 'base';
@@ -167,25 +172,29 @@ async function initialiseEditor() {
     event.target.blur();
   });
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 2_500);
-  try {
-    const response = await fetch(endpoint, {
-      headers: { Accept: 'application/json' },
-      credentials: 'omit',
-      signal: controller.signal,
-    });
-    if (!response.ok) return;
-    const state = await response.json();
-    revision = state.revision || 'base';
-    applyValues(state.fields || {});
-    if (state.canEdit === true) waitForPretextBeforeReveal(toolbar);
-  } catch {
-    // The static deck remains the safe fallback if the private editor is down.
-  } finally {
-    clearTimeout(timeout);
+  for (const candidate of endpoints) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2_500);
+    try {
+      const response = await fetch(candidate, {
+        headers: { Accept: 'application/json' },
+        credentials: 'omit',
+        signal: controller.signal,
+      });
+      if (!response.ok) continue;
+      const state = await response.json();
+      endpoint = candidate;
+      revision = state.revision || 'base';
+      applyValues(state.fields || {});
+      if (state.canEdit === true) waitForPretextBeforeReveal(toolbar);
+      break;
+    } catch {
+      // Try the next hostname. This also works around stale negative DNS caches.
+    } finally {
+      clearTimeout(timeout);
+    }
   }
 }
 
 window.__agiEditorReady = initialiseEditor();
-window.__agiEditor = { endpoint, fields, get editing() { return editing; } };
+window.__agiEditor = { endpoints, fields, get endpoint() { return endpoint; }, get editing() { return editing; } };

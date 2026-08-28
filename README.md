@@ -141,14 +141,15 @@ under `Microsites` in the primary navigation and sitemap.
 
 `/should-we-build-agi/` is a deliberately unlisted, `noindex` presentation.
 Its deck loads an inline text editor from `public/should-we-build-agi/inline-editor.js`.
-The Edit/Save controls appear only when the separate Cloudflare Worker at
-`agi-editor.mintresearch.org` confirms the request's edge-observed IP against
-the secret allowlist; every save is checked again server-side. Saved plain-text
+The Edit/Save controls appear only when the separate Cloudflare Worker confirms
+the request's edge-observed IP against the secret allowlist; every save is
+checked again server-side. Saved plain-text
 overrides live in Workers KV and are applied with `textContent` before Pretext
 measures the slide. The tracked HTML remains the failure-safe source: if the
 Worker is unavailable, the base deck renders normally and the controls stay
 hidden. Worker code, tests, deployment configuration, and the exact-IP caveat
-live in `agi-editor-worker/`.
+live in `agi-editor-worker/`. The client uses the custom domain first, with the
+Worker's `workers.dev` address and a second custom domain as DNS fallbacks.
 
 Keep deck code isolated inside its iframe so deck-specific keyboard controls,
 scaling, styles, and animations cannot conflict with the site shell. The deck
