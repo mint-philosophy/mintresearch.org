@@ -8,6 +8,7 @@ const fields = [];
 const savedValues = new Map();
 let revision = 'base';
 let editing = false;
+const controlsPreferenceKey = 'agi-editor-controls-hidden';
 
 const excluded = [
   '[aria-hidden="true"]',
@@ -68,13 +69,42 @@ function setToolbarMode(mode, message = '') {
   const edit = document.getElementById('inlineEditorEdit');
   const save = document.getElementById('inlineEditorSave');
   const cancel = document.getElementById('inlineEditorCancel');
+  const hide = document.getElementById('inlineEditorHide');
   const status = document.getElementById('inlineEditorStatus');
   edit.hidden = mode !== 'view';
   save.hidden = mode !== 'edit';
   cancel.hidden = mode !== 'edit';
+  hide.hidden = mode !== 'view';
   save.disabled = mode === 'saving';
   cancel.disabled = mode === 'saving';
   status.textContent = message;
+}
+
+function controlsAreHidden() {
+  try {
+    const saved = window.localStorage.getItem(controlsPreferenceKey);
+    return saved === null ? true : saved === 'true';
+  } catch {
+    return true;
+  }
+}
+
+function rememberControlsHidden(hidden) {
+  try {
+    window.localStorage.setItem(controlsPreferenceKey, String(hidden));
+  } catch {
+    // The editor still works if storage is blocked; it simply resets to compact mode.
+  }
+}
+
+function setControlsHidden(hidden, { remember = true } = {}) {
+  const toolbar = document.getElementById('inlineEditorToolbar');
+  const reveal = document.getElementById('inlineEditorReveal');
+  if (!toolbar || !reveal || (editing && hidden)) return;
+  toolbar.hidden = hidden;
+  reveal.hidden = !hidden;
+  reveal.setAttribute('aria-expanded', String(!hidden));
+  if (remember) rememberControlsHidden(hidden);
 }
 
 function makePlainTextPaste(event) {
@@ -143,13 +173,14 @@ async function save() {
   }
 }
 
-function waitForPretextBeforeReveal(toolbar) {
+function waitForPretextBeforeReveal() {
+  const revealControls = () => setControlsHidden(controlsAreHidden(), { remember: false });
   const state = document.documentElement.dataset.pretextStatus;
   if (state === 'ready' || state === 'fallback') {
-    toolbar.hidden = false;
+    revealControls();
     return;
   }
-  window.addEventListener('agi-pretext-state', () => { toolbar.hidden = false; }, { once: true });
+  window.addEventListener('agi-pretext-state', revealControls, { once: true });
 }
 
 async function initialiseEditor() {
@@ -158,10 +189,14 @@ async function initialiseEditor() {
   const edit = document.getElementById('inlineEditorEdit');
   const saveButton = document.getElementById('inlineEditorSave');
   const cancel = document.getElementById('inlineEditorCancel');
-  if (!toolbar || !edit || !saveButton || !cancel) return;
+  const hide = document.getElementById('inlineEditorHide');
+  const reveal = document.getElementById('inlineEditorReveal');
+  if (!toolbar || !edit || !saveButton || !cancel || !hide || !reveal) return;
 
   edit.addEventListener('click', enterEditMode);
   saveButton.addEventListener('click', save);
+  hide.addEventListener('click', () => setControlsHidden(true));
+  reveal.addEventListener('click', () => setControlsHidden(false));
   cancel.addEventListener('click', () => {
     leaveEditMode({ restore: true });
     setToolbarMode('view', 'Changes discarded');
@@ -186,7 +221,7 @@ async function initialiseEditor() {
       endpoint = candidate;
       revision = state.revision || 'base';
       applyValues(state.fields || {});
-      if (state.canEdit === true) waitForPretextBeforeReveal(toolbar);
+      if (state.canEdit === true) waitForPretextBeforeReveal();
       break;
     } catch {
       // Try the next hostname. This also works around stale negative DNS caches.

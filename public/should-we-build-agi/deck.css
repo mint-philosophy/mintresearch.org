@@ -528,7 +528,7 @@ button { color: inherit; }
 /* IP-gated inline editor */
 .inline-editor-toolbar {
   position: fixed;
-  top: calc(var(--ticker-h) + 10px);
+  bottom: calc(var(--nav-h) + max(8px, env(safe-area-inset-bottom)));
   right: 14px;
   z-index: 1000;
   max-width: calc(100vw - 28px);
@@ -546,7 +546,7 @@ button { color: inherit; }
   text-transform: uppercase;
   backdrop-filter: blur(8px);
 }
-.inline-editor-toolbar[hidden], .inline-editor-button[hidden] { display: none !important; }
+.inline-editor-toolbar[hidden], .inline-editor-button[hidden], .inline-editor-reveal[hidden] { display: none !important; }
 .inline-editor-button {
   appearance: none;
   min-width: 56px;
@@ -564,7 +564,31 @@ button { color: inherit; }
 .inline-editor-button:disabled { cursor: wait; opacity: 0.55; }
 .inline-editor-save { background: var(--blue); color: var(--paper); }
 .inline-editor-cancel { color: var(--muted); }
+.inline-editor-hide { min-width: 48px; border-color: transparent; color: var(--muted); }
 .inline-editor-status { max-width: 250px; overflow: hidden; color: var(--blue); text-overflow: ellipsis; white-space: nowrap; }
+.inline-editor-reveal {
+  appearance: none;
+  position: fixed;
+  right: 10px;
+  bottom: calc(var(--nav-h) + max(7px, env(safe-area-inset-bottom)));
+  z-index: 1000;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--ink) 48%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--paper) 82%, transparent);
+  color: color-mix(in srgb, var(--ink) 58%, transparent);
+  box-shadow: 0 3px 12px rgba(22, 19, 0, 0.12);
+  font: 500 14px/1 var(--serif);
+  cursor: pointer;
+  opacity: 0.62;
+  backdrop-filter: blur(6px);
+}
+.inline-editor-reveal:hover, .inline-editor-reveal:focus-visible { border-color: var(--blue); color: var(--blue); outline: 0; opacity: 1; }
+.inline-editor-reveal:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue) 35%, transparent); }
 
 html[data-editor-mode="editing"] [data-editor-key] {
   min-height: 1em;
@@ -778,6 +802,7 @@ html[data-editor-mode="editing"] [data-editor-key]:focus {
   .swipe-hint { display: none; }
   .inline-editor-toolbar { right: 9px; max-width: calc(100vw - 18px); gap: 5px; padding: 5px; }
   .inline-editor-button { min-width: 50px; height: 30px; padding-inline: 9px; font-size: 9px; }
+  .inline-editor-hide { min-width: 42px; }
   .inline-editor-status { max-width: 120px; font-size: 8px; }
 }
 
@@ -890,9 +915,11 @@ html[data-editor-mode="editing"] [data-editor-key]:focus {
   .ledger-table tbody th { font-size: 10px; }
 
   .deck-nav { grid-template-columns: minmax(135px, 1fr) auto minmax(135px, 1fr); gap: 8px; padding-inline: 12px; font-size: 8px; }
-  .inline-editor-toolbar { top: calc(var(--ticker-h) + 5px); right: 8px; padding: 4px; }
+  .inline-editor-toolbar { right: 8px; bottom: calc(var(--nav-h) + max(5px, env(safe-area-inset-bottom))); padding: 4px; }
   .inline-editor-button { min-width: 46px; height: 26px; padding-inline: 7px; font-size: 8px; }
+  .inline-editor-hide { min-width: 38px; }
   .inline-editor-status { max-width: 150px; font-size: 7px; }
+  .inline-editor-reveal { right: 7px; bottom: calc(var(--nav-h) + max(5px, env(safe-area-inset-bottom))); width: 24px; height: 24px; font-size: 12px; }
   .nav-status { gap: 8px; }
   .nav-dot { width: 15px; height: 20px; background-size: 13px 13px; }
   .nav-button { width: 30px; height: 30px; font-size: 21px; }

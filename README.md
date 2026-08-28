@@ -141,9 +141,11 @@ under `Microsites` in the primary navigation and sitemap.
 
 `/should-we-build-agi/` is a deliberately unlisted, `noindex` presentation.
 Its deck loads an inline text editor from `public/should-we-build-agi/inline-editor.js`.
-The Edit/Save controls appear only when the separate Cloudflare Worker confirms
+The editing controls appear only when the separate Cloudflare Worker confirms
 the request's edge-observed IP against the secret allowlist; every save is
-checked again server-side. Saved plain-text
+checked again server-side. Authorized browsers default to a small pencil control
+above the deck footer. It expands to Edit/Save/Cancel/Hide controls and remembers
+the user's compact or expanded preference locally. Saved plain-text
 overrides live in Workers KV and are applied with `textContent` before Pretext
 measures the slide. The tracked HTML remains the failure-safe source: if the
 Worker is unavailable, the base deck renders normally and the controls stay

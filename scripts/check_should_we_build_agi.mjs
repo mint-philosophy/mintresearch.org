@@ -84,26 +84,32 @@ assert.match(css, /\.reason-dialog::backdrop/, 'reason dialogs must have a legib
 assert.match(deck, /id="inlineEditorToolbar" hidden/, 'the editor toolbar must remain hidden until the server authorizes the client IP');
 assert.match(deck, /id="inlineEditorEdit">Edit</, 'the authorized editor must expose an Edit button');
 assert.match(deck, /id="inlineEditorSave" hidden>Save</, 'the authorized editor must expose a Save button only in edit mode');
+assert.match(deck, /id="inlineEditorHide">Hide</, 'the authorized editor must be collapsible after editing');
+assert.match(deck, /id="inlineEditorReveal" hidden[^>]*aria-label="Show editor controls"/, 'collapsed editor controls must leave a subtle accessible restore control');
 assert.match(editor, /https:\/\/agi-editor\.mintresearch\.org\/v1\/decks\/should-we-build-agi/, 'the deck must use the server-gated custom-domain endpoint');
 assert.match(editor, /https:\/\/mint-agi-inline-editor\.mintlabjhu\.workers\.dev\/v1\/decks\/should-we-build-agi/, 'the deck must include the server-gated workers.dev fallback');
 assert.match(editor, /contenteditable', 'plaintext-only'/, 'inline editing must accept plain text rather than HTML');
 assert.match(editor, /method: 'PUT'/, 'Save must persist through the editor service');
+assert.match(editor, /agi-editor-controls-hidden/, 'the editor must remember its compact-control preference');
+assert.match(editor, /saved === null \? true : saved === 'true'/, 'the authorized editor must default to the compact bottom control');
+assert.match(editor, /hide\.addEventListener\('click', \(\) => setControlsHidden\(true\)\)/, 'Hide must collapse the editor toolbar');
+assert.match(editor, /reveal\.addEventListener\('click', \(\) => setControlsHidden\(false\)\)/, 'the subtle restore control must reopen the editor toolbar');
 assert.match(editor, /element\.textContent = values\[field\.key\]/, 'saved values must be applied as text, never HTML');
 assert.doesNotMatch(editor, /ALLOWED_IPS|CF-Connecting-IP/, 'the client bundle must not contain or attempt to enforce the IP allowlist');
 assert.doesNotMatch(editor, /element\.closest\('\[aria-hidden="true"\]'\)/, 'inactive slides must remain represented in the editable field map');
 assert.match(css, /html\[data-editor-mode="editing"\] \[data-editor-key\]/, 'edit mode must visibly identify editable text');
 assert.match(css, /@media \(max-width: 600px\) and \(orientation: portrait\)[\s\S]*\.ledger-table thead th:first-child \{ width: 40%; \}[\s\S]*\.ledger-table tbody th \{ padding-inline: 10px; font-size: 12px; white-space: nowrap; \}/, 'phone ledger labels must remain inside the first column divider');
-assert.match(wrapper, /deck\.html\?v=20260828\.18/, 'wrapper must cache-bust the aligned liberty table');
-assert.match(deck, /deck\.css\?v=20260828\.11/, 'deck must cache-bust aligned liberty-table styling');
-assert.match(deck, /deck\.js\?v=20260828\.8/, 'deck must cache-bust edit-aware interactions');
-assert.match(deck, /inline-editor\.js\?v=20260828\.3/, 'deck must load the DNS-resilient all-slide inline editor');
+assert.match(wrapper, /deck\.html\?v=20260828\.19/, 'wrapper must cache-bust the compact editor control');
+assert.match(deck, /deck\.css\?v=20260828\.12/, 'deck must cache-bust compact editor styling');
+assert.match(deck, /deck\.js\?v=20260828\.9/, 'deck must cache-bust editor-control touch handling');
+assert.match(deck, /inline-editor\.js\?v=20260828\.4/, 'deck must load the collapsible all-slide inline editor');
 assert.match(deck, /pretext-layout\.js\?v=20260828\.8/, 'deck must cache-bust editor-aware Pretext layout');
 assert.equal((css.match(/\.ledger-table \{ min-width: 0;/g) || []).length, 2, 'ledger must fit responsive portrait and short-landscape frames without horizontal scrolling');
 assert.equal((deck.match(/<td aria-label="Blank"><\/td>/g) || []).length, 8, 'ledger must expose eight blank cells without overflow-prone hidden text');
 assert.match(deckScript, /touchstart/, 'deck must support touch navigation');
 assert.match(
   deckScript,
-  /addEventListener\('touchstart',[\s\S]*?event\.target instanceof Element && event\.target\.closest\('\.table-scroll, \.ledger-scroll, \[contenteditable="plaintext-only"\], \.inline-editor-toolbar'\)[\s\S]*?\}, \{ passive: true \}\);/,
+  /addEventListener\('touchstart',[\s\S]*?event\.target instanceof Element && event\.target\.closest\('\.table-scroll, \.ledger-scroll, \[contenteditable="plaintext-only"\], \.inline-editor-toolbar, \.inline-editor-reveal'\)[\s\S]*?\}, \{ passive: true \}\);/,
   'touch navigation must leave scrollable tables and inline editing controls in control of their gestures',
 );
 assert.match(deckScript, /ArrowRight/, 'deck must support keyboard navigation');
