@@ -131,7 +131,7 @@ async function initialise() {
 
   await document.fonts.ready;
   document.querySelectorAll('[data-pretext]').forEach((element, index) => {
-    const source = element.textContent.trim().replace(/\s+/g, ' ');
+    const source = element.textContent.trim().replace(/[ \t\r\n\f]+/g, ' ');
     const id = `pt-${index + 1}`;
     element.dataset.pretextId = id;
     entries.set(element, { source, signature: null, prepared: null });

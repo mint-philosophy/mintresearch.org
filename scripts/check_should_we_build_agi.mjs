@@ -37,6 +37,7 @@ assert.match(pretext, /layoutWithLines/, 'Pretext must perform explicit line lay
 assert.match(pretext, /document\.fonts\.ready/, 'Pretext must wait for web fonts');
 assert.match(pretext, /function inlineInsets\(style\)[\s\S]*paddingLeft[\s\S]*paddingRight[\s\S]*borderLeftWidth[\s\S]*borderRightWidth/, 'Pretext must measure the text content box rather than the padded border box');
 assert.match(pretext, /getBoundingClientRect\(\)\.width - inlineInsets\(style\)/, 'Pretext line width must exclude inline padding and borders');
+assert.match(pretext, /replace\(\/\[ \\t\\r\\n\\f\]\+\/g, ' '\)/, 'Pretext source normalisation must preserve non-breaking spaces');
 assert.match(pretext, /document\.documentElement\.dataset\.pretextStatus/, 'Pretext state must use a root status attribute');
 assert.doesNotMatch(pretext, /document\.documentElement\.dataset\.pretext\s*=/, 'root must not match the text-layout selector');
 assert.doesNotMatch(pretext, /Pretext ·/, 'layout diagnostics must not be visible to participants');
@@ -50,10 +51,11 @@ assert.match(css, /\.liberty-table ol \{ min-height: 0; display: grid; grid-temp
 assert.match(css, /\.liberty-question h2 \{ margin: 28px 0; font-size: 33px;/, 'desktop slide-11 title must use the balanced four-line measure');
 assert.match(css, /@media \(max-width: 600px\) and \(orientation: portrait\)[\s\S]*\.liberty-question h2 \{ font-size: 27px; \}[\s\S]*\.liberty-table li \{ display: block; padding: 14px 12px; font-size: 15px; \}/, 'phone slide-11 title and rows must preserve readable phrase-level wrapping');
 assert.match(css, /@media \(max-width: 340px\) and \(orientation: portrait\) \{[\s\S]*\.liberty-question h2 \{ font-size: 22px; \}/, 'small-phone slide-11 title must retain the four-line measure');
-assert.match(wrapper, /deck\.html\?v=20260828\.7/, 'wrapper must cache-bust the corrected Pretext measurements');
+assert.match(deck, /prohibit building&nbsp;AGI\./, 'the final liberty row must keep building AGI together across narrow layouts');
+assert.match(wrapper, /deck\.html\?v=20260828\.9/, 'wrapper must cache-bust the final slide-11 line balancing');
 assert.match(deck, /deck\.css\?v=20260828\.6/, 'deck must cache-bust the balanced slide-11 typography');
 assert.match(deck, /deck\.js\?v=20260828\.6/, 'deck must cache-bust touch-navigation changes');
-assert.match(deck, /pretext-layout\.js\?v=20260828\.6/, 'deck must cache-bust corrected Pretext measurements');
+assert.match(deck, /pretext-layout\.js\?v=20260828\.7/, 'deck must cache-bust non-breaking Pretext line balancing');
 assert.equal((css.match(/\.ledger-table \{ min-width: 0;/g) || []).length, 2, 'ledger must fit responsive portrait and short-landscape frames without horizontal scrolling');
 assert.equal((deck.match(/<td aria-label="Blank"><\/td>/g) || []).length, 8, 'ledger must expose eight blank cells without overflow-prone hidden text');
 assert.match(deckScript, /touchstart/, 'deck must support touch navigation');
