@@ -52,7 +52,11 @@ assert.match(css, /\.liberty-question h2 \{ margin: 28px 0; font-size: 33px;/, '
 assert.match(css, /@media \(max-width: 600px\) and \(orientation: portrait\)[\s\S]*\.liberty-question h2 \{ font-size: 27px; \}[\s\S]*\.liberty-table li \{ display: block; padding: 14px 12px; font-size: 15px; \}/, 'phone slide-11 title and rows must preserve readable phrase-level wrapping');
 assert.match(css, /@media \(max-width: 340px\) and \(orientation: portrait\) \{[\s\S]*\.liberty-question h2 \{ font-size: 22px; \}/, 'small-phone slide-11 title must retain the four-line measure');
 assert.match(deck, /prohibit building&nbsp;AGI\./, 'the final liberty row must keep building AGI together across narrow layouts');
-assert.match(wrapper, /deck\.html\?v=20260828\.9/, 'wrapper must cache-bust the final slide-11 line balancing');
+assert.match(deck, /Human-level AGI—but not superhuman AGI\?/, 'the separate-decision slide heading must distinguish human-level from superhuman AGI');
+assert.match(deck, /Yes to human-level; no to superhuman/, 'the separate-decision slide must distinguish human-level from superhuman AGI');
+assert.match(deck, /Human-level AGI may be built if specified conditions are met, but superhuman AGI should not be built\./, 'the first option must use the same capability distinction as its label');
+assert.doesNotMatch(deck, /Yes to AGI; no to superintelligence/, 'the separate-decision slide must not conflate AGI with human-level capability');
+assert.match(wrapper, /deck\.html\?v=20260828\.10/, 'wrapper must cache-bust the human-level and superhuman correction');
 assert.match(deck, /deck\.css\?v=20260828\.6/, 'deck must cache-bust the balanced slide-11 typography');
 assert.match(deck, /deck\.js\?v=20260828\.6/, 'deck must cache-bust touch-navigation changes');
 assert.match(deck, /pretext-layout\.js\?v=20260828\.7/, 'deck must cache-bust non-breaking Pretext line balancing');
