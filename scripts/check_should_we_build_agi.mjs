@@ -56,8 +56,10 @@ assert.match(deck, /Human-level AGI—but not superhuman AGI\?/, 'the separate-d
 assert.match(deck, /Yes to human-level; no to superhuman/, 'the separate-decision slide must distinguish human-level from superhuman AGI');
 assert.match(deck, /Human-level AGI may be built if specified conditions are met, but superhuman AGI should not be built\./, 'the first option must use the same capability distinction as its label');
 assert.doesNotMatch(deck, /Yes to AGI; no to superintelligence/, 'the separate-decision slide must not conflate AGI with human-level capability');
-assert.match(wrapper, /deck\.html\?v=20260828\.10/, 'wrapper must cache-bust the human-level and superhuman correction');
-assert.match(deck, /deck\.css\?v=20260828\.6/, 'deck must cache-bust the balanced slide-11 typography');
+assert.match(deck, /<p data-pretext>How much depends on our choices\? Institutional pessimism is as corrosive of agency as technological pessimism—but it could still be justified\.<\/p>/, 'agency must be a separate paragraph that preserves the institutional-pessimism qualification');
+assert.match(css, /\.section-summary p \+ p \{ margin-top: 1em; \}/, 'the separate agency paragraph must remain visibly distinct');
+assert.match(wrapper, /deck\.html\?v=20260828\.11/, 'wrapper must cache-bust the separate agency paragraph');
+assert.match(deck, /deck\.css\?v=20260828\.7/, 'deck must cache-bust the agency paragraph spacing');
 assert.match(deck, /deck\.js\?v=20260828\.6/, 'deck must cache-bust touch-navigation changes');
 assert.match(deck, /pretext-layout\.js\?v=20260828\.7/, 'deck must cache-bust non-breaking Pretext line balancing');
 assert.equal((css.match(/\.ledger-table \{ min-width: 0;/g) || []).length, 2, 'ledger must fit responsive portrait and short-landscape frames without horizontal scrolling');
