@@ -45,11 +45,17 @@ assert.doesNotMatch(css, /\.liberty-table li:nth-child\([^)]*\)::before/, 'spect
 assert.doesNotMatch(css, /@media \(max-width: 900px\) \{/, 'width alone must not force short landscape frames into tall stacked layouts');
 assert.match(css, /@media \(max-height: 600px\) and \(orientation: landscape\)/, 'short landscape frames need a compact no-scroll layout');
 assert.match(css, /\.liberty-table ol \{ min-height: 0; display: grid; grid-template-rows: repeat\(6, minmax\(0, 1fr\)\); \}/, 'compact liberty rows must share the available height');
-assert.match(wrapper, /deck\.html\?v=20260828\.5/, 'wrapper must cache-bust the compact responsive deck');
+assert.match(wrapper, /deck\.html\?v=20260828\.6/, 'wrapper must cache-bust the touch-safe responsive deck');
 assert.match(deck, /deck\.css\?v=20260828\.5/, 'deck must cache-bust the compact responsive stylesheet');
+assert.match(deck, /deck\.js\?v=20260828\.6/, 'deck must cache-bust touch-navigation changes');
 assert.equal((css.match(/\.ledger-table \{ min-width: 0;/g) || []).length, 2, 'ledger must fit responsive portrait and short-landscape frames without horizontal scrolling');
 assert.equal((deck.match(/<td aria-label="Blank"><\/td>/g) || []).length, 8, 'ledger must expose eight blank cells without overflow-prone hidden text');
 assert.match(deckScript, /touchstart/, 'deck must support touch navigation');
+assert.match(
+  deckScript,
+  /addEventListener\('touchstart',[\s\S]*?event\.target instanceof Element && event\.target\.closest\('\.table-scroll, \.ledger-scroll'\)[\s\S]*?\}, \{ passive: true \}\);/,
+  'touch navigation must leave horizontally scrollable tables in control of gestures that begin inside them',
+);
 assert.match(deckScript, /ArrowRight/, 'deck must support keyboard navigation');
 assert.match(css, /@media \(max-width: 900px\)/, 'deck must include tablet layout');
 assert.match(css, /@media \(max-width: 600px\)/, 'deck must include phone layout');

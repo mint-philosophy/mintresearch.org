@@ -101,7 +101,9 @@
   });
 
   document.addEventListener('touchstart', (event) => {
+    touchStart = null;
     if (event.touches.length !== 1) return;
+    if (event.target instanceof Element && event.target.closest('.table-scroll, .ledger-scroll')) return;
     touchStart = { x: event.touches[0].clientX, y: event.touches[0].clientY };
   }, { passive: true });
 
