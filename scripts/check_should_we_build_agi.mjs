@@ -37,6 +37,11 @@ assert.match(pretext, /layoutWithLines/, 'Pretext must perform explicit line lay
 assert.match(pretext, /document\.fonts\.ready/, 'Pretext must wait for web fonts');
 assert.match(pretext, /document\.documentElement\.dataset\.pretextStatus/, 'Pretext state must use a root status attribute');
 assert.doesNotMatch(pretext, /document\.documentElement\.dataset\.pretext\s*=/, 'root must not match the text-layout selector');
+assert.doesNotMatch(pretext, /Pretext ·/, 'layout diagnostics must not be visible to participants');
+assert.match(css, /\.pretext-state \{[\s\S]*clip: rect\(0 0 0 0\);/, 'layout status must remain visually hidden');
+assert.match(css, /@media \(max-width: 900px\)[\s\S]*\.liberty-spectrum \{ min-height: 54%; grid-template-columns: 52px minmax\(0, 1fr\);/, 'the vertical liberty spectrum must survive the stacked layout');
+assert.doesNotMatch(css, /\.spectrum-rail \{ display: none; \}/, 'the vertical liberty spectrum must remain visible at narrow widths');
+assert.doesNotMatch(css, /\.liberty-table li:nth-child\([^)]*\)::before/, 'spectrum labels must stay on the vertical rail, not flatten into rows');
 assert.equal((deck.match(/<td aria-label="Blank"><\/td>/g) || []).length, 8, 'ledger must expose eight blank cells without overflow-prone hidden text');
 assert.match(deckScript, /touchstart/, 'deck must support touch navigation');
 assert.match(deckScript, /ArrowRight/, 'deck must support keyboard navigation');

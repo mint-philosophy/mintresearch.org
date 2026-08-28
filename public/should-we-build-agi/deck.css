@@ -462,9 +462,17 @@ button { color: inherit; }
 .nav-dot:focus-visible { outline: 2px solid var(--blue); outline-offset: 0; opacity: 0.8; }
 
 .nav-controls { justify-self: end; display: flex; align-items: center; gap: 7px; }
-.pretext-state { margin-right: 7px; color: var(--muted); font-size: 8px; opacity: 0.8; }
-.pretext-state[data-state="ready"] { color: var(--blue); }
-.pretext-state[data-state="fallback"] { color: var(--muted); }
+.pretext-state {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
 .nav-button {
   appearance: none;
   width: 34px;
@@ -585,14 +593,8 @@ button { color: inherit; }
   .liberty-question { min-height: 46%; padding: 48px 34px; }
   .liberty-question h2 { font-size: 38px; }
   .blue-note { margin-top: 30px; }
-  .liberty-spectrum { min-height: 54%; grid-template-columns: 1fr; padding: 0 28px 84px; }
-  .spectrum-rail { display: none; }
+  .liberty-spectrum { min-height: 54%; grid-template-columns: 52px minmax(0, 1fr); padding: 0 28px 84px; }
   .liberty-table li { min-height: 0; padding: 17px 18px; font-size: 18px; }
-  .liberty-table li::before { display: inline-block; margin-right: 12px; color: var(--blue); font: 700 10px/1 var(--mono); text-transform: uppercase; }
-  .liberty-table li:nth-child(1)::before { content: "Libertarian"; }
-  .liberty-table li:nth-child(3)::before { content: "Political liberal"; }
-  .liberty-table li:nth-child(5)::before { content: "Classical liberal"; }
-  .liberty-table li:nth-child(6)::before { content: "Majoritarian"; }
   .reasons-grid { grid-template-columns: 1fr; gap: 12px; }
   .reason-feature { min-height: 300px; padding: 42px 30px; }
   .reason-feature h2 { font-size: 44px; }
@@ -616,7 +618,6 @@ button { color: inherit; }
   .ledger-table { min-width: 620px; }
   .deck-nav { grid-template-columns: minmax(0, 1fr) auto; padding-inline: 12px; }
   .nav-dots { display: none; }
-  .pretext-state { display: none; }
   .nav-status { gap: 9px; }
   .swipe-hint { display: block; position: fixed; right: 95px; bottom: 20px; z-index: 125; color: var(--muted); font: 700 8px/1 var(--mono); letter-spacing: 0.04em; text-transform: uppercase; pointer-events: none; }
 }
@@ -647,9 +648,9 @@ button { color: inherit; }
   .definition-column h3, .state-card h3 { font-size: 24px; }
   .liberty-question { padding: 40px 22px; }
   .liberty-question h2 { font-size: 31px; }
-  .liberty-spectrum { padding-inline: 16px; }
+  .liberty-spectrum { grid-template-columns: 44px minmax(0, 1fr); padding-inline: 10px; }
+  .spectrum-label { right: 13px; font-size: 7px; }
   .liberty-table li { display: block; padding: 16px; font-size: 16px; }
-  .liberty-table li::before { display: block; margin: 0 0 8px; }
   .blue-strip { font-size: 10px; }
   .reason-feature { min-height: 260px; padding: 34px 22px; }
   .reason-feature h2 { font-size: 37px; }

@@ -101,7 +101,7 @@ function relayout() {
     const reads = readLayouts();
     const layouts = computeLayouts(reads);
     applyLayouts(layouts);
-    setStatus('ready', `Pretext · ${layouts.length}`);
+    setStatus('ready', 'Text layout ready');
   } catch (error) {
     console.error('Pretext layout failed', error);
     setStatus('fallback', 'Browser text layout');
