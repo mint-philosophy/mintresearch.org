@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Goodfire cuts the cost of finding forking tokens — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-08-28">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-08-28">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 28 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Goodfire cuts the cost of finding forking tokens</h1>
+<p class="dek">Bigelow and colleagues model low-sample jitter in resampled reasoning chains as multinomial sampling noise, then smooth neighboring positions to multiply effective sample size by up to 22.1 times; Silico, Goodfire's interpretability agent, conducted the research and produced the initial draft under human direction.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 28 August 2026</span> <span class="chip">824 words · ~4 min</span></div>
+<div class="article-body">
+<p>In <a href="https://arxiv.org/abs/2608.19611">"Forking Fast: Efficiently Estimating Uncertainty Dynamics in Text Generation"</a>, a Goodfire preprint posted to arXiv on August 20, Eric Bigelow and nine co-authors set out to make resampling analysis of model reasoning affordable. It extends Forking Paths Analysis, which Bigelow introduced with Ari Holtzman, Hidenori Tanaka and Tomer Ullman in <a href="https://arxiv.org/abs/2412.07961">"Forking Paths in Neural Text Generation"</a> in December 2024, and which found that a few tokens, punctuation marks among them, decide where a generation ends up.</p>
+<p>Forking Paths Analysis fixes one greedily decoded chain as a base path and resamples around it. At each position, for every next token the model gives at least 0.05 probability, the researchers draw S continuations at temperature 1.0, read off each continuation's final answer, and weight the resulting distribution over answers by the probabilities of the token and of the continuation. Running that at every token position pushes a single analysis into the millions of tokens; the reference dataset behind this paper came to 1.77 billion.</p>
+<p>Bigelow and colleagues argue that most of that budget re-measures structure the neighboring positions already contain. Resampled a thousand times, the answer distribution drifts smoothly across almost every position and jumps only at forking points, and the jitter that dominates low-sample runs is an artifact of the sampling itself. They test that by dividing the 1,000 samples for two questions into disjoint subsets and measuring the total variation distance between the answer distributions each subset implies. On log-log axes the fitted slope is -0.4903, against the -0.5 that independent multinomial sampling predicts, and the measured curve stays within 2% of the exact multinomial null out to 200 samples.</p>
+<p>Bigelow's team builds an estimator around that structure. PELT change point detection under an exact multinomial cost cuts the base path into segments bounded by detected forks. Inside each segment, answer counts from neighboring positions are pooled under a Gaussian kernel to parameterize a Dirichlet distribution, and the detection penalty and kernel bandwidth are cross-validated on the low-sample run itself, splitting a 20-sample run into five folds of four.</p>
+<p>Measured against a 200-sample every-token reference over 100 tinyMMLU questions, smoothing multiplies the effective sample size by 22.1 times at five samples per position and 7.3 times at thirty, for Llama-3-8B-Instruct resampled at every token. DeepSeek-R1-Distill-Llama-8B, resampled at sentence granularity because its chains run much longer, gains about 3.1 times at thirty samples. In the discussion the authors put the improvement at roughly 15 times inside flat segments and roughly 4 times once the analysis also has to keep forking points in the right place, and report that pairing the smoother with wider resampling intervals cuts the total token budget to an eighth.</p>
+<p>Goodfire's <a href="https://x.com/GoodfireAI/status/2092661092652822969">announcement thread</a> says the work finds forking tokens "100x more efficiently". The hundredfold figure comes from Figure 1 of the paper, where one tinyMMLU question resampled twenty times at every second token, using 1% of the sampling cost of a thousand-sample every-token reference, is smoothed into a curve that recovers the same forking points. Across the full evaluation set the reported multipliers are the ones above.</p>
+<p>A limitations appendix marks where the estimator stops helping. Its advantage near forks holds at a forking threshold of 0.10, degrades at 0.15, and at the largest forks, threshold 0.20 over 21 questions, smoothing does marginally worse than raw data. Ninety-percent credible intervals reach empirical coverage between 0.48 and 0.64 on the development questions, against a nominal 0.90, so the authors recommend point estimates alone. Everything runs on tinyMMLU multiple choice with continuations capped at 400 tokens for Llama and 1,536 for DeepSeek, and the tuning procedure was developed on two questions from one model. A further appendix records a bug the work turned up in ruptures, the change point library: a custom cost object that does not inherit from BaseCost is silently swapped for least squares, and the fit still returns change points without warning. <a href="https://github.com/ericb-goodfire/forking-fast">The GitHub release</a> carries the sampler, the reconstruction code, the outcome data for all 100 questions across both models, and an offline dashboard.</p>
+<p>Goodfire aims the cheaper analysis at agent debugging, <a href="https://x.com/GoodfireAI/status/2092661104744997263">asking in the thread</a> "How did my agent end up doing this unsafe tool call?" Resampling has become a working tool for questions of that kind: in <a href="https://arxiv.org/abs/2510.27484">"Thought Branches: Interpreting LLM Reasoning Requires Resampling"</a>, presented at ICLR 2026, Uzay Macar, Paul C. Bogdan, Senthooran Rajamanoharan and Neel Nanda used it to show that self-preservation sentences in agentic misalignment transcripts carry "small causal impact", which they read as evidence that such sentences do not meaningfully drive blackmail.</p>
+<p>An LLM use statement closing the paper credits the research and the initial manuscript draft to <a href="https://www.goodfire.com/silico">Silico</a>, Goodfire's interpretability agent, working under human direction. <a href="https://x.com/GoodfireAI/status/2092661172680245602">The thread quotes Bigelow</a> describing that collaboration as "roughly on a similar level as working with a first- or second-year PhD student". Goodfire had already claimed Silico could reproduce recent interpretability results largely unaided when it <a href="https://mintresearch.org/newsletters/yinai/2026-07-14/#story-goodfire-goodfireai-twitter-goodfire-opens-silico-private-be">opened the agent's private beta in July</a>.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2608.19611">Forking Fast: Efficiently Estimating Uncertainty Dynamics in Text Generation - Bigelow, Zur, Grant, Haklay, Rager, Lewis, McGrath, Merullo, Lubana, Geiger (arXiv:2608.19611)</a> <span class="how">— Primary source. Full text read from the arXiv HTML render (arxiv.org/html/2608.19611v1), including all appendices. Supplies: submission date 20 Aug 2026; the FPA sampling protocol (greedy base path, alternative tokens at p &gt;= 0.05, S continuations at temperature 1.0, A/B/C/D/Other outcomes, probability-weighted outcome distribution); 1.77B tokens collected for the reference dataset; the multinomial noise result (disjoint subsets of the S=1000 runs for two questions, log-log slope -0.4903 against a -0.5 prediction, measured curve within 2% of the exact i.i.d. multinomial null through S=200); the three-stage estimator (PELT with exact multinomial cost, Gaussian-kernel Dirichlet pooling within segments, cross-validated penalty and bandwidth, S=20 split into 5 folds of S=4); sample-efficiency multipliers (Llama at 1-token spacing 22.1x at S=5, 7.3x at S=30, 1.6x at S=100; DeepSeek sentence-level 4.9x/3.1x/1.1x); the discussion figures of ~15x within segments and ~4x preserving fork identification; the 1/8 total-budget cut; and Figure 1's S=20/N=2 reconstruction at 1% of the S=1000 every-token reference's sampling cost. Appendix A supplies every limitation reported (tinyMMLU only, two 8B models, 400/1536-token continuation caps, tuning developed on two questions from one model, fork advantage at threshold 0.10 degrading at 0.15 and reversing at 0.20 over 21 questions, 90% credible-interval coverage 0.48-0.64). Appendix G supplies the ruptures BaseCost/CostL2 bug. Appendix H supplies the Silico authorship statement.</span></li>
+<li><a href="https://x.com/GoodfireAI/status/2092661092652822969">Goodfire announcement thread on Forking Paths Analysis - @GoodfireAI on X</a> <span class="how">— Canonical assigned source. Read from the on-disk FeedMe artifact and re-fetched in full via Bird (30 posts in the conversation, 8 Goodfire posts plus replies). Supplies the verbatim '100x more efficiently' claim traced in the piece and the link to the paper. Posted 26 Aug 2026, 1,100 likes on the lead post.</span></li>
+<li><a href="https://x.com/GoodfireAI/status/2092661104744997263">Goodfire thread post framing the agent-debugging use case - @GoodfireAI on X</a> <span class="how">— Verified verbatim quote: 'How did my agent end up doing this unsafe tool call?' Fetched via Bird.</span></li>
+<li><a href="https://x.com/GoodfireAI/status/2092661172680245602">Goodfire thread post crediting Silico and quoting Eric Bigelow - @GoodfireAI on X</a> <span class="how">— Verified verbatim Bigelow quote, 'roughly on a similar level as working with a first- or second-year PhD student', published inside Goodfire's own post text (Bird shows no quote-tweet embed here, so this Goodfire post is the publication venue for the quote). Also states that Silico performed the research.</span></li>
+<li><a href="https://arxiv.org/abs/2412.07961">Forking Paths in Neural Text Generation - Bigelow, Holtzman, Tanaka, Ullman (arXiv:2412.07961)</a> <span class="how">— Precursor. Abstract read in full for the method the new paper makes cheaper, the December 2024 date, and the finding that forking tokens include punctuation marks and that models are often one token away from a very different output.</span></li>
+<li><a href="https://github.com/ericb-goodfire/forking-fast">ericb-goodfire/forking-fast - GitHub</a> <span class="how">— Verified the released artifacts: the prefix-cached GPU sampler, the CPU reconstruction models, the outcome dataset for 100 tinyMMLU questions across Meta-Llama-3-8B-Instruct (every-token grid) and DeepSeek-R1-Distill-Llama-8B (sentence grid), and the standalone offline HTML dashboard. Also corroborates the paper's Goodfire provenance.</span></li>
+<li><a href="https://www.goodfire.com/silico">Silico - Goodfire</a> <span class="how">— Verified that Silico is Goodfire's interpretability agent, described on the company's own page as running long-running experiments and replicating interpretability research. URL matches the one given in the paper's LLM use statement.</span></li>
+<li><a href="https://arxiv.org/abs/2510.27484">Thought Branches: Interpreting LLM Reasoning Requires Resampling - Macar, Bogdan, Rajamanoharan, Nanda (arXiv:2510.27484, ICLR 2026)</a> <span class="how">— Context on why resampling analyses are worth making cheaper. Abstract read in full; supplies the verbatim 'small causal impact' phrase and the agentic-misalignment self-preservation finding, with the paper's own hedging preserved ('suggesting they do not meaningfully drive blackmail').</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-07-14/#story-goodfire-goodfireai-twitter-goodfire-opens-silico-private-be">Yesterday in AI, 14 July 2026 - Goodfire opens Silico's beta with an agent it says replicates interpretability research</a> <span class="how">— Earlier coverage of Goodfire's Silico private beta and its replication claims, linked as arc context for the Silico authorship credit. Anchor verified live against the published page.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-forking-paths-analysis-identifies-decisive-reasoning-tokens">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-28/forking-paths-analysis-identifies-decisive-reasoning-tokens</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

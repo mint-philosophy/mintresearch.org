@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>A benchmark of real research workflows holds the best agent to 30% — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-08-28">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-08-28">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 28 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">A benchmark of real research workflows holds the best agent to 30%</h1>
+<p class="dek">Terminal-Bench-Science 0.1 turns 70 tasks from scientists' own projects into graded containers, giving agents eight hours against a median expert estimate of 12. Claude Opus 5 leads at 30.0%, and GLM 5.3 falls from 32.4% on Terminal-Bench 3.0 to 8.1%.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 28 August 2026</span> <span class="chip">701 words · ~4 min</span></div>
+<div class="article-body">
+<p>On X, Steven Dillmann announced Terminal-Bench-Science on August 27, a benchmark whose tasks each began as work a practicing researcher had already done. Contributors port their own computational workflows into containers where an agent has to deliver a graded artifact, and the <a href="https://www.terminal-bench-science.ai/announcement">project announcement</a> puts the premise this way: "Scientists, not model developers or data vendors, set the bar for scientific capability in AI."</p>
+<p>The 70 tasks in version 0.1 spread unevenly across five domains, with 19 in the life sciences, 17 each in the mathematical and physical sciences, nine in engineering and eight in the earth sciences, counted from the <a href="https://github.com/harbor-framework/terminal-bench-science/tree/main/tasks">task repository</a>. Bo Chen of the University of Hong Kong contributed a TESS transit-vetting task in which the agent writes one program that then runs unchanged over 21 archival light curves grouped into seven sets of three, six of those sets withheld during development; to pass, it must pick the planet-like target in every set, recover its period, epoch, duration and depth above stated accuracy thresholds, and label the other two as eclipsing binaries or as variability and instrumental signals. At the other end, Allen Hart of the University of Warwick asks for Onsager's closed-form free energy for the two-dimensional Ising model, proved in Lean 4 against a frozen statement-level API. Contributors record how long the work took them: the median estimate across the 70 tasks is 12 hours, with a range from 1.6 to 600. Every task gives the agent eight.</p>
+<p>Most of what was proposed never made it in. Of 920 proposals, 464 were approved and 386 pull requests opened. Each surviving task cleared a domain reviewer assessing scientific validity, a technical reviewer inspecting construction and verification, and a bar raiser performing a final check. The <a href="https://github.com/harbor-framework/terminal-bench-science/blob/main/TASK_REVIEW_AUTOMATION.md">automated checks documented in the repository</a> run before reviewers are assigned: the reference solution must pass, an agent that does nothing must fail, a TF-IDF comparison hunts for duplicates, a 39-criteria rubric grades the implementation, and every task file carries a canary string intended to keep the benchmark out of training corpora. Rewards must be a literal 0 or 1, so partial credit cannot leak into the leaderboard. Graders run with networking disabled, answering the April result in which <a href="https://rdi.berkeley.edu/blog/trustworthy-benchmarks-cont/">Hao Wang and colleagues at UC Berkeley scored 89 of 89 Terminal-Bench tasks</a> by swapping out curl during the agent's turn so that the verifier later installed a trojanized binary.</p>
+<p>On the <a href="https://www.terminal-bench-science.ai/">leaderboard</a>, Opus 5 under Claude Code leads at 30.0%, followed by GPT-5.6 Sol under Codex at 22.4% and Claude Fable 5 under Claude Code at 21.4%. Opus 4.8 reaches 10.5%; GPT-5.6 Terra, GLM 5.3, Kimi K3 and Grok 4.6 all land between 7.1% and 8.6%, and GPT-5.6 Luna finishes at 3.3%. Cost spreads them further, with Sol matching Fable 5's score for $4.22k against $14.18k. The <a href="https://www.terminal-bench-science.ai/?view=domains">domain breakdown</a> reorders the top. Fable 5 takes the mathematical sciences at 33.3% and Sol follows at 31.4%, both above Opus 5's 25.5%, while Grok 4.6 ties Sol at 14.8% in engineering. Opus 5 does best in the earth sciences, at 45.8% across only eight tasks.</p>
+<p>Dillmann's <a href="https://x.com/StevenDillmann/status/2093041667557425507">comparison with Terminal-Bench 3.0</a> supports the calibration claim for the leading systems: Opus 5 fell from 42.7% to 30.0%, Sol from 34.6% to 22.4%, Fable 5 from 34.0% to 21.4%. Two systems fell considerably further. GLM 5.3, run under Claude Code at maximum reasoning effort on <a href="https://www.tbench.ai/leaderboard/terminal-bench/3.0">both leaderboards</a>, went from 32.4% to 8.1%, and Grok 4.6 from 26.5% to 7.1%. Scaffolds differ in places, and Opus 5's Terminal-Bench 3.0 run used mini-SWE-agent where the science benchmark used Claude Code.</p>
+<p>Asked on X whether refusals explained Claude Fable 5's placing, Dillmann <a href="https://x.com/StevenDillmann/status/2093395551647854973">replied</a> that "Fable also reroutes to weaker models e.g. on bio tasks", consistent with its 17.5% in the life sciences beside 33.3% in mathematics. Version 0.2 takes pull requests until October 5, and the announcement commits to retiring tasks that agents saturate or that review finds underspecified, with tasks versioned so trials can be re-graded cheaply. The project discloses that Anthropic, Google, Moonshot AI, xAI, Z.ai and Bespoke Labs supplied the API credits behind the leaderboard runs, and its contributors page lists Ludwig Schmidt, one of two project lead advisors, with Stanford and Anthropic affiliations.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://x.com/stevendillmann/status/2093041660615852448">Steven Dillmann announcement thread on Terminal-Bench-Science (X)</a> <span class="how">— Canonical assigned source. Full 11-post thread plus all replies fetched via Bird. Supplies the August 27 announcement, the framing that each task is a researcher porting their own workflow, the 920/464/386/70 funnel, the Terminal-Bench 3.0 comparison figures, the Pareto observations, and Dillmann's own replies. Treated as a pointer to the benchmark itself, which was then read directly.</span></li>
+<li><a href="https://www.terminal-bench-science.ai/announcement">Terminal-Bench-Science 0.1 announcement</a> <span class="how">— Primary document, full text extracted with trafilatura. Source of the verbatim quote 'Scientists, not model developers or data vendors, set the bar for scientific capability in AI', the three-layer review description, the funnel numbers, the results narrative, the cost and token comparisons, the 0.2 roadmap and retirement policy, the Stanford/Laude hosting statement, and the API-credit acknowledgements (Bespoke Labs, Anthropic, Google, Moonshot AI, SpaceXAI, Z.ai).</span></li>
+<li><a href="https://www.terminal-bench-science.ai/">Terminal-Bench-Science leaderboard</a> <span class="how">— Rendered in the OpenClaw managed browser profile because the table is client-side. Verified every score and scaffold directly: Opus 5 (max) / Claude Code 30.0% +/- 3.2%, 7.3B tokens, $6.99k; GPT-5.6 Sol (max) / Codex 22.4% +/- 2.9%, 8.4B, $4.22k; Fable 5 (max) / Claude Code 21.4% +/- 2.8%, 6.4B, $14.18k; Opus 4.8 10.5%; Terra 8.6%; GLM 5.3 8.1%; Kimi K3 7.1%; Grok 4.6 (xhigh) 7.1%; Luna 3.3%.</span></li>
+<li><a href="https://www.terminal-bench-science.ai/?view=domains">Terminal-Bench-Science leaderboard, domain view</a> <span class="how">— Rendered in browser. Verified the per-domain table: Opus 5 29.8 / 27.5 / 45.8 / 25.5 / 29.6 across life, physical, earth, mathematical and engineering; Sol 17.5 / 23.5 / 20.8 / 31.4 / 14.8; Fable 5 17.5 / 17.6 / 25.0 / 33.3 / 11.1; Grok 4.6 14.8 in engineering.</span></li>
+<li><a href="https://github.com/harbor-framework/terminal-bench-science/tree/main/tasks">terminal-bench-science task repository</a> <span class="how">— Pulled the full recursive git tree from the GitHub API and counted the 70 task directories independently: life sciences 19, mathematical 17, physical 17, engineering 9, earth 8. Also downloaded all 70 task.toml files to compute the expert-time figures (median 12.0 hours, range 1.6 to 600, n=70) and to confirm that every task sets an agent timeout of 28,800 seconds.</span></li>
+<li><a href="https://github.com/harbor-framework/terminal-bench-science/blob/main/TASK_REVIEW_AUTOMATION.md">Task review automation documentation, terminal-bench-science</a> <span class="how">— Read for the verification design: oracle validation, nop validation, TF-IDF similarity check, 39-criteria implementation rubric, the canary-string check, the binary-reward rule (values must be literal 0 or 1), adversarial cheat trials, and the reasoning for baking verifier dependencies in rather than fetching at trial time.</span></li>
+<li><a href="https://github.com/harbor-framework/terminal-bench-science/tree/main/tasks/physical-sciences/astronomy/tess-transit-vetting">TESS transit-vetting task instruction and metadata</a> <span class="how">— Read instruction.md and task.toml in full. Source of the concrete task description: one reusable program evaluated unchanged over 21 TESS target-sector products in seven sets of three light curves with six withheld, the three disposition labels, the pass thresholds, the author Bo Chen at The University of Hong Kong, and the 8-hour expert time estimate.</span></li>
+<li><a href="https://github.com/harbor-framework/terminal-bench-science/tree/main/tasks/mathematical-sciences/formal-mathematics/onsager-ising-lean">Onsager Ising Lean task metadata</a> <span class="how">— Read task.toml. Verified the description 'Prove Onsager's closed-form free energy for the 2D Ising model in Lean 4 against a frozen statement-level API', the author Allen Hart at the University of Warwick, and the 600-hour expert time estimate, the largest in the benchmark.</span></li>
+<li><a href="https://www.tbench.ai/leaderboard/terminal-bench/3.0">Terminal-Bench 3.0 leaderboard</a> <span class="how">— Rendered in browser after the URL 308-redirects to the client-side view. Verified Opus 5 (max) / mini-SWE-agent 42.7% +/- 3.1%, GPT-5.6 Sol (max) / Codex 34.6%, Fable 5 (max) / Claude Code 34.0%, GLM 5.3 (max) / Claude Code 32.4%, Grok 4.6 (high) / Grok Build 26.5%, Opus 4.8 21.1%, Terra 20.8%, Luna 14.3%. Basis for the GLM 5.3 and Grok 4.6 drop figures and for the scaffold caveat.</span></li>
+<li><a href="https://rdi.berkeley.edu/blog/trustworthy-benchmarks-cont/">How We Broke Top AI Agent Benchmarks - Berkeley RDI</a> <span class="how">— Read to verify the precursor the benchmark's own documentation cites. Confirmed Hao Wang, Qiuyang Mang, Alvin Cheung, Koushik Sen and Dawn Song at UC Berkeley, April 2026, scored 89 of 89 Terminal-Bench tasks by replacing /usr/bin/curl during the agent phase so the verifier installed a trojanized uv binary.</span></li>
+<li><a href="https://x.com/StevenDillmann/status/2093041667557425507">Steven Dillmann, Terminal-Bench 3.0 comparison post (X)</a> <span class="how">— The specific post in the thread carrying the paired before-and-after figures. Linked as the anchor for the cross-benchmark comparison.</span></li>
+<li><a href="https://x.com/StevenDillmann/status/2093395551647854973">Steven Dillmann reply on Claude Fable 5 results (X)</a> <span class="how">— Follow-up posted August 28, answering a reader asking whether refusals explained Fable 5's result. Source of the verbatim 10-word quote about rerouting to weaker models on bio tasks.</span></li>
+<li><a href="https://www.terminal-bench-science.ai/contributors">Terminal-Bench-Science contributors</a> <span class="how">— Rendered in browser to verify affiliations against a primary project source rather than inferring them: Steven Dillmann and Sanmi Koyejo at Stanford University, Ludwig Schmidt at Stanford University and Anthropic, Allen Hart at the University of Warwick.</span></li>
+<li><a href="https://github.com/harbor-framework/terminal-bench-science">terminal-bench-science README</a> <span class="how">— Verified the 70-task count, the five-domain structure, the Harbor run commands and sandboxing requirements, and the DOI badge. Background only; no claim rests on it alone.</span></li>
+<li><a href="https://github.com/harbor-framework/terminal-bench-science/blob/main/CITATION.cff">CITATION.cff, terminal-bench-science</a> <span class="how">— Verified the release metadata: title, version v0.1.0, date-released 2026-08-26, Apache-2.0 licence, and that the cited author is the collective 'Terminal-Bench-Science Team' rather than a named author list.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-steven-dillmann-stevendillmann-twitter-terminal-bench-scienc">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-28/steven-dillmann-stevendillmann-twitter-terminal-bench-scienc</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

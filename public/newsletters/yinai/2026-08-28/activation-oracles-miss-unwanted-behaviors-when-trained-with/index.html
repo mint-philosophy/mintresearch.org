@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Activation oracles miss the quirk built into their own base model — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-08-28">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-08-28">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 28 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Activation oracles miss the quirk built into their own base model</h1>
+<p class="dek">Fornasiere and colleagues, extending work done at LASR Labs, trained oracles on OLMo-2 models fixated on Italian food and on military submarines; each oracle then underdetected its own fixation while catching the other, and 20 secret-word models reproduced the pattern.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 28 August 2026</span> <span class="chip">896 words · ~4 min</span></div>
+<div class="article-body">
+<p>Raffaello Fornasiere, Nikita Menon, Andrzej Szablewski, Gabriel Konar-Steenberg, and Stefan Heimersheim posted <a href="https://www.lesswrong.com/posts/3X5EFjiHgxdNowrTA/activation-oracles-significantly-underperform-without-a-safe">&ldquo;Activation Oracles significantly underperform without a safe base model&rdquo;</a> to LessWrong on August 28, extending work they did at LASR Labs, the London AI safety research programme. Activation oracles come from Adam Karvonen, Samuel Marks, and nine co-authors, several of them at Anthropic, whose <a href="https://arxiv.org/abs/2512.15674">&ldquo;Activation Oracles: Training and Evaluating LLMs as General-Purpose Activation Explainers&rdquo;</a> fits a language model with a LoRA adapter so it can read another model&rsquo;s internal activations and answer questions about them. On the Taboo secret-word task it recovered 21 percent of hidden words against 4 percent for the best interpretability baseline. Every oracle in that paper trained on activations from its own clean instruct model and then audited fine-tuned descendants of it, generalization the authors count in their favor: the method works &ldquo;despite never having seen activations from fine-tuned models during training.&rdquo;</p><p>Fornasiere and colleagues question whether the clean ancestor exists. Models pass through pretraining, instruction tuning, and preference optimization, and for many behaviors no checkpoint marks the moment before the behavior arrived; some emerge during pretraining, leaving nothing untainted to build on. So they trained oracles on models that already carried the behavior under audit. The subjects came from their own <a href="https://arxiv.org/abs/2607.01033">&ldquo;The Model Organism Lottery: Model Organism Interpretability Strongly Depends on Training Methodology&rdquo;</a>, which planted quirks in 54 OLMo2-1B and Gemma-3-1b-it models through seven training routes, including integration into OLMo&rsquo;s own post-training DPO phase, and whose results &ldquo;cast substantial doubt on the validity of current MOs as interpretability proxies.&rdquo;</p><p>Two quirk families carried the new experiment, a preference for Italian food and a fixation on submarines in military contexts, seven variants each, all expressing the behavior at matched rates. For each family the researchers trained a LoRA adapter on one variant, the post-hoc model distilled from quirk-only transcripts, using the training setup released with that paper. Generic prompts, none of them about food or submarines, went to all seven variants; activations came out of layers 7 and 14 and into three oracles, one built on an Italian-food model, one on a submarine model, and a control built on Ai2&rsquo;s <a href="https://huggingface.co/allenai/OLMo-2-0425-1B-SFT">OLMo-2-0425-1B-SFT</a> checkpoint, which has neither quirk. An LLM investigator read the verbalizations and an LLM judge scored the result.</p><p>Each oracle missed its own behavior and caught the other. Auditing the Italian-food models through activation differences, the control oracle reached roughly 0.65 detection accuracy and the submarine oracle roughly 0.57, while the Italian-food oracle came in near 0.19. On the submarine models the gap widened, the control and Italian-food oracles both landing near 0.7 in that same differencing setting and the submarine oracle at about 0.03. Injecting raw activations instead of differences pulled every score down and left the self-trained oracle lowest in both families, and the authors report the pattern holding across all seven training methods.</p><p>The replication used the Taboo secret-keepers from <a href="https://arxiv.org/abs/2510.01070">&ldquo;Eliciting Secret Knowledge from Language Models&rdquo;</a>, by Bartosz Cywiński, Arthur Conmy, Neel Nanda, and colleagues: 20 Gemma-2-9B-IT models each fine-tuned to hint at a word such as &ldquo;gold&rdquo; or &ldquo;moon&rdquo; while never saying it. Fornasiere and colleagues trained one oracle adapter per secret-keeper. Under prompts that press for the word, an oracle built on plain gemma-2-9b-it recovered 10.0 percent of secrets, an oracle built on a taboo model 3.1 percent of the word its own base model was hiding, and 6.1 percent of the other models&rsquo; words. Under prompts that merely ask for hints the figures rose to 38.8, 21.6, and 26.7 percent in the same order, the cross number still trailing the plain oracle, which the authors put down to all 20 models sharing one secrecy behavior. With prompts unrelated to the secret, reported in an appendix, no oracle recovered any hidden word at all.</p><p>For the mechanism the authors split each injected activation into the mean activation of the model the oracle trained on and a per-prompt deviation. Training rewards verbalizing the deviation, which carries the topic; no training answer ever refers to the constant part, so the oracle is penalized on every example for producing output along it. Any component running through the whole training distribution earns the same treatment, whether or not it moves with the prompt. A food-preference direction present in every training example becomes background the oracle was taught to say nothing about, and stays unsaid when the oracle turns to some other model. They offer this as intuition for the effect, assuming activations decompose roughly linearly into behavior-linked components.</p><p>Two consequences follow, on their account. Oracles hold up for behaviors installed by an identifiable fine-tuning step, since only then does an un-quirked ancestor exist, while behaviors that emerge in pretraining or spread across post-training are both harder to detect and likelier to land in the blind spot. The economics that make oracles practical compound the problem, since one oracle trained once and reused across many fine-tuned variants carries its blindness into every audit it runs. Fornasiere and colleagues ask that future work report oracle performance when the oracle&rsquo;s base model is the model under study, a check that would belong in AObench, the oracle evaluation suite Jan Bauer, Adam Karvonen, Neel Nanda, and colleagues released with <a href="https://arxiv.org/abs/2606.02609">&ldquo;Building Better Activation Oracles&rdquo;</a>. They tested a worst case, with quirks fully expressed, and leave open whether an oracle trained on an early checkpoint can still audit a later one.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.lesswrong.com/posts/3X5EFjiHgxdNowrTA/activation-oracles-significantly-underperform-without-a-safe">Activation Oracles significantly underperform without a safe base model — Fornasiere, Menon, Szablewski, Konar-Steenberg, Heimersheim, LessWrong</a> <span class="how">— Primary source, read in full from the on-disk fetched text and re-verified against the live post and the LessWrong GraphQL record (posted 2026-08-28T01:39:11Z, 15 karma, 0 comments). Supplies the author list, the LASR Labs provenance, the two quirk families and seven variants, the post-hoc unmixed transcript-distillation base for each oracle, layers 7 and 14, the diffing and non-diffing injection settings, the LLM-investigator and LLM-judge scoring, the taboo replication design, the mean-plus-deviation mechanism and its stated linearity assumption, the two consequences, the recommendation about reporting oracle performance on the model under study, and the stated worst-case limitation.</span></li>
+<li><a href="https://arxiv.org/abs/2512.15674">Activation Oracles: Training and Evaluating LLMs as General-Purpose Activation Explainers — Karvonen, Chua, Dumas, Fraser-Taliente, Kantamneni, Minder, Ong, Sen Sharma, Wen, Evans, Marks (arXiv)</a> <span class="how">— Full HTML read. Verified verbatim quote from the introduction: "despite never having seen activations from fine-tuned models during training". Verified the training convention ("each Activation Oracle is trained on activations from its base instruct model and applied to audit either that same model or fine-tuned variants of it"), the Taboo result (21 percent versus 4 percent for the best interpretability baseline), the 11-author list, and the affiliations used (Karvonen at MATS and Truthful AI, Marks and three others at Anthropic). Also the source for the Taboo suite being 20 separate Gemma-2-9B-IT models with example words "gold", "moon", "cloud".</span></li>
+<li><a href="https://arxiv.org/abs/2607.01033">The Model Organism Lottery: Model Organism Interpretability Strongly Depends on Training Methodology — Szablewski, Konar-Steenberg, Fornasiere, Menon, Heimersheim (arXiv)</a> <span class="how">— Abstract and HTML read. Verified the 54 OLMo2-1B and gemma-3-1b-it model organisms, seven training techniques including post-hoc SFT, post-hoc DPO and integration into OLMo's post-training DPO phase, the three quirk families (CakeBake, ItalianFood, MilitarySubmarine), the shared authorship with the assigned post, the LASR Labs acknowledgement, and the verbatim quote "cast substantial doubt on the validity of current MOs as interpretability proxies".</span></li>
+<li><a href="https://arxiv.org/abs/2510.01070">Eliciting Secret Knowledge from Language Models — Cywiński, Ryd, Wang, Rajamanoharan, Nanda, Conmy, Marks (arXiv)</a> <span class="how">— PDF downloaded and read. Verified the Taboo model organism (trained to give hints about a secret keyword while never verbalizing it, secret word absent from training data and prompt) and its Gemma 2 9B chat-tuned base. The count of 20 taboo models comes from Karvonen et al.'s description of this same suite, not from this paper's accessible text.</span></li>
+<li><a href="https://arxiv.org/abs/2606.02609">Building Better Activation Oracles — Bauer, De Schamphelaere, Karvonen, Luick, Nanda (arXiv)</a> <span class="how">— Abstract read. Verified the release of AObench, described there as the first comprehensive evaluation suite for activation-oracle quality, and the author list. Used for one clause of institutional context about where the paper's reporting recommendation would land.</span></li>
+<li><a href="https://res.cloudinary.com/lesswrong-2-0/image/upload/f_auto,q_auto/v1/mirroredImages/1cbd45b2f35987fb8bfea201a91cb32c1ceb230b50614e9feffee74e69fe51a4/dnznhjtukeslyn5ebukj">Figure 4, Taboo accuracy recovery by oracle configuration — Fornasiere et al. (LessWrong image)</a> <span class="how">— Figure read directly. Carries printed bar labels: direct prompts, base 10.0, MO-AO 3.1, avg cross 6.1; standard prompts, base 38.8, MO-AO 21.6, avg cross 26.7 (percent accuracy recovery, mean plus or minus SEM over taboo model organisms). All six taboo percentages in the piece come from these printed labels.</span></li>
+<li><a href="https://res.cloudinary.com/lesswrong-2-0/image/upload/f_auto,q_auto/v1/mirroredImages/3X5EFjiHgxdNowrTA/2da6cd17841a1ed00e70e4bb4be7bde3915507ebaf9c70dfb9ca493c184e40a9/kzf2ndggjeng5up5s0hd">Figure 2, AO detection on ItalianFood MOs — Fornasiere et al. (LessWrong image)</a> <span class="how">— Figure read directly; bar heights measured against the axis, so the piece reports them as approximate. Diffing panel: SFT control near 0.65, Italian Food AO (self) near 0.19, Military Submarine AO (cross) near 0.57. Non-diffing panel: control near 0.23, self near 0.12, cross near 0.21. Axis label reads 'Mean over MOs (variant 5 excluded)'.</span></li>
+<li><a href="https://res.cloudinary.com/lesswrong-2-0/image/upload/f_auto,q_auto/v1/mirroredImages/3991e9b904fcafcb7c22c04535d656056c2a505b265691c7cdca77bec435a234/x2qlnvfofmgiqop6rsda">Figure 3, AO detection on MilitarySubmarine MOs — Fornasiere et al. (LessWrong image)</a> <span class="how">— Figure read directly. Diffing panel: SFT control near 0.69, Italian Food AO (cross) near 0.70, Military Submarine AO (self) near 0.03. Non-diffing panel: control near 0.23, cross near 0.19, self at approximately zero. Supports the 'gap widened' sentence and the claim that the self-trained oracle stays lowest in both injection settings.</span></li>
+<li><a href="https://huggingface.co/allenai/OLMo-2-0425-1B-SFT">allenai/OLMo-2-0425-1B-SFT — Hugging Face</a> <span class="how">— Verified the control checkpoint named in the post exists and is published by Ai2 (repo created 2025-04-24). Linked as the control model in the method paragraph.</span></li>
+<li><a href="https://www.lasrlabs.org/about">About — LASR Labs</a> <span class="how">— Verified LASR Labs is the London AI Safety Research programme, a 13-week research programme based in London and supported by Arcadia Impact. Used only for the descriptive phrase 'the London AI safety research programme'; no individual titles were inferred from it.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-activation-oracles-miss-unwanted-behaviors-when-trained-with">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-28/activation-oracles-miss-unwanted-behaviors-when-trained-with</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
