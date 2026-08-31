@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>The 54 checks drskill runs against agent loadouts — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-08-30">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-08-30">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 30 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">The 54 checks drskill runs against agent loadouts</h1>
+<p class="dek">Drew Breunig built the tool in July after meeting a developer whose enterprise agent silently loaded more than 600 skills; August releases added plugin-store discovery and checks for shell commands run when Claude Code invokes a skill.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 30 August 2026</span> <span class="chip">655 words · ~3 min</span></div>
+<div class="article-body">
+<p>Drew Breunig's <a href="https://github.com/dbreunig/drskill">drskill</a>, an MIT-licensed Python tool, determines which skills and MCP servers each coding agent on a machine loads before a session and checks the assembled set. He <a href="https://www.dbreunig.com/2026/07/24/manage-your-agent-s-loadout-with-dr-skill.html">introduced it on July 24</a> after meeting a developer whose enterprise agent was "loading over 600 skills" by default and finding that his own Hermes agent, with nearly 100 skills, often selected the wrong note-taking tool. The first release checked 34 issue categories. The README now lists 54 checks: 37 for installed loadouts and 17 in a lint suite that tests skills, plugins, and marketplaces against the <a href="https://agent-plugins.org/specification">Agent Plugins 1.0.0 specification</a>. Static checks find duplicate names, shadowed skills, conflicting instructions, hidden files, excessive context, and suspicious content before the agent runs. They run locally and do not modify the loadout. Separate session-trace audits examine what a live agent invoked, distinguishing a file merely present on disk from material that entered the working loadout.</p>
+<p>Version <a href="https://github.com/dbreunig/drskill/releases/tag/v0.7.0">0.7.0</a>, released August 15, added the plugin stores used by Claude Code, Codex, Gemini CLI, Copilot, and droid; version 0.7.2 followed on August 23. drskill counts enabled plugins in the effective loadout while ignoring disabled entries and stale cached copies, then reports the precedence rules that decide which identically named skill wins. The earlier gap hid all 11 skills in Thiago Perrotta's Claude Code plugin; after he <a href="https://perrotta.dev/2026/07/drskill-lint-claude-skills/">symlinked them into a skills directory</a>, drskill found angle brackets in three frontmatter blocks and two skills that never explained when an agent should use them.</p>
+<p>Breunig devotes a README section to Claude Code's <a href="https://code.claude.com/docs/en/skills#inject-dynamic-context">dynamic context injection</a>. A skill can contain shell commands that Claude Code runs when the skill is invoked, inserting their output before the model reads the file; a live git diff can enter the model's context this way. Anthropic's documentation says injected commands never prompt for permission. A permission check that returns anything except allow aborts the invocation, and <strong>disableSkillShellExecution</strong> disables the feature for user, project, and plugin skills. drskill's <em>injection-shell-unreviewed</em> check prints every embedded command on first sight and asks for an approved baseline, then names each addition or removal on later scans. <em>injection-shell-dangerous</em> immediately flags credential-store reads, credential-named environment variables, and curl or wget piped into a shell.</p>
+<p>With an opt-in connection flag, drskill applies similar baselines to MCP servers. It completes the handshake, enumerates tools without calling them, and commits names, descriptions, and full schema text to a snapshot. A later description edit prints the old and new text, produces a warning, and fails CI. Luca Beurer-Kellner and Marc Fischer of Invariant Labs <a href="https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks">demonstrated the threat</a> in April 2025 with a description that pulled SSH keys through Cursor; they also showed that a malicious server could change its description after client approval and recommended pinning tools by hash. drskill's <em>mcp-tool-poisoning</em> check searches committed snapshots for hidden instructions, credential paths, invisible Unicode, encoded blobs, and language steering the agent toward or away from other tools.</p>
+<p>drskill records acknowledgments in a committed ledger, hashing each check id with the contents of every implicated skill so an edit revives the warning. It can also use model adjudication for findings that require judgment, but live connections and model calls remain opt-in. Cached verdicts are content-addressed, so a changed skill returns to review instead of inheriting an earlier approval. The ledger and model-verdict cache are unsigned, which lets anyone able to commit silence a finding through either file. Breunig warns that a clean scan is not a security guarantee and a finding is not an accusation. Claude Code custom-command files using the same shell syntax remain undiscovered, and OpenCode precedence remains unverified because collision winners changed between runs. Static scanning also cannot secure content fetched later. The remote-fetch check would have flagged the AIR skill that <a href="https://thehackernews.com/2026/06/fake-ai-agent-skill-passed-security.html">passed scanners, reached roughly 26,000 installations, and later served altered instructions</a> from a controlled domain: the installed file merely directed agents to a setup page, whose operator changed the page after distribution.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://github.com/dbreunig/drskill">dbreunig/drskill</a> <span class="how">— Primary README for the scan, lint, ledger, MCP-baseline, shell-injection, check-count, and limitation details.</span></li>
+<li><a href="https://www.dbreunig.com/2026/07/24/manage-your-agent-s-loadout-with-dr-skill.html">Manage Your Agent's Loadout with Dr. Skill - Drew Breunig</a> <span class="how">— Primary July 24 introduction for the 600-skill case, Hermes example, and original 34-category count.</span></li>
+<li><a href="https://github.com/dbreunig/drskill/releases/tag/v0.7.0">drskill v0.7.0 release</a> <span class="how">— Verifies the August 15 release; repository data also confirms v0.7.2 on August 23.</span></li>
+<li><a href="https://code.claude.com/docs/en/skills#inject-dynamic-context">Extend Claude with skills - Anthropic documentation</a> <span class="how">— Primary documentation for invocation-time shell syntax, permission behavior, and the disabling setting.</span></li>
+<li><a href="https://perrotta.dev/2026/07/drskill-lint-claude-skills/">drskill: lint claude skills - Thiago Perrotta</a> <span class="how">— Provides the plugin-discovery gap and findings after the symlink workaround.</span></li>
+<li><a href="https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks">MCP Tool Poisoning Attacks - Invariant Labs</a> <span class="how">— Primary precursor for the mutable-description attack and version-pinning recommendation.</span></li>
+<li><a href="https://thehackernews.com/2026/06/fake-ai-agent-skill-passed-security.html">Fake AI skill passed security scans - The Hacker News</a> <span class="how">— Reports the AIR remote-fetch demonstration and its approximately 26,000 claimed installations.</span></li>
+<li><a href="https://agent-plugins.org/specification">Agent Plugins Specification 1.0.0</a> <span class="how">— Primary specification against which drskill runs its plugin lint suite.</span></li>
+<li><a href="https://pypi.org/project/drskill/">drskill on PyPI</a> <span class="how">— Cross-checks the July and August release history.</span></li>
+<li><a href="https://x.com/dbreunig/status/2094211809138049500">Drew Breunig relays drskill on X</a> <span class="how">— August 30 discovery lead only; no substantive claim is attributed to the relay.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-drskill-audits-agent-skill-and-mcp-loadouts-for-conflicts-dr">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-30/drskill-audits-agent-skill-and-mcp-loadouts-for-conflicts-dr</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
