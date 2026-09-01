@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>A Prime Agent fork routes session traffic around the supervisor — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-08-30">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-08-30">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 30 August 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">A Prime Agent fork routes session traffic around the supervisor</h1>
+<p class="dek">Tim Kellogg splits routine traffic from critical lifecycle work, adds a SQLite session catalog and reports 40-agent load tests; the changes remain outside the stable release.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 30 August 2026</span> <span class="chip">329 words · ~2 min</span></div>
+<div class="article-body">
+<p>Tim Kellogg <a href="https://bsky.app/profile/timkellogg.me/post/3mucvi2ve2c25">posted on Bluesky</a> on August 30 that he had rewritten a large part of Prime Agent after version 0.8.1 began failing across sessions. In the linked <a href="https://github.com/PrimeIntellect-ai/prime-agent/discussions/1805#discussioncomment-18208800">GitHub discussion</a>, he says the terminal interface remained open while its sessions locked up together and needed a kernel restart. Prime Agent's <a href="https://mintresearch.org/newsletters/yinai/2026-08-25/#story-tanishq-mathew-abraham-ph-d-iscienceluvr-twitter-prime-agent">seven-day Factorio run</a> had shown how widely the recursive harness could fan out; Kellogg's report concerns whether that machinery remains usable when many sessions generate traffic at once.</p><p>Kellogg traced the correlated failures to Prime Agent's supervisor. Every session sent routine data through the same process that also cleaned up sessions and replaced dead ones, so one burst could stall the whole harness. His <a href="https://github.com/tkellogg/prime-agent/commit/2902b3e007bb53bb394c46b176903a9c580504f7">direct-worker transport commit</a> keeps registration and recovery on the supervisor connection while routing session commands between each terminal client and its worker socket. Short-lived tickets bind the client to a particular worker and socket identity; a failed direct attachment falls back to the supervisor. Routing routine traffic directly lets the supervisor continue registration and recovery when a session becomes busy or hangs.</p><p>Kellogg's <a href="https://github.com/tkellogg/prime-agent/commit/57bbf05df04bb127734c185798f35a34ef2c120a">SQLite catalog commit</a> replaces repeated full scans for Agents View while retaining the existing JSONL session histories. The view checks timestamps and rereads only changed histories, and the supervisor coalesces summary refreshes. Kellogg reports that the fork handled 40 agents in one load test and 16 sessions with four communicating subagents each in another without the global failures; before the rewrite, he could barely run three subagents.</p><p>As of August 31, the code had not reached Prime Agent's stable channel. <a href="https://github.com/PrimeIntellect-ai/prime-agent/releases/tag/v0.8.1">Version 0.8.1</a>, released August 26, predates both changes, and upstream's <a href="https://github.com/PrimeIntellect-ai/prime-agent/blob/main/CONTRIBUTING.md">contribution policy</a> automatically closes pull requests from contributors who have not been vouched for. Kellogg says he cannot submit the fork directly and will run it while maintainers consider the discussion. The <a href="https://github.com/PrimeIntellect-ai/prime-agent/compare/main...tkellogg:prime-agent:feat/direct-worker-transport">August 31 branch comparison</a> also listed a third commit fixing a separate race in which an idle sweep could evict a parent before a child's completion notice arrived.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://bsky.app/profile/timkellogg.me/post/3mucvi2ve2c25">Tim Kellogg on the Prime Agent stability fork: Bluesky</a> <span class="how">— Assigned canonical source, verified against the on-disk thread and Bluesky's public AppView API. Supplies Kellogg's August 30 announcement, his account of global failures, the link to the detailed GitHub discussion, and his explanation that he cannot submit a pull request as an unauthorized contributor.</span></li>
+<li><a href="https://github.com/PrimeIntellect-ai/prime-agent/discussions/1805#discussioncomment-18208800">Is v0.8.1 usable at all?: Prime Agent GitHub Discussion #1805</a> <span class="how">— Primary technical account. Supplies the shared-supervisor failure mechanism, direct session-to-TUI transport design, SQLite and JSONL Agents View design, load-test figures, related issue list, and upstreaming status.</span></li>
+<li><a href="https://github.com/tkellogg/prime-agent/commit/2902b3e007bb53bb394c46b176903a9c580504f7">Add direct worker peer transport: Tim Kellogg's Prime Agent fork</a> <span class="how">— Primary code commit. Verified the split between supervisor control traffic and direct session commands, authenticated short-lived worker tickets tied to socket identity, supervisor fallback, and associated tests.</span></li>
+<li><a href="https://github.com/tkellogg/prime-agent/commit/57bbf05df04bb127734c185798f35a34ef2c120a">Stabilize Agents View catalog refresh: Tim Kellogg's Prime Agent fork</a> <span class="how">— Primary code commit. Verified the SQLite session-metadata catalog, timestamp-based reconciliation with JSONL histories, cached summaries, coalesced refreshes, fallback behavior, and tests.</span></li>
+<li><a href="https://github.com/PrimeIntellect-ai/prime-agent/releases/tag/v0.8.1">Prime Agent v0.8.1: Prime Intellect</a> <span class="how">— Verified the August 26 release date and that the latest stable release predates and does not list Kellogg's August 30 transport or catalog changes.</span></li>
+<li><a href="https://github.com/PrimeIntellect-ai/prime-agent/blob/main/CONTRIBUTING.md">Contributing to Prime Agent: Prime Intellect</a> <span class="how">— Verified that public contributions begin in Discussions and that pull requests from contributors who have not been vouched for are automatically closed.</span></li>
+<li><a href="https://github.com/PrimeIntellect-ai/prime-agent/compare/main...tkellogg:prime-agent:feat/direct-worker-transport">Prime Agent direct-worker fork compared with upstream main: GitHub</a> <span class="how">— Verified on August 31 that the branch comparison listed the two August 30 architecture commits plus an August 31 fix preventing parent eviction before deferred child-completion delivery.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-08-25/#story-tanishq-mathew-abraham-ph-d-iscienceluvr-twitter-prime-agent">Prime Agent's seven-day Factorio run kept every subagent one level down: Yesterday in AI, August 25, 2026</a> <span class="how">— Continuity source. Earlier coverage explained Prime Agent's recursive harness through its seven-day Factorio trajectory; the present update concerns a later reliability rearchitecture of the same harness.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-prime-agent-fork-removes-communications-bottleneck-behind-re">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-08-30/prime-agent-fork-removes-communications-bottleneck-behind-re</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
