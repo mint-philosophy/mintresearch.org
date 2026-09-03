@@ -123,6 +123,22 @@ blockquote cite { display: block; font-style: normal; font-family: var(--mono); 
 .cur-item .cur-title { font-family: var(--serif); font-size: 36px; font-weight: 500; margin-bottom: 3px; }
 .cur-item .cur-text { font-size: 28px; line-height: 1.4; color: var(--ink); }
 
+/* Plan items */
+.plan-grid { display: grid; grid-template-columns: 1fr 1fr; grid-auto-flow: column; grid-template-rows: repeat(5, auto); column-gap: 56px; margin: 12px 0 0; }
+.plan-item {
+  appearance: none; display: flex; gap: 18px; align-items: baseline; width: 100%;
+  padding: 14px 12px; border: 0; border-bottom: var(--border-dot);
+  background: transparent; color: inherit; font: inherit; text-align: left;
+  cursor: pointer; transition: background 0.15s;
+}
+.plan-item:nth-child(5), .plan-item:last-child { border-bottom: none; }
+.plan-item:hover { background: var(--teal); }
+.plan-item:focus-visible { outline: 2px solid var(--black); outline-offset: 2px; }
+.plan-num { font-family: var(--mono); font-size: 21px; font-weight: 700; letter-spacing: 2px; color: var(--mid); flex-shrink: 0; min-width: 48px; }
+.plan-body { display: flex; flex-direction: column; min-width: 0; }
+.plan-title { font-family: var(--serif); font-size: 36px; font-weight: 500; line-height: 1.2; }
+.plan-text { font-size: 26px; line-height: 1.4; color: var(--ink); }
+
 /* Ticker */
 .ticker {
   position: fixed; top: 0; left: 0; width: 100%; height: var(--ticker-h);
@@ -237,6 +253,11 @@ nav {
   .agi-grid p { font-size: 22px !important; }
   .agi-grid { grid-template-columns: 1fr !important; }
   .cur-grid { grid-template-columns: 1fr !important; }
+  .plan-grid { grid-template-columns: 1fr; grid-auto-flow: row; grid-template-rows: none; column-gap: 0; }
+  .plan-item:nth-child(5) { border-bottom: var(--border-dot); }
+  .plan-num { font-size: 17px; }
+  .plan-title { font-size: 28px; }
+  .plan-text { font-size: 22px; }
 }
 
 /* ── Phone ── */
@@ -296,6 +317,12 @@ nav {
   .cur-item .cur-title { font-size: 22px; }
   .cur-item .cur-text { font-size: 16px; }
 
+  /* Plan */
+  .plan-item { gap: 12px; padding: 10px 8px; }
+  .plan-num { font-size: 14px; min-width: 36px; }
+  .plan-title { font-size: 22px; }
+  .plan-text { font-size: 16px; }
+
   /* Labels */
   .label { font-size: 14px; letter-spacing: 1.5px; }
 
@@ -341,8 +368,8 @@ nav {
 <div id="tooltip-overlay" role="tooltip"></div>
 <div class="ticker" role="navigation" aria-label="Slide topics">
   <div class="ticker-track">
-    <button type="button" class="ticker-link" data-slide="1" aria-label="Go to slide 2: Background Assumptions">Background Assumptions</button><button type="button" class="ticker-link" data-slide="2" aria-label="Go to slide 3: Definitions of AGI">Definitions of AGI</button><button type="button" class="ticker-link" data-slide="3" aria-label="Go to slide 4: Concrete Waypoints">Concrete Waypoints</button><button type="button" class="ticker-link" data-slide="4" aria-label="Go to slide 5: Core Question">Core Question</button><button type="button" class="ticker-link" data-slide="5" aria-label="Go to slide 6: Steering the Transition">Steering the Transition</button><button type="button" class="ticker-link" data-slide="6" aria-label="Go to slide 7: Moral Competence">Moral Competence</button><button type="button" class="ticker-link" data-slide="7" aria-label="Go to slide 8: Decentralisation">Decentralisation</button><button type="button" class="ticker-link" data-slide="8" aria-label="Go to slide 9: Societal Adaptation">Societal Adaptation</button><button type="button" class="ticker-link" data-slide="9" aria-label="Go to slide 10: Applied Philosophy">Applied Philosophy</button>
-    <button type="button" class="ticker-link" data-slide="1" aria-label="Go to slide 2: Background Assumptions">Background Assumptions</button><button type="button" class="ticker-link" data-slide="2" aria-label="Go to slide 3: Definitions of AGI">Definitions of AGI</button><button type="button" class="ticker-link" data-slide="3" aria-label="Go to slide 4: Concrete Waypoints">Concrete Waypoints</button><button type="button" class="ticker-link" data-slide="4" aria-label="Go to slide 5: Core Question">Core Question</button><button type="button" class="ticker-link" data-slide="5" aria-label="Go to slide 6: Steering the Transition">Steering the Transition</button><button type="button" class="ticker-link" data-slide="6" aria-label="Go to slide 7: Moral Competence">Moral Competence</button><button type="button" class="ticker-link" data-slide="7" aria-label="Go to slide 8: Decentralisation">Decentralisation</button><button type="button" class="ticker-link" data-slide="8" aria-label="Go to slide 9: Societal Adaptation">Societal Adaptation</button><button type="button" class="ticker-link" data-slide="9" aria-label="Go to slide 10: Applied Philosophy">Applied Philosophy</button>
+    <button type="button" class="ticker-link" data-slide="2" aria-label="Go to slide 3: Background Assumptions">Background Assumptions</button><button type="button" class="ticker-link" data-slide="3" aria-label="Go to slide 4: Definitions of AGI">Definitions of AGI</button><button type="button" class="ticker-link" data-slide="4" aria-label="Go to slide 5: Concrete Waypoints">Concrete Waypoints</button><button type="button" class="ticker-link" data-slide="5" aria-label="Go to slide 6: Core Question">Core Question</button><button type="button" class="ticker-link" data-slide="6" aria-label="Go to slide 7: Steering the Transition">Steering the Transition</button><button type="button" class="ticker-link" data-slide="7" aria-label="Go to slide 8: Moral Competence">Moral Competence</button><button type="button" class="ticker-link" data-slide="8" aria-label="Go to slide 9: Decentralisation">Decentralisation</button><button type="button" class="ticker-link" data-slide="9" aria-label="Go to slide 10: Societal Adaptation">Societal Adaptation</button><button type="button" class="ticker-link" data-slide="10" aria-label="Go to slide 11: Applied Philosophy">Applied Philosophy</button>
+    <button type="button" class="ticker-link" data-slide="2" aria-label="Go to slide 3: Background Assumptions">Background Assumptions</button><button type="button" class="ticker-link" data-slide="3" aria-label="Go to slide 4: Definitions of AGI">Definitions of AGI</button><button type="button" class="ticker-link" data-slide="4" aria-label="Go to slide 5: Concrete Waypoints">Concrete Waypoints</button><button type="button" class="ticker-link" data-slide="5" aria-label="Go to slide 6: Core Question">Core Question</button><button type="button" class="ticker-link" data-slide="6" aria-label="Go to slide 7: Steering the Transition">Steering the Transition</button><button type="button" class="ticker-link" data-slide="7" aria-label="Go to slide 8: Moral Competence">Moral Competence</button><button type="button" class="ticker-link" data-slide="8" aria-label="Go to slide 9: Decentralisation">Decentralisation</button><button type="button" class="ticker-link" data-slide="9" aria-label="Go to slide 10: Societal Adaptation">Societal Adaptation</button><button type="button" class="ticker-link" data-slide="10" aria-label="Go to slide 11: Applied Philosophy">Applied Philosophy</button>
   </div>
 </div>
 
@@ -369,7 +396,26 @@ nav {
   </div>
 </div>
 
-<!-- 2. BACKGROUND ASSUMPTIONS -->
+<!-- 2. THE PLAN -->
+<div class="slide" data-name="The Plan">
+  <div class="full" style="position:relative;padding:44px 72px;">
+    <div class="vlabel">Overview</div>
+    <h2 class="fi">The Plan</h2>
+    <div class="plan-grid fi d1">
+      <button type="button" class="plan-item" data-slide="2" aria-label="Go to slide 3: Background Assumptions"><span class="plan-num">01</span><span class="plan-body"><span class="plan-title">Background Assumptions</span><span class="plan-text">Institutional decline meets transformative AI</span></span></button>
+      <button type="button" class="plan-item" data-slide="3" aria-label="Go to slide 4: Definitions of AGI"><span class="plan-num">02</span><span class="plan-body"><span class="plan-title">Definitions of AGI</span><span class="plan-text">Mechanistic/Cognitive · Capabilities · Outcomes</span></span></button>
+      <button type="button" class="plan-item" data-slide="4" aria-label="Go to slide 5: Concrete Waypoints"><span class="plan-num">03</span><span class="plan-body"><span class="plan-title">Concrete Waypoints</span><span class="plan-text">Agents · Science · Independent ASI</span></span></button>
+      <button type="button" class="plan-item" data-slide="5" aria-label="Go to slide 6: Core Question"><span class="plan-num">04</span><span class="plan-body"><span class="plan-title">Core Question</span><span class="plan-text">What if AGI doesn’t kill us all?</span></span></button>
+      <button type="button" class="plan-item" data-slide="6" aria-label="Go to slide 7: Steering the Transition"><span class="plan-num">05</span><span class="plan-body"><span class="plan-title">Steering the Transition</span><span class="plan-text">Alignment · Governance · Adaptation</span></span></button>
+      <button type="button" class="plan-item" data-slide="7" aria-label="Go to slide 8: Moral Competence"><span class="plan-num">06</span><span class="plan-body"><span class="plan-title">Moral Competence</span><span class="plan-text">Leveraging existing LLMs’ analytical moral understanding</span></span></button>
+      <button type="button" class="plan-item" data-slide="8" aria-label="Go to slide 9: Decentralisation"><span class="plan-num">07</span><span class="plan-body"><span class="plan-title">Decentralisation</span><span class="plan-text">Building a Safe, Decentralised, AI Agent Economy</span></span></button>
+      <button type="button" class="plan-item" data-slide="9" aria-label="Go to slide 10: Societal Adaptation"><span class="plan-num">08</span><span class="plan-body"><span class="plan-title">Societal Adaptation</span><span class="plan-text">Alignment’s Complement</span></span></button>
+      <button type="button" class="plan-item" data-slide="10" aria-label="Go to slide 11: Applied Philosophy"><span class="plan-num">09</span><span class="plan-body"><span class="plan-title">Applied Philosophy</span><span class="plan-text">A different kind of applied philosophy.</span></span></button>
+    </div>
+  </div>
+</div>
+
+<!-- 3. BACKGROUND ASSUMPTIONS -->
 <div class="slide" data-name="Background Assumptions">
   <div class="split">
     <div class="split-left" style="position:relative;">
@@ -387,7 +433,7 @@ nav {
   </div>
 </div>
 
-<!-- 3. DEFINITIONS OF AGI -->
+<!-- 4. DEFINITIONS OF AGI -->
 <div class="slide" data-name="Definitions of AGI">
   <div class="full" style="position:relative;padding:44px 72px;">
     <div class="vlabel">02 — Defining AGI</div>
@@ -417,7 +463,7 @@ nav {
   </div>
 </div>
 
-<!-- 4. CONCRETE WAYPOINTS -->
+<!-- 5. CONCRETE WAYPOINTS -->
 <div class="slide" data-name="Concrete Waypoints">
   <div class="full" style="position:relative;padding:44px 72px;">
     <div class="vlabel">03 — Concrete Waypoints</div>
@@ -447,7 +493,7 @@ nav {
   </div>
 </div>
 
-<!-- 5. CORE QUESTION -->
+<!-- 6. CORE QUESTION -->
 <div class="slide" data-name="Core Question">
   <div class="split">
     <div class="split-left teal-bg" style="position:relative;">
@@ -462,7 +508,7 @@ nav {
   </div>
 </div>
 
-<!-- 6. STEERING THE TRANSITION -->
+<!-- 7. STEERING THE TRANSITION -->
 <div class="slide" data-name="Steering the Transition">
   <div class="split wide-right">
     <div class="split-left teal-bg" style="position:relative;">
@@ -480,7 +526,7 @@ nav {
   </div>
 </div>
 
-<!-- 7. MORAL COMPETENCE -->
+<!-- 8. MORAL COMPETENCE -->
 <div class="slide" data-name="Moral Competence">
   <div class="split wide-right">
     <div class="split-left black-bg" style="position:relative;">
@@ -498,7 +544,7 @@ nav {
   </div>
 </div>
 
-<!-- 8. DECENTRALISATION -->
+<!-- 9. DECENTRALISATION -->
 <div class="slide" data-name="Decentralisation">
   <div class="split wide-left">
     <div class="split-left" style="position:relative;">
@@ -517,7 +563,7 @@ nav {
   </div>
 </div>
 
-<!-- 9. SOCIETAL ADAPTATION -->
+<!-- 10. SOCIETAL ADAPTATION -->
 <div class="slide" data-name="Societal Adaptation">
   <div class="full" style="position:relative;padding:44px 72px;">
     <div class="vlabel">08 — Societal Adaptation</div>
@@ -532,7 +578,7 @@ nav {
   </div>
 </div>
 
-<!-- 10. CLOSING -->
+<!-- 11. CLOSING -->
 <div class="slide" data-name="Applied Philosophy">
   <div class="split">
     <div class="split-left teal-bg" style="position:relative;">
@@ -554,7 +600,7 @@ nav {
 
 
 <nav>
-  <div class="nav-counter"><span id="slide-counter">1 / 10</span></div>
+  <div class="nav-counter"><span id="slide-counter">1 / 11</span></div>
   <div class="nav-dots" id="nav-dots"></div>
   <div class="nav-tail">
     <div class="nav-section"><span id="section-name">Title</span></div>
@@ -582,6 +628,12 @@ for(let i=0;i<total;i++){
 function hideTooltip(){overlay.style.display='none';activeTip=null;}
 function go(n){if(n<0||n>=total||n===cur)return;hideTooltip();slides[cur].classList.remove('active');cur=n;slides[cur].classList.add('active');document.querySelectorAll('.nav-dot').forEach((d,i)=>{const active=i===n;d.classList.toggle('active',active);d.setAttribute('aria-current',active?'true':'false');});prog.style.width=((n/(total-1))*100)+'%';counter.textContent=(n+1)+' / '+total;secName.textContent=slides[n].dataset.name||'';fitSlides();}
 document.querySelectorAll('.ticker-link').forEach((button)=>{
+  button.addEventListener('click',(event)=>{
+    go(Number(button.dataset.slide));
+    if(event.detail>0)button.blur();
+  });
+});
+document.querySelectorAll('.plan-item').forEach((button)=>{
   button.addEventListener('click',(event)=>{
     go(Number(button.dataset.slide));
     if(event.detail>0)button.blur();
@@ -681,7 +733,8 @@ const FIT_SEARCH_ITERATIONS = 10;
 const FRAME_INSET = 6;
 const BODY_FLOOR_SELECTOR = [
   'p:not(.dim)', 'blockquote', '.dc-text', '.obstacle-item', '.comp-title',
-  '.comp-desc', '.verif-text', '.cap-text', '.cur-title', '.cur-text'
+  '.comp-desc', '.verif-text', '.cap-text', '.cur-title', '.cur-text',
+  '.plan-title', '.plan-text'
 ].join(',');
 let fitFrame = null;
 const FIT_DEBUG = location.hostname === '127.0.0.1' || location.hostname === 'localhost';
