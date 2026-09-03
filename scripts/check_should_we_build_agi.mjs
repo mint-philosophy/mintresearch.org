@@ -25,8 +25,20 @@ for (const [name, html] of [['wrapper', wrapper], ['deck', deck]]) {
   assert.match(html, /<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">/, `${name} must be noindex`);
 }
 
-assert.equal((deck.match(/<section class="slide\b/g) || []).length, 16, 'deck must contain 16 slides');
-assert.equal((deck.match(/aria-label="Slide \d+ of 16:/g) || []).length, 16, 'every slide needs an accessible label');
+assert.equal((deck.match(/<section class="slide\b/g) || []).length, 17, 'deck must contain 17 slides');
+assert.equal((deck.match(/aria-label="Slide \d+ of 17:/g) || []).length, 17, 'every slide needs an accessible label');
+assert.match(deck, /<section class="slide slide-plan" data-section="Introduction" data-name="The plan" aria-label="Slide 6 of 17: The plan">/, 'the plan slide must close the introduction as slide 6');
+assert.equal((deck.match(/class="plan-button" data-go="/g) || []).length, 4, 'the plan slide must list the four remaining sections');
+for (const [target, label] of [['6', 'Quick definitions'], ['9', 'Freedom &amp; justification'], ['15', 'Uncertainty &amp; agency'], ['16', 'Your task']]) {
+  assert.match(deck, new RegExp(`<button type="button" class="plan-button" data-go="${target}">(?:(?!</button>)[\\s\\S])*?<span class="plan-label" data-pretext>${label}</span>`), `plan item ${label} must jump to slide index ${target}`);
+  assert.match(deck, new RegExp(`<button type="button" class="ticker-link" data-go="${target}">${label}</button>`), `ticker ${label} must agree with the plan slide`);
+}
+assert.match(editor, /'\.plan-number',/, 'plan numbers must stay out of the inline editor');
+assert.match(deckScript, /querySelectorAll\('\[data-go\]'\)[\s\S]*?dataset\.editorMode === 'editing'/, 'plan links must not navigate while their text is being edited');
+assert.match(css, /\.plan-list \{[^}]*grid-template-columns: 1fr 1fr;[^}]*border: var\(--dash\);/, 'the plan must use the deck\'s dashed two-column grid');
+for (const block of ['@media \\(max-width: 1180px\\) and \\(min-width: 901px\\)', '@media \\(max-width: 900px\\) and \\(orientation: portrait\\)', '@media \\(max-width: 600px\\) and \\(orientation: portrait\\)', '@media \\(max-height: 600px\\) and \\(orientation: landscape\\)']) {
+  assert.match(css, new RegExp(`${block} \\{(?:(?!\\n\\}\\n)[\\s\\S])*?\\.plan-button \\{`), `the plan must have compact rules inside ${block}`);
+}
 assert.match(deck, /What justifies overriding the presumption in favour of liberty\?/, 'first justificatory hurdle must be present');
 assert.match(deck, /what justifies imposing AGI’s costs and risks on others\?/, 'second justificatory hurdle must be present');
 assert.match(deck, /Against building AGI/, 'ledger must include the against column');
@@ -74,7 +86,7 @@ assert.doesNotMatch(deck, /“AGI is inevitable” is implausibly deterministic\
 assert.match(deck, /Promise must be subject to same level of rigour as peril\./, 'the final accounting must apply the same rigour to promise and peril');
 assert.equal((deck.match(/data-reason-dialog="/g) || []).length, 4, 'slide 12 must offer four interactive kinds of reasons');
 assert.equal((deck.match(/<dialog class="reason-dialog"/g) || []).length, 4, 'each kind of reason must have an illustrative dialog');
-for (const example of ['Existential hope', 'Mass casualty event', 'Democracy', 'Prosperity', 'Justice', 'Rule of law', 'Meaning in life', 'Faith', 'Personal relationships', 'Thick concepts of flourishing']) {
+for (const example of ['Existential hope', 'Defeating mortality? Solving climate change? Preventing civilisational collapse?', 'If others are going to develop powerful AI, do we need it for defence to *prevent* catastrophic harm?', 'Could powerful AI save liberal democracy from terminal decline?', 'Curing cancer??', 'Enhancing not saving democracy?', 'Significant economic growth?', 'Increasing state capacity?', 'Enabling justice and the rule of law?', 'Enabling fully-automated Aristotelian flourishing?', 'Tiling the universe with happy consciousnesses?', 'Something something glory of God?', 'Scientific excellence and the intrinsic value of discovery?']) {
   assert.ok(deck.includes(example), `reason dialogs must preserve the illustrative example: ${example}`);
 }
 assert.match(deckScript, /data-reason-dialog[\s\S]*showModal\(\)/, 'reason cards must open their associated dialog');
@@ -99,11 +111,11 @@ assert.doesNotMatch(editor, /ALLOWED_IPS|CF-Connecting-IP/, 'the client bundle m
 assert.doesNotMatch(editor, /element\.closest\('\[aria-hidden="true"\]'\)/, 'inactive slides must remain represented in the editable field map');
 assert.match(css, /html\[data-editor-mode="editing"\] \[data-editor-key\]/, 'edit mode must visibly identify editable text');
 assert.match(css, /@media \(max-width: 600px\) and \(orientation: portrait\)[\s\S]*\.ledger-table thead th:first-child \{ width: 40%; \}[\s\S]*\.ledger-table tbody th \{ padding-inline: 10px; font-size: 12px; white-space: nowrap; \}/, 'phone ledger labels must remain inside the first column divider');
-assert.match(wrapper, /deck\.html\?v=20260828\.19/, 'wrapper must cache-bust the compact editor control');
-assert.match(deck, /deck\.css\?v=20260828\.12/, 'deck must cache-bust compact editor styling');
-assert.match(deck, /deck\.js\?v=20260828\.9/, 'deck must cache-bust editor-control touch handling');
-assert.match(deck, /inline-editor\.js\?v=20260828\.4/, 'deck must load the collapsible all-slide inline editor');
-assert.match(deck, /pretext-layout\.js\?v=20260828\.8/, 'deck must cache-bust editor-aware Pretext layout');
+assert.match(wrapper, /deck\.html\?v=20260903\.1/, 'wrapper must cache-bust the plan slide');
+assert.match(deck, /deck\.css\?v=20260903\.1/, 'deck must cache-bust plan slide styling');
+assert.match(deck, /deck\.js\?v=20260903\.1/, 'deck must cache-bust edit-aware plan links');
+assert.match(deck, /inline-editor\.js\?v=20260903\.1/, 'deck must load the editor that excludes plan numbers');
+assert.match(deck, /pretext-layout\.js\?v=20260903\.1/, 'deck must cache-bust Pretext layout for the plan slide');
 assert.equal((css.match(/\.ledger-table \{ min-width: 0;/g) || []).length, 2, 'ledger must fit responsive portrait and short-landscape frames without horizontal scrolling');
 assert.equal((deck.match(/<td aria-label="Blank"><\/td>/g) || []).length, 8, 'ledger must expose eight blank cells without overflow-prone hidden text');
 assert.match(deckScript, /touchstart/, 'deck must support touch navigation');
