@@ -85,7 +85,10 @@
   next.addEventListener('click', () => showSlide(current + 1, { resetScroll: true }));
 
   document.querySelectorAll('[data-go]').forEach((button) => {
-    button.addEventListener('click', () => showSlide(Number(button.dataset.go), { resetScroll: true }));
+    button.addEventListener('click', (event) => {
+      if (document.documentElement.dataset.editorMode === 'editing' && event.target instanceof Element && event.target.closest('[data-editor-key]')) return;
+      showSlide(Number(button.dataset.go), { resetScroll: true });
+    });
   });
 
   document.querySelectorAll('[data-reason-dialog]').forEach((button) => {

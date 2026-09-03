@@ -15,6 +15,7 @@ const excluded = [
   '.prompt-number',
   '.definition-number',
   '.state-number',
+  '.plan-number',
   '.short-rule',
   '.reason-dialog-close',
   '.reason-card-action',
