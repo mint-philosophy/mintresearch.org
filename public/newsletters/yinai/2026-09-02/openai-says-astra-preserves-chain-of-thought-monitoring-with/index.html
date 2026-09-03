@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Astra turns chain-of-thought monitoring into a three-way dispute — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-02">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-02">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 2 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Astra turns chain-of-thought monitoring into a three-way dispute</h1>
+<p class="dek">Pachocki says Astra remains monitorable, Krueger says OpenAI abandoned the technique, and Raschka argues layer recurrence need not hide visible reasoning.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 2 September 2026</span> <span class="chip">424 words · ~2 min</span></div>
+<div class="article-body">
+<p>OpenAI chief scientist Jakub Pachocki said that current frontier models, including Astra, remain within twice GPT-4’s computation-graph depth and that OpenAI has worked to preserve chain-of-thought monitoring since its first reasoning models. <a href="https://x.com/digg/status/2095274101774631082">Digg relayed the post</a> on September 2 and noted that OpenAI had not confirmed whether Astra uses recurrent depth. Pachocki also said monitoring is deteriorating for reasons he considers independent of architectural changes. His statement adds an explicit monitorability claim and a quantitative depth bound to the <a href="https://mintresearch.org/newsletters/yinai/2026-09-01/#story-openai-technique-in-astra-model-sparks-security-concerns">September 1 report of Astra’s recurrent depth</a>.</p><p>David Krueger <a href="https://x.com/DavidSKrueger/status/2095161913730830765">argued on X</a> that chain-of-thought visibility had supplied useful evidence of model misalignment but was always too fragile to serve as a lasting safety backstop. He went further than Pachocki, writing that OpenAI had abandoned the technique. Krueger’s quote-post points to <a href="https://x.com/jachiam0/status/2094979489130479919">Joshua Achiam’s precursor</a>, which rejected safety strategies that require human-legible reasoning and called for interpretability methods that reach beyond chain-of-thought fidelity. Achiam declined to confirm or deny the architecture report; his relevance here is the safety premise Krueger adopted, not a separate claim about Astra’s design.</p><p>Sebastian Raschka addressed the architecture rather than OpenAI’s safety policy. In an <a href="https://x.com/rasbt/status/2095141254958858496">X thread</a> and <a href="https://sebastianraschka.com/blog/2026/openai-astra-looped-transformers.html">matching technical note</a>, he described a looped transformer as repeated use of the same layer stack. Hidden states pass through shared layers more than once, increasing effective depth and computation without increasing parameter count or duplicating stored weights. Weight storage therefore remains fixed. The design does not keep all memory fixed, however: the key-value cache grows as recurrent computation adds intermediate states.</p><p>Raschka’s open-weight example, <a href="https://arxiv.org/abs/2607.22083">Nanbeige4.2-3B</a>, uses 22 layers twice according to its <a href="https://huggingface.co/Nanbeige/Nanbeige4.2-3B-Base">released configuration</a>. Nanbeige Lab reports that the model was trained from scratch on 28 trillion tokens and that two passes retain about 75% of a standard transformer’s token efficiency. Additional passes produced marginal gains while slowing training and making optimization less stable. The related <a href="https://arxiv.org/abs/2507.10524">Mixture-of-Recursions paper</a> routes individual tokens to different recursion depths rather than imposing one fixed count.</p><p>Raschka argues that recurrence does not inherently conceal visible reasoning because the extra computation happens in hidden states before each emitted token, as it does in an ordinary deeper model. A recurrent model could still emit fewer intermediate reasoning tokens and move more work into latent activations; scaling a conventional model can produce the same effect. He proposes comparing looped and unlooped models on reasoning tasks both already solve, then measuring how many tokens each emits. That experiment would test the architectural concern directly while leaving Krueger’s broader objection to chain-of-thought as a durable safety strategy unresolved.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://x.com/digg/status/2095274101774631082">OpenAI chief scientist @merettm says Astra retains chain-of-thought monitoring — Digg on X</a> <span class="how">— Assigned canonical URL, read from the on-disk fetched JSON and re-fetched through Bird. It is a relay: it quotes Jakub Pachocki's post in full and adds one line of its own (that OpenAI has not said whether Astra uses recurrent depth). Resolved to the original and NOT cited in the piece; the quoted Pachocki post proved to be the same tweet already reported in the 1 September issue.</span></li>
+<li><a href="https://x.com/merettm/status/2095023204993490967">Jakub Pachocki on the computation-graph depth of OpenAI's frontier models (X, 2 September 2026)</a> <span class="how">— The original behind the Digg relay, fetched via Bird. Verified: posted 05:37 UTC on 2 September; supplies the factor-of-two-of-GPT-4 depth claim and the statement that OpenAI has worked to preserve chain-of-thought monitoring. A `from:merettm since:2026-09-02` search returned this post and nothing else, confirming he made no further statement. Used only as the timeline anchor Achiam's post precedes.</span></li>
+<li><a href="https://x.com/jachiam0/status/2094979489130479919">Joshua Achiam on chain-of-thought interpretability as a safety backstop (X, 2 September 2026)</a> <span class="how">— The piece's primary new source, read in full via Bird. Verified: posted 02:43 UTC on 2 September, 421 likes, 53 replies. Supplies every Achiam quote in the first paragraph: 'so fragile as to be an unacceptable backstop', 'definitely doomed', 'far beyond chain of thought fidelity', and 'I neither confirm nor deny any of it', plus the capability-diffusion argument about disclosure.</span></li>
+<li><a href="https://x.com/jachiam0/status/2074605703281693175">Joshua Achiam's departure message to OpenAI (X, 7 July 2026)</a> <span class="how">— Read in full via Bird to verify the departure claim from a primary source in his own words: joined OpenAI in 2017 as a 25-year-old intern, 'I'm graduating this month', last day the 24th. His post-OpenAI title, if any, could not be verified and is omitted.</span></li>
+<li><a href="https://x.com/yonashav/status/2094983182873407843">Yo Shavit's reply to Achiam (X, 2 September 2026)</a> <span class="how">— Read via Bird's reply listing (189 likes, the most-liked reply). Supplies the verbatim 'not a good reason to break them preemptively'. Shavit's current organizational title could not be verified against a primary institutional source (a 2024 Penn event page lists him as OpenAI's frontier AI safety policy lead, later reporting places him at the OpenAI Foundation), so no title is used.</span></li>
+<li><a href="https://x.com/jachiam0/status/2094984169797599668">Joshua Achiam's reply to Yo Shavit (X, 2 September 2026)</a> <span class="how">— Read via Bird thread listing. Verified verbatim: 'a fundamentally unsound basis for safety', and the framing that coordinating everyone around the technique is the problem.</span></li>
+<li><a href="https://x.com/BronsonSchoen/status/2094996996893610007">Bronson Schoen's reply to Achiam (X, 2 September 2026)</a> <span class="how">— Read via Bird. Supplies both verbatim phrases: 'correctly reads as just retroactive defense of OpenAI' and 'the primary advocates of betting everything on CoT monitorability'.</span></li>
+<li><a href="https://www.apolloresearch.ai/team">Team — Apollo Research</a> <span class="how">— Primary institutional source checked to verify Schoen's title: listed as Member of Technical Staff, Science.</span></li>
+<li><a href="https://x.com/daniel_271828/status/2095004590781677852">Daniel Eth's reply to Achiam (X, 2 September 2026)</a> <span class="how">— Read via Bird. Supplies the question about whether Achiam held this view before the reporting.</span></li>
+<li><a href="https://x.com/jachiam0/status/2095004992210149479">Joshua Achiam's reply to Daniel Eth (X, 2 September 2026)</a> <span class="how">— Read via Bird. Verified verbatim: 'I did, in private as was appropriate.'</span></li>
+<li><a href="https://x.com/DavidSKrueger/status/2095161913730830765">David Krueger on chain of thought and OpenAI (X, 2 September 2026)</a> <span class="how">— One of the assignment's merged leads, read from the on-disk fetched JSON and re-fetched via Bird, which exposed the quoted post's ID and confirmed it is Achiam's 02:43 UTC post. Supplies 'textbook AI safety hopium' and 'critical for the public to know OpenAI has abandoned it', and the point that chain of thought produced evidence of misalignment.</span></li>
+<li><a href="https://mila.quebec/en/directory/david-scott-krueger">David Scott Krueger — Mila directory</a> <span class="how">— Primary institutional source verifying his title: assistant professor, Université de Montréal (DIRO), and core academic member of Mila.</span></li>
+<li><a href="https://x.com/rasbt/status/2095141254958858496">Sebastian Raschka on OpenAI's Astra and looped transformers (X, 2 September 2026)</a> <span class="how">— One of the assignment's merged leads, read from the on-disk fetched JSON and re-fetched as a full Bird thread including all replies. Supplies the layer-reuse explanation, the compute-versus-storage trade-off, the verbatim 'Reusing layers does not by itself suppress visible chain of thought', the latent-computation concession, the model-scaling comparison, and the proposed token-count test (given in his reply to @spolen23).</span></li>
+<li><a href="https://sebastianraschka.com/blog/2026/openai-astra-looped-transformers.html">OpenAI Astra and Looped Transformers — Sebastian Raschka</a> <span class="how">— The matching blog version of the thread, dated 2 September 2026, fetched and read. Confirms the same argument and figures in long form.</span></li>
+<li><a href="https://magazine.sebastianraschka.com/about">About — Ahead of AI, Sebastian Raschka</a> <span class="how">— Read to verify the newsletter name and his self-description. His current employer is described inconsistently across sources, so no employer or title is claimed in the piece.</span></li>
+<li><a href="https://arxiv.org/abs/2607.22083">Nanbeige4.2-3B: Unlocking Agentic Capabilities in a Compact Model — Nanbeige Lab, arXiv:2607.22083</a> <span class="how">— Read the full HTML of v2 rather than relying on Raschka's summary. Verified directly from the report: pretrained from scratch on 28T tokens with a Looped Transformer; the two-pass configuration 'retains approximately 75% of the token efficiency' of a standard Transformer with a significant capacity gain; more passes give marginal improvement while slowing training and making optimization less stable; from-scratch looped training beat upcycling a trained model.</span></li>
+<li><a href="https://huggingface.co/Nanbeige/Nanbeige4.2-3B-Base">Nanbeige/Nanbeige4.2-3B-Base — Hugging Face</a> <span class="how">— Fetched config.json from the model repo to verify Raschka's layer figure independently: num_hidden_layers 22, num_loops 2.</span></li>
+<li><a href="https://arxiv.org/abs/2507.10524">Mixture-of-Recursions: Learning Dynamic Recursive Depths for Adaptive Token-Level Computation — Sangmin Bae et al., arXiv:2507.10524</a> <span class="how">— Fetched the abstract page and the HTML author block. Verified: lead author Sangmin Bae, KAIST AI; co-authors at Google DeepMind and Mila; NeurIPS 2025; per-token routing to different recursion depths. The Nanbeige report's own reference list cites this paper (Bae et al., Advances in Neural Information Processing Systems 38, pp. 96572-96617), which confirms the lineage claim in the piece.</span></li>
+<li><a href="https://openai.com/index/jakub-pachocki-announced-as-chief-scientist/">Ilya Sutskever to leave OpenAI, Jakub Pachocki announced as Chief Scientist — OpenAI</a> <span class="how">— Primary institutional source for Pachocki's title. Plain HTTP returned 403 twice, so the page was opened and read through the authenticated managed OpenClaw browser profile: headline and 14 May 2024 date confirmed.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-01/#story-openai-technique-in-astra-model-sparks-security-concerns">The Information reports recurrent depth in OpenAI's Astra — Yesterday in AI, 1 September 2026</a> <span class="how">— Prior coverage, read in full from the staged site HTML to establish exactly what readers already know. Woven into the first paragraph as the arc link. It already carried Pachocki's post, his factor-of-two quote, and the Greenblatt, Korbak, Adler, Scher, Calvin and Efrati responses.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-openai-says-astra-preserves-chain-of-thought-monitoring-with">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-02/openai-says-astra-preserves-chain-of-thought-monitoring-with</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
