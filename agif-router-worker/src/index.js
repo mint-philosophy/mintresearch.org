@@ -9,13 +9,6 @@ const legacyHosts = {
   'agif3.mintresearch.org': '/day-3/',
 };
 
-const mainSiteRoutes = {
-  '/agif': '/',
-  '/should-we-build-agi': '/day-1/',
-  '/agi-institutions': '/day-2/',
-  '/societal-adaptation': '/day-3/',
-};
-
 const daySources = {
   '/day-1': '/should-we-build-agi',
   '/day-2': '/agi-institutions',
@@ -56,13 +49,6 @@ function redirectToFellowship(request, path) {
   const target = new URL(path, `https://${FELLOWSHIP_HOST}`);
   target.search = incoming.search;
   return redirect(target.href);
-}
-
-function mainSiteDestination(pathname) {
-  for (const [prefix, destination] of Object.entries(mainSiteRoutes)) {
-    if (hasPrefix(pathname, prefix)) return destination;
-  }
-  return null;
 }
 
 function safeNext(value) {
@@ -337,15 +323,6 @@ export default {
     const host = incoming.hostname.toLowerCase();
 
     if (legacyHosts[host]) return redirectToFellowship(request, legacyHosts[host]);
-
-    if (host === 'mintresearch.org' || host === 'www.mintresearch.org') {
-      const destination = mainSiteDestination(incoming.pathname);
-      if (destination) return redirectToFellowship(request, destination);
-      return new Response('Not found', {
-        status: 404,
-        headers: responseHeaders({ 'Content-Type': 'text/plain; charset=utf-8' }, { noIndex: true }),
-      });
-    }
 
     if (host === FELLOWSHIP_HOST) return handleFellowship(request, env);
 

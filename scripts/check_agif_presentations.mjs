@@ -168,7 +168,6 @@ const fellowshipRoutes = [
 for (const [host, oldRoute, protectedRoute] of fellowshipRoutes) {
   assert.ok(router.includes(`'${host}'`), `router must recognize ${host}`);
   assert.ok(routerConfig.includes(`pattern = "${host}"`), `Worker must own ${host}`);
-  assert.ok(router.includes(`'${oldRoute.replace(/\/$/, '')}'`), `router must intercept ${oldRoute}`);
   assert.ok(fellowshipHub.includes(`href="${protectedRoute}"`), `${protectedRoute} must be reachable from the public Fellowship hub`);
   assert.ok(!nav.includes(oldRoute), `${oldRoute} must remain outside site navigation`);
   assert.ok(!sitemap.includes(`<loc>https://mintresearch.org${oldRoute}</loc>`), `${oldRoute} must remain outside the main-site sitemap`);
@@ -202,9 +201,6 @@ for (const [path, destination] of [
 assert.ok(nav.includes("href: 'https://fellowship.mintresearch.org/'"), 'the main-site Fellowship branch must link to the new public hub');
 assert.ok(!sitemap.includes('<loc>https://mintresearch.org/agif/</loc>'), 'the superseded main-site hub must leave the main-site sitemap');
 assert.ok(routerConfig.includes('pattern = "fellowship.mintresearch.org"'), 'the Worker must own the Fellowship custom domain');
-for (const route of ['mintresearch.org/agif*', 'mintresearch.org/should-we-build-agi*', 'mintresearch.org/agi-institutions*', 'mintresearch.org/societal-adaptation*']) {
-  assert.ok(routerConfig.includes(`pattern = "${route}"`), `the Worker must intercept ${route}`);
-}
 assert.match(routerConfig, /directory = "\.\/site-assets"/, 'the Worker must serve the isolated Fellowship asset tree');
 assert.match(routerConfig, /run_worker_first = true/, 'the password gate must run before static assets');
 assert.match(router, /FELLOWSHIP_PASSWORD/, 'the Fellowship password must be read only from a Worker secret');

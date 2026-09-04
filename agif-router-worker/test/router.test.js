@@ -82,15 +82,11 @@ test('the configured IP bypasses the password gate', async () => {
   assert.equal(await response.text(), 'asset:/agi-institutions/deck.html');
 });
 
-test('legacy subdomains and old main-site routes redirect to the protected Fellowship pages', async () => {
+test('legacy subdomains redirect to the protected Fellowship pages', async () => {
   const env = environment();
   const legacy = await worker.fetch(new Request('https://agif3.mintresearch.org/deck.html?old=1'), env);
-  const oldMain = await worker.fetch(new Request('https://mintresearch.org/should-we-build-agi/deck.html'), env);
-  const oldHub = await worker.fetch(new Request('https://mintresearch.org/agif/'), env);
   assert.equal(legacy.status, 308);
   assert.equal(legacy.headers.get('location'), 'https://fellowship.mintresearch.org/day-3/?old=1');
-  assert.equal(oldMain.headers.get('location'), 'https://fellowship.mintresearch.org/day-1/');
-  assert.equal(oldHub.headers.get('location'), 'https://fellowship.mintresearch.org/');
 });
 
 test('robots indexes only the public overview and unknown hosts fail closed', async () => {
