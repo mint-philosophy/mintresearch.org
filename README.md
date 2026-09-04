@@ -153,10 +153,23 @@ hidden. Worker code, tests, deployment configuration, and the exact-IP caveat
 live in `agi-editor-worker/`. The client uses the custom domain first, with the
 Worker's `workers.dev` address and a second custom domain as DNS fallbacks.
 
-Keep deck code isolated inside its iframe so deck-specific keyboard controls,
-scaling, styles, and animations cannot conflict with the site shell. The deck
-sources remain `noindex`; only the branded wrapper routes are canonical and
-indexable. The shell now exposes empty banner and navigation mounts; the shared
+The two AGI Governance Fellowship teaching decks also have deliberately
+unlisted canonical subdomains. `agif1.mintresearch.org` serves the existing
+interactive `/should-we-build-agi/` deck, while `agif2.mintresearch.org` serves
+the 34-slide Day 2 PowerPoint render under `public/agif2/`. The second deck is a
+source-faithful web compilation: its responsive shell paginates the actual 34
+saved slides while preserving the counters printed inside the PowerPoint.
+`agif-router-worker/` maps both exact hosts to their static paths and adds an
+HTTP `X-Robots-Tag`; both HTML sources also carry full `noindex` directives.
+Neither hostname nor backing route belongs in navigation or the sitemap. Run
+`npm run check:agif-presentations` and `npm --prefix agif-router-worker test`
+before publishing either deck or changing the routing Worker.
+
+For the four shell-backed presentations listed above, keep deck code isolated
+inside its iframe so deck-specific keyboard controls, scaling, styles, and
+animations cannot conflict with the site shell. Their deck sources remain
+`noindex`; only their branded wrapper routes are canonical and indexable. The
+shell now exposes empty banner and navigation mounts; the shared
 assets populate both. Do not reintroduce a navigation array, Minty image list,
 or banner measurement in `presentation-shell.js`. `npm run check:contracts`
 verifies the canonical contract and every served integration mount.
