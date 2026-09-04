@@ -30,7 +30,12 @@ const [
   fellowshipDay1,
   fellowshipDay2,
   fellowshipDay3,
+  fellowshipProjects,
   fellowshipShell,
+  projectsDeck,
+  projectsCss,
+  projectsJs,
+  projectsPretext,
 ] = await Promise.all([
   read('public/should-we-build-agi/index.html'),
   read('agif-router-worker/site-assets/should-we-build-agi/deck.html'),
@@ -56,7 +61,12 @@ const [
   read('agif-router-worker/site-assets/fellowship/day-1/index.html'),
   read('agif-router-worker/site-assets/fellowship/day-2/index.html'),
   read('agif-router-worker/site-assets/fellowship/day-3/index.html'),
+  read('agif-router-worker/site-assets/fellowship/projects/index.html'),
   read('agif-router-worker/site-assets/assets/fellowship-shell.js'),
+  read('agif-router-worker/site-assets/projects/deck.html'),
+  read('agif-router-worker/site-assets/projects/deck.css'),
+  read('agif-router-worker/site-assets/projects/deck.js'),
+  read('agif-router-worker/site-assets/projects/pretext-layout.js'),
 ]);
 
 assert.match(day1Wrapper, noIndex, 'Day 1 framed page must remain noindex');
@@ -103,6 +113,25 @@ assert.doesNotMatch(
   'Day 3 public assets must not contain speaker-note data or editor payload',
 );
 
+assert.match(fellowshipProjects, noIndex, 'Projects framed page must remain noindex');
+assert.match(projectsDeck, noIndex, 'Projects deck must remain noindex');
+assert.match(fellowshipProjects, /https:\/\/fellowship\.mintresearch\.org\/projects\//, 'Projects wrapper must use its protected Fellowship route');
+assert.match(projectsDeck, /https:\/\/fellowship\.mintresearch\.org\/projects\//, 'Projects deck canonical must point to its protected Fellowship page');
+assert.match(fellowshipProjects, /src="deck\.html\?v=[^"]+"/, 'Projects wrapper must load its versioned deck');
+assert.match(projectsDeck, /href="deck\.css\?v=[^"]+"/, 'Projects deck must load its versioned CSS');
+assert.match(projectsDeck, /src="deck\.js\?v=[^"]+"/, 'Projects deck must load its static navigation');
+assert.match(projectsDeck, /src="pretext-layout\.js\?v=[^"]+"/, 'Projects deck must load its Pretext layout pass');
+assert.equal((projectsDeck.match(/<section class="slide\b/g) || []).length, 9, 'Projects must expose all 9 source slides');
+assert.equal((projectsDeck.match(/aria-label="Slide \d+ of 9:/g) || []).length, 9, 'every Projects slide needs navigation metadata');
+assert.equal((projectsDeck.match(/data-sid="projects-[^"]+"/g) || []).length, 9, 'every Projects slide needs a stable source identifier');
+assert.match(projectsDeck, /id="slideCounter">1 \/ 9/, 'Projects counter must use the real slide total');
+assert.equal((projectsDeck.match(/class="ticker-cycle"/g) || []).length, 2, 'Projects ticker must contain two seamless cycles');
+assert.doesNotMatch(
+  [fellowshipProjects, projectsDeck, projectsCss, projectsJs, projectsPretext].join('\n'),
+  /speaker-notes|Speaker notes|notes(?:Drawer|Body|Toggle|Close)|notes-(?:drawer|close|empty|toggle|body)|nav-notes|ppt\/notesSlides|Seth, 24 Aug|Sources:/i,
+  'Projects public assets must not contain speaker-note data, controls, or source-only notes',
+);
+
 function slideMarkup(deck, slideNumber, total) {
   const marker = `aria-label="Slide ${slideNumber} of ${total}:`;
   const markerIndex = deck.indexOf(marker);
@@ -122,13 +151,17 @@ assert.match(day2Slide7, /class="slide slide-single"/, 'Day 2 slide 7 must use t
 assert.equal((day2Slide7.match(/class="split-panel\b/g) || []).length, 1, 'Day 2 slide 7 must contain only its left panel');
 assert.doesNotMatch(day2Slide7, /ecological metaphor|invasive species/i, 'Day 2 slide 7 must not retain the following-day metaphor');
 
-for (const [label, css] of [['Day 1', day1Css], ['Day 2', day2Css], ['Day 3', day3Css]]) {
+for (const [label, css] of [['Day 1', day1Css], ['Day 2', day2Css], ['Day 3', day3Css], ['Projects', projectsCss]]) {
   assert.match(css, /animation:\s*ticker 42s linear infinite;/, `${label} ticker must scroll continuously`);
   assert.match(css, /to\s*\{\s*transform:\s*translateX\(-50%\)/, `${label} ticker must loop over one cycle`);
   assert.doesNotMatch(css, /infinite alternate/, `${label} ticker must not reverse direction`);
 }
 assert.match(day3Css, /\.ticker-track\s*\{[^}]*flex:\s*0 0 auto/s, 'Day 3 ticker track must not shrink below the two-cycle width');
 assert.match(day3Css, /\.ticker-cycle\s*\{[^}]*min-width:\s*100vw/s, 'Day 3 ticker cycles must each cover the viewport');
+assert.match(projectsCss, /\.ticker-track\s*\{[^}]*flex:\s*0 0 auto/s, 'Projects ticker track must not shrink below the two-cycle width');
+assert.match(projectsCss, /\.ticker-cycle\s*\{[^}]*min-width:\s*100vw/s, 'Projects ticker cycles must each cover the viewport');
+assert.match(projectsCss, /--blue:\s*#2f6b4f/, 'Projects must use its forest-green accent');
+assert.doesNotMatch(projectsCss, /--blue:\s*(?:#2456a6|#74445b|#a8432a)/, 'Projects accent must differ from the three day decks');
 
 assert.match(day2Pretext, /@chenglou\/pretext@0\.0\.8/, 'Day 2 must pin the same Pretext release as Day 1');
 assert.match(day2Pretext, /prepareWithSegments/, 'Day 2 must prepare measured text');
@@ -136,6 +169,9 @@ assert.match(day2Pretext, /layoutWithLines/, 'Day 2 must lay out measured lines'
 assert.match(day3Pretext, /@chenglou\/pretext@0\.0\.8/, 'Day 3 must pin the same Pretext release as Days 1 and 2');
 assert.match(day3Pretext, /prepareWithSegments/, 'Day 3 must prepare measured text');
 assert.match(day3Pretext, /layoutWithLines/, 'Day 3 must lay out measured lines');
+assert.match(projectsPretext, /@chenglou\/pretext@0\.0\.8/, 'Projects must pin the same Pretext release as the day decks');
+assert.match(projectsPretext, /prepareWithSegments/, 'Projects must prepare measured text');
+assert.match(projectsPretext, /layoutWithLines/, 'Projects must lay out measured lines');
 assert.match(day2Css, /height:\s*100dvh/, 'Day 2 must account for mobile browser chrome');
 assert.match(day2Css, /@media \(max-width: 900px\) and \(orientation: portrait\)/, 'Day 2 must have readable portrait layouts');
 assert.match(day2Css, /@media \(max-height: 600px\) and \(orientation: landscape\)/, 'Day 2 must have short-landscape layouts');
@@ -148,6 +184,11 @@ assert.match(day3Css, /@media \(max-height: 600px\) and \(orientation: landscape
 assert.match(day3Css, /prefers-reduced-motion/, 'Day 3 must respect reduced motion');
 assert.match(day3Css, /\.slide\s*\{[^}]*overflow:\s*auto/s, 'Day 3 slides must allow readable fallback scrolling');
 assert.match(day3Css, /\.table-scroll[^}]*overflow:\s*auto/s, 'Day 3 tables must remain independently scrollable');
+assert.match(projectsCss, /height:\s*100dvh/, 'Projects must account for mobile browser chrome');
+assert.match(projectsCss, /@media \(max-width: 900px\) and \(orientation: portrait\)/, 'Projects must have readable portrait layouts');
+assert.match(projectsCss, /@media \(max-height: 600px\) and \(orientation: landscape\)/, 'Projects must have short-landscape layouts');
+assert.match(projectsCss, /prefers-reduced-motion/, 'Projects must respect reduced motion');
+assert.match(projectsCss, /\.slide\s*\{[^}]*overflow:\s*auto/s, 'Projects slides must allow readable fallback scrolling');
 
 for (const token of ['ArrowRight', 'ArrowLeft', 'touchstart', 'touchend', '#slide-']) {
   assert.ok(day2Js.includes(token), `Day 2 navigation must include ${token}`);
@@ -158,6 +199,11 @@ for (const token of ['ArrowRight', 'ArrowLeft', 'touchstart', 'touchend', '#slid
   assert.ok(day3Js.includes(token), `Day 3 static navigation must include ${token}`);
 }
 assert.match(day3Js, /closest\('\.table-scroll, \.ledger-scroll/, 'Day 3 swipe navigation must not claim table gestures');
+
+for (const token of ['ArrowRight', 'ArrowLeft', 'touchstart', 'touchend', '#slide-']) {
+  assert.ok(projectsJs.includes(token), `Projects static navigation must include ${token}`);
+}
+assert.match(projectsJs, /closest\('\.table-scroll, \.ledger-scroll/, 'Projects swipe navigation must not claim nested scrolling gestures');
 
 const fellowshipRoutes = [
   ['agif1.mintresearch.org', '/should-we-build-agi/', '/day-1/'],
@@ -175,7 +221,11 @@ for (const [host, oldRoute, protectedRoute] of fellowshipRoutes) {
   assert.ok(!sitemap.includes(host), `${host} must remain outside the sitemap`);
 }
 
-for (const [day, wrapper] of [['day-1', fellowshipDay1], ['day-2', fellowshipDay2], ['day-3', fellowshipDay3]]) {
+assert.ok(fellowshipHub.includes('href="/projects/"'), 'Projects must be reachable from the public Fellowship hub');
+assert.ok(fellowshipShell.includes("{ id: 'projects', label: 'Projects', href: '/projects/' }"), 'Projects must appear in the Fellowship slide navigation');
+assert.ok(router.includes("'/projects': '/projects'"), 'the Worker must gate and serve the Projects route');
+
+for (const [day, wrapper] of [['day-1', fellowshipDay1], ['day-2', fellowshipDay2], ['day-3', fellowshipDay3], ['projects', fellowshipProjects]]) {
   assert.match(wrapper, noIndex, `${day} Fellowship wrapper must remain noindex`);
   assert.match(wrapper, new RegExp(`https://fellowship\\.mintresearch\\.org/${day}/`), `${day} wrapper must use the Fellowship canonical URL`);
   assert.match(wrapper, /\/assets\/fellowship-shell\.js\?v=/, `${day} wrapper must load the Fellowship navigation shell`);
@@ -189,6 +239,7 @@ assert.match(fellowshipShell, /aria-label="Fellowship navigation"/, 'the slide s
 assert.match(fellowshipShell, /presentation-mode/, 'the Fellowship slide shell must preserve the expand and restore control');
 assert.match(legacyHub, /https:\/\/fellowship\.mintresearch\.org\//, 'the old main-site hub must point to the new canonical host');
 assert.equal(existsSync('public/fellowship'), false, 'the protected Fellowship tree must not be published by GitHub Pages');
+assert.equal(existsSync('public/projects'), false, 'Projects must not be published by GitHub Pages');
 for (const [path, destination] of [
   ['public/should-we-build-agi/deck.html', 'day-1'],
   ['public/agi-institutions/deck.html', 'day-2'],
@@ -209,4 +260,4 @@ assert.match(router, /HttpOnly; Secure; SameSite=Strict/, 'the Fellowship sessio
 assert.match(router, /X-Robots-Tag/, 'protected presentation routes must add an HTTP noindex directive');
 assert.doesNotMatch(router, /test-only-password|Minty-[A-Za-z0-9_-]{12,}/, 'the production Worker source must not contain a password');
 
-console.log('AGI Fellowship presentation contract OK: open dedicated hub, three isolated password-gated noindex Pretext decks (17/35/8 slides), IP bypass, and content-free redirects from the retired Pages routes.');
+console.log('AGI Fellowship presentation contract OK: open dedicated hub, four isolated password-gated noindex Pretext decks (17/35/8/9 slides), IP bypass, and content-free redirects from the retired Pages routes.');

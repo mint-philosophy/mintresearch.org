@@ -6,7 +6,8 @@
   var days = [
     { id: 'day-1', label: 'Day 1', href: '/day-1/' },
     { id: 'day-2', label: 'Day 2', href: '/day-2/' },
-    { id: 'day-3', label: 'Day 3', href: '/day-3/' }
+    { id: 'day-3', label: 'Day 3', href: '/day-3/' },
+    { id: 'projects', label: 'Projects', href: '/projects/' }
   ];
   var dayLinks = days.map(function (day, index) {
     var marker = index === days.length - 1 ? '└──' : '├──';

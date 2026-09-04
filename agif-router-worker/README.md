@@ -1,7 +1,8 @@
 # AGI Governance Fellowship site
 
 This Cloudflare Worker serves `fellowship.mintresearch.org` with a public
-overview and a shared-password gate around the three presentation routes. The
+overview and a shared-password gate around four presentation routes: Day 1,
+Day 2, Day 3, and Projects. The
 password and the optional IP bypass list are Worker secrets; neither value is
 stored in this repository. A successful password login creates a secure,
 HTTP-only, twelve-hour session cookie.

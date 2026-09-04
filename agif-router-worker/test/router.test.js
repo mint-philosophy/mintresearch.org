@@ -31,17 +31,17 @@ test('the Fellowship overview is public and served from the dedicated shell', as
   assert.equal(response.headers.get('x-robots-tag'), null);
 });
 
-test('protected day routes redirect to the password form', async () => {
-  const response = await worker.fetch(request('/day-2/?from=hub'), environment());
+test('protected presentation routes redirect to the password form', async () => {
+  const response = await worker.fetch(request('/projects/?from=hub'), environment());
   assert.equal(response.status, 303);
   assert.equal(
     response.headers.get('location'),
-    'https://fellowship.mintresearch.org/login?next=%2Fday-2%2F%3Ffrom%3Dhub',
+    'https://fellowship.mintresearch.org/login?next=%2Fprojects%2F%3Ffrom%3Dhub',
   );
   assert.match(response.headers.get('x-robots-tag'), /noindex/);
 });
 
-test('a correct password creates a secure session that opens every day', async () => {
+test('a correct password creates a secure session that opens every presentation', async () => {
   const login = await worker.fetch(request('/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -56,9 +56,11 @@ test('a correct password creates a secure session that opens every day', async (
 
   const cookie = setCookie.split(';', 1)[0];
   const day1 = await worker.fetch(request('/day-1/', { headers: { Cookie: cookie } }), environment());
-  const day3Asset = await worker.fetch(request('/day-3/deck.css', { headers: { Cookie: cookie } }), environment());
+  const projects = await worker.fetch(request('/projects/', { headers: { Cookie: cookie } }), environment());
+  const projectsAsset = await worker.fetch(request('/projects/deck.css', { headers: { Cookie: cookie } }), environment());
   assert.equal(await day1.text(), 'asset:/fellowship/day-1/index.html');
-  assert.equal(await day3Asset.text(), 'asset:/societal-adaptation/deck.css');
+  assert.equal(await projects.text(), 'asset:/fellowship/projects/index.html');
+  assert.equal(await projectsAsset.text(), 'asset:/projects/deck.css');
   assert.match(day1.headers.get('x-robots-tag'), /noindex/);
   assert.equal(day1.headers.get('cache-control'), 'private, no-store');
 });
@@ -75,11 +77,11 @@ test('an incorrect password is rejected without a session cookie', async () => {
 });
 
 test('the configured IP bypasses the password gate', async () => {
-  const response = await worker.fetch(request('/day-2/deck.html', {
+  const response = await worker.fetch(request('/projects/deck.html', {
     headers: { 'CF-Connecting-IP': '203.0.113.8' },
   }), environment());
   assert.equal(response.status, 200);
-  assert.equal(await response.text(), 'asset:/agi-institutions/deck.html');
+  assert.equal(await response.text(), 'asset:/projects/deck.html');
 });
 
 test('legacy subdomains redirect to the protected Fellowship pages', async () => {
@@ -94,6 +96,7 @@ test('robots indexes only the public overview and unknown hosts fail closed', as
   const robots = await worker.fetch(request('/robots.txt'), env);
   const robotsText = await robots.text();
   assert.match(robotsText, /Disallow: \/day-1\//);
+  assert.match(robotsText, /Disallow: \/projects\//);
   assert.match(robotsText, /Sitemap: https:\/\/fellowship\.mintresearch\.org\/sitemap\.xml/);
 
   const unknown = await worker.fetch(new Request('https://example.com/'), env);
