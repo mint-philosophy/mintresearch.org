@@ -28,9 +28,12 @@ for (const [name, html] of [['wrapper', wrapper], ['deck', deck]]) {
 assert.equal((deck.match(/<section class="slide\b/g) || []).length, 17, 'deck must contain 17 slides');
 assert.equal((deck.match(/aria-label="Slide \d+ of 17:/g) || []).length, 17, 'every slide needs an accessible label');
 assert.match(deck, /<section class="slide slide-plan" data-section="Introduction" data-name="The plan" aria-label="Slide 6 of 17: The plan">/, 'the plan slide must close the introduction as slide 6');
-assert.equal((deck.match(/class="plan-button" data-go="/g) || []).length, 4, 'the plan slide must list the four remaining sections');
+assert.equal((deck.match(/class="plan-button" role="button" tabindex="0" data-go="/g) || []).length, 4, 'the plan slide must list the four remaining sections as editable role=button items');
+assert.doesNotMatch(deck, /<button[^>]*class="plan-button"/, 'plan items must not be native buttons, or their text cannot be edited inline');
+assert.match(deckScript, /getAttribute\('role'\) === 'button'[\s\S]*?event\.key === 'Enter' \|\| event\.key === ' '/, 'role=button plan items must respond to Enter and Space when not editing');
+assert.match(deckScript, /addEventListener\('keydown', \(event\) => \{\n    if \(document\.querySelector\('\.reason-dialog\[open\]'\)\) return;\n    if \(document\.documentElement\.dataset\.editorMode === 'editing'\) return;/, 'keyboard navigation must stand down while editing');
 for (const [target, label] of [['6', 'Quick definitions'], ['9', 'Freedom &amp; justification'], ['15', 'Uncertainty &amp; agency'], ['16', 'Your task']]) {
-  assert.match(deck, new RegExp(`<button type="button" class="plan-button" data-go="${target}">(?:(?!</button>)[\\s\\S])*?<span class="plan-label" data-pretext>${label}</span>`), `plan item ${label} must jump to slide index ${target}`);
+  assert.match(deck, new RegExp(`<div class="plan-button" role="button" tabindex="0" data-go="${target}">(?:(?!</div>)[\\s\\S])*?<span class="plan-label" data-pretext>${label}</span>`), `plan item ${label} must jump to slide index ${target}`);
   assert.match(deck, new RegExp(`<button type="button" class="ticker-link" data-go="${target}">${label}</button>`), `ticker ${label} must agree with the plan slide`);
 }
 assert.match(editor, /'\.plan-number',/, 'plan numbers must stay out of the inline editor');
@@ -111,9 +114,9 @@ assert.doesNotMatch(editor, /ALLOWED_IPS|CF-Connecting-IP/, 'the client bundle m
 assert.doesNotMatch(editor, /element\.closest\('\[aria-hidden="true"\]'\)/, 'inactive slides must remain represented in the editable field map');
 assert.match(css, /html\[data-editor-mode="editing"\] \[data-editor-key\]/, 'edit mode must visibly identify editable text');
 assert.match(css, /@media \(max-width: 600px\) and \(orientation: portrait\)[\s\S]*\.ledger-table thead th:first-child \{ width: 40%; \}[\s\S]*\.ledger-table tbody th \{ padding-inline: 10px; font-size: 12px; white-space: nowrap; \}/, 'phone ledger labels must remain inside the first column divider');
-assert.match(wrapper, /deck\.html\?v=20260903\.1/, 'wrapper must cache-bust the plan slide');
-assert.match(deck, /deck\.css\?v=20260903\.1/, 'deck must cache-bust plan slide styling');
-assert.match(deck, /deck\.js\?v=20260903\.1/, 'deck must cache-bust edit-aware plan links');
+assert.match(wrapper, /deck\.html\?v=20260903\.2/, 'wrapper must cache-bust the plan slide');
+assert.match(deck, /deck\.css\?v=20260903\.2/, 'deck must cache-bust plan slide styling');
+assert.match(deck, /deck\.js\?v=20260903\.2/, 'deck must cache-bust edit-aware plan links');
 assert.match(deck, /inline-editor\.js\?v=20260903\.1/, 'deck must load the editor that excludes plan numbers');
 assert.match(deck, /pretext-layout\.js\?v=20260903\.1/, 'deck must cache-bust Pretext layout for the plan slide');
 assert.equal((css.match(/\.ledger-table \{ min-width: 0;/g) || []).length, 2, 'ledger must fit responsive portrait and short-landscape frames without horizontal scrolling');
