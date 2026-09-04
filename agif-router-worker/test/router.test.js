@@ -30,22 +30,38 @@ test('Day 1 root serves the existing interactive deck and preserves the query', 
   }
 });
 
-test('Day 2 paths map beneath its static origin directory', async () => {
+test('Day 2 root and paths map to Fable’s native Pretext deck', async () => {
   let seen;
   const restore = withMockFetch(async (request) => {
     seen = request;
-    return new Response('png', { headers: { 'Content-Type': 'image/png' } });
+    return new Response('<!doctype html>', { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
   });
 
   try {
-    const request = new Request('https://agif2.mintresearch.org/slides/slide-8.png', {
+    const request = new Request('https://agif2.mintresearch.org/deck.html?v=14', {
       headers: { Range: 'bytes=0-99' },
     });
     const response = await worker.fetch(request);
-    assert.equal(seen.url, 'https://mintresearch.org/agif2/slides/slide-8.png');
+    assert.equal(seen.url, 'https://mintresearch.org/agi-institutions/deck.html?v=14');
     assert.equal(seen.headers.get('range'), 'bytes=0-99');
-    assert.equal(response.headers.get('content-type'), 'image/png');
+    assert.equal(response.headers.get('content-type'), 'text/html; charset=utf-8');
+    assert.equal(response.headers.get('cache-control'), 'no-cache');
     assert.match(response.headers.get('x-robots-tag'), /noimageindex/);
+  } finally {
+    restore();
+  }
+});
+
+test('Day 2 root serves its standalone deck', async () => {
+  let seen;
+  const restore = withMockFetch(async (request) => {
+    seen = request;
+    return new Response('<!doctype html>', { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+  });
+
+  try {
+    await worker.fetch(new Request('https://agif2.mintresearch.org/'));
+    assert.equal(seen.url, 'https://mintresearch.org/agi-institutions/deck.html');
   } finally {
     restore();
   }

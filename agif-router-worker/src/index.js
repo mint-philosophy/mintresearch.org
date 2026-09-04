@@ -7,8 +7,8 @@ const sites = {
     entryPath: '/should-we-build-agi/deck.html',
   },
   'agif2.mintresearch.org': {
-    basePath: '/agif2',
-    entryPath: '/agif2/',
+    basePath: '/agi-institutions',
+    entryPath: '/agi-institutions/deck.html',
   },
 };
 
@@ -24,6 +24,9 @@ function responseHeaders(source) {
   const headers = new Headers(source);
   headers.set('X-Robots-Tag', NO_INDEX);
   headers.set('X-Content-Type-Options', 'nosniff');
+  if (headers.get('Content-Type')?.toLowerCase().includes('text/html')) {
+    headers.set('Cache-Control', 'no-cache');
+  }
   return headers;
 }
 

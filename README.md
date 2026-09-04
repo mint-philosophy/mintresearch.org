@@ -156,9 +156,9 @@ Worker's `workers.dev` address and a second custom domain as DNS fallbacks.
 The two AGI Governance Fellowship teaching decks also have deliberately
 unlisted canonical subdomains. `agif1.mintresearch.org` serves the existing
 interactive `/should-we-build-agi/` deck, while `agif2.mintresearch.org` serves
-the 34-slide Day 2 PowerPoint render under `public/agif2/`. The second deck is a
-source-faithful web compilation: its responsive shell paginates the actual 34
-saved slides while preserving the counters printed inside the PowerPoint.
+Fable's native 35-slide HTML/Pretext Day 2 deck under
+`public/agi-institutions/`. Day 2 retains its source statements in a speaker
+notes drawer and uses the same responsive reflow approach as Day 1.
 `agif-router-worker/` maps both exact hosts to their static paths and adds an
 HTTP `X-Robots-Tag`; both HTML sources also carry full `noindex` directives.
 Neither hostname nor backing route belongs in navigation or the sitemap. Run
