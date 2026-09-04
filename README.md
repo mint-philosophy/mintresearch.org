@@ -95,8 +95,8 @@ automatically for an active child, and uses an accessible disclosure button:
 - `Papers`: `https://blindrefusal.mintresearch.org/` and
   `https://coherence.mintresearch.org/`
 - `Resources`: `/governing-with-agents/` and `/ai-culture/`
-- `AGI Governance Fellowship`: `/agif/` plus the three framed main-site
-  teaching decks
+- `AGI Governance Fellowship`: `/agif/` only; the three teaching decks are
+  intentionally absent from primary navigation
 
 Only add maintained, intentionally public project microsites. A presentation
 leaf may remain `noindex` while still being linked for participants. Do not
@@ -137,8 +137,9 @@ public/societal-adaptation/index.html  -> public/societal-adaptation/deck.html
 ```
 
 All six use the same shell and responsive fitting contract. The first three are
-listed under `Talks`; the Fellowship presentations are listed under
-`AGI Governance Fellowship`. Every wrapper is in the sitemap.
+listed under `Talks`. The Fellowship branch links only to `/agif/`; its three
+presentation wrappers remain `noindex` and outside primary navigation and the
+sitemap.
 
 `/should-we-build-agi/` is the canonical framed Day 1 page. Its isolated,
 `noindex` deck loads an inline text editor from
@@ -170,11 +171,12 @@ is Fable's native 35-slide HTML/Pretext deck, and Day 3 is the native 8-slide
 artifacts exclude their private source notes and editor payloads and use the
 same responsive reflow and static navigation approach as Day 1.
 The wrappers retain the full MINT site chrome and presentation-mode control;
-the isolated `deck.html` files remain `noindex`. The Fellowship sidebar and
-indexable `/agif/` overview link to the wrappers, and all three wrapper routes
-are in the sitemap. `agif-router-worker/` retains the former `agif1`, `agif2`,
-and `agif3` hosts only as permanent redirects to the framed pages, with an HTTP
-`X-Robots-Tag`; the old hosts no longer proxy standalone decks. Run
+both the wrappers and isolated `deck.html` files remain `noindex`. The
+indexable `/agif/` overview links to the wrappers, while the three day routes
+stay outside primary navigation and the sitemap. `agif-router-worker/` retains
+the former `agif1`, `agif2`, and `agif3` hosts only as permanent redirects to
+the framed pages, with an HTTP `X-Robots-Tag`; the old hosts no longer proxy
+standalone decks. Run
 `npm run check:agif-presentations` and
 `npm --prefix agif-router-worker test` before publishing any Fellowship deck or
 changing the routing Worker.

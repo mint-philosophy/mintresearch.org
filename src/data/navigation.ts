@@ -124,9 +124,6 @@ export const siteNav: PageNav[] = [
     groupOnly: true,
     sections: [
       { href: "/agif/", label: "Overview" },
-      { href: "/should-we-build-agi/", label: "Day 1 — Should We Build AGI?" },
-      { href: "/agi-institutions/", label: "Day 2 — AGI Institutions" },
-      { href: "/societal-adaptation/", label: "Day 3 — Resilience and Adaptation" },
     ],
   },
   {

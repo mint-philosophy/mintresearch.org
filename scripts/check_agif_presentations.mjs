@@ -23,6 +23,7 @@ const [
   routerConfig,
   nav,
   sitemap,
+  hub,
   editorConfig,
 ] = await Promise.all([
   read('public/should-we-build-agi/index.html'),
@@ -43,10 +44,11 @@ const [
   read('agif-router-worker/wrangler.toml'),
   read('public/assets/mint-site-nav.v1.js'),
   read('public/sitemap.xml'),
+  read('public/agif/index.html'),
   read('agi-editor-worker/wrangler.toml'),
 ]);
 
-assert.doesNotMatch(day1Wrapper, noIndex, 'Day 1 framed page must be indexable');
+assert.match(day1Wrapper, noIndex, 'Day 1 framed page must remain noindex');
 assert.match(day1Deck, noIndex, 'Day 1 deck must remain noindex');
 assert.match(day1Wrapper, /https:\/\/mintresearch\.org\/should-we-build-agi\//, 'Day 1 canonical must use its framed main-site route');
 assert.match(day1Deck, /https:\/\/mintresearch\.org\/should-we-build-agi\//, 'Day 1 deck canonical must point to its framed page');
@@ -54,7 +56,7 @@ assert.match(day1Deck, /pretext-layout\.js/, 'Day 1 must retain its Pretext layo
 assert.match(editorConfig, /https:\/\/agif1\.mintresearch\.org/, 'Day 1 editor must allow the canonical origin');
 assert.equal((day1Deck.match(/class="ticker-cycle"/g) || []).length, 2, 'Day 1 ticker must contain two seamless cycles');
 
-assert.doesNotMatch(day2Wrapper, noIndex, 'Day 2 framed page must be indexable');
+assert.match(day2Wrapper, noIndex, 'Day 2 framed page must remain noindex');
 assert.match(day2Deck, noIndex, 'Day 2 deck must remain noindex');
 assert.match(day2Wrapper, /https:\/\/mintresearch\.org\/agi-institutions\//, 'Day 2 canonical must use its framed main-site route');
 assert.match(day2Deck, /https:\/\/mintresearch\.org\/agi-institutions\//, 'Day 2 deck canonical must point to its framed page');
@@ -71,7 +73,7 @@ assert.doesNotMatch(day2Deck, /<script[^>]+inline-editor\.js/, 'Day 2 must not c
 assert.match(day2Deck, /id="slideCounter">1 \/ 35/, 'Day 2 counter must use the real slide total');
 assert.equal((day2Deck.match(/class="ticker-cycle"/g) || []).length, 2, 'Day 2 ticker must contain two seamless cycles');
 
-assert.doesNotMatch(day3Wrapper, noIndex, 'Day 3 framed page must be indexable');
+assert.match(day3Wrapper, noIndex, 'Day 3 framed page must remain noindex');
 assert.match(day3Deck, noIndex, 'Day 3 deck must remain noindex');
 assert.match(day3Wrapper, /https:\/\/mintresearch\.org\/societal-adaptation\//, 'Day 3 canonical must use its framed main-site route');
 assert.match(day3Deck, /https:\/\/mintresearch\.org\/societal-adaptation\//, 'Day 3 deck canonical must point to its framed page');
@@ -155,9 +157,10 @@ const fellowshipRoutes = [
 for (const [host, route] of fellowshipRoutes) {
   assert.ok(router.includes(`'${host}'`), `router must recognize ${host}`);
   assert.ok(routerConfig.includes(`pattern = "${host}"`), `Worker must own ${host}`);
-  assert.equal(nav.split(route).length - 1, 1, `${route} must appear once in site navigation`);
   assert.ok(router.includes(`https://mintresearch.org${route}`), `${host} must redirect to ${route}`);
-  assert.ok(sitemap.includes(`<loc>https://mintresearch.org${route}</loc>`), `${route} must appear in the sitemap`);
+  assert.ok(hub.includes(`href="${route}"`), `${route} must remain reachable from the Fellowship hub`);
+  assert.ok(!nav.includes(route), `${route} must remain outside site navigation`);
+  assert.ok(!sitemap.includes(`<loc>https://mintresearch.org${route}</loc>`), `${route} must remain outside the sitemap`);
   assert.ok(!nav.includes(host), `${host} must not appear in site navigation`);
   assert.ok(!sitemap.includes(host), `${host} must remain outside the sitemap`);
 }
@@ -169,4 +172,4 @@ assert.match(router, /request\.method !== 'GET'.*request\.method !== 'HEAD'/s, '
 assert.match(router, /status:\s*308/, 'legacy subdomains must use permanent redirects');
 assert.doesNotMatch(router, /await\s+fetch\(|globalThis\.fetch|\bupstream(?:Path|Request)\b/, 'legacy subdomains must not proxy standalone deck content');
 
-console.log('AGI Fellowship presentation contract OK: three framed main-site pages, native Pretext decks (17/35/8 slides), and permanent legacy-subdomain redirects.');
+console.log('AGI Fellowship presentation contract OK: three noindex framed pages outside nav and sitemap, native Pretext decks (17/35/8 slides), and permanent legacy-subdomain redirects.');

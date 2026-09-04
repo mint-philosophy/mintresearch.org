@@ -71,6 +71,9 @@ for (const page of fallbackPages) {
   for (const label of ['Talks', 'Papers', 'Resources', 'AGI Governance Fellowship']) {
     assert.equal((html.match(new RegExp(`<summary class="nav-link nav-page nav-group"><span class="nav-mark">[▸▾]<\\/span> ${label}<\\/summary>`, 'g')) || []).length, 1, `${page} fallback must expose one ${label} disclosure`);
   }
+  for (const route of ['/should-we-build-agi/', '/agi-institutions/', '/societal-adaptation/']) {
+    assert.doesNotMatch(html, new RegExp(`<a class="nav-link nav-section" href="${route}"`), `${page} fallback navigation must omit ${route}`);
+  }
   assert.ok(!html.includes('Can Machines Reason Morally?'), `${page} fallback must not retain the retired talk`);
 }
 const aiCultureFallbackPages = [
@@ -215,7 +218,8 @@ assert.deepEqual(Array.from(groups, (item) => item.label), ['Talks', 'Papers', '
 assert.deepEqual(Array.from(groups.find((item) => item.id === 'talks').children, (item) => item.id), ['normative-competence', 'agi-policy-student', 'navigating-agi-reckoning'], 'Talks must contain only the three maintained presentations');
 assert.deepEqual(Array.from(groups.find((item) => item.id === 'papers').children, (item) => item.id), ['blind-refusal', 'incoherent-values'], 'Papers must contain the two paper microsites');
 assert.deepEqual(Array.from(groups.find((item) => item.id === 'resources').children, (item) => item.id), ['governing-with-agents', 'ai-culture'], 'Resources must contain the two curated collections');
-assert.deepEqual(Array.from(groups.find((item) => item.id === 'fellowship').children, (item) => item.id), ['agif-overview', 'agif-day-1', 'agif-day-2', 'agif-day-3'], 'Fellowship must contain its overview and three teaching days');
+assert.deepEqual(Array.from(groups.find((item) => item.id === 'fellowship').children, (item) => item.id), ['agif-overview'], 'Fellowship navigation must expose only its overview');
+assert.ok(!canonical.some((item) => ['agif-day-1', 'agif-day-2', 'agif-day-3'].includes(item.id)), 'no Fellowship teaching-day leaf may appear in primary navigation');
 assert.ok(!canonical.some((item) => item.id === 'microsites'), 'the crowded Microsites group must be retired');
 assert.ok(!canonical.some((item) => item.id === 'moral-reasoning' || item.href === '/lab-overview/'), 'the retired moral-reasoning talk must not remain in navigation');
 assert.ok(canonical.some((item) => item.id === 'governing-with-agents' && item.href === '/governing-with-agents/'), 'Governing with Agents must be listed under Resources');
@@ -290,7 +294,7 @@ for (const activeCase of [
   { groupId: 'talks', itemId: 'normative-competence', currentUrl: 'https://mintresearch.org/nc/' },
   { groupId: 'papers', itemId: 'blind-refusal', currentUrl: 'https://blindrefusal.mintresearch.org/' },
   { groupId: 'resources', itemId: 'governing-with-agents', currentUrl: 'https://mintresearch.org/governing-with-agents/' },
-  { groupId: 'fellowship', itemId: 'agif-day-2', currentUrl: 'https://mintresearch.org/agi-institutions/' }
+  { groupId: 'fellowship', itemId: 'agif-overview', currentUrl: 'https://mintresearch.org/agif/' }
 ]) {
   const activeMount = new FakeElement('div');
   api.render({ target: activeMount, currentUrl: activeCase.currentUrl });
