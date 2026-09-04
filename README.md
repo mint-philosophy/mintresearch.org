@@ -153,17 +153,26 @@ hidden. Worker code, tests, deployment configuration, and the exact-IP caveat
 live in `agi-editor-worker/`. The client uses the custom domain first, with the
 Worker's `workers.dev` address and a second custom domain as DNS fallbacks.
 
-The two AGI Governance Fellowship teaching decks also have deliberately
-unlisted canonical subdomains. `agif1.mintresearch.org` serves the existing
-interactive `/should-we-build-agi/` deck, while `agif2.mintresearch.org` serves
-Fable's native 35-slide HTML/Pretext Day 2 deck under
-`public/agi-institutions/`. Day 2 excludes its private source notes from the
-public payload and uses the same responsive reflow approach as Day 1.
-`agif-router-worker/` maps both exact hosts to their static paths and adds an
-HTTP `X-Robots-Tag`; both HTML sources also carry full `noindex` directives.
-Neither hostname nor backing route belongs in navigation or the sitemap. Run
-`npm run check:agif-presentations` and `npm --prefix agif-router-worker test`
-before publishing either deck or changing the routing Worker.
+The three AGI Governance Fellowship teaching decks have deliberately unlisted
+canonical subdomains:
+
+```text
+agif1.mintresearch.org -> public/should-we-build-agi/deck.html
+agif2.mintresearch.org -> public/agi-institutions/deck.html
+agif3.mintresearch.org -> public/societal-adaptation/deck.html
+```
+
+Day 1 is the existing interactive 17-slide `/should-we-build-agi/` deck. Day 2
+is Fable's native 35-slide HTML/Pretext deck, and Day 3 is the native 8-slide
+`Resilience and Adaptation` HTML/Pretext deck. The Day 2 and Day 3 public
+artifacts exclude their private source notes and editor payloads and use the
+same responsive reflow and static navigation approach as Day 1.
+`agif-router-worker/` maps all three exact hosts to their static paths and adds
+an HTTP `X-Robots-Tag`; every wrapper and standalone deck also carries the full
+`noindex` directive. None of the hostnames or backing routes belongs in
+navigation or the sitemap. Run `npm run check:agif-presentations` and
+`npm --prefix agif-router-worker test` before publishing any Fellowship deck or
+changing the routing Worker.
 
 For the four shell-backed presentations listed above, keep deck code isolated
 inside its iframe so deck-specific keyboard controls, scaling, styles, and

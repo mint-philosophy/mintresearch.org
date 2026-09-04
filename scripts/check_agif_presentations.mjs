@@ -14,6 +14,11 @@ const [
   day2Js,
   day2Pretext,
   day2Editor,
+  day3Wrapper,
+  day3Deck,
+  day3Css,
+  day3Js,
+  day3Pretext,
   router,
   routerConfig,
   nav,
@@ -29,6 +34,11 @@ const [
   read('public/agi-institutions/deck.js'),
   read('public/agi-institutions/pretext-layout.js'),
   read('public/agi-institutions/inline-editor.js'),
+  read('public/societal-adaptation/index.html'),
+  read('public/societal-adaptation/deck.html'),
+  read('public/societal-adaptation/deck.css'),
+  read('public/societal-adaptation/deck.js'),
+  read('public/societal-adaptation/pretext-layout.js'),
   read('agif-router-worker/src/index.js'),
   read('agif-router-worker/wrangler.toml'),
   read('public/assets/mint-site-nav.v1.js'),
@@ -61,6 +71,25 @@ assert.doesNotMatch(day2Deck, /<script[^>]+inline-editor\.js/, 'Day 2 must not c
 assert.match(day2Deck, /id="slideCounter">1 \/ 35/, 'Day 2 counter must use the real slide total');
 assert.equal((day2Deck.match(/class="ticker-cycle"/g) || []).length, 2, 'Day 2 ticker must contain two seamless cycles');
 
+assert.match(day3Wrapper, noIndex, 'Day 3 wrapper must remain noindex');
+assert.match(day3Deck, noIndex, 'Day 3 deck must remain noindex');
+assert.match(day3Wrapper, /https:\/\/agif3\.mintresearch\.org\//, 'Day 3 wrapper canonical must use agif3');
+assert.match(day3Deck, /https:\/\/agif3\.mintresearch\.org\//, 'Day 3 standalone canonical must use agif3');
+assert.match(day3Wrapper, /src="deck\.html\?v=[^"]+"/, 'Day 3 wrapper must load its versioned deck');
+assert.match(day3Deck, /href="deck\.css\?v=[^"]+"/, 'Day 3 deck must load its versioned CSS');
+assert.match(day3Deck, /src="deck\.js\?v=[^"]+"/, 'Day 3 deck must load its static navigation');
+assert.match(day3Deck, /src="pretext-layout\.js\?v=[^"]+"/, 'Day 3 deck must load its Pretext layout pass');
+assert.equal((day3Deck.match(/<section class="slide\b/g) || []).length, 8, 'Day 3 must expose all 8 source slides');
+assert.equal((day3Deck.match(/aria-label="Slide \d+ of 8:/g) || []).length, 8, 'every Day 3 slide needs navigation metadata');
+assert.equal((day3Deck.match(/data-sid="d3-[^"]+"/g) || []).length, 8, 'every Day 3 slide needs a stable source identifier');
+assert.match(day3Deck, /id="slideCounter">1 \/ 8/, 'Day 3 counter must use the real slide total');
+assert.equal((day3Deck.match(/class="ticker-cycle"/g) || []).length, 2, 'Day 3 ticker must contain two seamless cycles');
+assert.doesNotMatch(
+  [day3Wrapper, day3Deck, day3Css, day3Js, day3Pretext].join('\n'),
+  /speaker-notes|Speaker notes|notes(?:Drawer|Body|Toggle|Close)|notes-(?:drawer|close|empty|toggle|body)|nav-notes|inline-editor|artifact-editor|editorMode|__agiEditor|data-editor|slide-draft|draft-body|slide-hidden|slide-inserted|data-show-hidden|plan-grid-nine|slide-reasons-four/i,
+  'Day 3 public assets must not contain speaker-note data or editor payload',
+);
+
 function slideMarkup(deck, slideNumber, total) {
   const marker = `aria-label="Slide ${slideNumber} of ${total}:`;
   const markerIndex = deck.indexOf(marker);
@@ -80,28 +109,44 @@ assert.match(day2Slide7, /class="slide slide-single"/, 'Day 2 slide 7 must use t
 assert.equal((day2Slide7.match(/class="split-panel\b/g) || []).length, 1, 'Day 2 slide 7 must contain only its left panel');
 assert.doesNotMatch(day2Slide7, /ecological metaphor|invasive species/i, 'Day 2 slide 7 must not retain the following-day metaphor');
 
-for (const [label, css] of [['Day 1', day1Css], ['Day 2', day2Css]]) {
+for (const [label, css] of [['Day 1', day1Css], ['Day 2', day2Css], ['Day 3', day3Css]]) {
   assert.match(css, /animation:\s*ticker 42s linear infinite;/, `${label} ticker must scroll continuously`);
   assert.match(css, /to\s*\{\s*transform:\s*translateX\(-50%\)/, `${label} ticker must loop over one cycle`);
   assert.doesNotMatch(css, /infinite alternate/, `${label} ticker must not reverse direction`);
 }
+assert.match(day3Css, /\.ticker-track\s*\{[^}]*flex:\s*0 0 auto/s, 'Day 3 ticker track must not shrink below the two-cycle width');
+assert.match(day3Css, /\.ticker-cycle\s*\{[^}]*min-width:\s*100vw/s, 'Day 3 ticker cycles must each cover the viewport');
 
 assert.match(day2Pretext, /@chenglou\/pretext@0\.0\.8/, 'Day 2 must pin the same Pretext release as Day 1');
 assert.match(day2Pretext, /prepareWithSegments/, 'Day 2 must prepare measured text');
 assert.match(day2Pretext, /layoutWithLines/, 'Day 2 must lay out measured lines');
+assert.match(day3Pretext, /@chenglou\/pretext@0\.0\.8/, 'Day 3 must pin the same Pretext release as Days 1 and 2');
+assert.match(day3Pretext, /prepareWithSegments/, 'Day 3 must prepare measured text');
+assert.match(day3Pretext, /layoutWithLines/, 'Day 3 must lay out measured lines');
 assert.match(day2Css, /height:\s*100dvh/, 'Day 2 must account for mobile browser chrome');
 assert.match(day2Css, /@media \(max-width: 900px\) and \(orientation: portrait\)/, 'Day 2 must have readable portrait layouts');
 assert.match(day2Css, /@media \(max-height: 600px\) and \(orientation: landscape\)/, 'Day 2 must have short-landscape layouts');
 assert.match(day2Css, /prefers-reduced-motion/, 'Day 2 must respect reduced motion');
 assert.match(day2Css, /\.table-scroll[^}]*overflow:\s*auto/s, 'Day 2 tables must remain independently scrollable');
 assert.match(day2Css, /\.ledger-scroll[^}]*overflow:\s*auto/s, 'Day 2 ledger must remain independently scrollable');
+assert.match(day3Css, /height:\s*100dvh/, 'Day 3 must account for mobile browser chrome');
+assert.match(day3Css, /@media \(max-width: 900px\) and \(orientation: portrait\)/, 'Day 3 must have readable portrait layouts');
+assert.match(day3Css, /@media \(max-height: 600px\) and \(orientation: landscape\)/, 'Day 3 must have short-landscape layouts');
+assert.match(day3Css, /prefers-reduced-motion/, 'Day 3 must respect reduced motion');
+assert.match(day3Css, /\.slide\s*\{[^}]*overflow:\s*auto/s, 'Day 3 slides must allow readable fallback scrolling');
+assert.match(day3Css, /\.table-scroll[^}]*overflow:\s*auto/s, 'Day 3 tables must remain independently scrollable');
 
 for (const token of ['ArrowRight', 'ArrowLeft', 'touchstart', 'touchend', '#slide-']) {
   assert.ok(day2Js.includes(token), `Day 2 navigation must include ${token}`);
 }
 assert.match(day2Js, /closest\('\.table-scroll, \.ledger-scroll/, 'Day 2 swipe navigation must not claim table gestures');
 
-for (const host of ['agif1.mintresearch.org', 'agif2.mintresearch.org']) {
+for (const token of ['ArrowRight', 'ArrowLeft', 'touchstart', 'touchend', '#slide-']) {
+  assert.ok(day3Js.includes(token), `Day 3 static navigation must include ${token}`);
+}
+assert.match(day3Js, /closest\('\.table-scroll, \.ledger-scroll/, 'Day 3 swipe navigation must not claim table gestures');
+
+for (const host of ['agif1.mintresearch.org', 'agif2.mintresearch.org', 'agif3.mintresearch.org']) {
   assert.ok(router.includes(`'${host}'`), `router must recognize ${host}`);
   assert.ok(routerConfig.includes(`pattern = "${host}"`), `Worker must own ${host}`);
   assert.ok(!nav.includes(host), `${host} must remain outside site navigation`);
@@ -110,10 +155,11 @@ for (const host of ['agif1.mintresearch.org', 'agif2.mintresearch.org']) {
 assert.match(router, /X-Robots-Tag/, 'router must add an HTTP noindex directive');
 assert.match(router, /request\.method !== 'GET'.*request\.method !== 'HEAD'/s, 'router must reject write methods');
 assert.match(router, /\/agi-institutions\/deck\.html/, 'agif2 root must serve the native Day 2 deck');
+assert.match(router, /\/societal-adaptation\/deck\.html/, 'agif3 root must serve the native Day 3 deck');
 
-for (const route of ['/agi-institutions/', '/should-we-build-agi/']) {
+for (const route of ['/agi-institutions/', '/should-we-build-agi/', '/societal-adaptation/']) {
   assert.ok(!nav.includes(route), `${route} must remain outside site navigation`);
   assert.ok(!sitemap.includes(route), `${route} must remain outside the sitemap`);
 }
 
-console.log('AGI Fellowship presentation contract OK: two native Pretext decks, 17 Day 1 slides, 35 Day 2 slides, canonical subdomains, and noindex at page and edge.');
+console.log('AGI Fellowship presentation contract OK: three native Pretext decks, 17 Day 1 slides, 35 Day 2 slides, 8 Day 3 slides, canonical subdomains, and noindex at page and edge.');

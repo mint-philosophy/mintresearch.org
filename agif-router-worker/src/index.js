@@ -10,6 +10,10 @@ const sites = {
     basePath: '/agi-institutions',
     entryPath: '/agi-institutions/deck.html',
   },
+  'agif3.mintresearch.org': {
+    basePath: '/societal-adaptation',
+    entryPath: '/societal-adaptation/deck.html',
+  },
 };
 
 const sharedAsset = /^\/(?:assets\/|_astro\/|favicon(?:[-.])|apple-touch-icon\.png$)/;

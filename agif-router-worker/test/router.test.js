@@ -67,6 +67,46 @@ test('Day 2 root serves its standalone deck', async () => {
   }
 });
 
+test('Day 3 root serves its standalone deck', async () => {
+  let seen;
+  const restore = withMockFetch(async (request) => {
+    seen = request;
+    return new Response('<!doctype html>', { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+  });
+
+  try {
+    await worker.fetch(new Request('https://agif3.mintresearch.org/'));
+    assert.equal(seen.url, 'https://mintresearch.org/societal-adaptation/deck.html');
+  } finally {
+    restore();
+  }
+});
+
+test('Day 3 paths preserve query parameters and range requests', async () => {
+  let seen;
+  const restore = withMockFetch(async (request) => {
+    seen = request;
+    return new Response('asset', {
+      status: 206,
+      headers: { 'Content-Type': 'application/octet-stream', 'Content-Range': 'bytes 0-99/200' },
+    });
+  });
+
+  try {
+    const request = new Request('https://agif3.mintresearch.org/media/adaptation.mp4?v=day3', {
+      headers: { Range: 'bytes=0-99' },
+    });
+    const response = await worker.fetch(request);
+    assert.equal(seen.url, 'https://mintresearch.org/societal-adaptation/media/adaptation.mp4?v=day3');
+    assert.equal(seen.headers.get('range'), 'bytes=0-99');
+    assert.equal(response.status, 206);
+    assert.equal(response.headers.get('content-range'), 'bytes 0-99/200');
+    assert.match(response.headers.get('x-robots-tag'), /noindex/);
+  } finally {
+    restore();
+  }
+});
+
 test('shared root assets stay at the site origin root', async () => {
   let seen;
   const restore = withMockFetch(async (request) => {
@@ -92,9 +132,15 @@ test('the router is not an open proxy and accepts only read methods', async () =
   assert.equal(write.headers.get('allow'), 'GET, HEAD');
 });
 
-test('robots remains fetchable so crawlers can observe noindex headers', async () => {
-  const response = await worker.fetch(new Request('https://agif2.mintresearch.org/robots.txt'));
-  assert.equal(response.status, 200);
-  assert.equal(await response.text(), 'User-agent: *\nAllow: /\n');
-  assert.match(response.headers.get('x-robots-tag'), /noindex/);
+test('robots remains fetchable on every AGIF host so crawlers can observe noindex headers', async () => {
+  for (const host of [
+    'agif1.mintresearch.org',
+    'agif2.mintresearch.org',
+    'agif3.mintresearch.org',
+  ]) {
+    const response = await worker.fetch(new Request(`https://${host}/robots.txt`));
+    assert.equal(response.status, 200, host);
+    assert.equal(await response.text(), 'User-agent: *\nAllow: /\n', host);
+    assert.match(response.headers.get('x-robots-tag'), /noindex/, host);
+  }
 });
