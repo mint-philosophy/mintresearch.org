@@ -7,6 +7,7 @@ const noIndex = /noindex, nofollow, noarchive, nosnippet, noimageindex/;
 const [
   day1Wrapper,
   day1Deck,
+  day1Css,
   day2Wrapper,
   day2Deck,
   day2Css,
@@ -20,6 +21,7 @@ const [
 ] = await Promise.all([
   read('public/should-we-build-agi/index.html'),
   read('public/should-we-build-agi/deck.html'),
+  read('public/should-we-build-agi/deck.css'),
   read('public/agi-institutions/index.html'),
   read('public/agi-institutions/deck.html'),
   read('public/agi-institutions/deck.css'),
@@ -38,6 +40,7 @@ assert.match(day1Wrapper, /https:\/\/agif1\.mintresearch\.org\//, 'Day 1 canonic
 assert.match(day1Deck, /https:\/\/agif1\.mintresearch\.org\//, 'Day 1 standalone deck must use agif1');
 assert.match(day1Deck, /pretext-layout\.js/, 'Day 1 must retain its Pretext layout pass');
 assert.match(editorConfig, /https:\/\/agif1\.mintresearch\.org/, 'Day 1 editor must allow the canonical origin');
+assert.equal((day1Deck.match(/class="ticker-cycle"/g) || []).length, 2, 'Day 1 ticker must contain two seamless cycles');
 
 assert.match(day2Wrapper, noIndex, 'Day 2 wrapper must remain noindex');
 assert.match(day2Deck, noIndex, 'Day 2 deck must remain noindex');
@@ -51,6 +54,27 @@ assert.match(day2Deck, /pretext-layout\.js/, 'Day 2 must load its Pretext layout
 assert.doesNotMatch(day2Deck, /<script[^>]+inline-editor\.js/, 'Day 2 must not call the unregistered editor endpoint');
 assert.match(day2Deck, /id="notesDrawer"/, 'Day 2 must retain its speaker-notes drawer');
 assert.match(day2Deck, /id="slideCounter">1 \/ 35/, 'Day 2 counter must use the real slide total');
+assert.equal((day2Deck.match(/class="ticker-cycle"/g) || []).length, 2, 'Day 2 ticker must contain two seamless cycles');
+
+function slideMarkup(deck, slideNumber, total) {
+  const marker = `aria-label="Slide ${slideNumber} of ${total}:`;
+  const markerIndex = deck.indexOf(marker);
+  assert.notEqual(markerIndex, -1, `Slide ${slideNumber} must exist`);
+  const start = deck.lastIndexOf('<section class="slide', markerIndex);
+  const next = deck.indexOf('\n    <section class="slide', markerIndex);
+  return deck.slice(start, next === -1 ? deck.length : next);
+}
+
+for (const slideNumber of [7, 18, 31]) {
+  const slide = slideMarkup(day2Deck, slideNumber, 35);
+  assert.equal((slide.match(/class="section-index\b/g) || []).length, 1, `Day 2 slide ${slideNumber} must show its section label only on the left`);
+}
+
+for (const [label, css] of [['Day 1', day1Css], ['Day 2', day2Css]]) {
+  assert.match(css, /animation:\s*ticker 42s linear infinite;/, `${label} ticker must scroll continuously`);
+  assert.match(css, /to\s*\{\s*transform:\s*translateX\(-50%\)/, `${label} ticker must loop over one cycle`);
+  assert.doesNotMatch(css, /infinite alternate/, `${label} ticker must not reverse direction`);
+}
 
 assert.match(day2Pretext, /@chenglou\/pretext@0\.0\.8/, 'Day 2 must pin the same Pretext release as Day 1');
 assert.match(day2Pretext, /prepareWithSegments/, 'Day 2 must prepare measured text');

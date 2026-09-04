@@ -114,8 +114,8 @@ assert.doesNotMatch(editor, /ALLOWED_IPS|CF-Connecting-IP/, 'the client bundle m
 assert.doesNotMatch(editor, /element\.closest\('\[aria-hidden="true"\]'\)/, 'inactive slides must remain represented in the editable field map');
 assert.match(css, /html\[data-editor-mode="editing"\] \[data-editor-key\]/, 'edit mode must visibly identify editable text');
 assert.match(css, /@media \(max-width: 600px\) and \(orientation: portrait\)[\s\S]*\.ledger-table thead th:first-child \{ width: 40%; \}[\s\S]*\.ledger-table tbody th \{ padding-inline: 10px; font-size: 12px; white-space: nowrap; \}/, 'phone ledger labels must remain inside the first column divider');
-assert.match(wrapper, /deck\.html\?v=20260903\.2/, 'wrapper must cache-bust the plan slide');
-assert.match(deck, /deck\.css\?v=20260903\.2/, 'deck must cache-bust plan slide styling');
+assert.match(wrapper, /deck\.html\?v=20260904\.1/, 'wrapper must cache-bust the current deck');
+assert.match(deck, /deck\.css\?v=20260904\.1/, 'deck must cache-bust current styling');
 assert.match(deck, /deck\.js\?v=20260903\.2/, 'deck must cache-bust edit-aware plan links');
 assert.match(deck, /inline-editor\.js\?v=20260903\.1/, 'deck must load the editor that excludes plan numbers');
 assert.match(deck, /pretext-layout\.js\?v=20260903\.1/, 'deck must cache-bust Pretext layout for the plan slide');

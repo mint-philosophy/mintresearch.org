@@ -86,10 +86,12 @@ button { color: inherit; }
 .ticker-track {
   display: flex;
   align-items: center;
-  min-width: max-content;
-  padding-left: 24px;
-  animation: ticker 42s linear infinite alternate;
+  width: max-content;
+  animation: ticker 42s linear infinite;
+  will-change: transform;
 }
+
+.ticker-cycle { display: flex; align-items: center; flex: 0 0 auto; }
 
 .ticker:hover .ticker-track,
 .ticker:focus-within .ticker-track { animation-play-state: paused; }
@@ -121,7 +123,7 @@ button { color: inherit; }
 
 @keyframes ticker {
   from { transform: translateX(0); }
-  to { transform: translateX(min(0px, calc(100vw - 100%))); }
+  to { transform: translateX(-50%); }
 }
 
 .progress {
@@ -661,7 +663,6 @@ html[data-editor-mode="editing"] [data-editor-key]:focus {
 @media (max-width: 900px) and (orientation: portrait) {
   :root { --ticker-h: 32px; --nav-h: 56px; }
   body { font-size: 20px; }
-  .ticker-track { animation: none; padding-left: 14px; }
   .ticker-link { font-size: 9px; }
   .ticker-link::after { margin-inline: 12px; }
   .slide { display: block; -webkit-overflow-scrolling: touch; }
