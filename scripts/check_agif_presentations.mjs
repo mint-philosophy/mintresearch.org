@@ -75,6 +75,11 @@ for (const slideNumber of [7, 18, 31]) {
   assert.equal((slide.match(/class="section-index\b/g) || []).length, 1, `Day 2 slide ${slideNumber} must show its section label only on the left`);
 }
 
+const day2Slide7 = slideMarkup(day2Deck, 7, 35);
+assert.match(day2Slide7, /class="slide slide-single"/, 'Day 2 slide 7 must use the full-width single-panel layout');
+assert.equal((day2Slide7.match(/class="split-panel\b/g) || []).length, 1, 'Day 2 slide 7 must contain only its left panel');
+assert.doesNotMatch(day2Slide7, /ecological metaphor|invasive species/i, 'Day 2 slide 7 must not retain the following-day metaphor');
+
 for (const [label, css] of [['Day 1', day1Css], ['Day 2', day2Css]]) {
   assert.match(css, /animation:\s*ticker 42s linear infinite;/, `${label} ticker must scroll continuously`);
   assert.match(css, /to\s*\{\s*transform:\s*translateX\(-50%\)/, `${label} ticker must loop over one cycle`);
