@@ -13,6 +13,7 @@ const [
   day2Css,
   day2Js,
   day2Pretext,
+  day2Editor,
   router,
   routerConfig,
   nav,
@@ -27,6 +28,7 @@ const [
   read('public/agi-institutions/deck.css'),
   read('public/agi-institutions/deck.js'),
   read('public/agi-institutions/pretext-layout.js'),
+  read('public/agi-institutions/inline-editor.js'),
   read('agif-router-worker/src/index.js'),
   read('agif-router-worker/wrangler.toml'),
   read('public/assets/mint-site-nav.v1.js'),
@@ -48,11 +50,14 @@ assert.match(day2Wrapper, /https:\/\/agif2\.mintresearch\.org\//, 'Day 2 wrapper
 assert.match(day2Deck, /https:\/\/agif2\.mintresearch\.org\//, 'Day 2 standalone canonical must use agif2');
 assert.equal((day2Deck.match(/<section class="slide\b/g) || []).length, 35, 'Day 2 must expose all 35 Fable slides');
 assert.equal((day2Deck.match(/aria-label="Slide \d+ of 35:/g) || []).length, 35, 'every Day 2 slide needs navigation metadata');
-assert.equal((day2Deck.match(/class="speaker-notes"/g) || []).length, 35, 'every Day 2 slide must retain its source notes slot');
+assert.doesNotMatch(
+  [day2Deck, day2Css, day2Js, day2Pretext, day2Editor].join('\n'),
+  /speaker-notes|Speaker notes|notes(?:Drawer|Body|Toggle|Close)|notes-(?:drawer|close)|nav-notes/,
+  'Day 2 public assets must not contain speaker-note data, controls, behavior, or styles',
+);
 assert.ok((day2Deck.match(/data-pretext/g) || []).length >= 170, 'Day 2 must retain its measured text fields');
 assert.match(day2Deck, /pretext-layout\.js/, 'Day 2 must load its Pretext layout pass');
 assert.doesNotMatch(day2Deck, /<script[^>]+inline-editor\.js/, 'Day 2 must not call the unregistered editor endpoint');
-assert.match(day2Deck, /id="notesDrawer"/, 'Day 2 must retain its speaker-notes drawer');
 assert.match(day2Deck, /id="slideCounter">1 \/ 35/, 'Day 2 counter must use the real slide total');
 assert.equal((day2Deck.match(/class="ticker-cycle"/g) || []).length, 2, 'Day 2 ticker must contain two seamless cycles');
 
@@ -86,7 +91,7 @@ assert.match(day2Css, /prefers-reduced-motion/, 'Day 2 must respect reduced moti
 assert.match(day2Css, /\.table-scroll[^}]*overflow:\s*auto/s, 'Day 2 tables must remain independently scrollable');
 assert.match(day2Css, /\.ledger-scroll[^}]*overflow:\s*auto/s, 'Day 2 ledger must remain independently scrollable');
 
-for (const token of ['ArrowRight', 'ArrowLeft', 'touchstart', 'touchend', '#slide-', 'notesDrawer']) {
+for (const token of ['ArrowRight', 'ArrowLeft', 'touchstart', 'touchend', '#slide-']) {
   assert.ok(day2Js.includes(token), `Day 2 navigation must include ${token}`);
 }
 assert.match(day2Js, /closest\('\.table-scroll, \.ledger-scroll/, 'Day 2 swipe navigation must not claim table gestures');

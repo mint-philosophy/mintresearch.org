@@ -157,8 +157,8 @@ The two AGI Governance Fellowship teaching decks also have deliberately
 unlisted canonical subdomains. `agif1.mintresearch.org` serves the existing
 interactive `/should-we-build-agi/` deck, while `agif2.mintresearch.org` serves
 Fable's native 35-slide HTML/Pretext Day 2 deck under
-`public/agi-institutions/`. Day 2 retains its source statements in a speaker
-notes drawer and uses the same responsive reflow approach as Day 1.
+`public/agi-institutions/`. Day 2 excludes its private source notes from the
+public payload and uses the same responsive reflow approach as Day 1.
 `agif-router-worker/` maps both exact hosts to their static paths and adds an
 HTTP `X-Robots-Tag`; both HTML sources also carry full `noindex` directives.
 Neither hostname nor backing route belongs in navigation or the sitemap. Run

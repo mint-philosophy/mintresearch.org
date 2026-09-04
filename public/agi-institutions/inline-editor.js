@@ -19,8 +19,6 @@ const excluded = [
   '.reason-dialog-close',
   '.reason-card-action',
   '.ellipsis-row *',
-  '.speaker-notes *',
-  '.notes-drawer *',
 ].join(',');
 
 function normaliseText(value) {

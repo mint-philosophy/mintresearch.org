@@ -7,23 +7,6 @@
   const previous = document.getElementById('previousSlide');
   const next = document.getElementById('nextSlide');
   const reasonDialogs = Array.from(document.querySelectorAll('.reason-dialog'));
-  const notesDrawer = document.getElementById('notesDrawer');
-  const notesBody = document.getElementById('notesBody');
-  const notesToggle = document.getElementById('notesToggle');
-  const notesClose = document.getElementById('notesClose');
-
-  function renderNotes(slide) {
-    if (!notesBody) return;
-    const source = slide.querySelector('.speaker-notes');
-    notesBody.innerHTML = source && source.innerHTML.trim() ? source.innerHTML : '<p class="notes-empty">No notes for this slide.</p>';
-  }
-
-  function setNotesOpen(open) {
-    if (!notesDrawer || !notesToggle) return;
-    notesDrawer.hidden = !open;
-    notesToggle.setAttribute('aria-pressed', String(open));
-    if (open) renderNotes(slides[current]);
-  }
   let current = 0;
   let touchStart = null;
 
@@ -85,7 +68,6 @@
     window.__agiInstitutions.currentSlide = current + 1;
     window.__agiInstitutions.status = 'ready';
     if (!options.skipHash) updateLocation(current);
-    if (notesDrawer && !notesDrawer.hidden) renderNotes(newSlide);
     window.dispatchEvent(new CustomEvent('agi-slide-change', { detail: { index: current, slide: newSlide } }));
   }
 
@@ -99,8 +81,6 @@
     navDots.appendChild(dot);
   });
 
-  notesToggle?.addEventListener('click', () => setNotesOpen(notesDrawer.hidden));
-  notesClose?.addEventListener('click', () => setNotesOpen(false));
   previous.addEventListener('click', () => showSlide(current - 1, { resetScroll: true }));
   next.addEventListener('click', () => showSlide(current + 1, { resetScroll: true }));
 
@@ -143,10 +123,7 @@
     if (target instanceof Element && target.closest('input, textarea, select, [contenteditable], .table-scroll, .ledger-scroll')) return;
     if (target instanceof HTMLButtonElement && event.key === ' ') return;
 
-    if ((event.key === 'n' || event.key === 'N') && !event.metaKey && !event.ctrlKey && !event.altKey) {
-      event.preventDefault();
-      setNotesOpen(notesDrawer ? notesDrawer.hidden : false);
-    } else if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') {
+    if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') {
       event.preventDefault();
       showSlide(current + 1, { resetScroll: true });
     } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
