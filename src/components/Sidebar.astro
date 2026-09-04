@@ -41,37 +41,49 @@ function sectionHref(pagePath: string, href: string, active: boolean): string {
       return (
         <>
           {page.groupOnly ? (
-            <div class="nav-link nav-page nav-group" role="heading" aria-level="2">
-              <span class="nav-mark">▾</span>
-              {page.label}
-            </div>
+            <details class="nav-fallback-group">
+              <summary class="nav-link nav-page nav-group">
+                <span class="nav-mark">▸</span>
+                {page.label}
+              </summary>
+              <div class="nav-sections">
+                {page.sections.map((section: SectionLink, idx: number) => (
+                  <a class="nav-link nav-section" href={sectionHref(page.path, section.href, false)}>
+                    <span class="nav-mark">{idx === page.sections.length - 1 ? '└──' : '├──'}</span>
+                    {section.label}
+                  </a>
+                ))}
+              </div>
+            </details>
           ) : (
-            <a class:list={["nav-link", "nav-page", { active }]} href={base + page.path}>
-              <span class="nav-mark">{active ? '❯' : '▸'}</span>
-              {page.label}
-            </a>
-          )}
-          {page.sections.length > 0 && (
-            <div class:list={["nav-sections", { expanded: active || page.alwaysExpanded }]}>
-              {page.sections.map((section: SectionLink, idx: number) => {
-                const isLast = idx === page.sections.length - 1 && !section.children?.length;
-                return (
-                  <>
-                    {section.divider && <div class="nav-divider">{section.divider}</div>}
-                    <a class="nav-link nav-section" href={sectionHref(page.path, section.href, active)}>
-                      <span class="nav-mark">{isLast ? '└──' : '├──'}</span>
-                      {section.label}
-                    </a>
-                    {section.children?.map((child: SectionLink, ci: number) => (
-                      <a class="nav-link nav-section sub-link" href={sectionHref(page.path, child.href, active)}>
-                        <span class="nav-mark">{ci === (section.children?.length || 0) - 1 ? '└──' : '├──'}</span>
-                        {child.label}
-                      </a>
-                    ))}
-                  </>
-                );
-              })}
-            </div>
+            <>
+              <a class:list={["nav-link", "nav-page", { active }]} href={base + page.path}>
+                <span class="nav-mark">{active ? '❯' : '▸'}</span>
+                {page.label}
+              </a>
+              {page.sections.length > 0 && (
+                <div class:list={["nav-sections", { expanded: active || page.alwaysExpanded }]}>
+                  {page.sections.map((section: SectionLink, idx: number) => {
+                    const isLast = idx === page.sections.length - 1 && !section.children?.length;
+                    return (
+                      <>
+                        {section.divider && <div class="nav-divider">{section.divider}</div>}
+                        <a class="nav-link nav-section" href={sectionHref(page.path, section.href, active)}>
+                          <span class="nav-mark">{isLast ? '└──' : '├──'}</span>
+                          {section.label}
+                        </a>
+                        {section.children?.map((child: SectionLink, ci: number) => (
+                          <a class="nav-link nav-section sub-link" href={sectionHref(page.path, child.href, active)}>
+                            <span class="nav-mark">{ci === (section.children?.length || 0) - 1 ? '└──' : '├──'}</span>
+                            {child.label}
+                          </a>
+                        ))}
+                      </>
+                    );
+                  })}
+                </div>
+              )}
+            </>
           )}
         </>
       );

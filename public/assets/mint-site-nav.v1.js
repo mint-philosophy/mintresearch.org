@@ -1,7 +1,7 @@
 (function (root, document) {
   'use strict';
 
-  var VERSION = '1.2.1';
+  var VERSION = '1.3.0';
   var scriptUrl = document.currentScript && document.currentScript.src
     ? document.currentScript.src
     : 'https://mintresearch.org/assets/mint-site-nav.v1.js';
@@ -88,18 +88,42 @@
       ]
     },
     {
-      id: 'microsites',
+      id: 'talks',
       type: 'group',
-      label: 'Microsites',
+      label: 'Talks',
       children: [
-        { id: 'governing-with-agents', type: 'page', href: '/governing-with-agents/', label: 'Governing with Agents' },
-        { id: 'ai-culture', type: 'page', href: '/ai-culture/', label: 'AI (etc) in Culture' },
-        { id: 'blind-refusal', type: 'page', href: 'https://blindrefusal.mintresearch.org/', label: 'Blind Refusal' },
-        { id: 'moral-reasoning', type: 'page', href: '/lab-overview/', label: 'Can Machines Reason Morally?' },
         { id: 'normative-competence', type: 'page', href: '/nc/', label: 'Evaluating LLM Normative Competence' },
         { id: 'agi-policy-student', type: 'page', href: '/FDC', label: 'The AGI-Ready Policy Student' },
-        { id: 'navigating-agi-reckoning', type: 'page', href: '/navigating/', label: 'Navigating the AGI Reckoning' },
+        { id: 'navigating-agi-reckoning', type: 'page', href: '/navigating/', label: 'Navigating the AGI Reckoning' }
+      ]
+    },
+    {
+      id: 'papers',
+      type: 'group',
+      label: 'Papers',
+      children: [
+        { id: 'blind-refusal', type: 'page', href: 'https://blindrefusal.mintresearch.org/', label: 'Blind Refusal' },
         { id: 'incoherent-values', type: 'page', href: 'https://coherence.mintresearch.org/', label: 'Incoherent Values?' }
+      ]
+    },
+    {
+      id: 'resources',
+      type: 'group',
+      label: 'Resources',
+      children: [
+        { id: 'governing-with-agents', type: 'page', href: '/governing-with-agents/', label: 'Governing with Agents' },
+        { id: 'ai-culture', type: 'page', href: '/ai-culture/', label: 'AI (etc) in Culture' }
+      ]
+    },
+    {
+      id: 'fellowship',
+      type: 'group',
+      label: 'AGI Governance Fellowship',
+      children: [
+        { id: 'agif-overview', type: 'page', href: '/agif/', label: 'Overview' },
+        { id: 'agif-day-1', type: 'page', href: 'https://agif1.mintresearch.org/', label: 'Day 1 — Should We Build AGI?' },
+        { id: 'agif-day-2', type: 'page', href: 'https://agif2.mintresearch.org/', label: 'Day 2 — AGI Institutions' },
+        { id: 'agif-day-3', type: 'page', href: 'https://agif3.mintresearch.org/', label: 'Day 3 — Resilience and Adaptation' }
       ]
     },
     { id: 'corpus-map', type: 'page', href: '/corpus-map/', label: 'Corpus Map', sections: [] },

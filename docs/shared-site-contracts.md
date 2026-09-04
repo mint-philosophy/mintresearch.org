@@ -114,13 +114,13 @@ window.MintSiteNavConfig = {
 ### A new template paper
 
 A newly instantiated paper does not need to wait for a main-site change. Inject
-it into the Microsites group with a stable, URL-like ID:
+it into the Papers group with a stable, URL-like ID:
 
 ```js
 window.MintSiteNavConfig = {
   target: '#siteNav',
   local: {
-    parentId: 'microsites',
+    parentId: 'papers',
     currentId: 'example-paper',
     label: 'Example Paper',
     href: '#top',
@@ -133,17 +133,18 @@ window.MintSiteNavConfig = {
 };
 ```
 
-The renderer inserts this current paper as the first Microsites leaf, followed
-immediately by its local outline and then the canonical sibling microsites. Once
+The renderer inserts this current paper as the first Papers leaf, followed
+immediately by its local outline and then the canonical sibling papers. Once
 the same stable ID is added to the canonical contract, it automatically reuses
 that entry rather than rendering a duplicate. Set `position: 'last'` on `local`
-only when the temporary paper should follow the registered microsites.
+only when the temporary paper should follow the registered papers.
 
-The Microsites group is collapsed by default and expands automatically when one
-of its children is active. Its heading is a button with `aria-expanded` and
-`aria-controls`; consumers should preserve the button semantics and style it
-with `.nav-group`. Static no-JavaScript fallbacks may use a collapsed
-`<details class="nav-fallback-group">` with the same leaves.
+The Talks, Papers, Resources, and AGI Governance Fellowship groups are collapsed
+by default and expand automatically when one of their children is active. Each
+heading is a button with `aria-expanded` and `aria-controls`; consumers should
+preserve the button semantics and style it with `.nav-group`. Static
+no-JavaScript fallbacks may use collapsed
+`<details class="nav-fallback-group">` elements with the same leaves.
 
 ### Direct API and events
 

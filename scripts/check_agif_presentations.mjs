@@ -149,9 +149,11 @@ assert.match(day3Js, /closest\('\.table-scroll, \.ledger-scroll/, 'Day 3 swipe n
 for (const host of ['agif1.mintresearch.org', 'agif2.mintresearch.org', 'agif3.mintresearch.org']) {
   assert.ok(router.includes(`'${host}'`), `router must recognize ${host}`);
   assert.ok(routerConfig.includes(`pattern = "${host}"`), `Worker must own ${host}`);
-  assert.ok(!nav.includes(host), `${host} must remain outside site navigation`);
+  assert.equal(nav.split(host).length - 1, 1, `${host} must appear once in site navigation`);
   assert.ok(!sitemap.includes(host), `${host} must remain outside the sitemap`);
 }
+assert.ok(nav.includes("href: '/agif/'"), 'the Fellowship overview must appear in site navigation');
+assert.ok(sitemap.includes('<loc>https://mintresearch.org/agif/</loc>'), 'the Fellowship overview must appear in the sitemap');
 assert.equal((routerConfig.match(/zone_name = "mintresearch\.org"/g) || []).length, 3, 'every AGIF custom domain must name the Cloudflare zone explicitly');
 assert.match(router, /X-Robots-Tag/, 'router must add an HTTP noindex directive');
 assert.match(router, /request\.method !== 'GET'.*request\.method !== 'HEAD'/s, 'router must reject write methods');

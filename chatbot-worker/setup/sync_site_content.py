@@ -6,19 +6,21 @@ The floating Minty helper uses OpenAI file_search over uploaded local files.
 This script turns everything a visitor can read on mintresearch.org into
 markdown records: newsletters, research reports, Seth Lazar's CV, the lab
 people roster, and the visible text of the static HTML pages (home, guide,
-lab overview, agent reports, newsletter landing page).
+AGI Governance Fellowship, agent reports, newsletter landing page).
 
 Filenames are deterministic across runs — they key incremental sync. Stale
-.md files in the output directory (records no longer generated, e.g. an
-unpublished newsletter) are deleted, except for the snapshot record written
-by build_snapshot.py (00-lab-snapshot.md) and manifest.json.
+.md files owned by the preceding manifest (records no longer generated, e.g.
+an unpublished newsletter) are moved to Trash. The snapshot record written by
+build_snapshot.py (00-lab-snapshot.md) and unowned files are preserved.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
+import subprocess
 import sys
 from datetime import datetime, timezone
 from html.parser import HTMLParser
@@ -29,8 +31,9 @@ REPO_DIR = SCRIPT_DIR.parents[1]
 DEFAULT_OUTPUT_DIR = SCRIPT_DIR / "generated-site-content"
 SITE_BASE_URL = "https://mintresearch.org"
 
-# Files in the output dir that this script does not own and must not delete.
+# Files in the output dir that this script does not own and must not remove.
 PRESERVED_FILES = {"00-lab-snapshot.md"}
+TRASH_BIN = Path("/usr/bin/trash")
 
 # Static HTML pages: (output stem, relative path, canonical URL, purpose).
 HTML_PAGES: list[tuple[str, str, str, str]] = [
@@ -47,10 +50,10 @@ HTML_PAGES: list[tuple[str, str, str, str]] = [
         "Lab Infrastructure Guide (Agentic Research Infrastructure for AI Alignment, Governance and Adaptation)",
     ),
     (
-        "page-lab-overview",
-        "public/lab-overview/index.html",
-        f"{SITE_BASE_URL}/lab-overview/",
-        "Lab Overview — Can Machines Reason Morally?",
+        "page-agi-governance-fellowship",
+        "public/agif/index.html",
+        f"{SITE_BASE_URL}/agif/",
+        "AGI Governance Fellowship — presentation materials for Days 1, 2, and 3",
     ),
     (
         "page-agent-reports",
@@ -141,8 +144,7 @@ def generate_astro_records(
     pages_dir = REPO_DIR / "src" / "pages" / subdir
     records: dict[str, str] = {}
     if not pages_dir.is_dir():
-        print(f"WARNING: missing directory {pages_dir}", file=sys.stderr)
-        return records
+        raise FileNotFoundError(f"missing source directory: {pages_dir}")
     for source_path in sorted(pages_dir.glob("*.md")):
         canonical_url = f"{SITE_BASE_URL}/{subdir}/{source_path.stem}/"
         filename = f"{prefix}-{source_path.stem}.md"
@@ -206,9 +208,8 @@ def render_cv(source_path: Path) -> str:
             content = (section.get("content") or "").replace("\t", " — ")
             lines.extend([content.strip(), ""])
         else:
-            print(
-                f"WARNING: unknown CV section type {section_type!r} in {section.get('id')}",
-                file=sys.stderr,
+            raise ValueError(
+                f"unknown CV section type {section_type!r} in {section.get('id')}"
             )
 
     return "\n".join(lines).rstrip() + "\n"
@@ -474,10 +475,46 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def previous_record_names(output_dir: Path) -> set[str]:
+    manifest_path = output_dir / "manifest.json"
+    if manifest_path.is_symlink():
+        raise ValueError(f"refusing to read symlink manifest: {manifest_path}")
+    if not manifest_path.exists():
+        return set()
+    if not manifest_path.is_file():
+        raise ValueError(f"manifest is not a regular file: {manifest_path}")
+
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    names = manifest.get("records", [])
+    if not isinstance(names, list):
+        raise ValueError(f"invalid records list in {manifest_path}")
+
+    owned: set[str] = set()
+    for name in names:
+        if (
+            not isinstance(name, str)
+            or Path(name).name != name
+            or not name.endswith(".md")
+        ):
+            raise ValueError(f"unsafe record name in {manifest_path}: {name!r}")
+        owned.add(name)
+    return owned
+
+
 def main() -> None:
     args = parse_args()
     output_dir = args.output_dir.resolve()
-    output_dir.mkdir(parents=True, exist_ok=True)
+    missing_html_pages = [
+        str(REPO_DIR / relative_path)
+        for _, relative_path, _, _ in HTML_PAGES
+        if not (REPO_DIR / relative_path).is_file()
+    ]
+    if missing_html_pages:
+        raise FileNotFoundError(
+            "missing configured HTML page(s): " + ", ".join(missing_html_pages)
+        )
+
+    previous_records = previous_record_names(output_dir)
 
     records: dict[str, str] = {}
     counts: dict[str, int] = {}
@@ -519,23 +556,47 @@ def main() -> None:
     counts["pages"] = 0
     for stem, relative_path, canonical_url, purpose in HTML_PAGES:
         source_path = REPO_DIR / relative_path
-        if not source_path.is_file():
-            print(f"WARNING: missing HTML page {source_path}", file=sys.stderr)
-            warnings += 1
-            continue
         records[f"{stem}.md"] = render_html_page(source_path, canonical_url, purpose)
         counts["pages"] += 1
 
+    if warnings:
+        raise RuntimeError(
+            f"content generation aborted with {warnings} warning(s); see stderr"
+        )
+
+    for filename in records:
+        target = output_dir / filename
+        if target.is_symlink():
+            raise ValueError(f"refusing to overwrite symlink record: {target}")
+        if target.exists() and not target.is_file():
+            raise ValueError(f"record target is not a regular file: {target}")
+        if target.exists() and filename not in previous_records:
+            raise ValueError(f"refusing to overwrite unowned record: {target}")
+
+    stale_targets: list[Path] = []
+    for name in sorted(previous_records - records.keys() - PRESERVED_FILES):
+        target = output_dir / name
+        if target.is_symlink():
+            raise ValueError(f"refusing to trash symlink record: {target}")
+        if not target.exists():
+            continue
+        if not target.is_file():
+            raise ValueError(f"refusing to trash non-file record: {target}")
+        stale_targets.append(target)
+    if stale_targets and (
+        not TRASH_BIN.is_file() or not os.access(TRASH_BIN, os.X_OK)
+    ):
+        raise FileNotFoundError(f"recoverable deletion tool unavailable: {TRASH_BIN}")
+
+    output_dir.mkdir(parents=True, exist_ok=True)
     for filename, content in sorted(records.items()):
         (output_dir / filename).write_text(content, encoding="utf-8")
 
     stale_deleted: list[str] = []
-    for existing in sorted(output_dir.glob("*.md")):
-        if existing.name in records or existing.name in PRESERVED_FILES:
-            continue
-        existing.unlink()
-        stale_deleted.append(existing.name)
-        print(f"Deleted stale record: {existing.name}", file=sys.stderr)
+    for target in stale_targets:
+        subprocess.run([str(TRASH_BIN), str(target)], check=True)
+        stale_deleted.append(target.name)
+        print(f"Trashed stale record: {target.name}", file=sys.stderr)
 
     manifest = {
         "generated_at": generated_timestamp(),
@@ -552,10 +613,8 @@ def main() -> None:
     for category, count in counts.items():
         print(f"  {category}: {count}")
     if stale_deleted:
-        print(f"  stale records deleted: {len(stale_deleted)}")
+        print(f"  stale records trashed: {len(stale_deleted)}")
     print(f"Manifest: {manifest_path}")
-    if warnings:
-        print(f"Completed with {warnings} warning(s); see stderr.", file=sys.stderr)
 
 
 if __name__ == "__main__":

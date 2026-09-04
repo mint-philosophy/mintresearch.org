@@ -88,18 +88,45 @@ export const siteNav: PageNav[] = [
   },
   {
     path: "",
-    label: "Microsites",
+    label: "Talks",
+    icon: "◇",
+    groupOnly: true,
+    sections: [
+      { href: "/nc/", label: "Evaluating LLM Normative Competence" },
+      { href: "/FDC", label: "The AGI-Ready Policy Student" },
+      { href: "/navigating/", label: "Navigating the AGI Reckoning" },
+    ],
+  },
+  {
+    path: "",
+    label: "Papers",
+    icon: "◇",
+    groupOnly: true,
+    sections: [
+      { href: "https://blindrefusal.mintresearch.org/", label: "Blind Refusal" },
+      { href: "https://coherence.mintresearch.org/", label: "Incoherent Values?" },
+    ],
+  },
+  {
+    path: "",
+    label: "Resources",
     icon: "◇",
     groupOnly: true,
     sections: [
       { href: "/governing-with-agents/", label: "Governing with Agents" },
       { href: "/ai-culture/", label: "AI (etc) in Culture" },
-      { href: "https://blindrefusal.mintresearch.org/", label: "Blind Refusal" },
-      { href: "/lab-overview/", label: "Can Machines Reason Morally?" },
-      { href: "/nc/", label: "Evaluating LLM Normative Competence" },
-      { href: "/FDC", label: "The AGI-Ready Policy Student" },
-      { href: "/navigating/", label: "Navigating the AGI Reckoning" },
-      { href: "https://coherence.mintresearch.org/", label: "Incoherent Values?" },
+    ],
+  },
+  {
+    path: "",
+    label: "AGI Governance Fellowship",
+    icon: "◇",
+    groupOnly: true,
+    sections: [
+      { href: "/agif/", label: "Overview" },
+      { href: "https://agif1.mintresearch.org/", label: "Day 1 — Should We Build AGI?" },
+      { href: "https://agif2.mintresearch.org/", label: "Day 2 — AGI Institutions" },
+      { href: "https://agif3.mintresearch.org/", label: "Day 3 — Resilience and Adaptation" },
     ],
   },
   {

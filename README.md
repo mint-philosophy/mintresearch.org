@@ -87,23 +87,21 @@ contracts. The command
 `npm run check:banner -- --check-blind-refusal` additionally inspects the
 deployed Blind Refusal source.
 
-`Microsites` is a collapsible sidebar branch. It stays collapsed away from a
-microsite, opens automatically for the active microsite, and can be toggled as
-an accessible button. Its public leaves are currently:
+Public project microsites are divided into four independently collapsible
+sidebar branches. Each branch stays collapsed away from its children, opens
+automatically for an active child, and uses an accessible disclosure button:
 
-- `Governing with Agents` — `/governing-with-agents/`
-- `AI (etc) in Culture` — `/ai-culture/`
-- `Blind Refusal` — `https://blindrefusal.mintresearch.org/`
-- `Can Machines Reason Morally?` — `/lab-overview/`
-- `Evaluating LLM Normative Competence` — `/nc/`
-- `The AGI-Ready Policy Student` — `/FDC`
-- `Navigating the AGI Reckoning` — `/navigating/`
-- `Incoherent Values?` — `https://coherence.mintresearch.org/`
+- `Talks`: `/nc/`, `/FDC`, and `/navigating/`
+- `Papers`: `https://blindrefusal.mintresearch.org/` and
+  `https://coherence.mintresearch.org/`
+- `Resources`: `/governing-with-agents/` and `/ai-culture/`
+- `AGI Governance Fellowship`: `/agif/` plus the three canonical teaching-deck
+  subdomains
 
-Only add maintained, public, indexable project microsites. Do not expose
-private or deliberately unlisted surfaces such as `/proofeditor/`, `/camps/`,
-`/coquelin/`, the legacy direct FDC deck files, or the access-gated review
-service.
+Only add maintained, intentionally public project microsites. A presentation
+leaf may remain `noindex` while still being linked for participants. Do not
+expose private surfaces such as `/proofeditor/`, `/camps/`, `/coquelin/`, the
+legacy direct FDC deck files, or the access-gated review service.
 
 The former `/agent-reports/` index is retained as an unlinked archival route;
 it is not part of primary navigation or the sitemap.
@@ -120,7 +118,7 @@ editorial-note workflow.
 
 ## Presentation microsites
 
-The public presentation routes `/lab-overview/`, `/nc/`, and `/FDC` use the
+The public presentation routes `/nc/`, `/FDC`, and `/navigating/` use the
 shared shell in `public/assets/presentation-shell.css` and
 `public/assets/presentation-shell.js`. The shell renders the standard MINT
 banner, sidebar, status line, mobile navigation, and theme control around each
@@ -130,16 +128,15 @@ chrome without modifying the deck itself.
 The canonical wrappers and their isolated deck sources are:
 
 ```text
-public/lab-overview/index.html -> public/lab-overview/deck.html
 public/nc/index.html           -> public/nc/deck.html
 public/FDC.html                -> public/FDC-deck.html
 public/navigating/index.html   -> public/navigating/deck.html
 ```
 
-`/navigating/` uses the same shell and responsive fitting contract and is listed
-under `Microsites` in the primary navigation and sitemap.
+All three use the same shell and responsive fitting contract and are listed
+under `Talks` in the primary navigation and sitemap.
 
-`/should-we-build-agi/` is a deliberately unlisted, `noindex` presentation.
+`/should-we-build-agi/` is a direct backing route for a `noindex` presentation.
 Its deck loads an inline text editor from `public/should-we-build-agi/inline-editor.js`.
 The editing controls appear only when the separate Cloudflare Worker confirms
 the request's edge-observed IP against the secret allowlist; every save is
@@ -153,8 +150,7 @@ hidden. Worker code, tests, deployment configuration, and the exact-IP caveat
 live in `agi-editor-worker/`. The client uses the custom domain first, with the
 Worker's `workers.dev` address and a second custom domain as DNS fallbacks.
 
-The three AGI Governance Fellowship teaching decks have deliberately unlisted
-canonical subdomains:
+The three AGI Governance Fellowship teaching decks have canonical subdomains:
 
 ```text
 agif1.mintresearch.org -> public/should-we-build-agi/deck.html
@@ -169,8 +165,10 @@ artifacts exclude their private source notes and editor payloads and use the
 same responsive reflow and static navigation approach as Day 1.
 `agif-router-worker/` maps all three exact hosts to their static paths and adds
 an HTTP `X-Robots-Tag`; every wrapper and standalone deck also carries the full
-`noindex` directive. None of the hostnames or backing routes belongs in
-navigation or the sitemap. Run `npm run check:agif-presentations` and
+`noindex` directive. The canonical subdomains are linked from the Fellowship
+sidebar branch and the indexable `/agif/` overview; the subdomains themselves
+remain outside the sitemap, and the backing routes remain outside both
+navigation and the sitemap. Run `npm run check:agif-presentations` and
 `npm --prefix agif-router-worker test` before publishing any Fellowship deck or
 changing the routing Worker.
 

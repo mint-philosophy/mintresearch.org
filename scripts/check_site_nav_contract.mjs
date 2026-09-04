@@ -19,7 +19,8 @@ const staticPages = [
   'public/guide/index.html',
   'public/newsletter/index.html',
   'public/governing-with-agents/index.html',
-  'public/ai-culture/index.html'
+  'public/ai-culture/index.html',
+  'public/agif/index.html'
 ];
 for (const page of staticPages) {
   const html = fs.readFileSync(page, 'utf8');
@@ -32,7 +33,6 @@ for (const page of staticPages) {
 }
 
 const presentationPages = [
-  'public/lab-overview/index.html',
   'public/nc/index.html',
   'public/FDC.html',
   'public/navigating/index.html'
@@ -52,13 +52,18 @@ const fallbackPages = [
   'public/data-dash/index.html',
   'public/guide/index.html',
   'public/index.html',
-  'public/newsletter/index.html'
+  'public/newsletter/index.html',
+  'public/agif/index.html'
 ];
 for (const page of fallbackPages) {
   const html = fs.readFileSync(page, 'utf8');
   assert.equal((html.match(/\/assets\/mint-site-nav\.v1\.js\?v=\d{8}\.\d+/g) || []).length, 1, `${page} must cache-bust the shared navigation`);
   assert.equal((html.match(/href="\/navigating\/"/g) || []).length, 1, `${page} fallback must list Navigating the AGI Reckoning once`);
   assert.equal((html.match(/Navigating the AGI Reckoning/g) || []).length, 1, `${page} fallback must use the current Navigating title once`);
+  for (const label of ['Talks', 'Papers', 'Resources', 'AGI Governance Fellowship']) {
+    assert.equal((html.match(new RegExp(`<summary class="nav-link nav-page nav-group"><span class="nav-mark">[▸▾]<\\/span> ${label}<\\/summary>`, 'g')) || []).length, 1, `${page} fallback must expose one ${label} disclosure`);
+  }
+  assert.ok(!html.includes('Can Machines Reason Morally?'), `${page} fallback must not retain the retired talk`);
 }
 const aiCultureFallbackPages = [
   'public/agent-reports/index.html',
@@ -196,9 +201,18 @@ const canonical = flatten(api.items);
 const ids = canonical.map((item) => item.id).filter(Boolean);
 assert.equal(new Set(ids).size, ids.length, 'canonical navigation ids must be unique');
 assert.ok(!canonical.some((item) => item.id === 'agent-reports'), 'Agent Reports must not occupy primary navigation');
-assert.ok(canonical.some((item) => item.id === 'governing-with-agents' && item.href === '/governing-with-agents/'), 'Governing with Agents must be listed under microsites');
-assert.ok(canonical.some((item) => item.id === 'ai-culture' && item.href === '/ai-culture/' && item.label === 'AI (etc) in Culture'), 'AI (etc) in Culture must be listed under microsites');
-assert.ok(canonical.some((item) => item.id === 'navigating-agi-reckoning' && item.href === '/navigating/' && item.label === 'Navigating the AGI Reckoning'), 'Navigating the AGI Reckoning must be listed under microsites');
+const groups = api.items.filter((item) => item.type === 'group');
+assert.deepEqual(Array.from(groups, (item) => item.id), ['talks', 'papers', 'resources', 'fellowship'], 'primary navigation must expose the four content groups in order');
+assert.deepEqual(Array.from(groups, (item) => item.label), ['Talks', 'Papers', 'Resources', 'AGI Governance Fellowship'], 'content group labels must remain stable');
+assert.deepEqual(Array.from(groups.find((item) => item.id === 'talks').children, (item) => item.id), ['normative-competence', 'agi-policy-student', 'navigating-agi-reckoning'], 'Talks must contain only the three maintained presentations');
+assert.deepEqual(Array.from(groups.find((item) => item.id === 'papers').children, (item) => item.id), ['blind-refusal', 'incoherent-values'], 'Papers must contain the two paper microsites');
+assert.deepEqual(Array.from(groups.find((item) => item.id === 'resources').children, (item) => item.id), ['governing-with-agents', 'ai-culture'], 'Resources must contain the two curated collections');
+assert.deepEqual(Array.from(groups.find((item) => item.id === 'fellowship').children, (item) => item.id), ['agif-overview', 'agif-day-1', 'agif-day-2', 'agif-day-3'], 'Fellowship must contain its overview and three teaching days');
+assert.ok(!canonical.some((item) => item.id === 'microsites'), 'the crowded Microsites group must be retired');
+assert.ok(!canonical.some((item) => item.id === 'moral-reasoning' || item.href === '/lab-overview/'), 'the retired moral-reasoning talk must not remain in navigation');
+assert.ok(canonical.some((item) => item.id === 'governing-with-agents' && item.href === '/governing-with-agents/'), 'Governing with Agents must be listed under Resources');
+assert.ok(canonical.some((item) => item.id === 'ai-culture' && item.href === '/ai-culture/' && item.label === 'AI (etc) in Culture'), 'AI (etc) in Culture must be listed under Resources');
+assert.ok(canonical.some((item) => item.id === 'navigating-agi-reckoning' && item.href === '/navigating/' && item.label === 'Navigating the AGI Reckoning'), 'Navigating the AGI Reckoning must be listed under Talks');
 assert.ok(canonical.some((item) => item.id === 'about-papers' && item.label === 'Papers'), 'homepage section must use Papers');
 assert.ok(!canonical.some((item) => item.href === '/reports/ai-in-war/'), 'primary navigation must not enumerate report leaves');
 assert.ok(!canonical.some((item) => /2026-\d\d-\d\d-weekly/.test(item.href || '')), 'primary navigation must not enumerate newsletter issues');
@@ -238,14 +252,14 @@ assert.equal(aboutLink.href, 'https://mintresearch.org/', 'main-site links must 
 const blindRefusalOrder = walk(blindRefusalMount);
 const currentMicrosite = byAttribute(blindRefusalMount, 'data-nav-id', 'blind-refusal')[0];
 const firstLocalAnchor = byAttribute(blindRefusalMount, 'data-page-anchor')[0];
-const siblingMicrosite = byAttribute(blindRefusalMount, 'data-nav-id', 'moral-reasoning')[0];
+const siblingPaper = byAttribute(blindRefusalMount, 'data-nav-id', 'incoherent-values')[0];
 assert.ok(currentMicrosite, 'Blind Refusal must retain its current paper row');
 assert.ok(firstLocalAnchor, 'the active paper must retain its local page outline');
-assert.ok(siblingMicrosite, 'Blind Refusal must retain its sibling microsites');
+assert.ok(siblingPaper, 'Blind Refusal must retain its sibling paper');
 assert.ok(
   blindRefusalOrder.indexOf(currentMicrosite) < blindRefusalOrder.indexOf(firstLocalAnchor) &&
-    blindRefusalOrder.indexOf(firstLocalAnchor) < blindRefusalOrder.indexOf(siblingMicrosite),
-  'the active paper outline must sit between its paper row and sibling microsites'
+    blindRefusalOrder.indexOf(firstLocalAnchor) < blindRefusalOrder.indexOf(siblingPaper),
+  'the active paper outline must sit between its paper row and sibling paper'
 );
 
 const regularMount = new FakeElement('div');
@@ -253,22 +267,35 @@ api.render({
   target: regularMount,
   currentUrl: 'https://mintresearch.org/'
 });
-const micrositesButton = byAttribute(regularMount, 'data-nav-id', 'microsites')[0];
-assert.ok(micrositesButton, 'Microsites must be collapsed by default away from a microsite');
-assert.equal(micrositesButton.getAttribute('aria-expanded'), 'false', 'Microsites control must report its collapsed state');
-const micrositesPanelId = micrositesButton.getAttribute('aria-controls');
-const micrositesPanel = walk(regularMount).find((node) => node.id === micrositesPanelId);
-assert.equal(micrositesPanel.hidden, true, 'collapsed microsite children must be hidden');
-micrositesButton.click();
-assert.equal(micrositesButton.getAttribute('aria-expanded'), 'true', 'Microsites control must expand on click');
-assert.equal(micrositesPanel.hidden, false, 'expanded microsite children must be visible');
+for (const groupId of ['talks', 'papers', 'resources', 'fellowship']) {
+  const groupButton = byAttribute(regularMount, 'data-nav-id', groupId)[0];
+  assert.ok(groupButton, `${groupId} must render an accessible disclosure button`);
+  assert.equal(groupButton.getAttribute('aria-expanded'), 'false', `${groupId} must be collapsed away from its children`);
+  const groupPanel = walk(regularMount).find((node) => node.id === groupButton.getAttribute('aria-controls'));
+  assert.equal(groupPanel.hidden, true, `${groupId} children must be hidden while collapsed`);
+  groupButton.click();
+  assert.equal(groupButton.getAttribute('aria-expanded'), 'true', `${groupId} control must expand on click`);
+  assert.equal(groupPanel.hidden, false, `${groupId} children must be visible after expansion`);
+}
+
+for (const activeCase of [
+  { groupId: 'talks', itemId: 'normative-competence', currentUrl: 'https://mintresearch.org/nc/' },
+  { groupId: 'papers', itemId: 'blind-refusal', currentUrl: 'https://blindrefusal.mintresearch.org/' },
+  { groupId: 'resources', itemId: 'governing-with-agents', currentUrl: 'https://mintresearch.org/governing-with-agents/' },
+  { groupId: 'fellowship', itemId: 'agif-day-2', currentUrl: 'https://agif2.mintresearch.org/' }
+]) {
+  const activeMount = new FakeElement('div');
+  api.render({ target: activeMount, currentUrl: activeCase.currentUrl });
+  assert.equal(byAttribute(activeMount, 'data-nav-id', activeCase.groupId)[0].getAttribute('aria-expanded'), 'true', `${activeCase.groupId} must expand automatically on an active child`);
+  assert.equal(byAttribute(activeMount, 'data-nav-id', activeCase.itemId)[0].getAttribute('aria-current'), 'page', `${activeCase.itemId} must carry accessible current state`);
+}
 
 const templateMount = new FakeElement('div');
 api.render({
   target: templateMount,
   currentUrl: 'https://example-paper.test/',
   local: {
-    parentId: 'microsites',
+    parentId: 'papers',
     currentId: 'example-paper',
     label: 'Example Paper',
     href: '#top',
@@ -282,12 +309,12 @@ assert.equal(injected[0].getAttribute('data-microsite-current'), '', 'injected p
 const templateLocalAnchor = byAttribute(templateMount, 'data-page-anchor')[0];
 const templateSibling = byAttribute(templateMount, 'data-nav-id', 'blind-refusal')[0];
 assert.ok(templateLocalAnchor, 'an injected paper must retain its local outline');
-assert.ok(templateSibling, 'an injected paper must retain canonical sibling microsites');
+assert.ok(templateSibling, 'an injected paper must retain canonical sibling papers');
 const templateOrder = walk(templateMount);
 assert.ok(
   templateOrder.indexOf(injected[0]) < templateOrder.indexOf(templateLocalAnchor) &&
     templateOrder.indexOf(templateLocalAnchor) < templateOrder.indexOf(templateSibling),
-  'an injected paper outline must sit between its paper row and canonical sibling microsites'
+  'an injected paper outline must sit between its paper row and canonical sibling papers'
 );
 
 const dedupeMount = new FakeElement('div');
@@ -295,7 +322,7 @@ api.render({
   target: dedupeMount,
   currentUrl: 'https://blindrefusal.mintresearch.org/',
   local: {
-    parentId: 'microsites',
+    parentId: 'papers',
     currentId: 'blind-refusal',
     label: 'Blind Refusal',
     href: '#top',
@@ -304,4 +331,4 @@ api.render({
 });
 assert.equal(byAttribute(dedupeMount, 'data-nav-id', 'blind-refusal').length, 1, 'a now-canonical paper must not be duplicated');
 
-console.log('MINT site navigation contract passed: canonical hierarchy, safe cross-origin links, accessible current state, local anchors, injected papers, and deduplication.');
+console.log('MINT site navigation contract passed: four content groups, safe cross-origin links, accessible disclosure and current states, local anchors, injected papers, and deduplication.');
