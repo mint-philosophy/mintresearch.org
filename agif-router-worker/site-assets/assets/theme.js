@@ -1,0 +1,68 @@
+/* MINT Lab — theme toggle.
+   Light is the default; an explicit choice is stored as 'mint-theme'.
+   A tiny inline script in each page's <head> applies the stored dark theme
+   before first paint; this file also enforces the default and wires the button.
+   The banner is a separate contract and must be loaded explicitly. */
+(function () {
+  var KEY = 'mint-theme';
+
+  function current() {
+    return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  }
+
+  function setDocumentTheme(theme) {
+    if (theme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+  }
+
+  function storedTheme() {
+    try { return localStorage.getItem(KEY) === 'dark' ? 'dark' : 'light'; }
+    catch (e) { return 'light'; }
+  }
+
+  function apply(theme) {
+    setDocumentTheme(theme);
+    try { localStorage.setItem(KEY, theme); } catch (e) { /* private mode */ }
+  }
+
+  function render(btn) {
+    var dark = current() === 'dark';
+    // Label shows the mode the button switches TO.
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">☀</span>light'
+      : '<span class="theme-toggle-icon">☾</span>dark';
+    btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    btn.title = dark ? 'Switch to light mode' : 'Switch to dark mode';
+  }
+
+  function init() {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'theme-toggle';
+
+    var slot = document.querySelector('#statusline .statusline-row-top');
+    if (slot) {
+      slot.appendChild(btn);
+    } else {
+      btn.className += ' theme-toggle--floating';
+      document.body.appendChild(btn);
+    }
+
+    render(btn);
+    btn.addEventListener('click', function () {
+      apply(current() === 'dark' ? 'light' : 'dark');
+      render(btn);
+    });
+  }
+
+  setDocumentTheme(storedTheme());
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();

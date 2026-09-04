@@ -1,0 +1,215 @@
+/* ═══════════════════════════════════════════════════
+   MINT Lab — Shared Theme Contract
+   Loaded on every page after the base stylesheet.
+   Pages declare html[data-theme="light"] as the default; an explicit stored
+   dark preference removes that attribute before first paint.
+   The banner is a separate contract loaded explicitly.
+   ═══════════════════════════════════════════════════ */
+
+/* Shared design tokens for the main site and presentation shells. External
+   microsites consume the banner-only contract rather than this full theme. */
+:root {
+  --bg-0: #0a0a0a;
+  --bg-1: #111111;
+  --bg-2: #1a1a1a;
+  --bg-3: #222222;
+  --bg-4: #2a2a2a;
+  --accent: #2ec4b6;
+  --accent-soft: rgba(46, 196, 182, 0.12);
+  --accent-dim: rgba(46, 196, 182, 0.5);
+  --accent-bright: #5de8da;
+  --amber: #f5a623;
+  --red: #e06c75;
+  --cyan: #56b6c2;
+  --green: #98c379;
+  --purple: #c678dd;
+  --pink: #e06c96;
+  --yellow: #e5c07b;
+  --blue: #61afef;
+  --mint: #2ec4b6;
+  --indigo: #818cf8;
+  --teal: #2dd4bf;
+  --text-1: #abb2bf;
+  --text-2: #7f848e;
+  --text-3: #5c6370;
+  --text-bright: #d4d4d4;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(46, 196, 182, 0.4);
+  --sidebar-w: 240px;
+  --statusline-h: 28px;
+  --font: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+
+  /* Surfaces — warm off-white paper */
+  --bg-0: #ece8dc;
+  --bg-1: #f6f3ea;
+  --bg-2: #efebe0;
+  --bg-3: #e6e1d3;
+  --bg-4: #ddd7c7;
+
+  /* Accent — darkened mint for contrast on off-white */
+  --accent: #0d7c73;
+  --accent-soft: rgba(13, 124, 115, 0.10);
+  --accent-dim: rgba(13, 124, 115, 0.55);
+  --accent-bright: #0f948a;
+
+  /* Semantic hues — darkened for legibility on light ground */
+  --amber: #b45309;
+  --red: #bb2d3b;
+  --cyan: #0e7490;
+  --green: #4d7c0f;
+  --purple: #7e22ce;
+  --pink: #be185d;
+  --yellow: #a16207;
+  --blue: #2563eb;
+  --mint: #0d7c73;
+  --indigo: #4f46e5;
+  --teal: #0f766e;
+
+  /* Text */
+  --text-1: #3b4048;
+  --text-2: #6a7180;
+  --text-3: #8d93a0;
+  --text-bright: #16181d;
+
+  /* Lines */
+  --border: rgba(0, 0, 0, 0.14);
+  --border-hover: rgba(13, 124, 115, 0.5);
+}
+
+/* Bleed behind safe areas (Dynamic Island / home indicator) */
+html[data-theme="light"] {
+  background: #e5e1d2;
+}
+
+/* Softer scanlines on paper */
+html[data-theme="light"] body::after {
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.015) 2px,
+    rgba(0, 0, 0, 0.015) 4px
+  );
+}
+
+/* White-alpha hairlines from the dark theme vanish on paper —
+   restate them as black-alpha */
+html[data-theme="light"] .ref-table th + th { border-left-color: rgba(0, 0, 0, 0.08); }
+
+/* ===== Theme toggle button ===== */
+.theme-toggle {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text-2);
+  cursor: pointer;
+  font-family: var(--font, monospace);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  padding: 3px 8px;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+.theme-toggle:hover {
+  color: var(--accent);
+  border-color: var(--border-hover);
+}
+.theme-toggle .theme-toggle-icon { margin-right: 4px; }
+
+/* Placement inside the statusline */
+.statusline .theme-toggle {
+  margin-left: 10px;
+}
+
+/* Fallback fixed placement for pages without a statusline */
+.theme-toggle--floating {
+  position: fixed;
+  right: 14px;
+  bottom: 52px; /* clear page-specific bottom bars (e.g. presentation slide nav) */
+  z-index: 10000;
+  background: var(--bg-2, #1a1a1a);
+  padding: 6px 10px;
+  font-size: 11px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* Collapsible sidebar content groups. */
+nav.sidebar .nav-group {
+  appearance: none;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font-family: var(--font);
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+nav.sidebar .nav-group:hover,
+nav.sidebar .nav-group:focus-visible {
+  color: var(--accent);
+  background: var(--accent-soft);
+  outline: none;
+}
+
+nav.sidebar .nav-group .nav-mark {
+  width: 16px;
+  flex-shrink: 0;
+  text-align: center;
+  font-size: 11px;
+  opacity: 0.5;
+}
+
+nav.sidebar .nav-fallback-group {
+  margin: 0;
+}
+
+nav.sidebar .nav-fallback-group > summary {
+  list-style: none;
+}
+
+nav.sidebar .nav-fallback-group > summary::-webkit-details-marker {
+  display: none;
+}
+
+nav.sidebar .nav-fallback-group[open] > summary .nav-mark {
+  font-size: 0;
+}
+
+nav.sidebar .nav-fallback-group[open] > summary .nav-mark::after {
+  content: '▾';
+  font-size: 11px;
+}
+
+nav.sidebar .nav-fallback-group:not([open]) > .nav-sections {
+  display: none;
+}
+
+nav.sidebar .nav-fallback-group[open] > .nav-sections {
+  max-height: 800px;
+}
+
+main {
+  margin-top: var(--banner-h, 144px);
+  min-height: calc(100vh - var(--statusline-h) - var(--banner-h, 144px));
+}
+
+@media (max-width: 900px) {
+  main { margin-top: var(--banner-h, 120px); }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+  main { margin-top: var(--banner-h, 45px); }
+}

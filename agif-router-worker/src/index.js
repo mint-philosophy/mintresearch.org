@@ -257,6 +257,7 @@ function fellowshipAssetPath(pathname) {
   if (pathname === '/') return '/fellowship/index.html';
   for (const [prefix, source] of Object.entries(daySources)) {
     if (pathname === prefix || pathname === `${prefix}/`) return `/fellowship${prefix}/index.html`;
+    if (pathname === `${prefix}/index.html`) return `/fellowship${prefix}/index.html`;
     if (pathname.startsWith(`${prefix}/`)) return `${source}${pathname.slice(prefix.length)}`;
   }
   if (

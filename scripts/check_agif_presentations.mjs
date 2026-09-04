@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 
 const read = (path) => readFile(path, 'utf8');
@@ -32,30 +33,30 @@ const [
   fellowshipShell,
 ] = await Promise.all([
   read('public/should-we-build-agi/index.html'),
-  read('public/should-we-build-agi/deck.html'),
-  read('public/should-we-build-agi/deck.css'),
+  read('agif-router-worker/site-assets/should-we-build-agi/deck.html'),
+  read('agif-router-worker/site-assets/should-we-build-agi/deck.css'),
   read('public/agi-institutions/index.html'),
-  read('public/agi-institutions/deck.html'),
-  read('public/agi-institutions/deck.css'),
-  read('public/agi-institutions/deck.js'),
-  read('public/agi-institutions/pretext-layout.js'),
-  read('public/agi-institutions/inline-editor.js'),
+  read('agif-router-worker/site-assets/agi-institutions/deck.html'),
+  read('agif-router-worker/site-assets/agi-institutions/deck.css'),
+  read('agif-router-worker/site-assets/agi-institutions/deck.js'),
+  read('agif-router-worker/site-assets/agi-institutions/pretext-layout.js'),
+  read('agif-router-worker/site-assets/agi-institutions/inline-editor.js'),
   read('public/societal-adaptation/index.html'),
-  read('public/societal-adaptation/deck.html'),
-  read('public/societal-adaptation/deck.css'),
-  read('public/societal-adaptation/deck.js'),
-  read('public/societal-adaptation/pretext-layout.js'),
+  read('agif-router-worker/site-assets/societal-adaptation/deck.html'),
+  read('agif-router-worker/site-assets/societal-adaptation/deck.css'),
+  read('agif-router-worker/site-assets/societal-adaptation/deck.js'),
+  read('agif-router-worker/site-assets/societal-adaptation/pretext-layout.js'),
   read('agif-router-worker/src/index.js'),
   read('agif-router-worker/wrangler.toml'),
   read('public/assets/mint-site-nav.v1.js'),
   read('public/sitemap.xml'),
   read('public/agif/index.html'),
   read('agi-editor-worker/wrangler.toml'),
-  read('public/fellowship/index.html'),
-  read('public/fellowship/day-1/index.html'),
-  read('public/fellowship/day-2/index.html'),
-  read('public/fellowship/day-3/index.html'),
-  read('public/assets/fellowship-shell.js'),
+  read('agif-router-worker/site-assets/fellowship/index.html'),
+  read('agif-router-worker/site-assets/fellowship/day-1/index.html'),
+  read('agif-router-worker/site-assets/fellowship/day-2/index.html'),
+  read('agif-router-worker/site-assets/fellowship/day-3/index.html'),
+  read('agif-router-worker/site-assets/assets/fellowship-shell.js'),
 ]);
 
 assert.match(day1Wrapper, noIndex, 'Day 1 framed page must remain noindex');
@@ -87,7 +88,7 @@ assert.match(day3Wrapper, noIndex, 'Day 3 framed page must remain noindex');
 assert.match(day3Deck, noIndex, 'Day 3 deck must remain noindex');
 assert.match(day3Wrapper, /https:\/\/fellowship\.mintresearch\.org\/day-3\//, 'Day 3 canonical must use its protected Fellowship route');
 assert.match(day3Deck, /https:\/\/fellowship\.mintresearch\.org\/day-3\//, 'Day 3 deck canonical must point to its protected Fellowship page');
-assert.match(day3Wrapper, /src="deck\.html\?v=[^"]+"/, 'Day 3 wrapper must load its versioned deck');
+assert.match(fellowshipDay3, /src="deck\.html\?v=[^"]+"/, 'Day 3 wrapper must load its versioned deck');
 assert.match(day3Deck, /href="deck\.css\?v=[^"]+"/, 'Day 3 deck must load its versioned CSS');
 assert.match(day3Deck, /src="deck\.js\?v=[^"]+"/, 'Day 3 deck must load its static navigation');
 assert.match(day3Deck, /src="pretext-layout\.js\?v=[^"]+"/, 'Day 3 deck must load its Pretext layout pass');
@@ -97,7 +98,7 @@ assert.equal((day3Deck.match(/data-sid="d3-[^"]+"/g) || []).length, 8, 'every Da
 assert.match(day3Deck, /id="slideCounter">1 \/ 8/, 'Day 3 counter must use the real slide total');
 assert.equal((day3Deck.match(/class="ticker-cycle"/g) || []).length, 2, 'Day 3 ticker must contain two seamless cycles');
 assert.doesNotMatch(
-  [day3Wrapper, day3Deck, day3Css, day3Js, day3Pretext].join('\n'),
+  [fellowshipDay3, day3Deck, day3Css, day3Js, day3Pretext].join('\n'),
   /speaker-notes|Speaker notes|notes(?:Drawer|Body|Toggle|Close)|notes-(?:drawer|close|empty|toggle|body)|nav-notes|inline-editor|artifact-editor|editorMode|__agiEditor|data-editor|slide-draft|draft-body|slide-hidden|slide-inserted|data-show-hidden|plan-grid-nine|slide-reasons-four/i,
   'Day 3 public assets must not contain speaker-note data or editor payload',
 );
@@ -188,13 +189,23 @@ assert.match(fellowshipHub, /aria-label="Fellowship navigation"/, 'the public Fe
 assert.match(fellowshipShell, /aria-label="Fellowship navigation"/, 'the slide shell must expose Fellowship navigation');
 assert.match(fellowshipShell, /presentation-mode/, 'the Fellowship slide shell must preserve the expand and restore control');
 assert.match(legacyHub, /https:\/\/fellowship\.mintresearch\.org\//, 'the old main-site hub must point to the new canonical host');
+assert.equal(existsSync('public/fellowship'), false, 'the protected Fellowship tree must not be published by GitHub Pages');
+for (const [path, destination] of [
+  ['public/should-we-build-agi/deck.html', 'day-1'],
+  ['public/agi-institutions/deck.html', 'day-2'],
+  ['public/societal-adaptation/deck.html', 'day-3'],
+]) {
+  const legacyDeck = await read(path);
+  assert.match(legacyDeck, new RegExp(`https://fellowship\\.mintresearch\\.org/${destination}/`), `${path} must redirect to its protected route`);
+  assert.doesNotMatch(legacyDeck, /<section class="slide\b/, `${path} must not retain presentation content`);
+}
 assert.ok(nav.includes("href: 'https://fellowship.mintresearch.org/'"), 'the main-site Fellowship branch must link to the new public hub');
 assert.ok(!sitemap.includes('<loc>https://mintresearch.org/agif/</loc>'), 'the superseded main-site hub must leave the main-site sitemap');
 assert.ok(routerConfig.includes('pattern = "fellowship.mintresearch.org"'), 'the Worker must own the Fellowship custom domain');
 for (const route of ['mintresearch.org/agif*', 'mintresearch.org/should-we-build-agi*', 'mintresearch.org/agi-institutions*', 'mintresearch.org/societal-adaptation*']) {
   assert.ok(routerConfig.includes(`pattern = "${route}"`), `the Worker must intercept ${route}`);
 }
-assert.match(routerConfig, /directory = "\.\.\/public"/, 'the Worker must serve the validated static site assets');
+assert.match(routerConfig, /directory = "\.\/site-assets"/, 'the Worker must serve the isolated Fellowship asset tree');
 assert.match(routerConfig, /run_worker_first = true/, 'the password gate must run before static assets');
 assert.match(router, /FELLOWSHIP_PASSWORD/, 'the Fellowship password must be read only from a Worker secret');
 assert.match(router, /ALLOWED_IPS/, 'the IP bypass must be read only from a Worker secret');
@@ -202,4 +213,4 @@ assert.match(router, /HttpOnly; Secure; SameSite=Strict/, 'the Fellowship sessio
 assert.match(router, /X-Robots-Tag/, 'protected presentation routes must add an HTTP noindex directive');
 assert.doesNotMatch(router, /test-only-password|Minty-[A-Za-z0-9_-]{12,}/, 'the production Worker source must not contain a password');
 
-console.log('AGI Fellowship presentation contract OK: open dedicated hub, three password-gated noindex Pretext decks (17/35/8 slides), IP bypass, and protected redirects from the retired routes.');
+console.log('AGI Fellowship presentation contract OK: open dedicated hub, three isolated password-gated noindex Pretext decks (17/35/8 slides), IP bypass, and content-free redirects from the retired Pages routes.');

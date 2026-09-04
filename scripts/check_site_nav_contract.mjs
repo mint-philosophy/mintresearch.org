@@ -19,8 +19,7 @@ const staticPages = [
   'public/guide/index.html',
   'public/newsletter/index.html',
   'public/governing-with-agents/index.html',
-  'public/ai-culture/index.html',
-  'public/agif/index.html'
+  'public/ai-culture/index.html'
 ];
 for (const page of staticPages) {
   const html = fs.readFileSync(page, 'utf8');
@@ -35,10 +34,7 @@ for (const page of staticPages) {
 const presentationPages = [
   'public/nc/index.html',
   'public/FDC.html',
-  'public/navigating/index.html',
-  'public/should-we-build-agi/index.html',
-  'public/agi-institutions/index.html',
-  'public/societal-adaptation/index.html'
+  'public/navigating/index.html'
 ];
 for (const page of presentationPages) {
   const html = fs.readFileSync(page, 'utf8');
@@ -60,8 +56,7 @@ const fallbackPages = [
   'public/data-dash/index.html',
   'public/guide/index.html',
   'public/index.html',
-  'public/newsletter/index.html',
-  'public/agif/index.html'
+  'public/newsletter/index.html'
 ];
 for (const page of fallbackPages) {
   const html = fs.readFileSync(page, 'utf8');
