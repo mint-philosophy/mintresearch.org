@@ -35,7 +35,10 @@ for (const page of staticPages) {
 const presentationPages = [
   'public/nc/index.html',
   'public/FDC.html',
-  'public/navigating/index.html'
+  'public/navigating/index.html',
+  'public/should-we-build-agi/index.html',
+  'public/agi-institutions/index.html',
+  'public/societal-adaptation/index.html'
 ];
 for (const page of presentationPages) {
   const html = fs.readFileSync(page, 'utf8');
@@ -43,6 +46,11 @@ for (const page of presentationPages) {
   assert.equal((html.match(/\/assets\/mint-site-nav\.v1\.js\?v=\d{8}\.\d+/g) || []).length, 1, `${page} must cache-bust the shared navigation`);
   assert.equal((html.match(/\/assets\/mint-banner\.css/g) || []).length, 1, `${page} must load the shared banner stylesheet once`);
   assert.equal((html.match(/\/assets\/mint-banner\.js/g) || []).length, 1, `${page} must load the shared banner once`);
+  assert.equal((html.match(/\/assets\/presentation-shell\.css/g) || []).length, 1, `${page} must load the shared presentation shell stylesheet once`);
+  assert.equal((html.match(/\/assets\/presentation-shell\.js/g) || []).length, 1, `${page} must load the shared presentation shell once`);
+  assert.equal((html.match(/id="siteChrome"/g) || []).length, 1, `${page} must expose the site-chrome mount`);
+  assert.equal((html.match(/id="presentationModeToggle"/g) || []).length, 1, `${page} must expose the expand and restore control`);
+  assert.equal((html.match(/id="presentationFrame"/g) || []).length, 1, `${page} must frame its isolated deck`);
 }
 const fallbackPages = [
   'public/404.html',
@@ -282,7 +290,7 @@ for (const activeCase of [
   { groupId: 'talks', itemId: 'normative-competence', currentUrl: 'https://mintresearch.org/nc/' },
   { groupId: 'papers', itemId: 'blind-refusal', currentUrl: 'https://blindrefusal.mintresearch.org/' },
   { groupId: 'resources', itemId: 'governing-with-agents', currentUrl: 'https://mintresearch.org/governing-with-agents/' },
-  { groupId: 'fellowship', itemId: 'agif-day-2', currentUrl: 'https://agif2.mintresearch.org/' }
+  { groupId: 'fellowship', itemId: 'agif-day-2', currentUrl: 'https://mintresearch.org/agi-institutions/' }
 ]) {
   const activeMount = new FakeElement('div');
   api.render({ target: activeMount, currentUrl: activeCase.currentUrl });

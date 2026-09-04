@@ -95,8 +95,8 @@ automatically for an active child, and uses an accessible disclosure button:
 - `Papers`: `https://blindrefusal.mintresearch.org/` and
   `https://coherence.mintresearch.org/`
 - `Resources`: `/governing-with-agents/` and `/ai-culture/`
-- `AGI Governance Fellowship`: `/agif/` plus the three canonical teaching-deck
-  subdomains
+- `AGI Governance Fellowship`: `/agif/` plus the three framed main-site
+  teaching decks
 
 Only add maintained, intentionally public project microsites. A presentation
 leaf may remain `noindex` while still being linked for participants. Do not
@@ -131,13 +131,18 @@ The canonical wrappers and their isolated deck sources are:
 public/nc/index.html           -> public/nc/deck.html
 public/FDC.html                -> public/FDC-deck.html
 public/navigating/index.html   -> public/navigating/deck.html
+public/should-we-build-agi/index.html -> public/should-we-build-agi/deck.html
+public/agi-institutions/index.html     -> public/agi-institutions/deck.html
+public/societal-adaptation/index.html  -> public/societal-adaptation/deck.html
 ```
 
-All three use the same shell and responsive fitting contract and are listed
-under `Talks` in the primary navigation and sitemap.
+All six use the same shell and responsive fitting contract. The first three are
+listed under `Talks`; the Fellowship presentations are listed under
+`AGI Governance Fellowship`. Every wrapper is in the sitemap.
 
-`/should-we-build-agi/` is a direct backing route for a `noindex` presentation.
-Its deck loads an inline text editor from `public/should-we-build-agi/inline-editor.js`.
+`/should-we-build-agi/` is the canonical framed Day 1 page. Its isolated,
+`noindex` deck loads an inline text editor from
+`public/should-we-build-agi/inline-editor.js`.
 The editing controls appear only when the separate Cloudflare Worker confirms
 the request's edge-observed IP against the secret allowlist; every save is
 checked again server-side. Authorized browsers default to a small pencil control
@@ -150,12 +155,13 @@ hidden. Worker code, tests, deployment configuration, and the exact-IP caveat
 live in `agi-editor-worker/`. The client uses the custom domain first, with the
 Worker's `workers.dev` address and a second custom domain as DNS fallbacks.
 
-The three AGI Governance Fellowship teaching decks have canonical subdomains:
+The three AGI Governance Fellowship teaching decks have canonical framed
+main-site routes:
 
 ```text
-agif1.mintresearch.org -> public/should-we-build-agi/deck.html
-agif2.mintresearch.org -> public/agi-institutions/deck.html
-agif3.mintresearch.org -> public/societal-adaptation/deck.html
+/should-we-build-agi/ -> public/should-we-build-agi/index.html
+/agi-institutions/    -> public/agi-institutions/index.html
+/societal-adaptation/ -> public/societal-adaptation/index.html
 ```
 
 Day 1 is the existing interactive 17-slide `/should-we-build-agi/` deck. Day 2
@@ -163,16 +169,17 @@ is Fable's native 35-slide HTML/Pretext deck, and Day 3 is the native 8-slide
 `Resilience and Adaptation` HTML/Pretext deck. The Day 2 and Day 3 public
 artifacts exclude their private source notes and editor payloads and use the
 same responsive reflow and static navigation approach as Day 1.
-`agif-router-worker/` maps all three exact hosts to their static paths and adds
-an HTTP `X-Robots-Tag`; every wrapper and standalone deck also carries the full
-`noindex` directive. The canonical subdomains are linked from the Fellowship
-sidebar branch and the indexable `/agif/` overview; the subdomains themselves
-remain outside the sitemap, and the backing routes remain outside both
-navigation and the sitemap. Run `npm run check:agif-presentations` and
+The wrappers retain the full MINT site chrome and presentation-mode control;
+the isolated `deck.html` files remain `noindex`. The Fellowship sidebar and
+indexable `/agif/` overview link to the wrappers, and all three wrapper routes
+are in the sitemap. `agif-router-worker/` retains the former `agif1`, `agif2`,
+and `agif3` hosts only as permanent redirects to the framed pages, with an HTTP
+`X-Robots-Tag`; the old hosts no longer proxy standalone decks. Run
+`npm run check:agif-presentations` and
 `npm --prefix agif-router-worker test` before publishing any Fellowship deck or
 changing the routing Worker.
 
-For the four shell-backed presentations listed above, keep deck code isolated
+For the six shell-backed presentations listed above, keep deck code isolated
 inside its iframe so deck-specific keyboard controls, scaling, styles, and
 animations cannot conflict with the site shell. Their deck sources remain
 `noindex`; only their branded wrapper routes are canonical and indexable. The

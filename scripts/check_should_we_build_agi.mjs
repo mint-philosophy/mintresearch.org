@@ -21,9 +21,10 @@ const editor = fs.readFileSync(editorPath, 'utf8');
 const sitemap = fs.readFileSync('public/sitemap.xml', 'utf8');
 const nav = fs.readFileSync('public/assets/mint-site-nav.v1.js', 'utf8');
 
-for (const [name, html] of [['wrapper', wrapper], ['deck', deck]]) {
-  assert.match(html, /<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">/, `${name} must be noindex`);
-}
+assert.doesNotMatch(wrapper, /<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">/, 'framed wrapper must be indexable');
+assert.match(deck, /<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">/, 'isolated deck must remain noindex');
+assert.match(wrapper, /<link rel="canonical" href="https:\/\/mintresearch\.org\/should-we-build-agi\/">/, 'wrapper must be canonical on the main site');
+assert.match(deck, /<link rel="canonical" href="https:\/\/mintresearch\.org\/should-we-build-agi\/">/, 'isolated deck must canonicalize to the framed page');
 
 assert.equal((deck.match(/<section class="slide\b/g) || []).length, 17, 'deck must contain 17 slides');
 assert.equal((deck.match(/aria-label="Slide \d+ of 17:/g) || []).length, 17, 'every slide needs an accessible label');
@@ -132,7 +133,7 @@ assert.match(css, /@media \(max-width: 900px\)/, 'deck must include tablet layou
 assert.match(css, /@media \(max-width: 600px\)/, 'deck must include phone layout');
 assert.match(css, /prefers-reduced-motion/, 'deck must respect reduced motion');
 
-assert.ok(!sitemap.includes('/should-we-build-agi/'), 'unindexed route must not enter the sitemap');
-assert.ok(!nav.includes('/should-we-build-agi/'), 'unindexed route must not enter primary navigation');
+assert.ok(sitemap.includes('<loc>https://mintresearch.org/should-we-build-agi/</loc>'), 'framed route must appear in the sitemap');
+assert.ok(nav.includes("href: '/should-we-build-agi/'"), 'framed route must appear in primary navigation');
 
-console.log('Should We Build AGI microsite contract passed.');
+console.log('Should We Build AGI framed presentation contract passed.');

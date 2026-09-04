@@ -1,45 +1,24 @@
-const ORIGIN = 'https://mintresearch.org';
 const NO_INDEX = 'noindex, nofollow, noarchive, nosnippet, noimageindex';
 
-const sites = {
-  'agif1.mintresearch.org': {
-    basePath: '/should-we-build-agi',
-    entryPath: '/should-we-build-agi/deck.html',
-  },
-  'agif2.mintresearch.org': {
-    basePath: '/agi-institutions',
-    entryPath: '/agi-institutions/deck.html',
-  },
-  'agif3.mintresearch.org': {
-    basePath: '/societal-adaptation',
-    entryPath: '/societal-adaptation/deck.html',
-  },
+const destinations = {
+  'agif1.mintresearch.org': 'https://mintresearch.org/should-we-build-agi/',
+  'agif2.mintresearch.org': 'https://mintresearch.org/agi-institutions/',
+  'agif3.mintresearch.org': 'https://mintresearch.org/societal-adaptation/',
 };
-
-const sharedAsset = /^\/(?:assets\/|_astro\/|favicon(?:[-.])|apple-touch-icon\.png$)/;
-
-function upstreamPath(pathname, site) {
-  if (pathname === '/' || pathname === '/index.html') return site.entryPath;
-  if (sharedAsset.test(pathname)) return pathname;
-  return `${site.basePath}${pathname}`;
-}
 
 function responseHeaders(source) {
   const headers = new Headers(source);
   headers.set('X-Robots-Tag', NO_INDEX);
   headers.set('X-Content-Type-Options', 'nosniff');
-  if (headers.get('Content-Type')?.toLowerCase().includes('text/html')) {
-    headers.set('Cache-Control', 'no-cache');
-  }
   return headers;
 }
 
 export default {
   async fetch(request) {
     const incoming = new URL(request.url);
-    const site = sites[incoming.hostname.toLowerCase()];
+    const destination = destinations[incoming.hostname.toLowerCase()];
 
-    if (!site) {
+    if (!destination) {
       return new Response('Not found', {
         status: 404,
         headers: responseHeaders({ 'Content-Type': 'text/plain; charset=utf-8' }),
@@ -65,16 +44,14 @@ export default {
       });
     }
 
-    const upstream = new URL(ORIGIN);
-    upstream.pathname = upstreamPath(incoming.pathname, site);
-    upstream.search = incoming.search;
-
-    const upstreamRequest = new Request(upstream, request);
-    const response = await fetch(upstreamRequest);
-    return new Response(request.method === 'HEAD' ? null : response.body, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: responseHeaders(response.headers),
+    const target = new URL(destination);
+    target.search = incoming.search;
+    return new Response(null, {
+      status: 308,
+      headers: responseHeaders({
+        'Cache-Control': 'public, max-age=300',
+        Location: target.href,
+      }),
     });
   },
 };

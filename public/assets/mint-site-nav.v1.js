@@ -1,7 +1,7 @@
 (function (root, document) {
   'use strict';
 
-  var VERSION = '1.3.0';
+  var VERSION = '1.3.1';
   var scriptUrl = document.currentScript && document.currentScript.src
     ? document.currentScript.src
     : 'https://mintresearch.org/assets/mint-site-nav.v1.js';
@@ -121,9 +121,9 @@
       label: 'AGI Governance Fellowship',
       children: [
         { id: 'agif-overview', type: 'page', href: '/agif/', label: 'Overview' },
-        { id: 'agif-day-1', type: 'page', href: 'https://agif1.mintresearch.org/', label: 'Day 1 — Should We Build AGI?' },
-        { id: 'agif-day-2', type: 'page', href: 'https://agif2.mintresearch.org/', label: 'Day 2 — AGI Institutions' },
-        { id: 'agif-day-3', type: 'page', href: 'https://agif3.mintresearch.org/', label: 'Day 3 — Resilience and Adaptation' }
+        { id: 'agif-day-1', type: 'page', href: '/should-we-build-agi/', label: 'Day 1 — Should We Build AGI?' },
+        { id: 'agif-day-2', type: 'page', href: '/agi-institutions/', label: 'Day 2 — AGI Institutions' },
+        { id: 'agif-day-3', type: 'page', href: '/societal-adaptation/', label: 'Day 3 — Resilience and Adaptation' }
       ]
     },
     { id: 'corpus-map', type: 'page', href: '/corpus-map/', label: 'Corpus Map', sections: [] },

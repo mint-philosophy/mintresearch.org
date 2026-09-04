@@ -1,17 +1,16 @@
-# AGI Fellowship presentation router
+# AGI Fellowship legacy redirects
 
-This Cloudflare Worker gives the three Fellowship presentations stable
-subdomains while keeping their static source in this repository:
+The Fellowship presentations are canonical framed pages on the main MINT site:
 
-- `agif1.mintresearch.org` → `public/should-we-build-agi/`
-- `agif2.mintresearch.org` → `public/agi-institutions/deck.html`
-- `agif3.mintresearch.org` → `public/societal-adaptation/deck.html`
+- `mintresearch.org/should-we-build-agi/`
+- `mintresearch.org/agi-institutions/`
+- `mintresearch.org/societal-adaptation/`
 
-The Worker accepts only `GET` and `HEAD`, preserves paths, query strings, range
-requests, response status, and cache validators, and adds `X-Robots-Tag` to
-every response. HTML is revalidated rather than held in a browser cache. The
-pages also contain HTML `noindex` directives. They are not access-controlled;
-they are public and linked from the Fellowship hub, but remain unindexed.
+This Cloudflare Worker keeps the former `agif1`, `agif2`, and `agif3`
+subdomains only as permanent redirects to those pages. It does not proxy or
+host standalone decks. Redirects preserve query strings, discard obsolete
+paths, and carry `X-Robots-Tag` so search engines prefer the main-site URLs.
 
-Run `npm test` before `npm run deploy`. Cloudflare custom-domain routes create
-and maintain the DNS records and certificates for all three exact hostnames.
+The Worker accepts only `GET` and `HEAD`. Run `npm test` before
+`npm run deploy`. The custom-domain routes remain in `wrangler.toml` so old
+links keep working while the main-site framed pages are canonical.
