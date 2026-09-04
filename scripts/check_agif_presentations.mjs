@@ -152,6 +152,7 @@ for (const host of ['agif1.mintresearch.org', 'agif2.mintresearch.org', 'agif3.m
   assert.ok(!nav.includes(host), `${host} must remain outside site navigation`);
   assert.ok(!sitemap.includes(host), `${host} must remain outside the sitemap`);
 }
+assert.equal((routerConfig.match(/zone_name = "mintresearch\.org"/g) || []).length, 3, 'every AGIF custom domain must name the Cloudflare zone explicitly');
 assert.match(router, /X-Robots-Tag/, 'router must add an HTTP noindex directive');
 assert.match(router, /request\.method !== 'GET'.*request\.method !== 'HEAD'/s, 'router must reject write methods');
 assert.match(router, /\/agi-institutions\/deck\.html/, 'agif2 root must serve the native Day 2 deck');
