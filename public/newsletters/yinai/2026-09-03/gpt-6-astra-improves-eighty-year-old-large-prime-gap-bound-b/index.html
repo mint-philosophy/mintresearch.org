@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Astra improves an 80-year-old lower bound on long prime gaps — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-03">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-03">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 3 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Astra improves an 80-year-old lower bound on long prime gaps</h1>
+<p class="dek">OpenAI attributes a new log-log improvement to Astra and publishes the proof, a first-person search record, and a repository that describes its Lean formalization as self-assessed.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 3 September 2026</span> <span class="chip">898 words · ~4 min</span></div>
+<div class="article-body">
+<p>OpenAI published <a href="https://cdn.openai.com/pdf/51126fac-1b68-4128-9666-c908bcc16033/long_gaps.pdf">"Improved long gaps between primes"</a> on September 3 and attributes the proof to GPT-6 Astra. The eight-page paper improves the lower bound for the longest known prime-free stretches of the number line by an extra factor of log log X. Rankin established the previous baseline in 1938, and later work improved it only by factors that grow more slowly. Mehtaab Sawhney <a href="https://x.com/mehtaab_sawhney/status/2095597484773134805">described the result on X</a> as the first gain of this order since the 1930s. Erdős problem 4 asked about this family of bounds; the original qualitative question was settled in 2016, while Astra improves the quantitative record.</p><p>Rankin's bound combines several slowly growing logarithmic terms. In 2014, James Maynard and, independently, Kevin Ford, Ben Green, Sergei Konyagin, and Terence Tao proved that its leading constant could grow without bound. Their combined 2018 result added a factor of log log log X. Later improvements, including the August GPT-5.6 Sol argument, remained at that slower scale. Astra's extra log log X factor eventually exceeds any fixed multiple of those gains, although the difference becomes large only at enormous values of X. The advance is asymptotic: it changes the proved rate, not a table of newly discovered numerical prime gaps.</p><p>The elementary intuition starts with factorials. For any positive integer n, the numbers n!+2 through n!+n are all composite because each has an obvious divisor between 2 and n. Modern long-gap proofs refine that construction: they assign residue classes to small primes so that the primes collectively cover an interval, then use the Chinese remainder theorem to locate a corresponding stretch without primes. Astra's proof separates the desired interval length from the size of its starting point and covers the remaining positions in a more efficient final step.</p><p>In plain terms, OpenAI proves that if a small set of possible prime positions remains after the first covering stage, one carefully chosen shift can make all of them composite at once. OpenAI finds that shift with a weighted sieve, giving more weight to choices likely to cover many survivors and proving that some choice leaves none. The authors connect the construction to Ben Green and Terence Tao's enveloping sieve and James Maynard's multidimensional sieve, but combine those tools for a bound that had resisted the earlier approach.</p><p>The main proposition handles an interval whose length can reach roughly x(log x)² after a first round of residue classes has removed most candidate primes. The proof averages over possible shifts using the square of a truncated divisor sum, which keeps every weight nonnegative. If the weighted expected number of uncovered positions is below one, at least one shift covers them all. The final Erdős-Rankin construction substitutes that proposition for assigning a different unused prime to every survivor. That substitution contributes the additional log log factor.</p><p>OpenAI released two companion records. A <a href="https://cdn.openai.com/pdf/51126fac-1b68-4128-9666-c908bcc16033/long_gaps_abridged_cot.pdf">17-page abridged chain of thought</a> narrates the search in the first person, beginning from the goal of finding a long interval without primes and developing the separation between interval length and starting point. The <a href="https://github.com/openai/LongGapsBetweenPrimes">LongGapsBetweenPrimes repository</a> contains a 4,546-line Lean 4 formalization with no placeholder proofs and only Lean's three standard axioms. Its metadata says an Astra agent working through Codex produced the formalization in two hours, after which people made quality improvements. OpenAI describes the review status as self-assessed in the repository metadata.</p><p>The abridged chain of thought records why the search changed direction. The model argues that the Chinese remainder theorem guarantees a starting point below a large product of primes but may badly overestimate the earliest place where the desired interval occurs. The model then treats the starting point as something to optimize probabilistically after choosing the interval. The final paper is much shorter and removes that exploratory path. The exploratory account presents the heuristic that suggested the construction; the final paper contains the proof.</p><p>The immediate precursor came from GPT-5.6 Sol. A proof dated August 25, <a href="https://github.com/DottedCalculator/ai-math/blob/main/Erdos_4_GPT_5.6_Sol.pdf">"A tilted residue-class construction for long prime-free intervals,"</a> gained another factor of roughly log log log X and was submitted to erdosproblems.com the next day. Ben Green <a href="https://www.erdosproblems.com/forum/thread/4/proof-claims">wrote after discussions with Tao and Maynard</a> that he was largely convinced the rough argument was correct, helped by an unconditional Lean formalization. He also rejected the description of the idea as merely incremental: in his assessment, its sieve departed materially from the Erdős-Rankin procedure used by the prior bounds. Astra's paper cites that Sol construction and obtains the larger log log X gain.</p><p>Commenters on X disagreed about how to describe the advance. Jared Duker Lichtman <a href="https://x.com/jdlichtman/status/2095660916310483087">emphasized the full order-of-magnitude gain</a> over the Ford, Green, Konyagin, Maynard, and Tao bound. Michael Zaal <a href="https://x.com/MichaelZaal8/status/2095668298264309969">answered that Astra extended their method</a> and that the framing exaggerated the break. Lichtman agreed that AI mathematics has so far combined existing techniques, while stressing that researchers had obtained only log log log improvements over roughly 80 years. Their exchange separates two questions: how much the bound improved and how much conceptual novelty produced it.</p><p>The new result remains far below the scale mathematicians expect. The <a href="https://www.erdosproblems.com/4">Erdős problem catalogue</a> says the likely maximum gap grows on the order of (log X)², much faster than the proved lower bound. Even so, an unbounded log log factor is a genuine record. OpenAI published the mathematical paper, a record of the search, and a machine-checkable formalization; independent review will determine how mathematicians understand the proof and incorporate it into the literature.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://x.com/mehtaab_sawhney/status/2095597484773134805">As part of the GPT-6 Astra launch, we announced that Astra had given an improvement to the longest gap between primes (4-post thread) - Mehtaab Sawhney on X</a> <span class="how">— Assigned source; read in full from the on-disk packet and the dossier. Supplies the 'first such improvement since the 1930's' claim, the log log log attribution to subsets of Ford, Green, Konyagin, Maynard and Tao and to GPT 5.6 Sol, the n!+2 explanation, and the 'portion of interval' and 'much more quantitatively efficient' quotes. His title is omitted as unverified.</span></li>
+<li><a href="https://cdn.openai.com/pdf/51126fac-1b68-4128-9666-c908bcc16033/long_gaps.pdf">Improved long gaps between primes - OpenAI</a> <span class="how">— Primary document; fetched directly and checked with pdftotext (8 pages, author 'OpenAI'). Supplies the abstract quote, Theorem 1.1, the log2 X improvement over Rankin's (1.1), Proposition 1.2, the Section 3 substitution quote, the nonnegative-weight sentence, the Green-Tao and Maynard antecedents, and the historical chain in the introduction.</span></li>
+<li><a href="https://cdn.openai.com/pdf/51126fac-1b68-4128-9666-c908bcc16033/long_gaps_abridged_cot.pdf">Abridged chain of thought for 'Improved long gaps between primes' - OpenAI</a> <span class="how">— Companion document read by the researcher; supplies the seventeen-page length, first-person opening quote, the two-demands framing and the Chinese remainder theorem overestimate argument.</span></li>
+<li><a href="https://github.com/openai/LongGapsBetweenPrimes">openai/LongGapsBetweenPrimes - GitHub</a> <span class="how">— Formalization repository; formalization.yaml fetched directly from the master branch and GitHub API metadata checked (created 2 Sep, pushed 3 Sep, Apache-2.0). Supplies the 4,546-line file, sorry_count 0, three standard axioms, Codex two-hour wall time, the human-in-the-loop quote, 'self-assessed' review status, and the Alexeev commits. Reported as the repository's own declared metadata, not an independent build.</span></li>
+<li><a href="https://www.erdosproblems.com/4">Erdős Problem #4 - erdosproblems.com</a> <span class="how">— Problem page as read on 4 September: PROVED status, Maynard and Ford-Green-Konyagin-Tao credited, GPT 5.6 bound still listed as the state of the art, likely truth of order (log n)^2, and Erdős's revision to $5,000 with $10,000 reserved for a (log n)^(1+c) bound. Basis for the no-proof-claim-filed statement.</span></li>
+<li><a href="https://www.erdosproblems.com/forum/thread/4/proof-claims">Erdős Problems forum, problem #4 proof claims thread - erdosproblems.com</a> <span class="how">— Precursor reception: Ben Green's 'truly horrible' exposition comment, his 'more or less convinced' assessment after talking with Tao and Maynard, the 'lean formalisation exists' quote, the rejection of 'incremental', the Erdős-prize remark, the months-long write-up plan; Boris Alexeev's 27 August 'formalized unconditionally in Lean' statement; DottedCalculator's 26 August submission.</span></li>
+<li><a href="https://github.com/DottedCalculator/ai-math/blob/main/Erdos_4_GPT_5.6_Sol.pdf">A Tilted Residue-Class Construction for Long Prime-Free Intervals - GPT 5.6 Sol, posted by DottedCalculator</a> <span class="how">— The eight-day-old precursor, dated 25 August; cited as reference [13] of the Astra paper. Abstract and contents read by the researcher, body not.</span></li>
+<li><a href="https://x.com/jdlichtman/status/2095660916310483087">In 8 pages, GPT-6 blows away Ford-Green-Konyagin-Maynard-Tao's result - Jared Duker Lichtman on X</a> <span class="how">— Verbatim reaction quote; Lichtman's Stanford title verified by the researcher on the department page.</span></li>
+<li><a href="https://x.com/MichaelZaal8/status/2095668298264309969">Come on, you know perfectly well it's an extension of their method - Michael Zaal on X</a> <span class="how">— The dissenting reply, quoted verbatim.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-gpt-6-astra-improves-eighty-year-old-large-prime-gap-bound-b">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-03/gpt-6-astra-improves-eighty-year-old-large-prime-gap-bound-b</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
