@@ -294,7 +294,7 @@ for (const activeCase of [
   { groupId: 'talks', itemId: 'normative-competence', currentUrl: 'https://mintresearch.org/nc/' },
   { groupId: 'papers', itemId: 'blind-refusal', currentUrl: 'https://blindrefusal.mintresearch.org/' },
   { groupId: 'resources', itemId: 'governing-with-agents', currentUrl: 'https://mintresearch.org/governing-with-agents/' },
-  { groupId: 'fellowship', itemId: 'agif-overview', currentUrl: 'https://mintresearch.org/agif/' }
+  { groupId: 'fellowship', itemId: 'agif-overview', currentUrl: 'https://fellowship.mintresearch.org/' }
 ]) {
   const activeMount = new FakeElement('div');
   api.render({ target: activeMount, currentUrl: activeCase.currentUrl });

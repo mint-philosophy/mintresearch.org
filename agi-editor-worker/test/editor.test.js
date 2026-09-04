@@ -20,11 +20,12 @@ class MemoryKV {
 }
 
 const origin = 'https://mintresearch.org';
+const fellowshipOrigin = 'https://fellowship.mintresearch.org';
 const endpoint = 'https://agi-editor.mintresearch.org/v1/decks/should-we-build-agi';
 
 function environment() {
   return {
-    ALLOWED_ORIGINS: `${origin},https://www.mintresearch.org`,
+    ALLOWED_ORIGINS: `${origin},https://www.mintresearch.org,${fellowshipOrigin}`,
     ALLOWED_IPS: '203.0.113.8',
     CONTENT_OVERRIDES: new MemoryKV(),
   };
@@ -44,6 +45,13 @@ test('public readers receive overrides without edit authority', async () => {
 
 test('the configured IP receives edit authority', async () => {
   const response = await worker.fetch(request('GET', '203.0.113.8'), environment());
+  assert.equal((await response.json()).canEdit, true);
+});
+
+test('the Fellowship host is an allowed editor origin', async () => {
+  const response = await worker.fetch(request('GET', '203.0.113.8', undefined, fellowshipOrigin), environment());
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('Access-Control-Allow-Origin'), fellowshipOrigin);
   assert.equal((await response.json()).canEdit, true);
 });
 

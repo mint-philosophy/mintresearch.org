@@ -1,7 +1,7 @@
 (function (root, document) {
   'use strict';
 
-  var VERSION = '1.3.2';
+  var VERSION = '1.3.3';
   var scriptUrl = document.currentScript && document.currentScript.src
     ? document.currentScript.src
     : 'https://mintresearch.org/assets/mint-site-nav.v1.js';
@@ -120,7 +120,7 @@
       type: 'group',
       label: 'AGI Governance Fellowship',
       children: [
-        { id: 'agif-overview', type: 'page', href: '/agif/', label: 'Overview' }
+        { id: 'agif-overview', type: 'page', href: 'https://fellowship.mintresearch.org/', label: 'Overview' }
       ]
     },
     { id: 'corpus-map', type: 'page', href: '/corpus-map/', label: 'Corpus Map', sections: [] },

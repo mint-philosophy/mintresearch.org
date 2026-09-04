@@ -11,7 +11,8 @@ Security boundaries:
   restricted by the request's Cloudflare-provided client IP.
 - `ALLOWED_IPS` is a Worker secret, never a public JavaScript value or tracked
   configuration value.
-- CORS accepts only `mintresearch.org` and `www.mintresearch.org`.
+- CORS accepts the maintained MINT presentation origins, including
+  `fellowship.mintresearch.org` for the password-protected Day 1 shell.
 - Saves are revision-checked and bounded by field count, field size, and total
   size. Ninety days of revision snapshots are retained in KV.
 - If the Worker is unavailable, the static deck remains readable and the edit

@@ -23,8 +23,13 @@ const [
   routerConfig,
   nav,
   sitemap,
-  hub,
+  legacyHub,
   editorConfig,
+  fellowshipHub,
+  fellowshipDay1,
+  fellowshipDay2,
+  fellowshipDay3,
+  fellowshipShell,
 ] = await Promise.all([
   read('public/should-we-build-agi/index.html'),
   read('public/should-we-build-agi/deck.html'),
@@ -46,20 +51,25 @@ const [
   read('public/sitemap.xml'),
   read('public/agif/index.html'),
   read('agi-editor-worker/wrangler.toml'),
+  read('public/fellowship/index.html'),
+  read('public/fellowship/day-1/index.html'),
+  read('public/fellowship/day-2/index.html'),
+  read('public/fellowship/day-3/index.html'),
+  read('public/assets/fellowship-shell.js'),
 ]);
 
 assert.match(day1Wrapper, noIndex, 'Day 1 framed page must remain noindex');
 assert.match(day1Deck, noIndex, 'Day 1 deck must remain noindex');
-assert.match(day1Wrapper, /https:\/\/mintresearch\.org\/should-we-build-agi\//, 'Day 1 canonical must use its framed main-site route');
-assert.match(day1Deck, /https:\/\/mintresearch\.org\/should-we-build-agi\//, 'Day 1 deck canonical must point to its framed page');
+assert.match(day1Wrapper, /https:\/\/fellowship\.mintresearch\.org\/day-1\//, 'Day 1 canonical must use its protected Fellowship route');
+assert.match(day1Deck, /https:\/\/fellowship\.mintresearch\.org\/day-1\//, 'Day 1 deck canonical must point to its protected Fellowship page');
 assert.match(day1Deck, /pretext-layout\.js/, 'Day 1 must retain its Pretext layout pass');
-assert.match(editorConfig, /https:\/\/agif1\.mintresearch\.org/, 'Day 1 editor must allow the canonical origin');
+assert.match(editorConfig, /https:\/\/fellowship\.mintresearch\.org/, 'Day 1 editor must allow the canonical Fellowship origin');
 assert.equal((day1Deck.match(/class="ticker-cycle"/g) || []).length, 2, 'Day 1 ticker must contain two seamless cycles');
 
 assert.match(day2Wrapper, noIndex, 'Day 2 framed page must remain noindex');
 assert.match(day2Deck, noIndex, 'Day 2 deck must remain noindex');
-assert.match(day2Wrapper, /https:\/\/mintresearch\.org\/agi-institutions\//, 'Day 2 canonical must use its framed main-site route');
-assert.match(day2Deck, /https:\/\/mintresearch\.org\/agi-institutions\//, 'Day 2 deck canonical must point to its framed page');
+assert.match(day2Wrapper, /https:\/\/fellowship\.mintresearch\.org\/day-2\//, 'Day 2 canonical must use its protected Fellowship route');
+assert.match(day2Deck, /https:\/\/fellowship\.mintresearch\.org\/day-2\//, 'Day 2 deck canonical must point to its protected Fellowship page');
 assert.equal((day2Deck.match(/<section class="slide\b/g) || []).length, 35, 'Day 2 must expose all 35 Fable slides');
 assert.equal((day2Deck.match(/aria-label="Slide \d+ of 35:/g) || []).length, 35, 'every Day 2 slide needs navigation metadata');
 assert.doesNotMatch(
@@ -75,8 +85,8 @@ assert.equal((day2Deck.match(/class="ticker-cycle"/g) || []).length, 2, 'Day 2 t
 
 assert.match(day3Wrapper, noIndex, 'Day 3 framed page must remain noindex');
 assert.match(day3Deck, noIndex, 'Day 3 deck must remain noindex');
-assert.match(day3Wrapper, /https:\/\/mintresearch\.org\/societal-adaptation\//, 'Day 3 canonical must use its framed main-site route');
-assert.match(day3Deck, /https:\/\/mintresearch\.org\/societal-adaptation\//, 'Day 3 deck canonical must point to its framed page');
+assert.match(day3Wrapper, /https:\/\/fellowship\.mintresearch\.org\/day-3\//, 'Day 3 canonical must use its protected Fellowship route');
+assert.match(day3Deck, /https:\/\/fellowship\.mintresearch\.org\/day-3\//, 'Day 3 deck canonical must point to its protected Fellowship page');
 assert.match(day3Wrapper, /src="deck\.html\?v=[^"]+"/, 'Day 3 wrapper must load its versioned deck');
 assert.match(day3Deck, /href="deck\.css\?v=[^"]+"/, 'Day 3 deck must load its versioned CSS');
 assert.match(day3Deck, /src="deck\.js\?v=[^"]+"/, 'Day 3 deck must load its static navigation');
@@ -149,27 +159,47 @@ for (const token of ['ArrowRight', 'ArrowLeft', 'touchstart', 'touchend', '#slid
 assert.match(day3Js, /closest\('\.table-scroll, \.ledger-scroll/, 'Day 3 swipe navigation must not claim table gestures');
 
 const fellowshipRoutes = [
-  ['agif1.mintresearch.org', '/should-we-build-agi/'],
-  ['agif2.mintresearch.org', '/agi-institutions/'],
-  ['agif3.mintresearch.org', '/societal-adaptation/'],
+  ['agif1.mintresearch.org', '/should-we-build-agi/', '/day-1/'],
+  ['agif2.mintresearch.org', '/agi-institutions/', '/day-2/'],
+  ['agif3.mintresearch.org', '/societal-adaptation/', '/day-3/'],
 ];
 
-for (const [host, route] of fellowshipRoutes) {
+for (const [host, oldRoute, protectedRoute] of fellowshipRoutes) {
   assert.ok(router.includes(`'${host}'`), `router must recognize ${host}`);
   assert.ok(routerConfig.includes(`pattern = "${host}"`), `Worker must own ${host}`);
-  assert.ok(router.includes(`https://mintresearch.org${route}`), `${host} must redirect to ${route}`);
-  assert.ok(hub.includes(`href="${route}"`), `${route} must remain reachable from the Fellowship hub`);
-  assert.ok(!nav.includes(route), `${route} must remain outside site navigation`);
-  assert.ok(!sitemap.includes(`<loc>https://mintresearch.org${route}</loc>`), `${route} must remain outside the sitemap`);
+  assert.ok(router.includes(`'${oldRoute.replace(/\/$/, '')}'`), `router must intercept ${oldRoute}`);
+  assert.ok(fellowshipHub.includes(`href="${protectedRoute}"`), `${protectedRoute} must be reachable from the public Fellowship hub`);
+  assert.ok(!nav.includes(oldRoute), `${oldRoute} must remain outside site navigation`);
+  assert.ok(!sitemap.includes(`<loc>https://mintresearch.org${oldRoute}</loc>`), `${oldRoute} must remain outside the main-site sitemap`);
   assert.ok(!nav.includes(host), `${host} must not appear in site navigation`);
   assert.ok(!sitemap.includes(host), `${host} must remain outside the sitemap`);
 }
-assert.ok(nav.includes("href: '/agif/'"), 'the Fellowship overview must appear in site navigation');
-assert.ok(sitemap.includes('<loc>https://mintresearch.org/agif/</loc>'), 'the Fellowship overview must appear in the sitemap');
-assert.equal((routerConfig.match(/zone_name = "mintresearch\.org"/g) || []).length, 3, 'every AGIF custom domain must name the Cloudflare zone explicitly');
-assert.match(router, /X-Robots-Tag/, 'router must add an HTTP noindex directive');
-assert.match(router, /request\.method !== 'GET'.*request\.method !== 'HEAD'/s, 'router must reject write methods');
-assert.match(router, /status:\s*308/, 'legacy subdomains must use permanent redirects');
-assert.doesNotMatch(router, /await\s+fetch\(|globalThis\.fetch|\bupstream(?:Path|Request)\b/, 'legacy subdomains must not proxy standalone deck content');
 
-console.log('AGI Fellowship presentation contract OK: three noindex framed pages outside nav and sitemap, native Pretext decks (17/35/8 slides), and permanent legacy-subdomain redirects.');
+for (const [day, wrapper] of [['day-1', fellowshipDay1], ['day-2', fellowshipDay2], ['day-3', fellowshipDay3]]) {
+  assert.match(wrapper, noIndex, `${day} Fellowship wrapper must remain noindex`);
+  assert.match(wrapper, new RegExp(`https://fellowship\\.mintresearch\\.org/${day}/`), `${day} wrapper must use the Fellowship canonical URL`);
+  assert.match(wrapper, /\/assets\/fellowship-shell\.js\?v=/, `${day} wrapper must load the Fellowship navigation shell`);
+  assert.match(wrapper, /src="deck\.html\?v=/, `${day} wrapper must frame its native deck`);
+}
+
+assert.match(fellowshipHub, /<link rel="canonical" href="https:\/\/fellowship\.mintresearch\.org\/">/, 'the public Fellowship hub must be canonical on its own host');
+assert.doesNotMatch(fellowshipHub, noIndex, 'the public Fellowship hub must remain indexable');
+assert.match(fellowshipHub, /aria-label="Fellowship navigation"/, 'the public Fellowship hub must expose its own navigation');
+assert.match(fellowshipShell, /aria-label="Fellowship navigation"/, 'the slide shell must expose Fellowship navigation');
+assert.match(fellowshipShell, /presentation-mode/, 'the Fellowship slide shell must preserve the expand and restore control');
+assert.match(legacyHub, /https:\/\/fellowship\.mintresearch\.org\//, 'the old main-site hub must point to the new canonical host');
+assert.ok(nav.includes("href: 'https://fellowship.mintresearch.org/'"), 'the main-site Fellowship branch must link to the new public hub');
+assert.ok(!sitemap.includes('<loc>https://mintresearch.org/agif/</loc>'), 'the superseded main-site hub must leave the main-site sitemap');
+assert.ok(routerConfig.includes('pattern = "fellowship.mintresearch.org"'), 'the Worker must own the Fellowship custom domain');
+for (const route of ['mintresearch.org/agif*', 'mintresearch.org/should-we-build-agi*', 'mintresearch.org/agi-institutions*', 'mintresearch.org/societal-adaptation*']) {
+  assert.ok(routerConfig.includes(`pattern = "${route}"`), `the Worker must intercept ${route}`);
+}
+assert.match(routerConfig, /directory = "\.\.\/public"/, 'the Worker must serve the validated static site assets');
+assert.match(routerConfig, /run_worker_first = true/, 'the password gate must run before static assets');
+assert.match(router, /FELLOWSHIP_PASSWORD/, 'the Fellowship password must be read only from a Worker secret');
+assert.match(router, /ALLOWED_IPS/, 'the IP bypass must be read only from a Worker secret');
+assert.match(router, /HttpOnly; Secure; SameSite=Strict/, 'the Fellowship session cookie must use secure attributes');
+assert.match(router, /X-Robots-Tag/, 'protected presentation routes must add an HTTP noindex directive');
+assert.doesNotMatch(router, /test-only-password|Minty-[A-Za-z0-9_-]{12,}/, 'the production Worker source must not contain a password');
+
+console.log('AGI Fellowship presentation contract OK: open dedicated hub, three password-gated noindex Pretext decks (17/35/8 slides), IP bypass, and protected redirects from the retired routes.');
