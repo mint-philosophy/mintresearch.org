@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Claude formalizes an established proof of Fermat's Last Theorem — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-04">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-04">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 4 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Claude formalizes an established proof of Fermat's Last Theorem</h1>
+<p class="dek">Claude agents translated an established Fermat proof into Lean in eleven days with occasional human guidance. Kevin Buzzard independently checked the result, while continuing his project to make the mathematics reusable and readable.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 4 September 2026</span> <span class="chip">833 words · ~4 min</span></div>
+<div class="article-body">
+<p>Claude agents have produced the first complete computer-checked formalization of an established proof of Fermat’s Last Theorem, Anthropic reports in its September 4 research account, <a href="https://www.anthropic.com/research/formalizing-fermats-last-theorem">“Formalizing Fermat’s Last Theorem.”</a> The theorem says that no positive whole numbers a, b and c satisfy aⁿ + bⁿ = cⁿ when n is greater than two. Andrew Wiles proved it in the 1990s, with Richard Taylor helping repair a gap. Claude’s achievement was to translate the argument and its supporting mathematics into Lean, a language whose proof checker verifies every logical step. The agents completed the formalization in eleven days.</p>
+<p>Kevin Buzzard of Imperial College London, who leads a human effort to formalize the theorem, <a href="https://xenaproject.wordpress.com/2026/09/04/flt-anthropic-has-beaten-me-to-it/">reported independently on September 4</a> that he had compiled Anthropic’s code and successfully run Comparator, a tool that checks whether a proof establishes the intended statement. Buzzard congratulated Anthropic and wrote that the result shows how much automatic formalization can now accomplish. He expects such tools to make mathematical refereeing easier and expose gaps in arguments that researchers have treated as established.</p>
+<p>Anthropic researcher Tianyi Peng, whose group at Columbia University builds formalization tools, led dozens of agents using a system based on Claude Code. Anthropic describes the internal model as roughly comparable to Claude Fable 5.1. Peng occasionally directed priorities; the <a href="https://www-cdn.anthropic.com/9e431dff043da6538d99d6c2d231b670aa3da263.pdf">companion account of the run</a> says humans wrote no mathematics or Lean during the attempt beyond the goal’s one-line statement. The agents built on existing human work in Mathlib, Lean’s community mathematics library, as well as Buzzard’s <a href="https://github.com/ImperialCollegeLondon/FLT">Imperial project</a> and the earlier flt-regular project. The run began August 7 and completed its final theorem on August 17.</p>
+<p>Anthropic’s earlier attempts had failed when agents lost track of the project and stopped collaborating effectively. The successful attempt used Prove2Me, Peng’s group’s open platform for coordinating formalization. It keeps a shared graph showing which theorems depend on which others, so agents can choose a useful unfinished step without remembering the whole project. It also separates statements from proofs to speed compilation and attaches plain-language descriptions to help agents find results they can reuse. In Anthropic’s account, agents checked one another’s proposed statements and abandoned arguments when another agent identified a mistake.</p>
+<p>The final proof runs to about 13 million lines of Lean, more than five times the size of Mathlib. Anthropic notes that its code is probably much longer than necessary; Mathlib has been written for concision and reuse. The large output also reflects the work that formalization demands. A human exposition leaves routine deductions unstated and cites results from the literature. A proof checker needs those deductions supplied and the cited mathematics either proved in the same system or available in its library. Claude’s final argument depends on roughly 29,500 theorems.</p>
+<p>Anthropic’s <a href="https://github.com/anthropics/fermats-last-theorem/blob/main/PROOF-PATH.md">walk-through</a> follows the 1995 exposition by Henri Darmon, Fred Diamond and Richard Taylor. It begins by supposing a Fermat counterexample exists and using it to construct an elliptic curve, a kind of algebraic curve. The subsequent argument establishes properties of that curve that cannot coexist, ruling out the supposed counterexample. The code proves the supporting classical results in the particular forms needed for this argument. For example, it develops enough of Barry Mazur’s work for the large-prime cases, with separate arguments handling smaller exponents. Readers should therefore check an intermediate theorem’s exact statement before using it as a general result.</p>
+<p>The <a href="https://github.com/anthropics/fermats-last-theorem">repository</a> records several checks of the completed proof. A fresh build checked the entire development and confirmed that the final theorem used only Lean’s three standard axioms, with no unproved placeholders or extra assumptions. Comparator checked the final statement and its definitions against a reference written using Mathlib and replayed the proof through Lean’s kernel, the part that verifies logical deductions. A second implementation of that kernel, nanoda, also accepted the proof. Anthropic published its small nanoda modifications for progress reporting and speed, stating that they leave its checking rules unchanged. These checks establish the final theorem without requiring every intermediate result’s name to be an accurate description.</p>
+<p>The code still needs substantial work before it could become reusable library material. In the companion document, Claude’s own assessment identifies repeated theorem statements, restricted intermediate results and files too long for Mathlib’s rules; roughly two in five theorem statements repeat elsewhere. Anthropic labels the repository a research artifact and says it is not maintained. Buzzard’s project will continue contributing fundamental objects from modern number theory to Mathlib and producing an interactive explanation of a modern proof. His September 4 post says the Anthropic formalization follows the early literature and adds no new mathematics.</p>
+<p>Anthropic argues that formalized proofs could routinely accompany mathematical papers, helping human reviewers cope with the volume of AI-generated results. The separate <a href="https://mintresearch.org/newsletters/yinai/2026-09-04/#story-gpt-6-astra-autonomously-disproves-90-year-k-the-conjecture">Astra counterexample to Köthe’s matrix conjecture</a> uses Lean to check a proposed new result. For the Fermat project, the established proof gave researchers a demanding test of whether agents could translate a large body of mathematics into a form a computer can verify. Anthropic says that formal verification should accompany a human-understandable exposition.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.anthropic.com/research/formalizing-fermats-last-theorem">Formalizing Fermat's Last Theorem; Anthropic</a></li>
+<li><a href="https://www-cdn.anthropic.com/9e431dff043da6538d99d6c2d231b670aa3da263.pdf">Formalizing Fermat's Last Theorem in Lean: A timeline and selected excerpts from Claude's reasoning; Anthropic</a></li>
+<li><a href="https://github.com/anthropics/fermats-last-theorem">anthropics/fermats-last-theorem; README.md</a></li>
+<li><a href="https://github.com/anthropics/fermats-last-theorem/blob/main/PROOF-PATH.md">anthropics/fermats-last-theorem; PROOF-PATH.md</a></li>
+<li><a href="https://xenaproject.wordpress.com/2026/09/04/flt-anthropic-has-beaten-me-to-it/">FLT: Anthropic has beaten me to it; Kevin Buzzard, Xena Project (post and comments)</a></li>
+<li><a href="https://github.com/ImperialCollegeLondon/FLT">FLT; Imperial College London formalization project (Kevin Buzzard and contributors)</a></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-04/#story-gpt-6-astra-autonomously-disproves-90-year-k-the-conjecture">Astra’s counterexample to Köthe’s matrix conjecture; YiNAI September 4</a></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-claude-formalizes-fermat-s-last-theorem-in-lean-over-11-auto">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-04/claude-formalizes-fermat-s-last-theorem-in-lean-over-11-auto</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
