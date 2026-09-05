@@ -152,7 +152,8 @@ assert.equal((definitionsDeck.match(/aria-label="Slide \d+ of 6:/g) || []).lengt
 assert.equal((definitionsDeck.match(/data-sid="df-[^"]+"/g) || []).length, 6, 'every Definitions slide needs a stable source identifier');
 assert.match(definitionsDeck, /id="slideCounter">1 \/ 6/, 'Definitions counter must use the real slide total');
 assert.equal((definitionsDeck.match(/class="ticker-cycle"/g) || []).length, 2, 'Definitions ticker must contain two seamless cycles');
-assert.match(definitionsCss, /--blue:\s*#47657a/i, 'Definitions must use its slate-blue accent');
+assert.match(definitionsCss, /--blue:\s*#3558d4/i, 'Definitions must use its cobalt accent');
+assert.match(day1Css, /--blue:\s*#47657a/i, 'Day 1 must use its slate-blue accent');
 assert.match(definitionsCss, /height:\s*100dvh/, 'Definitions must account for mobile browser chrome');
 assert.match(definitionsCss, /@media \(max-width: 900px\) and \(orientation: portrait\)/, 'Definitions must have readable portrait layouts');
 assert.match(definitionsCss, /@media \(max-height: 600px\) and \(orientation: landscape\)/, 'Definitions must have short-landscape layouts');
