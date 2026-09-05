@@ -36,6 +36,11 @@ const [
   projectsCss,
   projectsJs,
   projectsPretext,
+  definitionsWrapper,
+  definitionsDeck,
+  definitionsCss,
+  definitionsJs,
+  definitionsPretext,
 ] = await Promise.all([
   read('public/should-we-build-agi/index.html'),
   read('agif-router-worker/site-assets/should-we-build-agi/deck.html'),
@@ -67,6 +72,11 @@ const [
   read('agif-router-worker/site-assets/projects/deck.css'),
   read('agif-router-worker/site-assets/projects/deck.js'),
   read('agif-router-worker/site-assets/projects/pretext-layout.js'),
+  read('agif-router-worker/site-assets/fellowship/definitions/index.html'),
+  read('agif-router-worker/site-assets/definitions/deck.html'),
+  read('agif-router-worker/site-assets/definitions/deck.css'),
+  read('agif-router-worker/site-assets/definitions/deck.js'),
+  read('agif-router-worker/site-assets/definitions/pretext-layout.js'),
 ]);
 
 assert.match(day1Wrapper, noIndex, 'Day 1 framed page must remain noindex');
@@ -132,6 +142,36 @@ assert.doesNotMatch(
   'Projects public assets must not contain speaker-note data, controls, or source-only notes',
 );
 
+assert.match(definitionsDeck, noIndex, 'Definitions deck must remain noindex');
+assert.match(definitionsDeck, /https:\/\/fellowship\.mintresearch\.org\/definitions\//, 'Definitions canonical must use its protected Fellowship route');
+assert.match(definitionsDeck, /href="deck\.css\?v=[^"]+"/, 'Definitions must load its versioned CSS');
+assert.match(definitionsDeck, /src="deck\.js\?v=[^"]+"/, 'Definitions must load its static navigation');
+assert.match(definitionsDeck, /src="pretext-layout\.js\?v=[^"]+"/, 'Definitions must load its Pretext layout pass');
+assert.equal((definitionsDeck.match(/<section class="slide\b/g) || []).length, 6, 'Definitions must expose all 6 source slides');
+assert.equal((definitionsDeck.match(/aria-label="Slide \d+ of 6:/g) || []).length, 6, 'every Definitions slide needs navigation metadata');
+assert.equal((definitionsDeck.match(/data-sid="df-[^"]+"/g) || []).length, 6, 'every Definitions slide needs a stable source identifier');
+assert.match(definitionsDeck, /id="slideCounter">1 \/ 6/, 'Definitions counter must use the real slide total');
+assert.equal((definitionsDeck.match(/class="ticker-cycle"/g) || []).length, 2, 'Definitions ticker must contain two seamless cycles');
+assert.match(definitionsCss, /--blue:\s*#47657a/i, 'Definitions must use its slate-blue accent');
+assert.match(definitionsCss, /height:\s*100dvh/, 'Definitions must account for mobile browser chrome');
+assert.match(definitionsCss, /@media \(max-width: 900px\) and \(orientation: portrait\)/, 'Definitions must have readable portrait layouts');
+assert.match(definitionsCss, /@media \(max-height: 600px\) and \(orientation: landscape\)/, 'Definitions must have short-landscape layouts');
+assert.match(definitionsCss, /prefers-reduced-motion/, 'Definitions must respect reduced motion');
+assert.match(definitionsCss, /\.slide\s*\{[^}]*overflow:\s*auto/s, 'Definitions must allow fallback scrolling');
+assert.match(definitionsCss, /\.ticker-track\s*\{[^}]*flex:\s*0 0 auto/s, 'Definitions ticker track must retain its two-cycle width');
+assert.match(definitionsCss, /\.ticker-cycle\s*\{[^}]*min-width:\s*100vw/s, 'Definitions ticker cycles must cover the viewport');
+assert.match(definitionsPretext, /@chenglou\/pretext@0\.0\.8/, 'Definitions must pin the same Pretext release as the other decks');
+assert.match(definitionsPretext, /prepareWithSegments/, 'Definitions must prepare measured text');
+assert.match(definitionsPretext, /layoutWithLines/, 'Definitions must lay out measured lines');
+for (const token of ['ArrowRight', 'ArrowLeft', 'touchstart', 'touchend', '#slide-']) {
+  assert.ok(definitionsJs.includes(token), `Definitions navigation must include ${token}`);
+}
+assert.doesNotMatch(
+  [definitionsWrapper, definitionsDeck, definitionsCss, definitionsJs, definitionsPretext].join('\n'),
+  /speaker-notes|Speaker notes|notes(?:Drawer|Body|Toggle|Close)|notes-(?:drawer|close|empty|toggle|body)|nav-notes|ppt\/notesSlides|inline-editor|artifact-editor|__agiEditor/i,
+  'Definitions served assets must not contain private notes or editor payloads',
+);
+
 function slideMarkup(deck, slideNumber, total) {
   const marker = `aria-label="Slide ${slideNumber} of ${total}:`;
   const markerIndex = deck.indexOf(marker);
@@ -151,7 +191,7 @@ assert.match(day2Slide7, /class="slide slide-single"/, 'Day 2 slide 7 must use t
 assert.equal((day2Slide7.match(/class="split-panel\b/g) || []).length, 1, 'Day 2 slide 7 must contain only its left panel');
 assert.doesNotMatch(day2Slide7, /ecological metaphor|invasive species/i, 'Day 2 slide 7 must not retain the following-day metaphor');
 
-for (const [label, css] of [['Day 1', day1Css], ['Day 2', day2Css], ['Day 3', day3Css], ['Projects', projectsCss]]) {
+for (const [label, css] of [['Day 1', day1Css], ['Day 2', day2Css], ['Day 3', day3Css], ['Projects', projectsCss], ['Definitions', definitionsCss]]) {
   assert.match(css, /animation:\s*ticker 42s linear infinite;/, `${label} ticker must scroll continuously`);
   assert.match(css, /to\s*\{\s*transform:\s*translateX\(-50%\)/, `${label} ticker must loop over one cycle`);
   assert.doesNotMatch(css, /infinite alternate/, `${label} ticker must not reverse direction`);
@@ -224,8 +264,13 @@ for (const [host, oldRoute, protectedRoute] of fellowshipRoutes) {
 assert.ok(fellowshipHub.includes('href="/projects/"'), 'Projects must be reachable from the public Fellowship hub');
 assert.ok(fellowshipShell.includes("{ id: 'projects', label: 'Projects', href: '/projects/' }"), 'Projects must appear in the Fellowship slide navigation');
 assert.ok(router.includes("'/projects': '/projects'"), 'the Worker must gate and serve the Projects route');
+assert.ok(fellowshipHub.includes('href="/definitions/"'), 'Definitions must be reachable from the Fellowship hub');
+assert.ok(fellowshipShell.includes("{ id: 'definitions', label: 'Definitions', href: '/definitions/' }"), 'Definitions must appear in Fellowship slide navigation');
+assert.ok(router.includes("'/definitions': '/definitions'"), 'the Worker must gate and serve Definitions');
+assert.ok(!nav.includes('/definitions/'), 'Definitions must remain outside main-site navigation');
+assert.ok(!sitemap.includes('/definitions/'), 'Definitions must remain outside the main-site sitemap');
 
-for (const [day, wrapper] of [['day-1', fellowshipDay1], ['day-2', fellowshipDay2], ['day-3', fellowshipDay3], ['projects', fellowshipProjects]]) {
+for (const [day, wrapper] of [['definitions', definitionsWrapper], ['day-1', fellowshipDay1], ['day-2', fellowshipDay2], ['day-3', fellowshipDay3], ['projects', fellowshipProjects]]) {
   assert.match(wrapper, noIndex, `${day} Fellowship wrapper must remain noindex`);
   assert.match(wrapper, new RegExp(`https://fellowship\\.mintresearch\\.org/${day}/`), `${day} wrapper must use the Fellowship canonical URL`);
   assert.match(wrapper, /\/assets\/fellowship-shell\.js\?v=/, `${day} wrapper must load the Fellowship navigation shell`);
@@ -240,6 +285,7 @@ assert.match(fellowshipShell, /presentation-mode/, 'the Fellowship slide shell m
 assert.match(legacyHub, /https:\/\/fellowship\.mintresearch\.org\//, 'the old main-site hub must point to the new canonical host');
 assert.equal(existsSync('public/fellowship'), false, 'the protected Fellowship tree must not be published by GitHub Pages');
 assert.equal(existsSync('public/projects'), false, 'Projects must not be published by GitHub Pages');
+assert.equal(existsSync('public/definitions'), false, 'Definitions must not be published by GitHub Pages');
 for (const [path, destination] of [
   ['public/should-we-build-agi/deck.html', 'day-1'],
   ['public/agi-institutions/deck.html', 'day-2'],
@@ -260,4 +306,4 @@ assert.match(router, /HttpOnly; Secure; SameSite=Strict/, 'the Fellowship sessio
 assert.match(router, /X-Robots-Tag/, 'protected presentation routes must add an HTTP noindex directive');
 assert.doesNotMatch(router, /test-only-password|Minty-[A-Za-z0-9_-]{12,}/, 'the production Worker source must not contain a password');
 
-console.log('AGI Fellowship presentation contract OK: open dedicated hub, four isolated password-gated noindex Pretext decks (17/35/8/9 slides), IP bypass, and content-free redirects from the retired Pages routes.');
+console.log('AGI Fellowship presentation contract OK: open dedicated hub, five isolated password-gated noindex Pretext decks (6/17/35/8/9 slides), IP bypass, and content-free redirects from the retired Pages routes.');

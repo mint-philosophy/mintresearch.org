@@ -76,6 +76,43 @@ test('an incorrect password is rejected without a session cookie', async () => {
   assert.match(await response.text(), /not recognized/);
 });
 
+test('Definitions wrapper and assets use the shared gate, session, and noindex policy', async () => {
+  const env = environment();
+  const paths = [
+    ['/definitions', '/fellowship/definitions/index.html'],
+    ['/definitions/', '/fellowship/definitions/index.html'],
+    ['/definitions/index.html', '/fellowship/definitions/index.html'],
+    ['/definitions/deck.html', '/definitions/deck.html'],
+    ['/definitions/deck.css', '/definitions/deck.css'],
+    ['/definitions/deck.js', '/definitions/deck.js'],
+    ['/definitions/pretext-layout.js', '/definitions/pretext-layout.js'],
+  ];
+  const login = await worker.fetch(request('/login', {
+    method: 'POST',
+    body: new URLSearchParams({ password, next: '/definitions/' }),
+  }), env);
+  assert.equal(login.status, 303);
+  assert.equal(login.headers.get('location'), '/definitions/');
+  const cookie = login.headers.get('set-cookie').split(';', 1)[0];
+  for (const [path, asset] of paths) {
+    const anonymous = await worker.fetch(request(path), env);
+    assert.equal(anonymous.status, 303, `${path} must require access`);
+    assert.equal(new URL(anonymous.headers.get('location')).searchParams.get('next'), path);
+    for (const headers of [{ Cookie: cookie }, { 'CF-Connecting-IP': '203.0.113.8' }]) {
+      const authorized = await worker.fetch(request(path, { headers }), env);
+      assert.equal(authorized.status, 200);
+      assert.equal(await authorized.text(), `asset:${asset}`);
+      assert.match(authorized.headers.get('x-robots-tag'), /noindex/);
+      assert.equal(authorized.headers.get('cache-control'), 'private, no-store');
+    }
+  }
+  const head = await worker.fetch(request('/definitions/', {
+    method: 'HEAD', headers: { Cookie: cookie },
+  }), env);
+  assert.equal(head.status, 200);
+  assert.equal(await head.text(), '');
+});
+
 test('the configured IP bypasses the password gate', async () => {
   const response = await worker.fetch(request('/projects/deck.html', {
     headers: { 'CF-Connecting-IP': '203.0.113.8' },
@@ -97,6 +134,7 @@ test('robots indexes only the public overview and unknown hosts fail closed', as
   const robotsText = await robots.text();
   assert.match(robotsText, /Disallow: \/day-1\//);
   assert.match(robotsText, /Disallow: \/projects\//);
+  assert.match(robotsText, /Disallow: \/definitions\//);
   assert.match(robotsText, /Sitemap: https:\/\/fellowship\.mintresearch\.org\/sitemap\.xml/);
 
   const unknown = await worker.fetch(new Request('https://example.com/'), env);
