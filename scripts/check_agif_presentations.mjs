@@ -360,9 +360,9 @@ assert.match(philosophyPretext, /layoutWithLines/);
 for (const token of ['ArrowRight', 'ArrowLeft', 'touchstart', 'hashchange', '__philosophyDeck']) assert.ok(philosophyJs.includes(token));
 assert.ok(fellowshipHub.includes('href="/philosophy/"'));
 assert.ok(fellowshipShell.includes("{ id: 'philosophy', label: '9.9 — Philosophy', href: '/philosophy/' }"));
-assert.match(fellowshipHub, /class="agif-link" href="\/philosophy\/">\s*<span class="agif-day">9\.9<\/span>/);
-assert.match(fellowshipHub, /class="agif-link" href="\/projects\/">\s*<span class="agif-day">9\.9<\/span>/);
-assert.ok(fellowshipHub.indexOf('class="agif-link" href="/philosophy/"') < fellowshipHub.indexOf('class="agif-link" href="/projects/"'), 'the earlier 9.9 Philosophy session must precede Projects');
+assert.match(fellowshipHub, /class="agif-link" data-presentation="philosophy" href="\/philosophy\/">\s*<span class="agif-day">9\.9<\/span>/);
+assert.match(fellowshipHub, /class="agif-link" data-presentation="projects" href="\/projects\/">\s*<span class="agif-day">9\.9<\/span>/);
+assert.ok(fellowshipHub.indexOf('data-presentation="philosophy"') < fellowshipHub.indexOf('data-presentation="projects"'), 'the earlier 9.9 Philosophy session must precede Projects');
 assert.ok(fellowshipShell.indexOf("id: 'philosophy'") < fellowshipShell.indexOf("id: 'projects'"));
 assert.match(router, /id: 'philosophy', path: '\/philosophy'/);
 for (const marker of ['9.8 — Definitions', '9.9 — Philosophy', '9.9 — Projects', '9.10 — Should We Build AGI?', '9.11 — AGI Institutions', '9.14 — Adaptation']) {

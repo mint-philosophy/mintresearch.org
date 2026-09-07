@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFile } from 'node:fs/promises';
 
 import worker from '../src/index.js';
 
@@ -71,6 +72,28 @@ test('the Fellowship overview is public and served from the dedicated shell', as
   assert.equal(response.status, 200);
   assert.equal(await response.text(), 'asset:/fellowship/index.html');
   assert.equal(response.headers.get('x-robots-tag'), null);
+});
+
+test('the overview groups public resources and moves presentations at their release time', async () => {
+  const source = await readFile(new URL('../site-assets/fellowship/index.html', import.meta.url), 'utf8');
+  for (const [time, expectedOpen] of [
+    ['2026-09-08T05:59:59-04:00', []],
+    ['2026-09-08T06:00:00-04:00', ['definitions']],
+    ['2026-09-09T06:00:00-04:00', ['definitions', 'philosophy', 'projects']],
+    ['2026-09-14T06:00:00-04:00', ['definitions', 'philosophy', 'projects', 'should-we-build-agi', 'agi-institutions', 'adaptation']],
+  ]) {
+    const env = environment({ TEST_NOW_MS: Date.parse(time), ASSETS: { fetch: async () => new Response(source) } });
+    // Owner access does not make a presentation publicly released.
+    const response = await worker.fetch(request('/', { headers: { 'CF-Connecting-IP': '203.0.113.8' } }), env);
+    const html = await response.text();
+    const open = html.match(/<section id="open-resources">([\s\S]*?)<\/section>/)[1];
+    const pending = html.match(/<section id="pending-presentations"[^>]*>([\s\S]*?)<\/section>/)[1];
+    assert.deepEqual([...open.matchAll(/data-presentation="([^"]+)"/g)].map(match => match[1]), expectedOpen);
+    assert.equal([...pending.matchAll(/data-presentation=/g)].length, 6 - expectedOpen.length);
+    assert.match(open, /href="\/bibliography\/"/);
+    assert.doesNotMatch(open, /Password until/);
+    assert.equal(response.headers.get('cache-control'), 'no-store');
+  }
 });
 
 test('public bibliography routes forward the original request and preserve backend responses', async () => {

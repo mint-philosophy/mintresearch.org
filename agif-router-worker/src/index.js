@@ -561,6 +561,28 @@ async function serveAsset(request, env, assetPath, { noIndex = false } = {}) {
   assetUrl.pathname = assetPath;
   const assetResponse = await env.ASSETS.fetch(new Request(assetUrl, request));
   const headers = responseHeaders(assetResponse.headers, { noIndex, noStore: noIndex });
+  if (assetPath === '/fellowship/index.html' && assetResponse.ok && request.method !== 'HEAD') {
+    const source = await assetResponse.text();
+    const pendingBlock = /<!-- pending-presentations:start -->([\s\S]*?)<!-- pending-presentations:end -->/;
+    const cards = source.match(pendingBlock)?.[1] || '';
+    const open = [];
+    const pending = [];
+    for (const match of cards.matchAll(/<a class="agif-link" data-presentation="([^"]+)"[\s\S]*?<\/a>/g)) {
+      const presentation = presentationForId(match[1]);
+      if (presentation && isPresentationOpen(presentation, env)) {
+        open.push(match[0].replace(/<span class="agif-access">[^<]*<\/span>/, '<span class="agif-access">Open</span>'));
+      } else {
+        pending.push(match[0]);
+      }
+    }
+    let html = source.replace('<!-- open-presentations -->', open.join('\n'))
+      .replace(pendingBlock, pending.join('\n'));
+    if (cards && !pending.length) html = html.replace('id="pending-presentations"', 'id="pending-presentations" hidden');
+    headers.set('Cache-Control', 'no-store');
+    headers.delete('Content-Length');
+    headers.delete('ETag');
+    return new Response(html, { status: assetResponse.status, headers });
+  }
   return new Response(request.method === 'HEAD' ? null : assetResponse.body, {
     status: assetResponse.status,
     statusText: assetResponse.statusText,
