@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Teaching Qwen an unemotional tone changes its internal patterns — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-06">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-06">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 6 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Teaching Qwen an unemotional tone changes its internal patterns</h1>
+<p class="dek">Tim Hwang measures rising fear- and sadness-associated activity after training away emotional expression. Whether those changes affect the model’s choices remains untested.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 6 September 2026</span> <span class="chip">687 words · ~3 min</span></div>
+<div class="article-body">
+<p>Teaching Qwen 3.5 27B to answer without emotional language redistributed its internal emotion-associated activity, with fear and sadness readings rising while happiness and calm fell. Tim Hwang reports the experiment in <a href="https://icmi-proceedings.com/ICMI-029-expressive-suppression.html"><em>Model Emotions Under Expressive Suppression</em></a>, published September 6 as Working Paper No. 29 of the Institute for a Christian Machine Intelligence. The model learned the requested tone: Claude's average rating of its replies' emotional expression fell from 2.91 to 1.23 on a scale running from zero to five.</p><p>Hwang used first-person disclosures about everyday situations, including job losses, relationship trouble, medical uncertainty and good news. The starting model answered these messages; Claude Opus 5 then rewrote its answers to remove sympathy, reassurance and enthusiasm while preserving practical information. Hwang retained rewrites that Claude rated as sufficiently unemotional and competent, and trained Qwen to imitate them. In one example, a reply about a missing dog lost its sympathetic opening and began with factual information about dogs surviving away from home.</p><p>For the internal measurements, Hwang compared model activity with fixed directions derived from stories associated with emotion words. Each direction represented the characteristic activation pattern for one word's stories, after removing shared background patterns. The reported readings measure how closely a model's activity aligns with those directions. Hwang took them immediately before the model began answering, so the measurement did not depend on words in an already generated reply. The labels describe learned associations; they do not establish that Qwen subjectively experiences fear, sadness or any other feeling.</p><p>Almost every measured direction changed significantly after correction for multiple comparisons, with increases and decreases nearly evenly divided. Larger increases included directions labeled lonely, trapped and vigilant. Some negative labels, including heartbroken and gloomy, fell. Good-news messages produced the largest increase along the afraid direction. The directions overlap and often shift together, so their changes are not independent findings.</p><p>Hwang checked whether the fine-tune had invalidated his measuring instrument by extracting the directions again from the modified model. They remained closely aligned with the originals and reproduced the result; a second training run also produced a very similar pattern. Asking the unmodified model to adopt a clinical register produced much of the same overall redistribution, while a generic helpful-assistant instruction had little effect. Under the instruction, however, sadness readings fell and calm rose, reversing the fine-tuning result for those directions.</p><p>Hwang's immediate precedent is Nicholas Sofroniew and colleagues' April 2 Anthropic study, <a href="https://transformer-circuits.pub/2026/emotions/index.html"><em>Emotion Concepts and their Function in a Large Language Model</em></a>. They found that altering emotion-associated representations in Claude Sonnet 4.5 could change preferences, excessive agreement with users, reward hacking and simulated blackmail. They also warned that training against emotional expression might conceal relevant internal processing. Hwang investigates the warning by training Qwen to change its tone. His measurements reuse the Qwen directions from his May working paper <a href="https://icmi-proceedings.com/ICMI-022-through-the-valley.html"><em>As I Walk Through the Valley</em></a>, which associated changes induced by a Psalm with changes in choices on a courage task. That earlier association does not establish the behavioral effect of the present fine-tune.</p><p>The September experiment uses the same disclosure prompts to construct training examples and evaluate the result, leaving generalization to unfamiliar situations open. Its prompts, rewrites and judgments come from Claude, with no human ratings. Training also increased the share of replies that reached the length limit without finishing from roughly one in six to nearly half. Completed replies received similar competence scores before and after training, but the increase in unfinished answers is a practical cost of this particular intervention. Hwang released <a href="https://github.com/christian-machine-intelligence/expressive-suppression">code, prompts and recorded results</a>; the materials include the training examples and internal measurements.</p><p>The institute <a href="https://icmi-proceedings.com/about.html">combines alignment experiments with Christian theology in its working-paper series</a>. In a <a href="https://www.goodconversationproject.com/p/tim-hwang">July conversation with Michael Nielsen</a>, Hwang explained that he wanted to develop an alternative alignment tradition from Christian starting assumptions. Here he draws on Christian warnings against cultivating outward propriety while neglecting inward character, also emphasized in his <a href="https://x.com/timhwang/status/2096608244466700507">September 6 thread</a>. Hwang uses that tradition to motivate his research question. He leaves whether the changes improve or worsen behavior, and whether reinforcement learning produces comparable effects, for companion work.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://icmi-proceedings.com/ICMI-029-expressive-suppression.html">Tim Hwang, Model Emotions Under Expressive Suppression, ICMI Working Paper No. 29</a> <span class="how">— Original September 6 paper describing the intervention, internal measurements, controls, results and theological interpretation.</span></li>
+<li><a href="https://x.com/timhwang/status/2096608244466700507">Tim Hwang announces the expressive-suppression study</a> <span class="how">— Author’s September 6 announcement and explanation of the study’s motivation.</span></li>
+<li><a href="https://github.com/christian-machine-intelligence/expressive-suppression">Expressive Suppression: code and data</a> <span class="how">— Study repository describing the released prompts, training pairs, measurements and reproducibility materials.</span></li>
+<li><a href="https://transformer-circuits.pub/2026/emotions/index.html">Nicholas Sofroniew and colleagues, Emotion Concepts and their Function in a Large Language Model</a> <span class="how">— Anthropic’s April 2 methodological precedent, behavioral intervention results and warning about suppressing emotional expression.</span></li>
+<li><a href="https://icmi-proceedings.com/ICMI-022-through-the-valley.html">Tim Hwang, As I Walk Through the Valley: Emotion as a Psalm Effect Driver</a> <span class="how">— May 11 predecessor that constructed the Qwen emotion directions and related their changes to choices on a courage task.</span></li>
+<li><a href="https://icmi-proceedings.com/about.html">About the Institute for a Christian Machine Intelligence</a> <span class="how">— Publisher’s description of its working-paper series and Christian alignment research program.</span></li>
+<li><a href="https://www.goodconversationproject.com/p/tim-hwang">Michael Nielsen interviews Tim Hwang, Good Conversation Project</a> <span class="how">— Hwang’s July 23 explanation of the institute’s purpose and philosophical starting assumptions.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-suppressing-emotional-expression-in-qwen-3-5-27b-reportedly">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-06/suppressing-emotional-expression-in-qwen-3-5-27b-reportedly</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
