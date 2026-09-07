@@ -1,8 +1,5 @@
 const DECK_ID = 'should-we-build-agi';
 const CURRENT_KEY = `deck:${DECK_ID}:current`;
-const MAX_FIELDS = 256;
-const MAX_FIELD_LENGTH = 2_000;
-const MAX_TOTAL_LENGTH = 60_000;
 
 function csv(value) {
   return String(value || '')
@@ -14,11 +11,6 @@ function csv(value) {
 function allowedOrigin(request, env) {
   const origin = request.headers.get('Origin') || '';
   return csv(env.ALLOWED_ORIGINS).includes(origin) ? origin : null;
-}
-
-function canEdit(request, env) {
-  const clientIp = request.headers.get('CF-Connecting-IP') || '';
-  return Boolean(clientIp) && csv(env.ALLOWED_IPS).includes(clientIp);
 }
 
 function headers(origin) {
@@ -45,28 +37,6 @@ async function currentState(env) {
   return { revision: 'base', updatedAt: null, fields: {} };
 }
 
-function validateFields(value) {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    throw new Error('fields must be an object');
-  }
-
-  const entries = Object.entries(value);
-  if (entries.length > MAX_FIELDS) throw new Error(`at most ${MAX_FIELDS} fields may be saved`);
-
-  let totalLength = 0;
-  const fields = {};
-  for (const [key, text] of entries) {
-    if (!/^s\d{2}-[a-f0-9]{8}-\d{2}$/.test(key)) throw new Error(`invalid field key: ${key}`);
-    if (typeof text !== 'string') throw new Error(`field ${key} must be text`);
-    if (text.length > MAX_FIELD_LENGTH) throw new Error(`field ${key} is too long`);
-    if (/\u0000/.test(text)) throw new Error(`field ${key} contains an invalid character`);
-    totalLength += text.length;
-    if (totalLength > MAX_TOTAL_LENGTH) throw new Error('saved text is too large');
-    fields[key] = text;
-  }
-  return fields;
-}
-
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -85,44 +55,12 @@ export default {
 
     if (request.method === 'GET') {
       const state = await currentState(env);
-      return json(origin, { ...state, canEdit: canEdit(request, env) });
+      return json(origin, { ...state, canEdit: false });
     }
 
-    if (request.method !== 'PUT') return json(origin, { error: 'Method not allowed' }, 405);
-    if (!canEdit(request, env)) return json(origin, { error: 'Editing is not available from this network' }, 403);
-    if (!String(request.headers.get('Content-Type') || '').toLowerCase().startsWith('application/json')) {
-      return json(origin, { error: 'Content-Type must be application/json' }, 415);
+    if (request.method === 'PUT') {
+      return json(origin, { error: 'This legacy editor endpoint is read-only' }, 410);
     }
-
-    let payload;
-    try {
-      payload = await request.json();
-    } catch {
-      return json(origin, { error: 'Invalid JSON' }, 400);
-    }
-
-    const existing = await currentState(env);
-    if (payload.revision !== existing.revision) {
-      return json(origin, { error: 'The deck changed elsewhere. Reload before saving.', ...existing }, 409);
-    }
-
-    let fields;
-    try {
-      fields = validateFields(payload.fields);
-    } catch (error) {
-      return json(origin, { error: error.message }, 400);
-    }
-
-    const state = {
-      revision: crypto.randomUUID(),
-      updatedAt: new Date().toISOString(),
-      fields,
-    };
-    await env.CONTENT_OVERRIDES.put(CURRENT_KEY, JSON.stringify(state));
-    await env.CONTENT_OVERRIDES.put(`deck:${DECK_ID}:history:${state.revision}`, JSON.stringify(state), {
-      expirationTtl: 60 * 60 * 24 * 90,
-    });
-
-    return json(origin, { ok: true, ...state, canEdit: true });
+    return json(origin, { error: 'Method not allowed' }, 405);
   },
 };

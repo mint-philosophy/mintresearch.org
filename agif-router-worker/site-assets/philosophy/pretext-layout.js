@@ -125,6 +125,7 @@ function scheduleRelayout() {
 
 async function initialise() {
   setStatus('loading', 'Text layout…');
+  await window.__agiEditorReady?.catch(() => undefined);
   pretext = await loadPretext();
   if (!pretext) {
     setStatus('fallback', 'Browser text layout');

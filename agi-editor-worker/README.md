@@ -1,26 +1,14 @@
-# AGI deck inline editor
+# Legacy AGI deck inline-editor endpoint
 
-This Cloudflare Worker backs the IP-gated inline editor on the unlisted
-`/should-we-build-agi/` deck. The public deck remains a static GitHub Pages
-artifact. Text overrides are fetched from Workers KV at page load and applied
-with `textContent`; no HTML is accepted or rendered.
+This compatibility Worker now serves saved text overrides read-only. All writes
+have moved to the same-origin editor at `fellowship.mintresearch.org`, where
+every save requires both the exact-IP allowlist and the separate Fellowship
+editor credential. Keeping this endpoint readable preserves older cached pages;
+returning HTTP 410 for every PUT prevents it from bypassing the current editor's
+two-lock authorization.
 
-Security boundaries:
-
-- The editor toolbar is merely a convenience signal. Every save is separately
-  restricted by the request's Cloudflare-provided client IP.
-- `ALLOWED_IPS` is a Worker secret, never a public JavaScript value or tracked
-  configuration value.
-- CORS accepts the maintained MINT presentation origins, including
-  `fellowship.mintresearch.org` for the password-protected Day 1 shell.
-- Saves are revision-checked and bounded by field count, field size, and total
-  size. Ninety days of revision snapshots are retained in KV.
-- If the Worker is unavailable, the static deck remains readable and the edit
-  controls stay hidden.
-
-The exact-IP gate is intentionally the mechanism Seth requested. Anyone using
-the same public NAT address would share its authority, and the secret must be
-updated when that address changes.
+CORS remains limited to the maintained MINT presentation origins. This service
+has no write authority regardless of origin, IP, or payload.
 
 ## Commands
 
@@ -30,9 +18,5 @@ npm run dev
 npm run deploy
 ```
 
-The production KV namespace is bound as `CONTENT_OVERRIDES`. Set or rotate the
-allowlist without printing it:
-
-```bash
-printf '%s' "$ALLOWED_IPS" | npx wrangler secret put ALLOWED_IPS
-```
+The production KV namespace remains bound as `CONTENT_OVERRIDES` for read-only
+compatibility.

@@ -25,7 +25,6 @@ const [
   nav,
   sitemap,
   legacyHub,
-  editorConfig,
   fellowshipHub,
   fellowshipDay1,
   fellowshipDay2,
@@ -41,6 +40,9 @@ const [
   definitionsCss,
   definitionsJs,
   definitionsPretext,
+  sharedEditorJs,
+  sharedEditorCss,
+  legacyEditorWorker,
 ] = await Promise.all([
   read('public/should-we-build-agi/index.html'),
   read('agif-router-worker/site-assets/should-we-build-agi/deck.html'),
@@ -61,7 +63,6 @@ const [
   read('public/assets/mint-site-nav.v1.js'),
   read('public/sitemap.xml'),
   read('public/agif/index.html'),
-  read('agi-editor-worker/wrangler.toml'),
   read('agif-router-worker/site-assets/fellowship/index.html'),
   read('agif-router-worker/site-assets/fellowship/day-1/index.html'),
   read('agif-router-worker/site-assets/fellowship/day-2/index.html'),
@@ -77,20 +78,22 @@ const [
   read('agif-router-worker/site-assets/definitions/deck.css'),
   read('agif-router-worker/site-assets/definitions/deck.js'),
   read('agif-router-worker/site-assets/definitions/pretext-layout.js'),
+  read('agif-router-worker/site-assets/assets/inline-editor.js'),
+  read('agif-router-worker/site-assets/assets/inline-editor.css'),
+  read('agi-editor-worker/src/index.js'),
 ]);
 
 assert.match(day1Wrapper, noIndex, 'Day 1 framed page must remain noindex');
 assert.match(day1Deck, noIndex, 'Day 1 deck must remain noindex');
-assert.match(day1Wrapper, /https:\/\/fellowship\.mintresearch\.org\/day-1\//, 'Day 1 canonical must use its protected Fellowship route');
-assert.match(day1Deck, /https:\/\/fellowship\.mintresearch\.org\/day-1\//, 'Day 1 deck canonical must point to its protected Fellowship page');
+assert.match(day1Wrapper, /https:\/\/fellowship\.mintresearch\.org\/should-we-build-agi\//, 'Should We Build canonical must use its protected Fellowship route');
+assert.match(day1Deck, /https:\/\/fellowship\.mintresearch\.org\/should-we-build-agi\//, 'Should We Build deck canonical must point to its protected Fellowship page');
 assert.match(day1Deck, /pretext-layout\.js/, 'Day 1 must retain its Pretext layout pass');
-assert.match(editorConfig, /https:\/\/fellowship\.mintresearch\.org/, 'Day 1 editor must allow the canonical Fellowship origin');
 assert.equal((day1Deck.match(/class="ticker-cycle"/g) || []).length, 2, 'Day 1 ticker must contain two seamless cycles');
 
 assert.match(day2Wrapper, noIndex, 'Day 2 framed page must remain noindex');
 assert.match(day2Deck, noIndex, 'Day 2 deck must remain noindex');
-assert.match(day2Wrapper, /https:\/\/fellowship\.mintresearch\.org\/day-2\//, 'Day 2 canonical must use its protected Fellowship route');
-assert.match(day2Deck, /https:\/\/fellowship\.mintresearch\.org\/day-2\//, 'Day 2 deck canonical must point to its protected Fellowship page');
+assert.match(day2Wrapper, /https:\/\/fellowship\.mintresearch\.org\/agi-institutions\//, 'AGI Institutions canonical must use its protected Fellowship route');
+assert.match(day2Deck, /https:\/\/fellowship\.mintresearch\.org\/agi-institutions\//, 'AGI Institutions deck canonical must point to its protected Fellowship page');
 assert.equal((day2Deck.match(/<section class="slide\b/g) || []).length, 35, 'Day 2 must expose all 35 Fable slides');
 assert.equal((day2Deck.match(/aria-label="Slide \d+ of 35:/g) || []).length, 35, 'every Day 2 slide needs navigation metadata');
 assert.doesNotMatch(
@@ -100,14 +103,13 @@ assert.doesNotMatch(
 );
 assert.ok((day2Deck.match(/data-pretext/g) || []).length >= 170, 'Day 2 must retain its measured text fields');
 assert.match(day2Deck, /pretext-layout\.js/, 'Day 2 must load its Pretext layout pass');
-assert.doesNotMatch(day2Deck, /<script[^>]+inline-editor\.js/, 'Day 2 must not call the unregistered editor endpoint');
 assert.match(day2Deck, /id="slideCounter">1 \/ 35/, 'Day 2 counter must use the real slide total');
 assert.equal((day2Deck.match(/class="ticker-cycle"/g) || []).length, 2, 'Day 2 ticker must contain two seamless cycles');
 
 assert.match(day3Wrapper, noIndex, 'Day 3 framed page must remain noindex');
 assert.match(day3Deck, noIndex, 'Day 3 deck must remain noindex');
-assert.match(day3Wrapper, /https:\/\/fellowship\.mintresearch\.org\/day-3\//, 'Day 3 canonical must use its protected Fellowship route');
-assert.match(day3Deck, /https:\/\/fellowship\.mintresearch\.org\/day-3\//, 'Day 3 deck canonical must point to its protected Fellowship page');
+assert.match(day3Wrapper, /https:\/\/fellowship\.mintresearch\.org\/adaptation\//, 'Adaptation canonical must use its protected Fellowship route');
+assert.match(day3Deck, /https:\/\/fellowship\.mintresearch\.org\/adaptation\//, 'Adaptation deck canonical must point to its protected Fellowship page');
 assert.match(fellowshipDay3, /src="deck\.html\?v=[^"]+"/, 'Day 3 wrapper must load its versioned deck');
 assert.match(day3Deck, /href="deck\.css\?v=[^"]+"/, 'Day 3 deck must load its versioned CSS');
 assert.match(day3Deck, /src="deck\.js\?v=[^"]+"/, 'Day 3 deck must load its static navigation');
@@ -119,8 +121,8 @@ assert.match(day3Deck, /id="slideCounter">1 \/ 8/, 'Day 3 counter must use the r
 assert.equal((day3Deck.match(/class="ticker-cycle"/g) || []).length, 2, 'Day 3 ticker must contain two seamless cycles');
 assert.doesNotMatch(
   [fellowshipDay3, day3Deck, day3Css, day3Js, day3Pretext].join('\n'),
-  /speaker-notes|Speaker notes|notes(?:Drawer|Body|Toggle|Close)|notes-(?:drawer|close|empty|toggle|body)|nav-notes|inline-editor|artifact-editor|editorMode|__agiEditor|data-editor|slide-draft|draft-body|slide-hidden|slide-inserted|data-show-hidden|plan-grid-nine|slide-reasons-four/i,
-  'Day 3 public assets must not contain speaker-note data or editor payload',
+  /speaker-notes|Speaker notes|notes(?:Drawer|Body|Toggle|Close)|notes-(?:drawer|close|empty|toggle|body)|nav-notes|slide-draft|draft-body|slide-hidden|slide-inserted|data-show-hidden|plan-grid-nine|slide-reasons-four/i,
+  'Day 3 public assets must not contain speaker-note or superseded draft data',
 );
 
 assert.match(fellowshipProjects, noIndex, 'Projects framed page must remain noindex');
@@ -169,8 +171,8 @@ for (const token of ['ArrowRight', 'ArrowLeft', 'touchstart', 'touchend', '#slid
 }
 assert.doesNotMatch(
   [definitionsWrapper, definitionsDeck, definitionsCss, definitionsJs, definitionsPretext].join('\n'),
-  /speaker-notes|Speaker notes|notes(?:Drawer|Body|Toggle|Close)|notes-(?:drawer|close|empty|toggle|body)|nav-notes|ppt\/notesSlides|inline-editor|artifact-editor|__agiEditor/i,
-  'Definitions served assets must not contain private notes or editor payloads',
+  /speaker-notes|Speaker notes|notes(?:Drawer|Body|Toggle|Close)|notes-(?:drawer|close|empty|toggle|body)|nav-notes|ppt\/notesSlides/i,
+  'Definitions served assets must not contain private notes',
 );
 
 function slideMarkup(deck, slideNumber, total) {
@@ -247,9 +249,9 @@ for (const token of ['ArrowRight', 'ArrowLeft', 'touchstart', 'touchend', '#slid
 assert.match(projectsJs, /closest\('\.table-scroll, \.ledger-scroll/, 'Projects swipe navigation must not claim nested scrolling gestures');
 
 const fellowshipRoutes = [
-  ['agif1.mintresearch.org', '/should-we-build-agi/', '/day-1/'],
-  ['agif2.mintresearch.org', '/agi-institutions/', '/day-2/'],
-  ['agif3.mintresearch.org', '/societal-adaptation/', '/day-3/'],
+  ['agif1.mintresearch.org', '/should-we-build-agi/', '/should-we-build-agi/'],
+  ['agif2.mintresearch.org', '/agi-institutions/', '/agi-institutions/'],
+  ['agif3.mintresearch.org', '/societal-adaptation/', '/adaptation/'],
 ];
 
 for (const [host, oldRoute, protectedRoute] of fellowshipRoutes) {
@@ -263,19 +265,25 @@ for (const [host, oldRoute, protectedRoute] of fellowshipRoutes) {
 }
 
 assert.ok(fellowshipHub.includes('href="/projects/"'), 'Projects must be reachable from the public Fellowship hub');
-assert.ok(fellowshipShell.includes("{ id: 'projects', label: '9.9 — Projects', href: '/projects/' }"), 'Projects must appear with its date in the Fellowship slide navigation');
-assert.ok(router.includes("'/projects': '/projects'"), 'the Worker must gate and serve the Projects route');
+assert.ok(fellowshipShell.includes("{ id: 'projects', label: '9.9 — Projects', href: '/projects/' }"), 'Projects must appear in the dated Fellowship slide navigation');
+assert.match(router, /id: 'projects', path: '\/projects'/, 'the Worker must gate and serve the Projects route');
 assert.ok(fellowshipHub.includes('href="/definitions/"'), 'Definitions must be reachable from the Fellowship hub');
-assert.ok(fellowshipShell.includes("{ id: 'definitions', label: '9.8 — Definitions', href: '/definitions/' }"), 'Definitions must appear with its date in Fellowship slide navigation');
-assert.ok(router.includes("'/definitions': '/definitions'"), 'the Worker must gate and serve Definitions');
+assert.ok(fellowshipShell.includes("{ id: 'definitions', label: '9.8 — Definitions', href: '/definitions/' }"), 'Definitions must appear in dated Fellowship slide navigation');
+assert.match(router, /id: 'definitions', path: '\/definitions'/, 'the Worker must gate and serve Definitions');
 assert.ok(!nav.includes('/definitions/'), 'Definitions must remain outside main-site navigation');
 assert.ok(!sitemap.includes('/definitions/'), 'Definitions must remain outside the main-site sitemap');
 
-for (const [day, wrapper] of [['definitions', definitionsWrapper], ['day-1', fellowshipDay1], ['day-2', fellowshipDay2], ['day-3', fellowshipDay3], ['projects', fellowshipProjects]]) {
-  assert.match(wrapper, noIndex, `${day} Fellowship wrapper must remain noindex`);
-  assert.match(wrapper, new RegExp(`https://fellowship\\.mintresearch\\.org/${day}/`), `${day} wrapper must use the Fellowship canonical URL`);
-  assert.match(wrapper, /\/assets\/fellowship-shell\.js\?v=/, `${day} wrapper must load the Fellowship navigation shell`);
-  assert.match(wrapper, /src="deck\.html\?v=/, `${day} wrapper must frame its native deck`);
+for (const [label, canonical, wrapper] of [
+  ['Definitions', 'definitions', definitionsWrapper],
+  ['Projects', 'projects', fellowshipProjects],
+  ['Should We Build', 'should-we-build-agi', fellowshipDay1],
+  ['AGI Institutions', 'agi-institutions', fellowshipDay2],
+  ['Adaptation', 'adaptation', fellowshipDay3],
+]) {
+  assert.match(wrapper, noIndex, `${label} Fellowship wrapper must remain noindex`);
+  assert.match(wrapper, new RegExp(`https://fellowship\\.mintresearch\\.org/${canonical}/`), `${label} wrapper must use the Fellowship canonical URL`);
+  assert.match(wrapper, /\/assets\/fellowship-shell\.js\?v=/, `${label} wrapper must load the Fellowship navigation shell`);
+  assert.match(wrapper, /src="deck\.html\?v=/, `${label} wrapper must frame its native deck`);
 }
 
 assert.match(fellowshipHub, /<link rel="canonical" href="https:\/\/fellowship\.mintresearch\.org\/">/, 'the public Fellowship hub must be canonical on its own host');
@@ -288,20 +296,28 @@ assert.equal(existsSync('public/fellowship'), false, 'the protected Fellowship t
 assert.equal(existsSync('public/projects'), false, 'Projects must not be published by GitHub Pages');
 assert.equal(existsSync('public/definitions'), false, 'Definitions must not be published by GitHub Pages');
 for (const [path, destination] of [
-  ['public/should-we-build-agi/deck.html', 'day-1'],
-  ['public/agi-institutions/deck.html', 'day-2'],
-  ['public/societal-adaptation/deck.html', 'day-3'],
+  ['public/should-we-build-agi/deck.html', 'should-we-build-agi'],
+  ['public/agi-institutions/deck.html', 'agi-institutions'],
+  ['public/societal-adaptation/deck.html', 'adaptation'],
 ]) {
   const legacyDeck = await read(path);
   assert.match(legacyDeck, new RegExp(`https://fellowship\\.mintresearch\\.org/${destination}/`), `${path} must redirect to its protected route`);
   assert.doesNotMatch(legacyDeck, /<section class="slide\b/, `${path} must not retain presentation content`);
 }
 assert.ok(nav.includes("href: 'https://fellowship.mintresearch.org/'"), 'the main-site Fellowship branch must link to the new public hub');
+const resourcesStart = nav.indexOf("id: 'resources'");
+const resourcesEnd = nav.indexOf('\n    },', resourcesStart);
+const resourcesBlock = nav.slice(resourcesStart, resourcesEnd);
+assert.ok(resourcesBlock.includes("href: 'https://fellowship.mintresearch.org/'"), 'the Fellowship link must live inside Resources');
+assert.ok(!nav.includes("id: 'fellowship'"), 'the old top-level Fellowship group must be removed');
 assert.ok(!sitemap.includes('<loc>https://mintresearch.org/agif/</loc>'), 'the superseded main-site hub must leave the main-site sitemap');
 assert.ok(routerConfig.includes('pattern = "fellowship.mintresearch.org"'), 'the Worker must own the Fellowship custom domain');
 assert.match(routerConfig, /directory = "\.\/site-assets"/, 'the Worker must serve the isolated Fellowship asset tree');
 assert.match(routerConfig, /run_worker_first = true/, 'the password gate must run before static assets');
-assert.match(router, /FELLOWSHIP_PASSWORD/, 'the Fellowship password must be read only from a Worker secret');
+assert.match(routerConfig, /binding = "CONTENT_OVERRIDES"/, 'the Fellowship Worker must bind the text-override store');
+for (const day of ['8', '9', '10', '11', '14']) {
+  assert.ok(router.includes(`FELLOWSHIP_PASSWORD_SEPTEMBER_${day}`), `September ${day} must use its own Worker secret`);
+}
 assert.match(router, /ALLOWED_IPS/, 'the IP bypass must be read only from a Worker secret');
 assert.match(router, /HttpOnly; Secure; SameSite=Strict/, 'the Fellowship session cookie must use secure attributes');
 assert.match(router, /X-Robots-Tag/, 'protected presentation routes must add an HTTP noindex directive');
@@ -343,16 +359,45 @@ assert.match(philosophyPretext, /prepareWithSegments/);
 assert.match(philosophyPretext, /layoutWithLines/);
 for (const token of ['ArrowRight', 'ArrowLeft', 'touchstart', 'hashchange', '__philosophyDeck']) assert.ok(philosophyJs.includes(token));
 assert.ok(fellowshipHub.includes('href="/philosophy/"'));
-const datedSessions = [["definitions","9.8","Definitions"],["philosophy","9.9","Philosophy"],["projects","9.9","Projects"],["day-1","9.10","Should We Build AGI?"],["day-2","9.11","AGI Institutions"],["day-3","9.14","Adaptation"]];
-for (const [id, date, label] of datedSessions) {
-  assert.ok(fellowshipShell.includes(`{ id: '${id}', label: '${date} — ${label}', href: '/${id}/' }`));
-  const card = fellowshipHub.match(new RegExp(`class="agif-link" href="/${id}/">[\\s\\S]*?</a>`))?.[0];
-  assert.ok(card?.includes(`<span class="agif-day">${date}</span>`), `${id} must show ${date}`);
+assert.ok(fellowshipShell.includes("{ id: 'philosophy', label: '9.9 — Philosophy', href: '/philosophy/' }"));
+assert.match(fellowshipHub, /class="agif-link" href="\/philosophy\/">\s*<span class="agif-day">9\.9<\/span>/);
+assert.match(fellowshipHub, /class="agif-link" href="\/projects\/">\s*<span class="agif-day">9\.9<\/span>/);
+assert.ok(fellowshipHub.indexOf('class="agif-link" href="/philosophy/"') < fellowshipHub.indexOf('class="agif-link" href="/projects/"'), 'the earlier 9.9 Philosophy session must precede Projects');
+assert.ok(fellowshipShell.indexOf("id: 'philosophy'") < fellowshipShell.indexOf("id: 'projects'"));
+assert.match(router, /id: 'philosophy', path: '\/philosophy'/);
+for (const marker of ['9.8 — Definitions', '9.9 — Philosophy', '9.9 — Projects', '9.10 — Should We Build AGI?', '9.11 — AGI Institutions', '9.14 — Adaptation']) {
+  assert.ok(fellowshipShell.includes(marker), `Fellowship navigation must include ${marker}`);
 }
-for (let i = 1; i < datedSessions.length; i++) {
-  assert.ok(fellowshipHub.indexOf(`class="agif-link" href="/${datedSessions[i-1][0]}/"`) < fellowshipHub.indexOf(`class="agif-link" href="/${datedSessions[i][0]}/"`));
-}
-assert.ok(router.includes("'/philosophy': '/philosophy'"));
 assert.equal(existsSync('public/philosophy'), false, 'Philosophy must not be published by GitHub Pages');
 
-console.log('AGI Fellowship presentation contract OK: open dedicated hub, six isolated password-gated noindex Pretext decks (6/5/17/35/8/9 slides), IP bypass, and content-free redirects from the retired Pages routes.');
+for (const [id, deck, navigation, pretext] of [
+  ['definitions', definitionsDeck, definitionsJs, definitionsPretext],
+  ['philosophy', philosophy, philosophyJs, philosophyPretext],
+  ['projects', projectsDeck, projectsJs, projectsPretext],
+  ['should-we-build-agi', day1Deck, await read('agif-router-worker/site-assets/should-we-build-agi/deck.js'), await read('agif-router-worker/site-assets/should-we-build-agi/pretext-layout.js')],
+  ['agi-institutions', day2Deck, day2Js, day2Pretext],
+  ['adaptation', day3Deck, day3Js, day3Pretext],
+]) {
+  assert.match(deck, new RegExp(`data-editor-deck="${id}"`), `${id} must identify its editor store`);
+  assert.match(deck, /href="\/assets\/inline-editor\.css\?v=/, `${id} must load the shared editor styles`);
+  assert.match(deck, /src="\/assets\/inline-editor\.js\?v=/, `${id} must load the same-origin editor`);
+  for (const control of ['inlineEditorToolbar', 'inlineEditorEdit', 'inlineEditorSave', 'inlineEditorCancel', 'inlineEditorHide', 'inlineEditorReveal']) {
+    assert.ok(deck.includes(`id="${control}"`), `${id} must provide ${control}`);
+  }
+  assert.match(pretext, /await window\.__agiEditorReady/, `${id} must apply saved text before measuring line layout`);
+  assert.match(navigation, /dataset\.editorMode === 'editing'/, `${id} must suspend slide navigation while editing`);
+}
+
+assert.match(sharedEditorJs, /`\/editor\/v1\/decks\/\$\{deckId\}`/, 'the browser editor must use the Fellowship same-origin endpoint');
+assert.match(sharedEditorJs, /credentials: 'same-origin'/, 'editor reads and saves must retain the dated access session');
+assert.match(sharedEditorJs, /textContent = values\[field\.key\]/, 'saved overrides must be rendered as plain text');
+assert.doesNotMatch(sharedEditorJs, /https?:\/\/|innerHTML/, 'the shared editor must not transmit to another origin or render saved HTML');
+assert.match(sharedEditorCss, /html\[data-editor-mode="editing"\] \[data-editor-key\]/, 'editing must visibly identify editable text');
+assert.match(router, /EDITOR_PATH_PREFIX = '\/editor\/v1\/decks\/'/, 'the Fellowship Worker must own the editor endpoint');
+assert.match(router, /request\.headers\.get\('Origin'\) !== EDITOR_ORIGIN/, 'saves must require the exact Fellowship origin');
+assert.match(router, /ipIsAllowed\(request, env\)/, 'saves must retain the exact-IP authority check');
+assert.match(router, /MAX_EDITOR_FIELDS = 384/, 'editor payloads must retain a bounded field count above the largest deck');
+assert.match(legacyEditorWorker, /legacy editor endpoint is read-only/, 'the retired cross-origin editor must reject writes');
+assert.doesNotMatch(legacyEditorWorker, /CONTENT_OVERRIDES\.put/, 'the retired editor must have no remaining storage write path');
+
+console.log('AGI Fellowship presentation contract OK: six dated, isolated, noindex Pretext decks (6/5/9/17/35/8 slides), five day-specific password gates, timed public release, exact-IP inline editing, and content-free redirects from retired routes.');

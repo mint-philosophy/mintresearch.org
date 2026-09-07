@@ -86,10 +86,12 @@
 
   document.querySelectorAll('[data-go]').forEach((button) => {
     button.addEventListener('click', (event) => {
+      if (document.documentElement.dataset.editorMode === 'editing') return;
       showSlide(Number(button.dataset.go), { resetScroll: true });
     });
     if (button.getAttribute('role') === 'button') {
       button.addEventListener('keydown', (event) => {
+        if (document.documentElement.dataset.editorMode === 'editing') return;
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault();
           event.stopPropagation();
@@ -101,6 +103,7 @@
 
   document.querySelectorAll('[data-reason-dialog]').forEach((button) => {
     button.addEventListener('click', (event) => {
+      if (document.documentElement.dataset.editorMode === 'editing' && event.target instanceof Element && event.target.closest('[data-editor-key]')) return;
       const dialog = document.getElementById(button.dataset.reasonDialog);
       if (dialog instanceof HTMLDialogElement && !dialog.open) dialog.showModal();
     });
@@ -115,6 +118,7 @@
 
   document.addEventListener('keydown', (event) => {
     if (document.querySelector('.reason-dialog[open]')) return;
+    if (document.documentElement.dataset.editorMode === 'editing') return;
     const target = event.target;
     if (target instanceof Element && target.closest('input, textarea, select, [contenteditable], .table-scroll, .ledger-scroll')) return;
     if (target instanceof HTMLButtonElement && event.key === ' ') return;
@@ -137,8 +141,9 @@
   document.addEventListener('touchstart', (event) => {
     touchStart = null;
     if (document.querySelector('.reason-dialog[open]')) return;
+    if (document.documentElement.dataset.editorMode === 'editing') return;
     if (event.touches.length !== 1) return;
-    if (event.target instanceof Element && event.target.closest('.table-scroll, .ledger-scroll, [contenteditable="plaintext-only"]')) return;
+    if (event.target instanceof Element && event.target.closest('.table-scroll, .ledger-scroll, [contenteditable="plaintext-only"], .inline-editor-toolbar, .inline-editor-reveal')) return;
     touchStart = { x: event.touches[0].clientX, y: event.touches[0].clientY };
   }, { passive: true });
 

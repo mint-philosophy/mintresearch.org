@@ -7,9 +7,9 @@
     { id: 'definitions', label: '9.8 — Definitions', href: '/definitions/' },
     { id: 'philosophy', label: '9.9 — Philosophy', href: '/philosophy/' },
     { id: 'projects', label: '9.9 — Projects', href: '/projects/' },
-    { id: 'day-1', label: '9.10 — Should We Build AGI?', href: '/day-1/' },
-    { id: 'day-2', label: '9.11 — AGI Institutions', href: '/day-2/' },
-    { id: 'day-3', label: '9.14 — Adaptation', href: '/day-3/' }
+    { id: 'should-we-build-agi', label: '9.10 — Should We Build AGI?', href: '/should-we-build-agi/' },
+    { id: 'agi-institutions', label: '9.11 — AGI Institutions', href: '/agi-institutions/' },
+    { id: 'adaptation', label: '9.14 — Adaptation', href: '/adaptation/' }
   ];
   var dayLinks = days.map(function (day, index) {
     var marker = index === days.length - 1 ? '└──' : '├──';

@@ -1,22 +1,67 @@
 const FELLOWSHIP_HOST = 'fellowship.mintresearch.org';
 const NO_INDEX = 'noindex, nofollow, noarchive, nosnippet, noimageindex';
-const SESSION_COOKIE = 'mint_fellowship_session';
+const SESSION_COOKIE_PREFIX = 'mint_fellowship_session';
 const SESSION_SECONDS = 12 * 60 * 60;
+const EDITOR_PATH_PREFIX = '/editor/v1/decks/';
+const EDITOR_SESSION_PATH = '/editor/v1/session';
+const EDITOR_ORIGIN = `https://${FELLOWSHIP_HOST}`;
+const EDITOR_SESSION_COOKIE = 'mint_fellowship_editor';
+const EDITOR_SESSION_SECONDS = 30 * 24 * 60 * 60;
+const MAX_EDITOR_FIELDS = 384;
+const MAX_EDITOR_FIELD_LENGTH = 2_000;
+const MAX_EDITOR_TOTAL_LENGTH = 60_000;
+const MAX_EDITOR_BODY_LENGTH = 100_000;
 
 const legacyHosts = {
-  'agif1.mintresearch.org': '/day-1/',
-  'agif2.mintresearch.org': '/day-2/',
-  'agif3.mintresearch.org': '/day-3/',
+  'agif1.mintresearch.org': '/should-we-build-agi/',
+  'agif2.mintresearch.org': '/agi-institutions/',
+  'agif3.mintresearch.org': '/adaptation/',
 };
 
-const daySources = {
-  '/philosophy': '/philosophy',
-  '/definitions': '/definitions',
+const legacyPaths = {
   '/day-1': '/should-we-build-agi',
   '/day-2': '/agi-institutions',
-  '/day-3': '/societal-adaptation',
-  '/projects': '/projects',
+  '/day-3': '/adaptation',
 };
+
+const presentations = [
+  {
+    id: 'definitions', path: '/definitions', source: '/definitions',
+    wrapper: '/fellowship/definitions/index.html', dateLabel: '9.8', dateLong: 'September 8',
+    title: 'Definitions', unlockAt: '2026-09-08T06:00:00-04:00',
+    accessGroup: '2026-09-08', passwordBinding: 'FELLOWSHIP_PASSWORD_SEPTEMBER_8',
+  },
+  {
+    id: 'philosophy', path: '/philosophy', source: '/philosophy',
+    wrapper: '/fellowship/philosophy/index.html', dateLabel: '9.9', dateLong: 'September 9',
+    title: 'Philosophy', unlockAt: '2026-09-09T06:00:00-04:00',
+    accessGroup: '2026-09-09', passwordBinding: 'FELLOWSHIP_PASSWORD_SEPTEMBER_9',
+  },
+  {
+    id: 'projects', path: '/projects', source: '/projects',
+    wrapper: '/fellowship/projects/index.html', dateLabel: '9.9', dateLong: 'September 9',
+    title: 'Projects', unlockAt: '2026-09-09T06:00:00-04:00',
+    accessGroup: '2026-09-09', passwordBinding: 'FELLOWSHIP_PASSWORD_SEPTEMBER_9',
+  },
+  {
+    id: 'should-we-build-agi', path: '/should-we-build-agi', source: '/should-we-build-agi',
+    wrapper: '/fellowship/day-1/index.html', dateLabel: '9.10', dateLong: 'September 10',
+    title: 'Should We Build AGI?', unlockAt: '2026-09-10T06:00:00-04:00',
+    accessGroup: '2026-09-10', passwordBinding: 'FELLOWSHIP_PASSWORD_SEPTEMBER_10',
+  },
+  {
+    id: 'agi-institutions', path: '/agi-institutions', source: '/agi-institutions',
+    wrapper: '/fellowship/day-2/index.html', dateLabel: '9.11', dateLong: 'September 11',
+    title: 'AGI Institutions', unlockAt: '2026-09-11T06:00:00-04:00',
+    accessGroup: '2026-09-11', passwordBinding: 'FELLOWSHIP_PASSWORD_SEPTEMBER_11',
+  },
+  {
+    id: 'adaptation', path: '/adaptation', source: '/societal-adaptation',
+    wrapper: '/fellowship/day-3/index.html', dateLabel: '9.14', dateLong: 'September 14',
+    title: 'Adaptation', unlockAt: '2026-09-14T06:00:00-04:00',
+    accessGroup: '2026-09-14', passwordBinding: 'FELLOWSHIP_PASSWORD_SEPTEMBER_14',
+  },
+];
 
 const textEncoder = new TextEncoder();
 
@@ -40,10 +85,10 @@ function responseHeaders(source, { noIndex = false, noStore = false } = {}) {
   return headers;
 }
 
-function redirect(location, status = 308, { noIndex = true, cookie = null } = {}) {
+function redirect(location, status = 308, { noIndex = true, cookies = [] } = {}) {
   const headers = responseHeaders({ Location: location }, { noIndex, noStore: status !== 308 });
   if (status === 308) headers.set('Cache-Control', 'public, max-age=300');
-  if (cookie) headers.append('Set-Cookie', cookie);
+  for (const cookie of cookies) headers.append('Set-Cookie', cookie);
   return new Response(null, { status, headers });
 }
 
@@ -54,13 +99,27 @@ function redirectToFellowship(request, path) {
   return redirect(target.href);
 }
 
+function canonicalizeLegacyPath(pathname) {
+  for (const [legacy, canonical] of Object.entries(legacyPaths)) {
+    if (hasPrefix(pathname, legacy)) return `${canonical}${pathname.slice(legacy.length)}`;
+  }
+  return pathname;
+}
+
+function presentationForPath(pathname) {
+  return presentations.find((presentation) => hasPrefix(pathname, presentation.path)) || null;
+}
+
+function presentationForId(id) {
+  return presentations.find((presentation) => presentation.id === id) || null;
+}
+
 function safeNext(value) {
   try {
     const url = new URL(String(value || ''), `https://${FELLOWSHIP_HOST}`);
     if (url.origin !== `https://${FELLOWSHIP_HOST}`) return '/';
-    return Object.keys(daySources).some((prefix) => hasPrefix(url.pathname, prefix))
-      ? `${url.pathname}${url.search}`
-      : '/';
+    url.pathname = canonicalizeLegacyPath(url.pathname);
+    return presentationForPath(url.pathname) ? `${url.pathname}${url.search}` : '/';
   } catch {
     return '/';
   }
@@ -98,7 +157,25 @@ async function passwordMatches(candidate, expected) {
   return constantTimeEqual(candidateDigest, expectedDigest);
 }
 
-async function sessionSignature(expiry, password) {
+function nowMs(env) {
+  if (env.TEST_NOW_MS === undefined) return Date.now();
+  const value = Number(env.TEST_NOW_MS);
+  return Number.isFinite(value) ? value : Date.now();
+}
+
+function isPresentationOpen(presentation, env) {
+  return Boolean(presentation.unlockAt) && nowMs(env) >= Date.parse(presentation.unlockAt);
+}
+
+function presentationPassword(presentation, env) {
+  return env[presentation.passwordBinding];
+}
+
+function sessionCookieName(presentation) {
+  return `${SESSION_COOKIE_PREFIX}_${presentation.accessGroup.replaceAll('-', '_')}`;
+}
+
+async function sessionSignature(presentation, expiry, password) {
   const key = await crypto.subtle.importKey(
     'raw',
     textEncoder.encode(password),
@@ -106,13 +183,15 @@ async function sessionSignature(expiry, password) {
     false,
     ['sign'],
   );
-  return bytesToBase64Url(new Uint8Array(await crypto.subtle.sign('HMAC', key, textEncoder.encode(`agif:${expiry}`))));
+  return bytesToBase64Url(new Uint8Array(await crypto.subtle.sign(
+    'HMAC', key, textEncoder.encode(`agif:${presentation.accessGroup}:${expiry}`),
+  )));
 }
 
-async function createSessionCookie(password) {
-  const expiry = Math.floor(Date.now() / 1000) + SESSION_SECONDS;
-  const signature = await sessionSignature(expiry, password);
-  return `${SESSION_COOKIE}=${expiry}.${signature}; Max-Age=${SESSION_SECONDS}; Path=/; HttpOnly; Secure; SameSite=Strict`;
+async function createSessionCookie(presentation, password, env) {
+  const expiry = Math.floor(nowMs(env) / 1000) + SESSION_SECONDS;
+  const signature = await sessionSignature(presentation, expiry, password);
+  return `${sessionCookieName(presentation)}=${expiry}.${signature}; Max-Age=${SESSION_SECONDS}; Path=/; HttpOnly; Secure; SameSite=Strict`;
 }
 
 function cookieValue(request, name) {
@@ -124,14 +203,49 @@ function cookieValue(request, name) {
   return '';
 }
 
-async function sessionIsValid(request, password) {
+async function sessionIsValid(request, presentation, password, env) {
   if (!password) return false;
-  const value = cookieValue(request, SESSION_COOKIE);
+  const value = cookieValue(request, sessionCookieName(presentation));
   const [expiryText, suppliedSignature, ...extra] = value.split('.');
   if (!expiryText || !suppliedSignature || extra.length) return false;
   const expiry = Number(expiryText);
-  if (!Number.isSafeInteger(expiry) || expiry <= Math.floor(Date.now() / 1000)) return false;
-  const expectedSignature = await sessionSignature(expiry, password);
+  if (!Number.isSafeInteger(expiry) || expiry <= Math.floor(nowMs(env) / 1000)) return false;
+  const expectedSignature = await sessionSignature(presentation, expiry, password);
+  return constantTimeEqual(textEncoder.encode(suppliedSignature), textEncoder.encode(expectedSignature));
+}
+
+function editorPassword(env) {
+  return env.FELLOWSHIP_EDITOR_PASSWORD;
+}
+
+async function editorSessionSignature(expiry, password) {
+  const key = await crypto.subtle.importKey(
+    'raw',
+    textEncoder.encode(password),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  );
+  return bytesToBase64Url(new Uint8Array(await crypto.subtle.sign(
+    'HMAC', key, textEncoder.encode(`agif:editor:${expiry}`),
+  )));
+}
+
+async function createEditorSessionCookie(password, env) {
+  const expiry = Math.floor(nowMs(env) / 1000) + EDITOR_SESSION_SECONDS;
+  const signature = await editorSessionSignature(expiry, password);
+  return `${EDITOR_SESSION_COOKIE}=${expiry}.${signature}; Max-Age=${EDITOR_SESSION_SECONDS}; Path=/; HttpOnly; Secure; SameSite=Strict`;
+}
+
+async function editorSessionIsValid(request, env) {
+  const password = editorPassword(env);
+  if (!password) return false;
+  const value = cookieValue(request, EDITOR_SESSION_COOKIE);
+  const [expiryText, suppliedSignature, ...extra] = value.split('.');
+  if (!expiryText || !suppliedSignature || extra.length) return false;
+  const expiry = Number(expiryText);
+  if (!Number.isSafeInteger(expiry) || expiry <= Math.floor(nowMs(env) / 1000)) return false;
+  const expectedSignature = await editorSessionSignature(expiry, password);
   return constantTimeEqual(textEncoder.encode(suppliedSignature), textEncoder.encode(expectedSignature));
 }
 
@@ -140,22 +254,29 @@ function ipIsAllowed(request, env) {
   return Boolean(clientIp) && csv(env.ALLOWED_IPS).includes(clientIp);
 }
 
-async function requestIsAuthorized(request, env) {
-  return ipIsAllowed(request, env) || sessionIsValid(request, env.FELLOWSHIP_PASSWORD);
+async function requestIsAuthorized(request, presentation, env) {
+  if (isPresentationOpen(presentation, env) || ipIsAllowed(request, env)) return true;
+  return sessionIsValid(request, presentation, presentationPassword(presentation, env), env);
 }
 
-function loginPage(next, invalid = false) {
-  const nextValue = escapeHtml(safeNext(next));
+function loginPage(next, presentation, invalid = false) {
+  const nextValue = escapeHtml(next);
   const error = invalid
     ? '<p class="login-error" role="alert">That password was not recognized.</p>'
     : '';
+  const heading = presentation.dateLabel
+    ? `${presentation.dateLabel} · ${presentation.title}`
+    : presentation.title;
+  const accessCopy = presentation.unlockAt
+    ? `Enter this presentation’s password. It opens without a password at 6:00 a.m. ET on ${presentation.dateLong}.`
+    : 'Enter the Fellowship password to open this presentation.';
   return `<!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="robots" content="${NO_INDEX}">
-  <title>Fellowship access — MINT Lab</title>
+  <title>${escapeHtml(heading)} — Fellowship access</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -165,7 +286,7 @@ function loginPage(next, invalid = false) {
     * { box-sizing:border-box; }
     html, body { min-height:100%; margin:0; }
     body { display:grid; place-items:center; padding:28px; background:linear-gradient(145deg,#e6f5f2,#f9fcfb 48%,#d9efeb); color:var(--ink); font:14px/1.6 "JetBrains Mono",monospace; }
-    .login-shell { width:min(520px,100%); background:var(--panel); border:1px solid var(--line); box-shadow:0 24px 70px rgba(13,47,45,.14); }
+    .login-shell { width:min(560px,100%); background:var(--panel); border:1px solid var(--line); box-shadow:0 24px 70px rgba(13,47,45,.14); }
     .login-bar { display:flex; justify-content:space-between; gap:16px; padding:13px 16px; border-bottom:1px solid var(--line); color:var(--accent); font-size:11px; letter-spacing:.08em; text-transform:uppercase; }
     .login-body { padding:34px; }
     h1 { margin:0 0 12px; font-size:24px; line-height:1.25; }
@@ -184,8 +305,8 @@ function loginPage(next, invalid = false) {
   <main class="login-shell">
     <div class="login-bar"><span>MINT Research Lab</span><span>AGI Governance Fellowship</span></div>
     <div class="login-body">
-      <h1>Fellowship materials</h1>
-      <p>Enter the shared Fellowship password to open the presentation.</p>
+      <h1>${escapeHtml(heading)}</h1>
+      <p>${escapeHtml(accessCopy)}</p>
       <form method="post" action="/login">
         <input type="hidden" name="next" value="${nextValue}">
         <label for="password">Password</label>
@@ -200,10 +321,179 @@ function loginPage(next, invalid = false) {
 </html>`;
 }
 
-function renderLogin(next, invalid = false) {
-  return new Response(loginPage(next, invalid), {
+function renderLogin(next, presentation, invalid = false) {
+  return new Response(loginPage(next, presentation, invalid), {
     status: invalid ? 401 : 200,
     headers: responseHeaders({ 'Content-Type': 'text/html; charset=utf-8' }, { noIndex: true, noStore: true }),
+  });
+}
+
+function unavailable() {
+  return new Response('Fellowship access is temporarily unavailable.', {
+    status: 503,
+    headers: responseHeaders({ 'Content-Type': 'text/plain; charset=utf-8' }, { noIndex: true, noStore: true }),
+  });
+}
+
+function editorHeaders(extra = {}) {
+  return responseHeaders({
+    'Content-Type': 'application/json; charset=utf-8',
+    ...extra,
+  }, { noIndex: true, noStore: true });
+}
+
+function editorJson(body, status = 200, extraHeaders = {}) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: editorHeaders(extraHeaders),
+  });
+}
+
+async function currentEditorState(env, presentation) {
+  const stored = await env.CONTENT_OVERRIDES.get(`deck:${presentation.id}:current`, 'json');
+  if (stored && typeof stored === 'object' && stored.fields && typeof stored.fields === 'object') {
+    return stored;
+  }
+  return { revision: 'base', updatedAt: null, fields: {} };
+}
+
+function validateEditorFields(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error('fields must be an object');
+  }
+
+  const entries = Object.entries(value);
+  if (entries.length > MAX_EDITOR_FIELDS) {
+    throw new Error(`at most ${MAX_EDITOR_FIELDS} fields may be saved`);
+  }
+
+  let totalLength = 0;
+  const fields = {};
+  for (const [key, text] of entries) {
+    if (!/^s\d{2}-[a-f0-9]{8}-\d{2}$/.test(key)) throw new Error(`invalid field key: ${key}`);
+    if (typeof text !== 'string') throw new Error(`field ${key} must be text`);
+    if (text.length > MAX_EDITOR_FIELD_LENGTH) throw new Error(`field ${key} is too long`);
+    if (/\u0000/.test(text)) throw new Error(`field ${key} contains an invalid character`);
+    totalLength += text.length;
+    if (totalLength > MAX_EDITOR_TOTAL_LENGTH) throw new Error('saved text is too large');
+    fields[key] = text;
+  }
+  return fields;
+}
+
+async function handleEditor(request, env, presentation) {
+  if (!env.CONTENT_OVERRIDES) {
+    return editorJson({ error: 'Editing is temporarily unavailable' }, 503);
+  }
+
+  if (request.method === 'GET' || request.method === 'HEAD') {
+    if (!(await requestIsAuthorized(request, presentation, env))) {
+      if (!presentationPassword(presentation, env) && !isPresentationOpen(presentation, env)) {
+        return editorJson({ error: 'Fellowship access is temporarily unavailable' }, 503);
+      }
+      return editorJson({ error: 'Authentication required' }, 401);
+    }
+    const state = await currentEditorState(env, presentation);
+    const canRequestEdit = ipIsAllowed(request, env) && Boolean(editorPassword(env));
+    const canEdit = canRequestEdit && await editorSessionIsValid(request, env);
+    const response = editorJson({ ...state, canEdit, canRequestEdit });
+    return request.method === 'HEAD'
+      ? new Response(null, { status: response.status, headers: response.headers })
+      : response;
+  }
+
+  if (request.method !== 'PUT') {
+    return editorJson({ error: 'Method not allowed' }, 405, { Allow: 'GET, HEAD, PUT' });
+  }
+  if (request.headers.get('Origin') !== EDITOR_ORIGIN) {
+    return editorJson({ error: 'Forbidden' }, 403);
+  }
+  if (!ipIsAllowed(request, env)) {
+    return editorJson({ error: 'Editing is not available from this network' }, 403);
+  }
+  if (!editorPassword(env)) {
+    return editorJson({ error: 'Editing is temporarily unavailable' }, 503);
+  }
+  if (!(await editorSessionIsValid(request, env))) {
+    return editorJson({ error: 'Editor authentication required' }, 403);
+  }
+  if (!String(request.headers.get('Content-Type') || '').toLowerCase().startsWith('application/json')) {
+    return editorJson({ error: 'Content-Type must be application/json' }, 415);
+  }
+
+  const contentLength = Number(request.headers.get('Content-Length') || 0);
+  if (contentLength > MAX_EDITOR_BODY_LENGTH) {
+    return editorJson({ error: 'Request body is too large' }, 413);
+  }
+  const body = await request.text();
+  if (body.length > MAX_EDITOR_BODY_LENGTH) {
+    return editorJson({ error: 'Request body is too large' }, 413);
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(body);
+  } catch {
+    return editorJson({ error: 'Invalid JSON' }, 400);
+  }
+
+  const existing = await currentEditorState(env, presentation);
+  if (!payload || payload.revision !== existing.revision) {
+    return editorJson({ error: 'The deck changed elsewhere. Reload before saving.', ...existing }, 409);
+  }
+
+  let fields;
+  try {
+    fields = validateEditorFields(payload.fields);
+  } catch (error) {
+    return editorJson({ error: error.message }, 400);
+  }
+
+  const state = {
+    revision: crypto.randomUUID(),
+    updatedAt: new Date(nowMs(env)).toISOString(),
+    fields,
+  };
+  await env.CONTENT_OVERRIDES.put(`deck:${presentation.id}:current`, JSON.stringify(state));
+  await env.CONTENT_OVERRIDES.put(
+    `deck:${presentation.id}:history:${state.revision}`,
+    JSON.stringify(state),
+    { expirationTtl: 60 * 60 * 24 * 90 },
+  );
+
+  return editorJson({ ok: true, ...state, canEdit: true });
+}
+
+async function handleEditorSession(request, env) {
+  if (request.method !== 'POST') {
+    return editorJson({ error: 'Method not allowed' }, 405, { Allow: 'POST' });
+  }
+  if (request.headers.get('Origin') !== EDITOR_ORIGIN || !ipIsAllowed(request, env)) {
+    return editorJson({ error: 'Forbidden' }, 403);
+  }
+  const password = editorPassword(env);
+  if (!password) return editorJson({ error: 'Editing is temporarily unavailable' }, 503);
+  if (!String(request.headers.get('Content-Type') || '').toLowerCase().startsWith('application/json')) {
+    return editorJson({ error: 'Content-Type must be application/json' }, 415);
+  }
+
+  const contentLength = Number(request.headers.get('Content-Length') || 0);
+  if (contentLength > 4_096) return editorJson({ error: 'Request body is too large' }, 413);
+  const body = await request.text();
+  if (body.length > 4_096) return editorJson({ error: 'Request body is too large' }, 413);
+
+  let payload;
+  try {
+    payload = JSON.parse(body);
+  } catch {
+    return editorJson({ error: 'Invalid JSON' }, 400);
+  }
+  if (!(await passwordMatches(payload?.password, password))) {
+    return editorJson({ error: 'Editor password was not recognized' }, 401);
+  }
+
+  return editorJson({ ok: true, canEdit: true }, 200, {
+    'Set-Cookie': await createEditorSessionCookie(password, env),
   });
 }
 
@@ -211,8 +501,11 @@ async function handleLogin(request, env) {
   const url = new URL(request.url);
   if (request.method === 'GET' || request.method === 'HEAD') {
     const next = safeNext(url.searchParams.get('next'));
-    if (await requestIsAuthorized(request, env)) return redirect(next, 303, { noIndex: true });
-    const response = renderLogin(next);
+    const presentation = presentationForPath(new URL(next, `https://${FELLOWSHIP_HOST}`).pathname);
+    if (!presentation) return redirect('/', 303, { noIndex: true });
+    if (await requestIsAuthorized(request, presentation, env)) return redirect(next, 303, { noIndex: true });
+    if (!presentationPassword(presentation, env)) return unavailable();
+    const response = renderLogin(next, presentation);
     return request.method === 'HEAD'
       ? new Response(null, { status: response.status, headers: response.headers })
       : response;
@@ -223,31 +516,35 @@ async function handleLogin(request, env) {
       headers: responseHeaders({ Allow: 'GET, HEAD, POST', 'Content-Type': 'text/plain; charset=utf-8' }, { noIndex: true, noStore: true }),
     });
   }
-  if (!env.FELLOWSHIP_PASSWORD) {
-    return new Response('Fellowship access is temporarily unavailable.', {
-      status: 503,
-      headers: responseHeaders({ 'Content-Type': 'text/plain; charset=utf-8' }, { noIndex: true, noStore: true }),
-    });
-  }
   const length = Number(request.headers.get('Content-Length') || 0);
-  if (length > 8_192) return renderLogin('/', true);
+  if (length > 8_192) return redirect('/', 303, { noIndex: true });
   const body = await request.text();
-  if (body.length > 8_192) return renderLogin('/', true);
+  if (body.length > 8_192) return redirect('/', 303, { noIndex: true });
   const form = new URLSearchParams(body);
   const next = safeNext(form.get('next'));
-  if (!(await passwordMatches(form.get('password'), env.FELLOWSHIP_PASSWORD))) return renderLogin(next, true);
+  const presentation = presentationForPath(new URL(next, `https://${FELLOWSHIP_HOST}`).pathname);
+  if (!presentation) return redirect('/', 303, { noIndex: true });
+  if (isPresentationOpen(presentation, env) || ipIsAllowed(request, env)) {
+    return redirect(next, 303, { noIndex: true });
+  }
+  const password = presentationPassword(presentation, env);
+  if (!password) return unavailable();
+  if (!(await passwordMatches(form.get('password'), password))) return renderLogin(next, presentation, true);
   return redirect(next, 303, {
     noIndex: true,
-    cookie: await createSessionCookie(env.FELLOWSHIP_PASSWORD),
+    cookies: [await createSessionCookie(presentation, password, env)],
   });
 }
 
-function fellowshipAssetPath(pathname) {
+function fellowshipAssetPath(pathname, presentation) {
   if (pathname === '/') return '/fellowship/index.html';
-  for (const [prefix, source] of Object.entries(daySources)) {
-    if (pathname === prefix || pathname === `${prefix}/`) return `/fellowship${prefix}/index.html`;
-    if (pathname === `${prefix}/index.html`) return `/fellowship${prefix}/index.html`;
-    if (pathname.startsWith(`${prefix}/`)) return `${source}${pathname.slice(prefix.length)}`;
+  if (presentation) {
+    if (
+      pathname === presentation.path ||
+      pathname === `${presentation.path}/` ||
+      pathname === `${presentation.path}/index.html`
+    ) return presentation.wrapper;
+    return `${presentation.source}${pathname.slice(presentation.path.length)}`;
   }
   if (
     pathname.startsWith('/assets/') ||
@@ -272,8 +569,13 @@ async function serveAsset(request, env, assetPath, { noIndex = false } = {}) {
 }
 
 function robots() {
+  const disallowed = [
+    ...presentations.map((presentation) => `Disallow: ${presentation.path}/`),
+    ...Object.keys(legacyPaths).map((path) => `Disallow: ${path}/`),
+    'Disallow: /login',
+  ].join('\n');
   return new Response(
-    `User-agent: *\nAllow: /$\nDisallow: /definitions/\nDisallow: /philosophy/\nDisallow: /day-1/\nDisallow: /day-2/\nDisallow: /day-3/\nDisallow: /projects/\nDisallow: /login\nSitemap: https://${FELLOWSHIP_HOST}/sitemap.xml\n`,
+    `User-agent: *\nAllow: /$\n${disallowed}\nSitemap: https://${FELLOWSHIP_HOST}/sitemap.xml\n`,
     { headers: responseHeaders({ 'Cache-Control': 'public, max-age=600', 'Content-Type': 'text/plain; charset=utf-8' }) },
   );
 }
@@ -285,15 +587,30 @@ function sitemap() {
   );
 }
 
+function logoutCookies() {
+  return [SESSION_COOKIE_PREFIX, EDITOR_SESSION_COOKIE, ...new Set(presentations.map(sessionCookieName))]
+    .map((name) => `${name}=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict`);
+}
+
 async function handleFellowship(request, env) {
   const url = new URL(request.url);
   if (url.pathname === '/login') return handleLogin(request, env);
   if (url.pathname === '/logout') {
     return redirect('/', 303, {
       noIndex: true,
-      cookie: `${SESSION_COOKIE}=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict`,
+      cookies: logoutCookies(),
     });
   }
+
+  if (url.pathname === EDITOR_SESSION_PATH) return handleEditorSession(request, env);
+
+  if (url.pathname.startsWith(EDITOR_PATH_PREFIX)) {
+    const deckId = url.pathname.slice(EDITOR_PATH_PREFIX.length);
+    const presentation = !deckId.includes('/') ? presentationForId(deckId) : null;
+    if (!presentation) return editorJson({ error: 'Not found' }, 404);
+    return handleEditor(request, env, presentation);
+  }
+
   if (request.method !== 'GET' && request.method !== 'HEAD') {
     return new Response('Method not allowed', {
       status: 405,
@@ -303,21 +620,29 @@ async function handleFellowship(request, env) {
   if (url.pathname === '/robots.txt') return robots();
   if (url.pathname === '/sitemap.xml') return sitemap();
 
-  const protectedDay = Object.keys(daySources).find((prefix) => hasPrefix(url.pathname, prefix));
-  if (protectedDay && !(await requestIsAuthorized(request, env))) {
+  const canonicalPath = canonicalizeLegacyPath(url.pathname);
+  if (canonicalPath !== url.pathname) {
+    const target = new URL(url);
+    target.pathname = canonicalPath;
+    return redirect(target.href);
+  }
+
+  const presentation = presentationForPath(url.pathname);
+  if (presentation && !(await requestIsAuthorized(request, presentation, env))) {
+    if (!presentationPassword(presentation, env)) return unavailable();
     const login = new URL('/login', url);
     login.searchParams.set('next', `${url.pathname}${url.search}`);
     return redirect(login.href, 303, { noIndex: true });
   }
 
-  const assetPath = fellowshipAssetPath(url.pathname);
+  const assetPath = fellowshipAssetPath(url.pathname, presentation);
   if (!assetPath) {
     return new Response('Not found', {
       status: 404,
       headers: responseHeaders({ 'Content-Type': 'text/plain; charset=utf-8' }, { noIndex: true }),
     });
   }
-  return serveAsset(request, env, assetPath, { noIndex: Boolean(protectedDay) });
+  return serveAsset(request, env, assetPath, { noIndex: Boolean(presentation) });
 }
 
 export default {
