@@ -50,6 +50,9 @@ Required production secrets:
 
 `FELLOWSHIP_OWNER_IPS` optionally registers the owner's current exact addresses
 without replacing the existing allowlist. It never bypasses editor authentication.
+`FELLOWSHIP_OWNER_IPV6_NETWORKS` registers only explicit `/64` local networks so
+IPv6 privacy-address rotation on the approved network does not hide the editor.
+Other network sizes are rejected; editor authentication remains required.
 
 Run `npm test` before `npm run deploy`.
 

@@ -249,9 +249,29 @@ async function editorSessionIsValid(request, env) {
   return constantTimeEqual(textEncoder.encode(suppliedSignature), textEncoder.encode(expectedSignature));
 }
 
+function ipv6NetworkPrefix(address) {
+  if (!/^[0-9a-f:]+$/i.test(address) || !address.includes(':')) return null;
+  try {
+    const canonical = new URL(`http://[${address}]/`).hostname.slice(1, -1);
+    const [left, right] = canonical.split('::');
+    const head = left ? left.split(':') : [];
+    const tail = right ? right.split(':') : [];
+    const parts = right === undefined ? head : [...head, ...Array(8 - head.length - tail.length).fill('0'), ...tail];
+    return parts.slice(0, 4).map(part => Number.parseInt(part, 16).toString(16)).join(':');
+  } catch {
+    return null;
+  }
+}
+
 function ipIsAllowed(request, env) {
   const clientIp = request.headers.get('CF-Connecting-IP') || '';
-  return Boolean(clientIp) && [...csv(env.ALLOWED_IPS), ...csv(env.FELLOWSHIP_OWNER_IPS)].includes(clientIp);
+  if (!clientIp) return false;
+  if ([...csv(env.ALLOWED_IPS), ...csv(env.FELLOWSHIP_OWNER_IPS)].includes(clientIp)) return true;
+  const prefix = ipv6NetworkPrefix(clientIp);
+  return prefix !== null && csv(env.FELLOWSHIP_OWNER_IPV6_NETWORKS).some(network => {
+    const [address, length, extra] = network.split('/');
+    return length === '64' && extra === undefined && ipv6NetworkPrefix(address) === prefix;
+  });
 }
 
 async function requestIsAuthorized(request, presentation, env) {

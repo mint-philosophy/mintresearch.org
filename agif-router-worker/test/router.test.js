@@ -74,6 +74,25 @@ test('the Fellowship overview is public and served from the dedicated shell', as
   assert.equal(response.headers.get('x-robots-tag'), null);
 });
 
+test('owner IPv6 privacy addresses match only the registered network and still need editor authentication', async () => {
+  const env = environment({ FELLOWSHIP_OWNER_IPV6_NETWORKS: '2001:db8:abcd:1234::/64' });
+  for (const ip of ['2001:db8:abcd:1234::1', '2001:0DB8:ABCD:1234:9876:4321:abcd:1234']) {
+    const headers = { 'CF-Connecting-IP': ip, Origin: 'https://fellowship.mintresearch.org', 'Content-Type': 'application/json' };
+    const response = await worker.fetch(request('/editor/v1/decks/definitions', { headers }), env);
+    assert.equal(response.status, 200);
+    const state = await response.json();
+    assert.equal(state.canRequestEdit, true);
+    assert.equal(state.canEdit, false);
+    assert.equal((await worker.fetch(request('/editor/v1/session', { method: 'POST', headers, body: JSON.stringify({ password: passwords.september8 }) }), env)).status, 401);
+  }
+  for (const ip of ['2001:db8:abcd:1235::1', '2001:db8:abcd::1', '198.51.100.9']) {
+    assert.equal((await worker.fetch(request('/editor/v1/decks/definitions', { headers: { 'CF-Connecting-IP': ip } }), env)).status, 401);
+  }
+  for (const network of ['::/0', 'invalid/64', '2001:db8:abcd:1234::/48']) {
+    assert.equal((await worker.fetch(request('/editor/v1/decks/definitions', { headers: { 'CF-Connecting-IP': '2001:db8:abcd:1234::1' } }), environment({ FELLOWSHIP_OWNER_IPV6_NETWORKS: network }))).status, 401);
+  }
+});
+
 test('the overview groups public resources and moves presentations at their release time', async () => {
   const source = await readFile(new URL('../site-assets/fellowship/index.html', import.meta.url), 'utf8');
   for (const [time, expectedOpen] of [
