@@ -582,7 +582,7 @@ function robots() {
 
 function sitemap() {
   return new Response(
-    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://${FELLOWSHIP_HOST}/</loc></url></urlset>\n`,
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://${FELLOWSHIP_HOST}/</loc></url><url><loc>https://${FELLOWSHIP_HOST}/bibliography/</loc></url></urlset>\n`,
     { headers: responseHeaders({ 'Cache-Control': 'public, max-age=600', 'Content-Type': 'application/xml; charset=utf-8' }) },
   );
 }
@@ -594,6 +594,30 @@ function logoutCookies() {
 
 async function handleFellowship(request, env) {
   const url = new URL(request.url);
+  if (url.pathname === '/bibliography' || url.pathname.startsWith('/bibliography/')) {
+    const allowedMethods = {
+      '/bibliography': ['GET', 'HEAD'],
+      '/bibliography/': ['GET', 'HEAD'],
+      '/bibliography/api/state': ['GET'],
+      '/bibliography/api/suggestions': ['POST'],
+    }[url.pathname];
+    if (!allowedMethods) {
+      return new Response('Not found', { status: 404, headers: responseHeaders({}, { noIndex: true }) });
+    }
+    if (!allowedMethods.includes(request.method)) {
+      return new Response('Method not allowed', {
+        status: 405,
+        headers: responseHeaders({ Allow: allowedMethods.join(', ') }, { noIndex: true }),
+      });
+    }
+    if (url.pathname === '/bibliography') {
+      url.pathname = '/bibliography/';
+      return redirect(url.href);
+    }
+    if (!env.BIBLIOGRAPHY) return unavailable();
+    // Preserve origin, body, cookies and client IP for the backend's own checks.
+    return env.BIBLIOGRAPHY.fetch(request);
+  }
   if (url.pathname === '/login') return handleLogin(request, env);
   if (url.pathname === '/logout') {
     return redirect('/', 303, {

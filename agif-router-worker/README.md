@@ -29,6 +29,15 @@ redirect to the protected Fellowship day pages. The old main-site paths publish
 small redirect documents because the apex domain goes directly to GitHub Pages.
 All presentation responses retain HTTP-level no-indexing.
 
+The public bibliography lives at `/bibliography/` and is linked from the overview
+and shared Fellowship menu. The `BIBLIOGRAPHY` service binding forwards the
+original request to `mint-agi-governance-bibliography`; that backend handles the
+prefix and validates its own requests. The router permits only the page
+(`GET`/`HEAD`), `/bibliography/api/state` (`GET`), and
+`/bibliography/api/suggestions` (`POST`). Editing remains on the existing
+`https://agi-governance.mintresearch.org/edit/` endpoint. Deploy the backend's
+prefix support before deploying this binding. No presentation gate changes.
+
 Required production secrets:
 
 - `FELLOWSHIP_PASSWORD_SEPTEMBER_8`

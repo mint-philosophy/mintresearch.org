@@ -30,6 +30,7 @@
       '<div class="nav-pages">' +
         '<a class="nav-link nav-page" href="/"><span class="nav-mark">▸</span> Overview</a>' +
         dayLinks +
+        '<a class="nav-link nav-page" href="/bibliography/"><span class="nav-mark">▸</span> Bibliography</a>' +
         '<a class="nav-link nav-page" href="/logout"><span class="nav-mark">×</span> Sign out</a>' +
         '<a class="nav-link nav-page" href="https://mintresearch.org/"><span class="nav-mark">←</span> MINT Research Lab</a>' +
       '</div>' +

@@ -73,6 +73,46 @@ test('the Fellowship overview is public and served from the dedicated shell', as
   assert.equal(response.headers.get('x-robots-tag'), null);
 });
 
+test('public bibliography routes forward the original request and preserve backend responses', async () => {
+  for (const [path, method] of [
+    ['/bibliography/', 'GET'], ['/bibliography/', 'HEAD'],
+    ['/bibliography/api/state', 'GET'], ['/bibliography/api/suggestions', 'POST'],
+  ]) {
+    const incoming = request(`${path}?example=1`, {
+      method,
+      headers: { Origin: 'https://fellowship.mintresearch.org', 'CF-Connecting-IP': '198.51.100.9' },
+      ...(method === 'POST' ? { body: '{"title":"Example"}' } : {}),
+    });
+    const backendResponse = new Response(method === 'HEAD' ? null : 'bibliography', { headers: { 'X-Backend': 'preserved' } });
+    const response = await worker.fetch(incoming, environment({ BIBLIOGRAPHY: { fetch(forwarded) {
+      assert.equal(forwarded, incoming);
+      return backendResponse;
+    } } }));
+    assert.equal(response, backendResponse);
+  }
+});
+
+test('bibliography routing exposes only the public allowlist', async () => {
+  const env = environment({ BIBLIOGRAPHY: { fetch() { assert.fail('private or invalid request forwarded'); } } });
+  for (const path of ['/bibliography/edit/', '/bibliography/api/admin', '/bibliography/definitions/deck.html', '/bibliography/api/state/']) {
+    assert.equal((await worker.fetch(request(path), env)).status, 404);
+  }
+  for (const [path, method] of [['/bibliography/', 'POST'], ['/bibliography/api/state', 'PUT'], ['/bibliography/api/suggestions', 'GET']]) {
+    assert.equal((await worker.fetch(request(path, { method }), env)).status, 405);
+  }
+  const response = await worker.fetch(request('/bibliography?from=hub'), env);
+  assert.equal(response.status, 308);
+  assert.equal(response.headers.get('location'), 'https://fellowship.mintresearch.org/bibliography/?from=hub');
+  assert.equal((await worker.fetch(request('/bibliography/'), environment())).status, 503);
+});
+
+test('sitemap includes the public bibliography and excludes presentations', async () => {
+  const response = await worker.fetch(request('/sitemap.xml'), environment());
+  const xml = await response.text();
+  assert.match(xml, /https:\/\/fellowship\.mintresearch\.org\/bibliography\//);
+  assert.doesNotMatch(xml, /definitions|philosophy|projects|adaptation/);
+});
+
 const schedule = [
   ['/definitions/', '/fellowship/definitions/index.html', '2026-09-08T06:00:00-04:00'],
   ['/philosophy/', '/fellowship/philosophy/index.html', '2026-09-09T06:00:00-04:00'],
