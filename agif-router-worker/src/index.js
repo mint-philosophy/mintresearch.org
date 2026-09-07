@@ -119,7 +119,7 @@ function safeNext(value) {
     const url = new URL(String(value || ''), `https://${FELLOWSHIP_HOST}`);
     if (url.origin !== `https://${FELLOWSHIP_HOST}`) return '/';
     url.pathname = canonicalizeLegacyPath(url.pathname);
-    return presentationForPath(url.pathname) ? `${url.pathname}${url.search}` : '/';
+    return presentationForPath(url.pathname) || url.pathname === '/bibliography/edit/' ? `${url.pathname}${url.search}` : '/';
   } catch {
     return '/';
   }
@@ -276,18 +276,19 @@ function ipIsAllowed(request, env) {
 
 async function requestIsAuthorized(request, presentation, env) {
   if (isPresentationOpen(presentation, env) || ipIsAllowed(request, env)) return true;
+  if (await editorSessionIsValid(request, env)) return true;
   return sessionIsValid(request, presentation, presentationPassword(presentation, env), env);
 }
 
-function loginPage(next, presentation, invalid = false) {
+function loginPage(next, presentation, invalid = false, owner = false) {
   const nextValue = escapeHtml(next);
   const error = invalid
     ? '<p class="login-error" role="alert">That password was not recognized.</p>'
     : '';
-  const heading = presentation.dateLabel
+  const heading = owner ? 'Owner login' : presentation.dateLabel
     ? `${presentation.dateLabel} · ${presentation.title}`
     : presentation.title;
-  const accessCopy = presentation.unlockAt
+  const accessCopy = owner ? 'Log in once to view and edit all Fellowship presentations and the bibliography, from any network. Stay signed in for 30 days on this browser.' : presentation.unlockAt
     ? `Enter this presentation’s password. It opens without a password at 6:00 a.m. ET on ${presentation.dateLong}.`
     : 'Enter the Fellowship password to open this presentation.';
   return `<!DOCTYPE html>
@@ -327,14 +328,15 @@ function loginPage(next, presentation, invalid = false) {
     <div class="login-body">
       <h1>${escapeHtml(heading)}</h1>
       <p>${escapeHtml(accessCopy)}</p>
-      <form method="post" action="/login">
+      <form method="post" action="${owner ? '/owner/login' : '/login'}">
         <input type="hidden" name="next" value="${nextValue}">
-        <label for="password">Password</label>
+        <label for="password">${owner ? 'Owner password' : 'Password'}</label>
         <input id="password" name="password" type="password" autocomplete="current-password" required autofocus>
-        <button type="submit">Open presentation</button>
+        <button type="submit">${owner ? 'Log in' : 'Open presentation'}</button>
       </form>
       ${error}
       <a class="login-back" href="/">← Fellowship overview</a>
+      ${owner ? '' : `<a class="login-back" href="/owner/login?next=${encodeURIComponent(next)}">Owner login</a>`}
     </div>
   </main>
 </body>
@@ -414,8 +416,8 @@ async function handleEditor(request, env, presentation) {
       return editorJson({ error: 'Authentication required' }, 401);
     }
     const state = await currentEditorState(env, presentation);
-    const canRequestEdit = ipIsAllowed(request, env) && Boolean(editorPassword(env));
-    const canEdit = canRequestEdit && await editorSessionIsValid(request, env);
+    const canEdit = await editorSessionIsValid(request, env);
+    const canRequestEdit = canEdit || (ipIsAllowed(request, env) && Boolean(editorPassword(env)));
     const response = editorJson({ ...state, canEdit, canRequestEdit });
     return request.method === 'HEAD'
       ? new Response(null, { status: response.status, headers: response.headers })
@@ -427,9 +429,6 @@ async function handleEditor(request, env, presentation) {
   }
   if (request.headers.get('Origin') !== EDITOR_ORIGIN) {
     return editorJson({ error: 'Forbidden' }, 403);
-  }
-  if (!ipIsAllowed(request, env)) {
-    return editorJson({ error: 'Editing is not available from this network' }, 403);
   }
   if (!editorPassword(env)) {
     return editorJson({ error: 'Editing is temporarily unavailable' }, 503);
@@ -488,11 +487,13 @@ async function handleEditorSession(request, env) {
   if (request.method !== 'POST') {
     return editorJson({ error: 'Method not allowed' }, 405, { Allow: 'POST' });
   }
-  if (request.headers.get('Origin') !== EDITOR_ORIGIN || !ipIsAllowed(request, env)) {
+  if (request.headers.get('Origin') !== EDITOR_ORIGIN) {
     return editorJson({ error: 'Forbidden' }, 403);
   }
   const password = editorPassword(env);
   if (!password) return editorJson({ error: 'Editing is temporarily unavailable' }, 503);
+  const limited = await ownerLoginLimit(request, env);
+  if (limited) return limited;
   if (!String(request.headers.get('Content-Type') || '').toLowerCase().startsWith('application/json')) {
     return editorJson({ error: 'Content-Type must be application/json' }, 415);
   }
@@ -508,13 +509,49 @@ async function handleEditorSession(request, env) {
   } catch {
     return editorJson({ error: 'Invalid JSON' }, 400);
   }
-  if (!(await passwordMatches(payload?.password, password))) {
+  if (typeof payload?.password !== 'string' || !(await passwordMatches(payload.password, password))) {
     return editorJson({ error: 'Editor password was not recognized' }, 401);
   }
 
   return editorJson({ ok: true, canEdit: true }, 200, {
     'Set-Cookie': await createEditorSessionCookie(password, env),
   });
+}
+
+async function ownerLoginLimit(request, env) {
+  if (!env.OWNER_LOGIN_LIMITER) return editorJson({ error: 'Owner login is temporarily unavailable' }, 503);
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const network = ipv6NetworkPrefix(ip) || ip;
+  const key = bytesToBase64Url(await digest(`fellowship-owner-login:${network}`));
+  const { success } = await env.OWNER_LOGIN_LIMITER.limit({ key });
+  return success ? null : editorJson({ error: 'Too many login attempts. Please wait one minute.' }, 429, { 'Retry-After': '60' });
+}
+
+async function handleOwnerLogin(request, env) {
+  const url = new URL(request.url);
+  const next = safeNext(url.searchParams.get('next'));
+  const render = (target, invalid = false) => new Response(loginPage(target, {}, invalid, true), {
+    status: invalid ? 401 : 200,
+    headers: responseHeaders({ 'Content-Type': 'text/html; charset=utf-8', 'Content-Security-Policy': "frame-ancestors 'none'; form-action 'self'; base-uri 'none'" }, { noIndex: true, noStore: true }),
+  });
+  if (request.method === 'GET' || request.method === 'HEAD') {
+    if (await editorSessionIsValid(request, env)) return redirect(next, 303);
+    const response = render(next);
+    return request.method === 'HEAD' ? new Response(null, { headers: response.headers }) : response;
+  }
+  if (request.method !== 'POST') return editorJson({ error: 'Method not allowed' }, 405, { Allow: 'GET, HEAD, POST' });
+  if (request.headers.get('Origin') !== EDITOR_ORIGIN) return editorJson({ error: 'Forbidden' }, 403);
+  if (!editorPassword(env)) return unavailable();
+  const limited = await ownerLoginLimit(request, env);
+  if (limited) return limited;
+  if (!String(request.headers.get('Content-Type') || '').startsWith('application/x-www-form-urlencoded')) return editorJson({ error: 'Invalid form' }, 415);
+  if (Number(request.headers.get('Content-Length') || 0) > 4096) return editorJson({ error: 'Request body is too large' }, 413);
+  const body = await request.text();
+  if (body.length > 4096) return editorJson({ error: 'Request body is too large' }, 413);
+  const form = new URLSearchParams(body);
+  const target = safeNext(form.get('next'));
+  if (!(await passwordMatches(form.get('password'), editorPassword(env)))) return render(target, true);
+  return redirect(target, 303, { cookies: [await createEditorSessionCookie(editorPassword(env), env)] });
 }
 
 async function handleLogin(request, env) {
@@ -597,6 +634,11 @@ async function serveAsset(request, env, assetPath, { noIndex = false } = {}) {
     }
     let html = source.replace('<!-- open-presentations -->', open.join('\n'))
       .replace(pendingBlock, pending.join('\n'));
+    const isOwner = await editorSessionIsValid(request, env);
+    html = html.replace('<!-- owner-controls -->', isOwner
+      ? '<span>Owner editing enabled</span><form method="post" action="/owner/logout"><button type="submit">Log out</button></form>'
+      : '<a href="/owner/login">Owner login</a>');
+    if (isOwner) html = html.replaceAll('href="/bibliography/"', 'href="/bibliography/edit/"');
     if (cards && !pending.length) html = html.replace('id="pending-presentations"', 'id="pending-presentations" hidden');
     headers.set('Cache-Control', 'no-store');
     headers.delete('Content-Length');
@@ -615,6 +657,8 @@ function robots() {
     ...presentations.map((presentation) => `Disallow: ${presentation.path}/`),
     ...Object.keys(legacyPaths).map((path) => `Disallow: ${path}/`),
     'Disallow: /login',
+    'Disallow: /owner/',
+    'Disallow: /editor/',
   ].join('\n');
   return new Response(
     `User-agent: *\nAllow: /$\n${disallowed}\nSitemap: https://${FELLOWSHIP_HOST}/sitemap.xml\n`,
@@ -636,13 +680,25 @@ function logoutCookies() {
 
 async function handleFellowship(request, env) {
   const url = new URL(request.url);
+  if (url.pathname === '/owner/login') return handleOwnerLogin(request, env);
+  if (url.pathname === '/owner/logout') {
+    if (request.method !== 'POST') return editorJson({ error: 'Method not allowed' }, 405, { Allow: 'POST' });
+    if (request.headers.get('Origin') !== EDITOR_ORIGIN) return editorJson({ error: 'Forbidden' }, 403);
+    return redirect('/', 303, { cookies: logoutCookies() });
+  }
   if (url.pathname === '/bibliography' || url.pathname.startsWith('/bibliography/')) {
+    const ownerMethods = {
+      '/bibliography/edit': ['GET', 'HEAD'],
+      '/bibliography/edit/': ['GET', 'HEAD'],
+      '/bibliography/api/editor/state': ['GET', 'HEAD', 'PUT'],
+      '/bibliography/api/editor/suggestions': ['GET'],
+    }[url.pathname] || (/^\/bibliography\/api\/editor\/suggestions\/[a-f0-9-]{36}$/.test(url.pathname) ? ['PATCH'] : null);
     const allowedMethods = {
       '/bibliography': ['GET', 'HEAD'],
       '/bibliography/': ['GET', 'HEAD'],
       '/bibliography/api/state': ['GET'],
       '/bibliography/api/suggestions': ['POST'],
-    }[url.pathname];
+    }[url.pathname] || ownerMethods;
     if (!allowedMethods) {
       return new Response('Not found', { status: 404, headers: responseHeaders({}, { noIndex: true }) });
     }
@@ -652,6 +708,13 @@ async function handleFellowship(request, env) {
         headers: responseHeaders({ Allow: allowedMethods.join(', ') }, { noIndex: true }),
       });
     }
+    if (ownerMethods && !(await editorSessionIsValid(request, env))) {
+      if (url.pathname === '/bibliography/edit/' || url.pathname === '/bibliography/edit') {
+        return redirect('/owner/login?next=%2Fbibliography%2Fedit%2F', 303);
+      }
+      return editorJson({ error: 'Owner authentication required' }, 401);
+    }
+    if (ownerMethods && !['GET', 'HEAD'].includes(request.method) && request.headers.get('Origin') !== EDITOR_ORIGIN) return editorJson({ error: 'Forbidden' }, 403);
     if (url.pathname === '/bibliography') {
       url.pathname = '/bibliography/';
       return redirect(url.href);

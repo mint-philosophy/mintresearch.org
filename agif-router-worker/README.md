@@ -17,8 +17,10 @@ release.
 All six decks load the same same-origin, plain-text inline editor. Saved text is
 stored in the existing `CONTENT_OVERRIDES` KV namespace and applied before the
 Pretext layout pass. Viewing passwords never confer edit authority. The editor
-controls appear only from the configured exact IP, and every save additionally
-requires a separate `FELLOWSHIP_EDITOR_PASSWORD` session. Editor sessions are
+owner login at `/owner/login` uses `FELLOWSHIP_EDITOR_PASSWORD` and grants
+viewing and editing across all six decks and the bibliography from any network.
+The overview shows Owner login or the signed-in status and a POST logout button.
+Every save requires this separate owner session. Editor sessions last thirty days and are
 HTTP-only, secure, same-site cookies; saves are revision checked, size bounded,
 rendered with `textContent`, and retained in ninety-day history snapshots.
 
@@ -34,9 +36,11 @@ and shared Fellowship menu. The `BIBLIOGRAPHY` service binding forwards the
 original request to `mint-agi-governance-bibliography`; that backend handles the
 prefix and validates its own requests. The router permits only the page
 (`GET`/`HEAD`), `/bibliography/api/state` (`GET`), and
-`/bibliography/api/suggestions` (`POST`). Editing remains on the existing
-`https://agi-governance.mintresearch.org/edit/` endpoint. Deploy the backend's
-prefix support before deploying this binding. No presentation gate changes.
+`/bibliography/api/suggestions` (`POST`) publicly. `/bibliography/edit/` and its
+editor APIs require the owner cookie; the bibliography backend independently
+verifies it using the same secret. Existing email-code editing at
+`https://agi-governance.mintresearch.org/edit/` is unchanged. Deploy the backend
+before the router and set the same owner password in both Workers.
 
 Required production secrets:
 
@@ -51,8 +55,11 @@ Required production secrets:
 `FELLOWSHIP_OWNER_IPS` optionally registers the owner's current exact addresses
 without replacing the existing allowlist. It never bypasses editor authentication.
 `FELLOWSHIP_OWNER_IPV6_NETWORKS` registers only explicit `/64` local networks so
-IPv6 privacy-address rotation on the approved network does not hide the editor.
-Other network sizes are rejected; editor authentication remains required.
+IPv6 privacy-address rotation preserves the optional viewing bypass.
+Other network sizes are rejected. These addresses do not restrict authenticated
+owner sessions or confer edit authority on unauthenticated visitors.
+The `OWNER_LOGIN_LIMITER` binding permits five login attempts per minute per
+network key (IPv6 grouped by /64); missing rate limiting fails closed.
 
 Run `npm test` before `npm run deploy`.
 

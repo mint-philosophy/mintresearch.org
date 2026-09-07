@@ -36,6 +36,7 @@ function environment(overrides = {}) {
     FELLOWSHIP_PASSWORD_SEPTEMBER_11: passwords.september11,
     FELLOWSHIP_PASSWORD_SEPTEMBER_14: passwords.september14,
     FELLOWSHIP_EDITOR_PASSWORD: 'test-editor-only-password',
+    OWNER_LOGIN_LIMITER: { limit: async () => ({ success: true }) },
     TEST_NOW_MS: Date.parse('2026-09-07T12:00:00-04:00'),
     ALLOWED_IPS: '203.0.113.8',
     CONTENT_OVERRIDES: new MemoryKV(),
@@ -134,9 +135,11 @@ test('public bibliography routes forward the original request and preserve backe
   }
 });
 
-test('bibliography routing exposes only the public allowlist', async () => {
+test('bibliography routing protects owner routes and keeps the public allowlist bounded', async () => {
   const env = environment({ BIBLIOGRAPHY: { fetch() { assert.fail('private or invalid request forwarded'); } } });
-  for (const path of ['/bibliography/edit/', '/bibliography/api/admin', '/bibliography/definitions/deck.html', '/bibliography/api/state/']) {
+  assert.equal((await worker.fetch(request('/bibliography/edit/'), env)).status, 303);
+  assert.equal((await worker.fetch(request('/bibliography/api/editor/state'), env)).status, 401);
+  for (const path of ['/bibliography/api/admin', '/bibliography/definitions/deck.html', '/bibliography/api/state/']) {
     assert.equal((await worker.fetch(request(path), env)).status, 404);
   }
   for (const [path, method] of [['/bibliography/', 'POST'], ['/bibliography/api/state', 'PUT'], ['/bibliography/api/suggestions', 'GET']]) {
@@ -351,7 +354,7 @@ test('editor reads follow the presentation gate and expose controls only on the 
   });
 });
 
-test('editor authentication requires both the allowed IP and the separate editor password', async () => {
+test('editor authentication requires the separate owner password and works from any network', async () => {
   const env = environment();
   const presentationPassword = await requestEditorSession(env, passwords.september9);
   assert.equal(presentationPassword.status, 401);
@@ -366,7 +369,7 @@ test('editor authentication requires both the allowed IP and the separate editor
     },
     body: JSON.stringify({ password: env.FELLOWSHIP_EDITOR_PASSWORD }),
   }), env);
-  assert.equal(otherIp.status, 403);
+  assert.equal(otherIp.status, 200);
 
   const authenticated = await requestEditorSession(env);
   assert.equal(authenticated.status, 200);
@@ -408,7 +411,7 @@ test('same-origin saves require editor authentication and persist per deck with 
 
   const saved = await worker.fetch(request(endpoint, {
     method: 'PUT',
-    headers: { ...baseHeaders, Origin: 'https://fellowship.mintresearch.org', 'CF-Connecting-IP': '203.0.113.8', Cookie: editorCookie },
+    headers: { ...baseHeaders, Origin: 'https://fellowship.mintresearch.org', 'CF-Connecting-IP': '198.51.100.4', Cookie: editorCookie },
     body: payload,
   }), env);
   assert.equal(saved.status, 200);
@@ -425,6 +428,50 @@ test('same-origin saves require editor authentication and persist per deck with 
   const readerState = await reader.json();
   assert.deepEqual(readerState.fields, fields);
   assert.equal(readerState.canEdit, true);
+});
+
+test('one owner form login grants all six decks and the bibliography across networks', async () => {
+  const env = environment({ BIBLIOGRAPHY: { fetch: async () => new Response('owner bibliography') } });
+  const login = await worker.fetch(request('/owner/login', {
+    method: 'POST', headers: { Origin: 'https://fellowship.mintresearch.org', 'Content-Type': 'application/x-www-form-urlencoded', 'CF-Connecting-IP': '198.51.100.4' },
+    body: new URLSearchParams({ password: env.FELLOWSHIP_EDITOR_PASSWORD, next: '/bibliography/edit/' }),
+  }), env);
+  assert.equal(login.status, 303);
+  assert.equal(login.headers.get('location'), '/bibliography/edit/');
+  assert.match(login.headers.get('set-cookie'), /Max-Age=2592000; Path=\/; HttpOnly; Secure; SameSite=Strict/);
+  const headers = { Cookie: login.headers.get('set-cookie').split(';')[0], 'CF-Connecting-IP': '192.0.2.73' };
+  for (const [path] of schedule) {
+    assert.equal((await worker.fetch(request(path, { headers }), env)).status, 200);
+    const state = await (await worker.fetch(request('/editor/v1/decks' + path.slice(0, -1), { headers }), env)).json();
+    assert.equal(state.canEdit, true);
+    assert.equal(state.canRequestEdit, true);
+  }
+  assert.equal(await (await worker.fetch(request('/bibliography/edit/', { headers }), env)).text(), 'owner bibliography');
+  assert.equal((await worker.fetch(request('/bibliography/api/editor/state', { method: 'PUT', headers: { ...headers, Origin: 'https://evil.example' }, body: '{}' }), env)).status, 403);
+  assert.equal((await worker.fetch(request('/owner/login', { headers }), env)).status, 303);
+  const logout = await worker.fetch(request('/owner/logout', { method: 'POST', headers: { ...headers, Origin: 'https://fellowship.mintresearch.org' } }), env);
+  assert.equal(logout.status, 303);
+  assert.match(logout.headers.get('set-cookie'), /mint_fellowship_editor=; Max-Age=0/);
+  assert.equal((await worker.fetch(request('/owner/logout', { headers }), env)).status, 405);
+  const expired = { ...env, TEST_NOW_MS: env.TEST_NOW_MS + 31 * 86400000 };
+  assert.equal((await (await worker.fetch(request('/editor/v1/decks/definitions', { headers }), expired)).json()).canEdit, false);
+  assert.equal((await worker.fetch(request('/bibliography/api/editor/state', { headers }), { ...env, FELLOWSHIP_EDITOR_PASSWORD: 'rotated-test-secret' })).status, 401);
+});
+
+test('owner login rejects forged origins, wrong passwords and rate-limited attempts', async () => {
+  const env = environment();
+  const init = { method: 'POST', headers: { Origin: 'https://fellowship.mintresearch.org', 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ password: passwords.september8 }) };
+  assert.equal((await worker.fetch(request('/owner/login', init), env)).status, 401);
+  assert.equal((await worker.fetch(request('/owner/login', { ...init, headers: { ...init.headers, Origin: 'https://evil.example' } }), env)).status, 403);
+  const limited = { ...env, OWNER_LOGIN_LIMITER: { limit: async () => ({ success: false }) } };
+  const response = await worker.fetch(request('/owner/login', init), limited);
+  assert.equal(response.status, 429);
+  assert.equal(response.headers.get('retry-after'), '60');
+  assert.equal((await requestEditorSession(limited)).status, 429);
+  assert.equal((await worker.fetch(request('/owner/login', init), { ...env, OWNER_LOGIN_LIMITER: undefined })).status, 503);
+  const page = await worker.fetch(request('/owner/login?next=https://evil.example'), env);
+  assert.match(await page.text(), /name="next" value="\/"/);
+  assert.match(page.headers.get('x-robots-tag'), /noindex/);
 });
 
 test('editor rejects stale revisions and invalid fields', async () => {

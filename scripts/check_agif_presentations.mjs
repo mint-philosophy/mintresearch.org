@@ -395,9 +395,10 @@ assert.doesNotMatch(sharedEditorJs, /https?:\/\/|innerHTML/, 'the shared editor 
 assert.match(sharedEditorCss, /html\[data-editor-mode="editing"\] \[data-editor-key\]/, 'editing must visibly identify editable text');
 assert.match(router, /EDITOR_PATH_PREFIX = '\/editor\/v1\/decks\/'/, 'the Fellowship Worker must own the editor endpoint');
 assert.match(router, /request\.headers\.get\('Origin'\) !== EDITOR_ORIGIN/, 'saves must require the exact Fellowship origin');
-assert.match(router, /ipIsAllowed\(request, env\)/, 'saves must retain the exact-IP authority check');
+assert.match(router, /await editorSessionIsValid\(request, env\)/, 'saves must require the private owner session');
+assert.match(router, /OWNER_LOGIN_LIMITER/, 'network-independent owner login must be rate limited');
 assert.match(router, /MAX_EDITOR_FIELDS = 384/, 'editor payloads must retain a bounded field count above the largest deck');
 assert.match(legacyEditorWorker, /legacy editor endpoint is read-only/, 'the retired cross-origin editor must reject writes');
 assert.doesNotMatch(legacyEditorWorker, /CONTENT_OVERRIDES\.put/, 'the retired editor must have no remaining storage write path');
 
-console.log('AGI Fellowship presentation contract OK: six dated, isolated, noindex Pretext decks (6/5/9/17/35/8 slides), five day-specific password gates, timed public release, exact-IP inline editing, and content-free redirects from retired routes.');
+console.log('AGI Fellowship presentation contract OK: six dated, isolated, noindex Pretext decks (6/5/9/17/35/8 slides), five day-specific password gates, timed public release, private owner-session editing, and content-free redirects from retired routes.');
