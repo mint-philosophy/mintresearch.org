@@ -29,7 +29,9 @@ shell as the other decks. No presentation content belongs in `public/`.
 Philosophy is framed at `/philosophy/`; its five-slide deck uses deep ochre
 (`#856018`, pale `#F3E8CA`) and preserves the latest saved v6.1 source wording,
 including the vulnerability-scanning block. Speaker notes are excluded. Its
-native editable counterpart is v7, with the same colour-only change.
+native editable counterpart is v7, with the same colour-only change. The hub and
+shared menu date Philosophy to 9.9 immediately before the other 9.9 session,
+Should We Build AGI, following Seth's specified order. No clock time is inferred.
 
 Production deployment belongs to `Seths-M4`, whose Cloudflare account owns the
 MINT zone. The M5 OAuth account does not own that zone; do not deploy the MINT

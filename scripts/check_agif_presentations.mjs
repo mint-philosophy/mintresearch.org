@@ -343,7 +343,12 @@ assert.match(philosophyPretext, /prepareWithSegments/);
 assert.match(philosophyPretext, /layoutWithLines/);
 for (const token of ['ArrowRight', 'ArrowLeft', 'touchstart', 'hashchange', '__philosophyDeck']) assert.ok(philosophyJs.includes(token));
 assert.ok(fellowshipHub.includes('href="/philosophy/"'));
-assert.ok(fellowshipShell.includes("{ id: 'philosophy', label: 'Philosophy', href: '/philosophy/' }"));
+assert.ok(fellowshipShell.includes("{ id: 'philosophy', label: '9.9 — Philosophy', href: '/philosophy/' }"));
+assert.ok(fellowshipShell.includes("{ id: 'day-1', label: '9.9 — Day 1', href: '/day-1/' }"));
+assert.match(fellowshipHub, /class="agif-link" href="\/philosophy\/">\s*<span class="agif-day">9\.9<\/span>/);
+assert.match(fellowshipHub, /class="agif-link" href="\/day-1\/">\s*<span class="agif-day">9\.9<\/span>/);
+assert.ok(fellowshipHub.indexOf('class="agif-link" href="/philosophy/"') < fellowshipHub.indexOf('class="agif-link" href="/day-1/"'), 'the earlier 9.9 Philosophy session must precede Should We Build AGI');
+assert.ok(fellowshipShell.indexOf("id: 'philosophy'") < fellowshipShell.indexOf("id: 'day-1'"));
 assert.ok(router.includes("'/philosophy': '/philosophy'"));
 assert.equal(existsSync('public/philosophy'), false, 'Philosophy must not be published by GitHub Pages');
 
