@@ -5,6 +5,7 @@
 
   var days = [
     { id: 'definitions', label: 'Definitions', href: '/definitions/' },
+    { id: 'philosophy', label: 'Philosophy', href: '/philosophy/' },
     { id: 'day-1', label: 'Day 1', href: '/day-1/' },
     { id: 'day-2', label: 'Day 2', href: '/day-2/' },
     { id: 'day-3', label: 'Day 3', href: '/day-3/' },

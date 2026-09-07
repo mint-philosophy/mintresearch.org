@@ -121,6 +121,40 @@ test('the configured IP bypasses the password gate', async () => {
   assert.equal(await response.text(), 'asset:/projects/deck.html');
 });
 
+test('Philosophy wrapper and all assets share the password, session, IP bypass and noindex policy', async () => {
+  const env = environment();
+  const paths = [
+    ['/philosophy', '/fellowship/philosophy/index.html'],
+    ['/philosophy/', '/fellowship/philosophy/index.html'],
+    ['/philosophy/index.html', '/fellowship/philosophy/index.html'],
+    ...['deck.html', 'deck.css', 'philosophy.css', 'deck.js', 'pretext-layout.js']
+      .map(asset => [`/philosophy/${asset}`, `/philosophy/${asset}`]),
+  ];
+  const login = await worker.fetch(request('/login', {
+    method: 'POST', body: new URLSearchParams({ password, next: '/philosophy/' }),
+  }), env);
+  assert.equal(login.status, 303);
+  assert.equal(login.headers.get('location'), '/philosophy/');
+  const cookie = login.headers.get('set-cookie').split(';', 1)[0];
+  for (const [path, asset] of paths) {
+    const anonymous = await worker.fetch(request(path), env);
+    assert.equal(anonymous.status, 303);
+    assert.equal(new URL(anonymous.headers.get('location')).searchParams.get('next'), path);
+    for (const headers of [{ Cookie: cookie }, { 'CF-Connecting-IP': '203.0.113.8' }]) {
+      const authorized = await worker.fetch(request(path, { headers }), env);
+      assert.equal(authorized.status, 200);
+      assert.equal(await authorized.text(), `asset:${asset}`);
+      assert.match(authorized.headers.get('x-robots-tag'), /noindex/);
+      assert.equal(authorized.headers.get('cache-control'), 'private, no-store');
+    }
+  }
+  const head = await worker.fetch(request('/philosophy/', {
+    method: 'HEAD', headers: { Cookie: cookie },
+  }), env);
+  assert.equal(head.status, 200);
+  assert.equal(await head.text(), '');
+});
+
 test('legacy subdomains redirect to the protected Fellowship pages', async () => {
   const env = environment();
   const legacy = await worker.fetch(new Request('https://agif3.mintresearch.org/deck.html?old=1'), env);
@@ -135,6 +169,7 @@ test('robots indexes only the public overview and unknown hosts fail closed', as
   assert.match(robotsText, /Disallow: \/day-1\//);
   assert.match(robotsText, /Disallow: \/projects\//);
   assert.match(robotsText, /Disallow: \/definitions\//);
+  assert.match(robotsText, /Disallow: \/philosophy\//);
   assert.match(robotsText, /Sitemap: https:\/\/fellowship\.mintresearch\.org\/sitemap\.xml/);
 
   const unknown = await worker.fetch(new Request('https://example.com/'), env);

@@ -307,4 +307,44 @@ assert.match(router, /HttpOnly; Secure; SameSite=Strict/, 'the Fellowship sessio
 assert.match(router, /X-Robots-Tag/, 'protected presentation routes must add an HTTP noindex directive');
 assert.doesNotMatch(router, /test-only-password|Minty-[A-Za-z0-9_-]{12,}/, 'the production Worker source must not contain a password');
 
-console.log('AGI Fellowship presentation contract OK: open dedicated hub, five isolated password-gated noindex Pretext decks (6/17/35/8/9 slides), IP bypass, and content-free redirects from the retired Pages routes.');
+const [philosophy, philosophyCss, philosophyLayouts, philosophyJs, philosophyPretext, philosophyWrapper] = await Promise.all([
+  'philosophy/deck.html', 'philosophy/deck.css', 'philosophy/philosophy.css',
+  'philosophy/deck.js', 'philosophy/pretext-layout.js', 'fellowship/philosophy/index.html',
+].map(path => read(`agif-router-worker/site-assets/${path}`)));
+assert.match(philosophy, noIndex);
+assert.match(philosophyWrapper, noIndex);
+assert.match(philosophyWrapper, /data-fellowship-day="philosophy"/);
+assert.match(philosophyWrapper, /src="\/philosophy\/deck\.html\?v=/);
+const philosophyFrame = philosophyWrapper.match(/id="presentationFrame"[^>]*src="([^"]+)"/)[1];
+for (const route of ['/philosophy', '/philosophy/', '/philosophy/index.html']) {
+  assert.equal(new URL(philosophyFrame, `https://fellowship.mintresearch.org${route}`).pathname, '/philosophy/deck.html');
+}
+assert.match(philosophy, /https:\/\/fellowship\.mintresearch\.org\/philosophy\//);
+assert.equal((philosophy.match(/<section class="slide\b/g) || []).length, 5);
+assert.equal((philosophy.match(/aria-label="Slide \d+ of 5:/g) || []).length, 5);
+assert.equal((philosophy.match(/data-sid="philosophy-[^"]+"/g) || []).length, 5);
+assert.equal((philosophy.match(/class="ticker-cycle"/g) || []).length, 2);
+assert.match(philosophy, /id="slideCounter">1 \/ 5/);
+for (const required of [
+  'What philosophy can contribute', 'AI-targeted Policy', 'Our approach to justified power',
+  'Building a methodology for vulnerability scanning', 'Updating our normative theories',
+  'AGI will change both the contents and grounds of our mutual obligations.',
+  'could expand to “alignment and control”', '<h4>What</h4>', '<h4>Who</h4>', '<h4>How</h4>',
+]) assert.ok(philosophy.includes(required), `Philosophy must preserve source text: ${required}`);
+assert.doesNotMatch(philosophy, /speaker.?notes|ppt\/notesSlides|inspection_notes|source\.pptx|\/Volumes\//i);
+assert.match(philosophyCss, /--blue:\s*#856018/);
+assert.match(philosophyCss, /--pale-blue:\s*#f3e8ca/);
+assert.match(philosophyCss, /height:\s*100dvh/);
+assert.match(philosophyCss, /\.slide\s*\{[^}]*overflow:\s*auto/s);
+assert.match(philosophyLayouts, /writing-mode:\s*vertical-rl/);
+assert.match(philosophyLayouts, /@media \(max-width: 900px\) and \(orientation: portrait\)/);
+assert.match(philosophyPretext, /@chenglou\/pretext@0\.0\.8/);
+assert.match(philosophyPretext, /prepareWithSegments/);
+assert.match(philosophyPretext, /layoutWithLines/);
+for (const token of ['ArrowRight', 'ArrowLeft', 'touchstart', 'hashchange', '__philosophyDeck']) assert.ok(philosophyJs.includes(token));
+assert.ok(fellowshipHub.includes('href="/philosophy/"'));
+assert.ok(fellowshipShell.includes("{ id: 'philosophy', label: 'Philosophy', href: '/philosophy/' }"));
+assert.ok(router.includes("'/philosophy': '/philosophy'"));
+assert.equal(existsSync('public/philosophy'), false, 'Philosophy must not be published by GitHub Pages');
+
+console.log('AGI Fellowship presentation contract OK: open dedicated hub, six isolated password-gated noindex Pretext decks (6/5/17/35/8/9 slides), IP bypass, and content-free redirects from the retired Pages routes.');

@@ -10,6 +10,7 @@ const legacyHosts = {
 };
 
 const daySources = {
+  '/philosophy': '/philosophy',
   '/definitions': '/definitions',
   '/day-1': '/should-we-build-agi',
   '/day-2': '/agi-institutions',
@@ -272,7 +273,7 @@ async function serveAsset(request, env, assetPath, { noIndex = false } = {}) {
 
 function robots() {
   return new Response(
-    `User-agent: *\nAllow: /$\nDisallow: /definitions/\nDisallow: /day-1/\nDisallow: /day-2/\nDisallow: /day-3/\nDisallow: /projects/\nDisallow: /login\nSitemap: https://${FELLOWSHIP_HOST}/sitemap.xml\n`,
+    `User-agent: *\nAllow: /$\nDisallow: /definitions/\nDisallow: /philosophy/\nDisallow: /day-1/\nDisallow: /day-2/\nDisallow: /day-3/\nDisallow: /projects/\nDisallow: /login\nSitemap: https://${FELLOWSHIP_HOST}/sitemap.xml\n`,
     { headers: responseHeaders({ 'Cache-Control': 'public, max-age=600', 'Content-Type': 'text/plain; charset=utf-8' }) },
   );
 }
