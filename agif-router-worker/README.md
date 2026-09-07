@@ -39,6 +39,9 @@ Required production secrets:
 - `FELLOWSHIP_EDITOR_PASSWORD`
 - `ALLOWED_IPS`
 
+`FELLOWSHIP_OWNER_IPS` optionally registers the owner's current exact addresses
+without replacing the existing allowlist. It never bypasses editor authentication.
+
 Run `npm test` before `npm run deploy`.
 
 Definitions is framed at `/definitions/`; its six-slide deck assets live in

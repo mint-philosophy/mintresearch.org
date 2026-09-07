@@ -251,7 +251,7 @@ async function editorSessionIsValid(request, env) {
 
 function ipIsAllowed(request, env) {
   const clientIp = request.headers.get('CF-Connecting-IP') || '';
-  return Boolean(clientIp) && csv(env.ALLOWED_IPS).includes(clientIp);
+  return Boolean(clientIp) && [...csv(env.ALLOWED_IPS), ...csv(env.FELLOWSHIP_OWNER_IPS)].includes(clientIp);
 }
 
 async function requestIsAuthorized(request, presentation, env) {
