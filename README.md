@@ -87,16 +87,16 @@ contracts. The command
 `npm run check:banner -- --check-blind-refusal` additionally inspects the
 deployed Blind Refusal source.
 
-Public project microsites are divided into four independently collapsible
+Public project microsites are divided into three independently collapsible
 sidebar branches. Each branch stays collapsed away from its children, opens
 automatically for an active child, and uses an accessible disclosure button:
 
 - `Talks`: `/nc/`, `/FDC`, and `/navigating/`
 - `Papers`: `https://blindrefusal.mintresearch.org/` and
   `https://coherence.mintresearch.org/`
-- `Resources`: `/governing-with-agents/` and `/ai-culture/`
-- `AGI Governance Fellowship`: `/agif/` only; the three teaching decks are
-  intentionally absent from primary navigation
+- `Resources`: `/governing-with-agents/`, `/ai-culture/`, and the AGI Governance
+  Fellowship link at `https://fellowship.mintresearch.org/`; individual teaching
+  decks remain absent from primary navigation
 
 Only add maintained, intentionally public project microsites. A presentation
 leaf may remain `noindex` while still being linked for participants. Do not

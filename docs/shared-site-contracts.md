@@ -139,8 +139,9 @@ the same stable ID is added to the canonical contract, it automatically reuses
 that entry rather than rendering a duplicate. Set `position: 'last'` on `local`
 only when the temporary paper should follow the registered papers.
 
-The Talks, Papers, Resources, and AGI Governance Fellowship groups are collapsed
-by default and expand automatically when one of their children is active. Each
+The Talks, Papers, and Resources groups are collapsed
+by default and expand automatically when one of their children is active. The
+AGI Governance Fellowship is a link within Resources. Each
 heading is a button with `aria-expanded` and `aria-controls`; consumers should
 preserve the button semantics and style it with `.nav-group`. Static
 no-JavaScript fallbacks may use collapsed

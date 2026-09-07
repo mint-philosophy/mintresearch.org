@@ -4,12 +4,12 @@
   var pageTitle = body.dataset.presentationTitle || document.title;
 
   var days = [
-    { id: 'definitions', label: 'Definitions', href: '/definitions/' },
+    { id: 'definitions', label: '9.8 — Definitions', href: '/definitions/' },
     { id: 'philosophy', label: '9.9 — Philosophy', href: '/philosophy/' },
-    { id: 'day-1', label: '9.9 — Day 1', href: '/day-1/' },
-    { id: 'day-2', label: 'Day 2', href: '/day-2/' },
-    { id: 'day-3', label: 'Day 3', href: '/day-3/' },
-    { id: 'projects', label: 'Projects', href: '/projects/' }
+    { id: 'projects', label: '9.9 — Projects', href: '/projects/' },
+    { id: 'day-1', label: '9.10 — Should We Build AGI?', href: '/day-1/' },
+    { id: 'day-2', label: '9.11 — AGI Institutions', href: '/day-2/' },
+    { id: 'day-3', label: '9.14 — Adaptation', href: '/day-3/' }
   ];
   var dayLinks = days.map(function (day, index) {
     var marker = index === days.length - 1 ? '└──' : '├──';

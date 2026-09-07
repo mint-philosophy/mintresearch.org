@@ -263,10 +263,10 @@ for (const [host, oldRoute, protectedRoute] of fellowshipRoutes) {
 }
 
 assert.ok(fellowshipHub.includes('href="/projects/"'), 'Projects must be reachable from the public Fellowship hub');
-assert.ok(fellowshipShell.includes("{ id: 'projects', label: 'Projects', href: '/projects/' }"), 'Projects must appear in the Fellowship slide navigation');
+assert.ok(fellowshipShell.includes("{ id: 'projects', label: '9.9 — Projects', href: '/projects/' }"), 'Projects must appear with its date in the Fellowship slide navigation');
 assert.ok(router.includes("'/projects': '/projects'"), 'the Worker must gate and serve the Projects route');
 assert.ok(fellowshipHub.includes('href="/definitions/"'), 'Definitions must be reachable from the Fellowship hub');
-assert.ok(fellowshipShell.includes("{ id: 'definitions', label: 'Definitions', href: '/definitions/' }"), 'Definitions must appear in Fellowship slide navigation');
+assert.ok(fellowshipShell.includes("{ id: 'definitions', label: '9.8 — Definitions', href: '/definitions/' }"), 'Definitions must appear with its date in Fellowship slide navigation');
 assert.ok(router.includes("'/definitions': '/definitions'"), 'the Worker must gate and serve Definitions');
 assert.ok(!nav.includes('/definitions/'), 'Definitions must remain outside main-site navigation');
 assert.ok(!sitemap.includes('/definitions/'), 'Definitions must remain outside the main-site sitemap');
@@ -343,12 +343,15 @@ assert.match(philosophyPretext, /prepareWithSegments/);
 assert.match(philosophyPretext, /layoutWithLines/);
 for (const token of ['ArrowRight', 'ArrowLeft', 'touchstart', 'hashchange', '__philosophyDeck']) assert.ok(philosophyJs.includes(token));
 assert.ok(fellowshipHub.includes('href="/philosophy/"'));
-assert.ok(fellowshipShell.includes("{ id: 'philosophy', label: '9.9 — Philosophy', href: '/philosophy/' }"));
-assert.ok(fellowshipShell.includes("{ id: 'day-1', label: '9.9 — Day 1', href: '/day-1/' }"));
-assert.match(fellowshipHub, /class="agif-link" href="\/philosophy\/">\s*<span class="agif-day">9\.9<\/span>/);
-assert.match(fellowshipHub, /class="agif-link" href="\/day-1\/">\s*<span class="agif-day">9\.9<\/span>/);
-assert.ok(fellowshipHub.indexOf('class="agif-link" href="/philosophy/"') < fellowshipHub.indexOf('class="agif-link" href="/day-1/"'), 'the earlier 9.9 Philosophy session must precede Should We Build AGI');
-assert.ok(fellowshipShell.indexOf("id: 'philosophy'") < fellowshipShell.indexOf("id: 'day-1'"));
+const datedSessions = [["definitions","9.8","Definitions"],["philosophy","9.9","Philosophy"],["projects","9.9","Projects"],["day-1","9.10","Should We Build AGI?"],["day-2","9.11","AGI Institutions"],["day-3","9.14","Adaptation"]];
+for (const [id, date, label] of datedSessions) {
+  assert.ok(fellowshipShell.includes(`{ id: '${id}', label: '${date} — ${label}', href: '/${id}/' }`));
+  const card = fellowshipHub.match(new RegExp(`class="agif-link" href="/${id}/">[\\s\\S]*?</a>`))?.[0];
+  assert.ok(card?.includes(`<span class="agif-day">${date}</span>`), `${id} must show ${date}`);
+}
+for (let i = 1; i < datedSessions.length; i++) {
+  assert.ok(fellowshipHub.indexOf(`class="agif-link" href="/${datedSessions[i-1][0]}/"`) < fellowshipHub.indexOf(`class="agif-link" href="/${datedSessions[i][0]}/"`));
+}
 assert.ok(router.includes("'/philosophy': '/philosophy'"));
 assert.equal(existsSync('public/philosophy'), false, 'Philosophy must not be published by GitHub Pages');
 

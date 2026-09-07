@@ -115,15 +115,7 @@ export const siteNav: PageNav[] = [
     sections: [
       { href: "/governing-with-agents/", label: "Governing with Agents" },
       { href: "/ai-culture/", label: "AI (etc) in Culture" },
-    ],
-  },
-  {
-    path: "",
-    label: "AGI Governance Fellowship",
-    icon: "◇",
-    groupOnly: true,
-    sections: [
-      { href: "/agif/", label: "Overview" },
+      { href: "https://fellowship.mintresearch.org/", label: "AGI Governance Fellowship" },
     ],
   },
   {

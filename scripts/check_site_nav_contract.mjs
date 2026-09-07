@@ -63,9 +63,12 @@ for (const page of fallbackPages) {
   assert.equal((html.match(/\/assets\/mint-site-nav\.v1\.js\?v=\d{8}\.\d+/g) || []).length, 1, `${page} must cache-bust the shared navigation`);
   assert.equal((html.match(/href="\/navigating\/"/g) || []).length, 1, `${page} fallback must list Navigating the AGI Reckoning once`);
   assert.equal((html.match(/Navigating the AGI Reckoning/g) || []).length, 1, `${page} fallback must use the current Navigating title once`);
-  for (const label of ['Talks', 'Papers', 'Resources', 'AGI Governance Fellowship']) {
+  for (const label of ['Talks', 'Papers', 'Resources']) {
     assert.equal((html.match(new RegExp(`<summary class="nav-link nav-page nav-group"><span class="nav-mark">[▸▾]<\\/span> ${label}<\\/summary>`, 'g')) || []).length, 1, `${page} fallback must expose one ${label} disclosure`);
   }
+  const resourceFallback = html.match(/<details class="nav-fallback-group"[^>]*>\s*<summary[^>]*><span[^>]*>[^<]*<\/span> Resources<\/summary>[\s\S]*?<\/details>/)?.[0];
+  assert.ok(resourceFallback?.includes('AGI Governance Fellowship'), `${page} fallback must put Fellowship under Resources`);
+  assert.doesNotMatch(html, /AGI Governance Fellowship<\/summary>/, `${page} must not retain a Fellowship group`);
   for (const route of ['/should-we-build-agi/', '/agi-institutions/', '/societal-adaptation/']) {
     assert.doesNotMatch(html, new RegExp(`<a class="nav-link nav-section" href="${route}"`), `${page} fallback navigation must omit ${route}`);
   }
@@ -208,12 +211,13 @@ const ids = canonical.map((item) => item.id).filter(Boolean);
 assert.equal(new Set(ids).size, ids.length, 'canonical navigation ids must be unique');
 assert.ok(!canonical.some((item) => item.id === 'agent-reports'), 'Agent Reports must not occupy primary navigation');
 const groups = api.items.filter((item) => item.type === 'group');
-assert.deepEqual(Array.from(groups, (item) => item.id), ['talks', 'papers', 'resources', 'fellowship'], 'primary navigation must expose the four content groups in order');
-assert.deepEqual(Array.from(groups, (item) => item.label), ['Talks', 'Papers', 'Resources', 'AGI Governance Fellowship'], 'content group labels must remain stable');
+assert.deepEqual(Array.from(groups, (item) => item.id), ['talks', 'papers', 'resources'], 'primary navigation must expose the three content groups in order');
+assert.deepEqual(Array.from(groups, (item) => item.label), ['Talks', 'Papers', 'Resources'], 'content group labels must remain stable');
 assert.deepEqual(Array.from(groups.find((item) => item.id === 'talks').children, (item) => item.id), ['normative-competence', 'agi-policy-student', 'navigating-agi-reckoning'], 'Talks must contain only the three maintained presentations');
 assert.deepEqual(Array.from(groups.find((item) => item.id === 'papers').children, (item) => item.id), ['blind-refusal', 'incoherent-values'], 'Papers must contain the two paper microsites');
-assert.deepEqual(Array.from(groups.find((item) => item.id === 'resources').children, (item) => item.id), ['governing-with-agents', 'ai-culture'], 'Resources must contain the two curated collections');
-assert.deepEqual(Array.from(groups.find((item) => item.id === 'fellowship').children, (item) => item.id), ['agif-overview'], 'Fellowship navigation must expose only its overview');
+assert.deepEqual(Array.from(groups.find((item) => item.id === 'resources').children, (item) => item.id), ['governing-with-agents', 'ai-culture', 'agif-overview'], 'Resources must contain the collections and Fellowship link');
+assert.ok(!groups.some((item) => item.id === 'fellowship'), 'Fellowship must not remain a separate top-level group');
+assert.equal(canonical.find((item) => item.id === 'agif-overview').label, 'AGI Governance Fellowship');
 assert.ok(!canonical.some((item) => ['agif-day-1', 'agif-day-2', 'agif-day-3'].includes(item.id)), 'no Fellowship teaching-day leaf may appear in primary navigation');
 assert.ok(!canonical.some((item) => item.id === 'microsites'), 'the crowded Microsites group must be retired');
 assert.ok(!canonical.some((item) => item.id === 'moral-reasoning' || item.href === '/lab-overview/'), 'the retired moral-reasoning talk must not remain in navigation');
@@ -274,7 +278,7 @@ api.render({
   target: regularMount,
   currentUrl: 'https://mintresearch.org/'
 });
-for (const groupId of ['talks', 'papers', 'resources', 'fellowship']) {
+for (const groupId of ['talks', 'papers', 'resources']) {
   const groupButton = byAttribute(regularMount, 'data-nav-id', groupId)[0];
   assert.ok(groupButton, `${groupId} must render an accessible disclosure button`);
   assert.equal(groupButton.getAttribute('aria-expanded'), 'false', `${groupId} must be collapsed away from its children`);
@@ -289,7 +293,7 @@ for (const activeCase of [
   { groupId: 'talks', itemId: 'normative-competence', currentUrl: 'https://mintresearch.org/nc/' },
   { groupId: 'papers', itemId: 'blind-refusal', currentUrl: 'https://blindrefusal.mintresearch.org/' },
   { groupId: 'resources', itemId: 'governing-with-agents', currentUrl: 'https://mintresearch.org/governing-with-agents/' },
-  { groupId: 'fellowship', itemId: 'agif-overview', currentUrl: 'https://fellowship.mintresearch.org/' }
+  { groupId: 'resources', itemId: 'agif-overview', currentUrl: 'https://fellowship.mintresearch.org/' }
 ]) {
   const activeMount = new FakeElement('div');
   api.render({ target: activeMount, currentUrl: activeCase.currentUrl });
@@ -338,4 +342,4 @@ api.render({
 });
 assert.equal(byAttribute(dedupeMount, 'data-nav-id', 'blind-refusal').length, 1, 'a now-canonical paper must not be duplicated');
 
-console.log('MINT site navigation contract passed: four content groups, safe cross-origin links, accessible disclosure and current states, local anchors, injected papers, and deduplication.');
+console.log('MINT site navigation contract passed: three content groups, safe cross-origin links, accessible disclosure and current states, local anchors, injected papers, and deduplication.');
