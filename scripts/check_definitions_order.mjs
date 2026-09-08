@@ -40,18 +40,23 @@ const windowEvents = {};
 const window = { location: { hash: '', origin: 'https://fellowship.mintresearch.org' }, addEventListener: (event, handler) => { windowEvents[event] = handler; }, dispatchEvent() {} };
 vm.runInNewContext(script, { document, window, Element, HTMLDialogElement: Element, CustomEvent: class {}, history: { replaceState: (_state, _title, hash) => { window.location.hash = hash; } } });
 
-const expected = ['df-title', 'df-retire', 'df-defs', 'df-waypoints', 'df-normal', 'df-bottlenecks'];
+const expected = ['df-title', 'df-intelligence', 'df-retire', 'df-defs', 'df-waypoints', 'df-normal', 'df-bottlenecks'];
+assert.equal(slides.length, 7);
+assert.deepEqual(slides.map((slide) => Number(slide.dataset.presentationIndex)).sort((a, b) => a - b), [0, 1, 2, 3, 4, 5, 6]);
 const active = () => slides.find((slide) => slide.classes.has('active')).dataset.sid;
 for (let index = 0; index < expected.length; index++) {
   ids.navDots.children[index].events.click();
   assert.equal(active(), expected[index]);
-  assert.equal(ids.slideCounter.textContent, `${index + 1} / 6`);
-  assert.match(slides.find((slide) => slide.dataset.sid === active()).attrs['aria-label'], new RegExp(`^Slide ${index + 1} of 6:`));
+  assert.equal(ids.slideCounter.textContent, `${index + 1} / 7`);
+  assert.match(slides.find((slide) => slide.dataset.sid === active()).attrs['aria-label'], new RegExp(`^Slide ${index + 1} of 7:`));
   buttons[index].events.click({});
   assert.equal(active(), expected[index]);
   assert.equal(buttons[index].dataset.goSid, expected[index]);
 }
-window.location.hash = '#slide-4';
+window.location.hash = '#slide-2';
+windowEvents.hashchange();
+assert.equal(active(), 'df-intelligence');
+window.location.hash = '#slide-5';
 windowEvents.hashchange();
 assert.equal(active(), 'df-waypoints');
 ids.nextSlide.events.click();
@@ -59,5 +64,12 @@ assert.equal(active(), 'df-normal');
 ids.previousSlide.events.click();
 assert.equal(active(), 'df-waypoints');
 // Runtime navigation must not reorder DOM nodes used for saved editor identities.
-assert.deepEqual(slides.map((slide) => slide.dataset.sid), ['df-title', 'df-retire', 'df-defs', 'df-normal', 'df-waypoints', 'df-bottlenecks']);
-console.log('Definitions order passed: extension slide 4, normal technology slide 5; dots, ticker, next/previous and hashes agree; source/editor order unchanged.');
+assert.deepEqual(slides.map((slide) => slide.dataset.sid), ['df-title', 'df-retire', 'df-defs', 'df-normal', 'df-waypoints', 'df-bottlenecks', 'df-intelligence']);
+const quoteSlide = html.match(/<section class="slide df-intelligence-quote"[\s\S]*?<\/section>/)?.[0];
+assert.ok(quoteSlide);
+assert.match(quoteSlide, /<h2 data-pretext>what is intelligence\?<\/h2>/);
+assert.ok(quoteSlide.includes('<p class="df-intelligence-text" data-pretext>Artificial intelligence is that activity devoted to making machines intelligent, and intelligence is that quality that enables an entity to function appropriately and with foresight in its environment.</p>'));
+assert.ok(quoteSlide.includes('<p class="df-intelligence-attribution" data-pretext>(Nilsson 2010)</p>'));
+assert.equal((quoteSlide.match(/data-pretext(?=[ >])/g) || []).length, 3);
+assert.equal((html.match(/data-pretext(?=[ >])/g) || []).length, 39);
+console.log('Definitions order passed: exact Nilsson quote at slide 2, extension slide 5, normal technology slide 6; seven navigation targets agree; original source/editor order unchanged.');

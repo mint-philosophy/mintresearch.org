@@ -63,7 +63,7 @@ network key (IPv6 grouped by /64); missing rate limiting fails closed.
 
 Run `npm test` before `npm run deploy`.
 
-Definitions is framed at `/definitions/`; its six-slide deck assets live in
+Definitions is framed at `/definitions/`; its seven-slide deck assets live in
 `site-assets/definitions/` and its wrapper in `site-assets/fellowship/definitions/`.
 It uses the same date-gate, exact-IP bypass, noindex headers, and presentation
 shell as the other decks. No presentation content belongs in `public/`.

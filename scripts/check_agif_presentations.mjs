@@ -149,10 +149,10 @@ assert.match(definitionsDeck, /https:\/\/fellowship\.mintresearch\.org\/definiti
 assert.match(definitionsDeck, /href="deck\.css\?v=[^"]+"/, 'Definitions must load its versioned CSS');
 assert.match(definitionsDeck, /src="deck\.js\?v=[^"]+"/, 'Definitions must load its static navigation');
 assert.match(definitionsDeck, /src="pretext-layout\.js\?v=[^"]+"/, 'Definitions must load its Pretext layout pass');
-assert.equal((definitionsDeck.match(/<section class="slide\b/g) || []).length, 6, 'Definitions must expose all 6 source slides');
-assert.equal((definitionsDeck.match(/aria-label="Slide \d+ of 6:/g) || []).length, 6, 'every Definitions slide needs navigation metadata');
-assert.equal((definitionsDeck.match(/data-sid="df-[^"]+"/g) || []).length, 6, 'every Definitions slide needs a stable source identifier');
-assert.match(definitionsDeck, /id="slideCounter">1 \/ 6/, 'Definitions counter must use the real slide total');
+assert.equal((definitionsDeck.match(/<section class="slide\b/g) || []).length, 7, 'Definitions must expose all 7 slides');
+assert.equal((definitionsDeck.match(/aria-label="Slide \d+ of 7:/g) || []).length, 7, 'every Definitions slide needs navigation metadata');
+assert.equal((definitionsDeck.match(/data-sid="df-[^"]+"/g) || []).length, 7, 'every Definitions slide needs a stable source identifier');
+assert.match(definitionsDeck, /id="slideCounter">1 \/ 7/, 'Definitions counter must use the real slide total');
 assert.equal((definitionsDeck.match(/class="ticker-cycle"/g) || []).length, 2, 'Definitions ticker must contain two seamless cycles');
 assert.match(definitionsCss, /--blue:\s*#3558d4/i, 'Definitions must use its cobalt accent');
 assert.match(day1Css, /--blue:\s*#47657a/i, 'Day 1 must use its slate-blue accent');
@@ -401,4 +401,4 @@ assert.match(router, /MAX_EDITOR_FIELDS = 384/, 'editor payloads must retain a b
 assert.match(legacyEditorWorker, /legacy editor endpoint is read-only/, 'the retired cross-origin editor must reject writes');
 assert.doesNotMatch(legacyEditorWorker, /CONTENT_OVERRIDES\.put/, 'the retired editor must have no remaining storage write path');
 
-console.log('AGI Fellowship presentation contract OK: six dated, isolated, noindex Pretext decks (6/5/9/17/35/8 slides), five day-specific password gates, timed public release, private owner-session editing, and content-free redirects from retired routes.');
+console.log('AGI Fellowship presentation contract OK: six dated, isolated, noindex Pretext decks (7/5/9/17/35/8 slides), five day-specific password gates, timed public release, private owner-session editing, and content-free redirects from retired routes.');
