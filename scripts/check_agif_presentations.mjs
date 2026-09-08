@@ -195,9 +195,9 @@ assert.equal((day2Slide7.match(/class="split-panel\b/g) || []).length, 1, 'Day 2
 assert.doesNotMatch(day2Slide7, /ecological metaphor|invasive species/i, 'Day 2 slide 7 must not retain the following-day metaphor');
 
 for (const [label, css] of [['Day 1', day1Css], ['Day 2', day2Css], ['Day 3', day3Css], ['Projects', projectsCss], ['Definitions', definitionsCss]]) {
-  assert.match(css, /animation:\s*ticker 42s linear infinite;/, `${label} ticker must scroll continuously`);
-  assert.match(css, /to\s*\{\s*transform:\s*translateX\(-50%\)/, `${label} ticker must loop over one cycle`);
-  assert.doesNotMatch(css, /infinite alternate/, `${label} ticker must not reverse direction`);
+  assert.match(css, /\.ticker-track\s*\{[^}]*animation:\s*none;/s, `${label} ticker must remain stationary`);
+  assert.match(css, /\.ticker\s*\{[^}]*overflow-x:\s*auto;/s, `${label} ticker labels must remain manually reachable`);
+  assert.match(css, /\.ticker-cycle\[aria-hidden="true"\]\s*\{\s*display:\s*none;/, `${label} duplicate ticker cycle must stay hidden`);
 }
 assert.match(day3Css, /\.ticker-track\s*\{[^}]*flex:\s*0 0 auto/s, 'Day 3 ticker track must not shrink below the two-cycle width');
 assert.match(day3Css, /\.ticker-cycle\s*\{[^}]*min-width:\s*100vw/s, 'Day 3 ticker cycles must each cover the viewport');
