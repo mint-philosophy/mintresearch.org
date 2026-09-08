@@ -58,12 +58,40 @@ function readLayouts() {
     return {
       element,
       entry,
-      width: Math.max(1, element.getBoundingClientRect().width - inlineInsets(style)),
+      width: Math.max(1, element.getBoundingClientRect().width - inlineInsets(style) - quoteEmphasisAllowance(element, entry.source, style)),
       font: fontSpec(style),
       lineHeight: lineHeight(style),
       letterSpacing: letterSpacing(style),
     };
   });
+}
+
+function quoteEmphasisAllowance(element, source, style) {
+  if (!element.matches('.df-intelligence-text')) return 0;
+  const words = source.match(/\bappropriately\b/g) || [];
+  if (!words.length) return 0;
+  const context = document.createElement('canvas').getContext('2d');
+  if (!context) return 0;
+  context.font = fontSpec(style);
+  const regularWidth = context.measureText('appropriately').width;
+  context.font = fontSpec({ fontStyle: style.fontStyle, fontVariant: style.fontVariant, fontWeight: '700', fontSize: style.fontSize, fontFamily: style.fontFamily });
+  // Reserve the exact added glyph width on every line before Pretext breaks it.
+  return Math.max(0, context.measureText('appropriately').width - regularWidth) * words.length;
+}
+
+function applyQuoteEmphasis(element) {
+  if (!element.matches('.df-intelligence-text')) return;
+  const fragment = document.createDocumentFragment();
+  for (const part of element.textContent.split(/\b(appropriately)\b/g)) {
+    if (part === 'appropriately') {
+      const strong = document.createElement('strong');
+      strong.textContent = part;
+      fragment.append(strong);
+    } else {
+      fragment.append(document.createTextNode(part));
+    }
+  }
+  element.replaceChildren(fragment);
 }
 
 function computeLayouts(reads) {
@@ -87,6 +115,7 @@ function applyLayouts(layouts) {
   for (const { element, result } of layouts) {
     if (!result?.lines?.length) continue;
     element.textContent = result.lines.map((line) => line.text).join('\n');
+    applyQuoteEmphasis(element);
     element.style.whiteSpace = 'pre-wrap';
     element.style.textWrap = 'wrap';
     element.dataset.pretextLines = String(result.lineCount);

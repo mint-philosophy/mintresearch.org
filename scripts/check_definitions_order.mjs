@@ -73,3 +73,60 @@ assert.ok(quoteSlide.includes('<p class="df-intelligence-attribution" data-prete
 assert.equal((quoteSlide.match(/data-pretext(?=[ >])/g) || []).length, 3);
 assert.equal((html.match(/data-pretext(?=[ >])/g) || []).length, 39);
 console.log('Definitions order passed: exact Nilsson quote at slide 2, extension slide 5, normal technology slide 6; seven navigation targets agree; original source/editor order unchanged.');
+
+// Exercise the actual emphasis and editor suspend/resume functions without a browser.
+const layoutScript = readFileSync(new URL('pretext-layout.js', root), 'utf8').split('\ninitialise().catch(')[0];
+class TextElement {
+  constructor(tag = 'p', quote = false) { this.tag = tag; this.quote = quote; this.nodes = []; this.dataset = {}; this.style = {}; }
+  get textContent() { return this.nodes.map((node) => node.textContent).join(''); }
+  set textContent(text) { this.nodes = [{ textContent: text }]; }
+  matches(selector) { return this.quote && selector === '.df-intelligence-text'; }
+  replaceChildren(fragment) { this.nodes = fragment.nodes; }
+  getBoundingClientRect() { return { width: 800 }; }
+}
+const quote = new TextElement('p', true);
+const other = new TextElement();
+const originalQuote = 'Function appropriately and with foresight in its environment.';
+quote.textContent = originalQuote;
+other.textContent = 'appropriately unchanged elsewhere';
+const measuredFonts = [];
+const measurement = { font: '', measureText() { measuredFonts.push(this.font); return { width: this.font.startsWith('700 ') ? 110 : 100 }; } };
+const computedStyle = { fontStyle: 'normal', fontVariant: 'normal', fontWeight: '400', fontSize: '40px', fontFamily: 'Georgia', lineHeight: '46px', letterSpacing: 'normal' };
+const layoutWindow = { addEventListener() {}, dispatchEvent() {} };
+const layoutDocument = {
+  getElementById: () => ({ dataset: {} }),
+  documentElement: { dataset: {} },
+  fonts: { ready: Promise.resolve(), addEventListener() {} },
+  querySelectorAll: () => [quote, other],
+  createElement: (tag) => tag === 'canvas' ? { getContext: () => measurement } : new TextElement(tag),
+  createTextNode: (textContent) => ({ textContent }),
+  createDocumentFragment: () => ({ nodes: [], append(node) { this.nodes.push(node); } }),
+};
+const layoutContext = vm.createContext({ document: layoutDocument, window: layoutWindow, getComputedStyle: () => computedStyle, CustomEvent: class {}, console, quote, other, computedStyle });
+vm.runInContext(layoutScript, layoutContext);
+vm.runInContext('applyQuoteEmphasis(quote); applyQuoteEmphasis(other);', layoutContext);
+assert.equal(quote.textContent, originalQuote);
+assert.equal(quote.nodes.filter((node) => node.tag === 'strong').length, 1);
+assert.equal(quote.nodes.find((node) => node.tag === 'strong').textContent, 'appropriately');
+assert.equal(other.nodes.length, 1);
+assert.equal(vm.runInContext('quoteEmphasisAllowance(quote, quote.textContent, computedStyle)', layoutContext), 10);
+assert.deepEqual(measuredFonts, ['400 40px Georgia', '700 40px Georgia']);
+assert.equal(vm.runInContext('quoteEmphasisAllowance(other, other.textContent, computedStyle)', layoutContext), 0);
+quote.textContent = 'inappropriately APPROPRIATELY';
+vm.runInContext('applyQuoteEmphasis(quote)', layoutContext);
+assert.equal(quote.nodes.filter((node) => node.tag === 'strong').length, 0);
+quote.textContent = originalQuote;
+await vm.runInContext(`loadPretext = async () => ({
+  prepareWithSegments: (text) => text,
+  layoutWithLines: (text) => ({ lines: text.split(' and ').map((text) => ({ text })), lineCount: 2, height: 92 }),
+}); initialise();`, layoutContext);
+assert.equal(quote.nodes.filter((node) => node.tag === 'strong').length, 1);
+layoutWindow.__agiPretext.suspend();
+assert.equal(quote.textContent, originalQuote);
+assert.equal(quote.nodes.filter((node) => node.tag === 'strong').length, 0);
+quote.textContent = 'Edited appropriately with foresight.';
+layoutWindow.__agiPretext.resume();
+assert.equal(quote.textContent, 'Edited appropriately with foresight.');
+assert.equal(quote.nodes.filter((node) => node.tag === 'strong').length, 1);
+assert.match(readFileSync(new URL('deck.css', root), 'utf8'), /\.df-intelligence-text strong\s*\{\s*font-weight:\s*700;\s*color:\s*var\(--blue\);\s*\}/);
+console.log('Definitions emphasis passed: exact word only, bold-width allowance, unchanged text, other blocks untouched, editor suspend/resume restored emphasis.');
