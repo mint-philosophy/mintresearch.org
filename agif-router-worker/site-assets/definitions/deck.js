@@ -1,5 +1,10 @@
 (function () {
-  const slides = Array.from(document.querySelectorAll('.slide'));
+  // Keep source DOM order stable: saved inline-editor keys include its index.
+  // Navigation may use a different order without detaching those saved edits.
+  const slides = Array.from(document.querySelectorAll('.slide'))
+    .map((slide, index) => ({ slide, index: Number(slide.dataset.presentationIndex ?? index) }))
+    .sort((a, b) => a.index - b.index)
+    .map(({ slide }) => slide);
   const navDots = document.getElementById('navDots');
   const counter = document.getElementById('slideCounter');
   const sectionName = document.getElementById('sectionName');
