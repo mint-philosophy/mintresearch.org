@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>WeWorm spreads through unanswered calls between WeChat contacts — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-08">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-08">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 8 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">WeWorm spreads through unanswered calls between WeChat contacts</h1>
+<p class="dek">Calif demonstrated account takeover across Android and iOS with AI assistance. Tencent blocked the exploit before disclosure; the caller needed an existing contact connection.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 8 September 2026</span> <span class="chip">562 words · ~3 min</span></div>
+<div class="article-body">
+<p>Calif's September 8 <a href="https://calif.io/research/weworm">WeWorm demonstration</a> shows a WeChat account being taken over through an unanswered voice call, then used to call and compromise another account. The security researchers ran the sequence across three phones: an Android Pixel 10a, an iPhone 17e and another Pixel 10a. Each takeover occurred while the target was ringing. Calif says the attack gives access to messages and calls; full control of the device would require additional vulnerabilities. Tencent had already blocked the demonstrated exploit for all users by August 28, according to Calif.</p>
+<p>Swati Khandelwal's <a href="https://thehackernews.com/2026/09/wechat-zero-click-worm-took-over.html">report for The Hacker News</a> emphasizes the contact requirement: the caller must already be on the target's WeChat friend list. Compromising one contact allows an attacker to approach that person's friends through an account they trust. The target need not answer or interact with the phone. Answering does not prevent the exploit; declining ends that attempt, though another call can follow. The demonstration proves a chain between test accounts. The Hacker News reports no known attacks using the flaw, and Calif reports no such outbreak.</p>
+<p>Calif describes a memory-corruption flaw in WeChat's voice-call software and credits AI with much of the discovery and exploit development. It says finding the bug and writing the first working exploit took about two days, followed by another week to build the worm. Humans chose the targets and supervised safe testing. Khandelwal obtained a further explanation: Calif had developed skills to guide an AI's investigation of messaging-app attack surfaces. She also identifies a discrepancy in the elapsed timeline: the engineers knew about the flaw on July 23, completed the Android exploit July 30 and finished the polished worm demonstration August 11. The publication does not explain whether its shorter estimates count working time.</p>
+<p>Calif's disclosure timeline records a report to Tencent on July 24, mitigating Android and iOS releases on August 21, and confirmation of a server-side block on August 28. The researchers supplied their technical analysis and working exploits September 3; Tencent confirmed the remote-command-execution vulnerability the next day. Public disclosure followed September 8. Khandelwal reports that Tencent had not issued a security advisory or a complete list of affected versions. Asked whether the underlying flaw had been fixed, Calif declined to comment beyond the mitigation of its exploit.</p>
+<p>Dustin Volz, who <a href="https://x.com/dnvolz/status/2097300310813192419">reported on WeWorm</a> for <a href="https://www.nytimes.com/2026/09/08/us/politics/calif-ai-worm-wechat-hack.html">The New York Times</a>, relayed a warning from Vinh Nguyen, a former NSA chief data scientist. In a <a href="https://x.com/dnvolz/status/2097313029851328734?s=12">follow-up post</a>, Volz reports Nguyen's judgment that the worm was among the most troubling and potentially severe attacks he had seen and could reach hundreds of millions of devices within hours. That was an estimate of potential spread, extending far beyond the three-phone demonstration.</p>
+<p>The call-processing vulnerability has a technical precedent in Facebook's <a href="https://github.com/CVEProject/cvelistV5/blob/main/cves/2019/3xxx/CVE-2019-3568.json">2019 WhatsApp vulnerability record</a>. It describes a buffer overflow in voice-call software that allowed remote code execution through data sent to a target phone number, affecting Android and iOS clients among others. WeWorm demonstrates how account access can then propagate through contacts across both operating systems. Calif also points to its own <a href="https://calif.io/research/oempocalypse">OEMpocalypse research</a>, published August 31 by Lukas Maar, as an example of other vulnerabilities an attacker could use to gain the initial access needed to compromise a trusted contact. That research concerns escalating an Android app's privileges to control the operating system; it is a separate exploit chain from the unanswered WeChat call.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://calif.io/research/weworm">WeWorm | Calif Research</a> <span class="how">— Full live primary report and saved source read: three-device demo, account access versus chained device control, trusted contacts, AI/human contributions and complete mitigation chronology.</span></li>
+<li><a href="https://thehackernews.com/2026/09/wechat-zero-click-worm-took-over.html">WeChat Zero-Click Worm Took Over Accounts on iPhone and Android via Incoming Calls | Swati Khandelwal, The Hacker News</a> <span class="how">— Full live article read. Direct Calif answers, limitations of the demonstration, no reported attacks, elapsed-date versus short-work-estimate distinction, advisory/version gaps and flaw-versus-exploit answer.</span></li>
+<li><a href="https://www.nytimes.com/2026/09/08/us/politics/calif-ai-worm-wechat-hack.html">A.I. Models Built a Computer Worm That Could Rapidly Hack WeChat Accounts | Dustin Volz, The New York Times</a> <span class="how">— Merged selected original article link preserved. Fable reports a full researcher reading via the archive linked by Calif; fresh editor reads encountered publisher failure and archive CAPTCHA. No NYT-only detail retained unless also verified in Volz’s original public posts.</span></li>
+<li><a href="https://x.com/dnvolz/status/2097300310813192419">Original WeWorm reporting announcement | Dustin Volz</a> <span class="how">— Original reporting post read through Bird. Establishes what Volz announced and points to his NYT story.</span></li>
+<li><a href="https://x.com/dnvolz/status/2097313029851328734?s=12">Vinh Nguyen’s assessment of WeWorm | Dustin Volz</a> <span class="how">— Selected follow-up preserved and read through Bird. Supplies attributed former-NSA role, severity judgment and potential-spread estimate; no claim that mass infection occurred.</span></li>
+<li><a href="https://github.com/CVEProject/cvelistV5/blob/main/cves/2019/3xxx/CVE-2019-3568.json">CVE-2019-3568 | Facebook CNA record, CVE Program</a> <span class="how">— Official Facebook-assigned record read via raw GitHub mirror after NVD access failed. Describes WhatsApp VoIP buffer overflow, remote code execution sent to phone number and affected mobile clients. Does not supply unanswered-call or Pegasus claims; those were removed.</span></li>
+<li><a href="https://calif.io/research/oempocalypse">OEMpocalypse Now | Lukas Maar, Calif</a> <span class="how">— Opening, strategy and coverage sections read from the live original. Used only to distinguish Android privilege escalation as a possible initial compromise route from the separate WeChat call exploit.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-weworm-demonstrates-ai-assisted-account-takeover-through-una">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-08/weworm-demonstrates-ai-assisted-account-takeover-through-una</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

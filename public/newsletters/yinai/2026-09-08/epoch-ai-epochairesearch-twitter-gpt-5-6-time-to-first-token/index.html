@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Longer inputs slow GPT-5.6 more than Sonnet — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-08">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-08">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 8 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Longer inputs slow GPT-5.6 more than Sonnet</h1>
+<p class="dek">GPT-5.6 Terra and Sol slow progressively as inputs lengthen; Sonnet 5 stays close to linear. Jason Li relates the measurements to pricing and agents’ memory.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 8 September 2026</span> <span class="chip">735 words · ~4 min</span></div>
+<div class="article-body">
+<p>Longer inputs make GPT-5.6's waiting time rise progressively faster, while Claude Sonnet 5's increases at an almost constant rate, Jason Li reports for Epoch AI in <a href="https://epoch.ai/publications/long-context-latency-scaling-gpt-vs-claude">"Long-context latency scales quadratically for GPT-5.6 but nearly linearly for Claude 5"</a>, published September 8. Li measured the time until the first response text appeared after sending a long input. GPT-5.6 Terra and Sol showed a substantial quadratic component: each additional chunk of text added more delay as the existing input grew. Sonnet remained close to linear. Claude Opus 5 was noisier, leaving its exact scaling less certain.</p>
+<p>Li started from a difference in the companies' pricing. OpenAI charges more per token once an input passes 272,000 tokens; Anthropic's per-token rate stays fixed as the input grows. Li notes that a company's prices need not reflect its cost of serving a model, then asks whether the different schedules accompany different performance. Epoch's <a href="https://x.com/epochairesearch/status/2097432975172567373?s=12">announcement thread</a> presents the measurements as evidence suggesting different architectural choices.</p>
+<p>The <a href="https://github.com/epoch-research/ttft-latency-scaling">released code and data</a> document 262 requests across four sessions on August 13 and 14 from one Toronto home network. Inputs ranged from roughly 50,000 to 900,000 tokens. Li disabled reasoning and asked every model to respond with the single word OK, holding the task constant across input lengths. He sent one request at a time, shuffled input lengths within each block of measurements and reused a connection. Short and long requests were therefore interleaved as network and serving conditions changed.</p>
+<p>Li's inputs began with a small shared prefix of about 2,000 cached tokens, followed by a different number on every request and then a long passage from a fixed collection of Gutenberg books. The changing number prevented the remainder from being reused from a previous request's cache. Provider usage records confirmed that only the intended prefix was cached. The benchmark consequently measured processing a large amount of new text, not retrieving a previously processed long conversation. Earlier Sonnet runs without the shared prefix were more variable. Li suggests caching may stabilize routing, but the experiment did not establish why the variation fell.</p>
+<p>Li fitted every model with the same equation, allowing both a linear and a quadratic term, and accounted for shifts in baseline delay between blocks. His main estimator reduced the influence of unusually slow requests. Two further analyses treated some noise as extra waiting caused by contention, such as requests queueing for service. All three recovered clear upward curvature for Terra and Sol and little curvature for Sonnet. Opus's uncertainty was much wider. The distinction survived different assumptions about noisy API timing; the Opus data do not support the same confidence as Sonnet's.</p>
+<p>The repository defines the timing interval from sending the prepared request to receiving its first nonempty text. It includes upload and network transit, provider routing and queueing, cache lookup, processing the input and generating the first output. Local input preparation and token counting happen before the timer starts. Those boundaries explain why the measurements concern effective serving latency. They cannot separately identify the model's computation, its hardware or the attention mechanism responsible for a curve. The code and archived observations support repeating the analysis offline; a new collection would encounter different provider conditions.</p>
+<p>Li interprets the results through the cost of attention, the operation that lets a model relate tokens to one another. Full attention compares positions across the input, making its work grow quadratically as the text lengthens. Efficient alternatives have a research history: Angelos Katharopoulos and colleagues' ICML 2020 paper <a href="https://arxiv.org/abs/2006.16236">"Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention"</a> reformulates that operation so its cost grows linearly with sequence length. Li discusses hybrids that combine linear and full attention, sparse attention that limits the comparisons, and sliding windows that restrict each token's reach. He infers that Claude's processing may use substantially less quadratic computation.</p>
+<p>Within today's roughly million-token windows, Li concludes that the observed difference does not make GPT uneconomical. To examine a larger gap, he extends the fitted curves to a hypothetical 10 million tokens. At that length, an additional 10,000 tokens would add about 1.66 seconds for Terra against 0.13 seconds for Sonnet under his chosen fits. These are extrapolations beyond the measured range, with Claude deliberately approximated by a straight line. Li's proposed consequence concerns agents' memory: if long-context serving remains economical, more history could stay inside the model's input; if marginal costs rise rapidly, external memory and frequent compaction become more attractive.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://epoch.ai/publications/long-context-latency-scaling-gpt-vs-claude">Long-context latency scales quadratically for GPT-5.6 but nearly linearly for Claude 5 | Jason Li, Epoch AI</a> <span class="how">— Full live report, tables and appendices read via direct HTTP after web opener failed. Sources attribution, finding, pricing motivation, noise analyses, architectural interpretation and explicitly hypothetical 10-million-token extrapolation. Page licenses Epoch work under Creative Commons Attribution.</span></li>
+<li><a href="https://github.com/epoch-research/ttft-latency-scaling">Long-context API TTFT scaling | Epoch AI</a> <span class="how">— Live README and collection-methodology/results documents read. Four sessions, 262 requests, August 13-14 collection, shared-prefix method, sequential requests, measured timing boundary and offline reproducibility. No API requests or paid collection run.</span></li>
+<li><a href="https://x.com/epochairesearch/status/2097432975172567373?s=12">Report announcement | Epoch AI</a> <span class="how">— Selected URL preserved. Original post read through Bird; it presents architectural explanation as a suggestion. Attribution and detailed claims link Li’s full report.</span></li>
+<li><a href="https://arxiv.org/abs/2006.16236">Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention | Angelos Katharopoulos and colleagues, ICML 2020</a> <span class="how">— Original arXiv author, title, venue comment and abstract read. Supports the named precedent for linear attention. Used for that narrow established method, not the full paper’s performance claims.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-epoch-ai-epochairesearch-twitter-gpt-5-6-time-to-first-token">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-08/epoch-ai-epochairesearch-twitter-gpt-5-6-time-to-first-token</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
