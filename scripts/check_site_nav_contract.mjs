@@ -67,6 +67,7 @@ for (const page of fallbackPages) {
     assert.equal((html.match(new RegExp(`<summary class="nav-link nav-page nav-group"><span class="nav-mark">[▸▾]<\\/span> ${label}<\\/summary>`, 'g')) || []).length, 1, `${page} fallback must expose one ${label} disclosure`);
   }
   const resourceFallback = html.match(/<details class="nav-fallback-group"[^>]*>\s*<summary[^>]*><span[^>]*>[^<]*<\/span> Resources<\/summary>[\s\S]*?<\/details>/)?.[0];
+  assert.ok(resourceFallback?.includes('https://bibliography.mintresearch.org/'), `${page} fallback must put Bibliography under Resources`);
   assert.ok(resourceFallback?.includes('AGI Governance Fellowship'), `${page} fallback must put Fellowship under Resources`);
   assert.doesNotMatch(html, /AGI Governance Fellowship<\/summary>/, `${page} must not retain a Fellowship group`);
   for (const route of ['/should-we-build-agi/', '/agi-institutions/', '/societal-adaptation/']) {
@@ -215,7 +216,7 @@ assert.deepEqual(Array.from(groups, (item) => item.id), ['talks', 'papers', 'res
 assert.deepEqual(Array.from(groups, (item) => item.label), ['Talks', 'Papers', 'Resources'], 'content group labels must remain stable');
 assert.deepEqual(Array.from(groups.find((item) => item.id === 'talks').children, (item) => item.id), ['normative-competence', 'agi-policy-student', 'navigating-agi-reckoning'], 'Talks must contain only the three maintained presentations');
 assert.deepEqual(Array.from(groups.find((item) => item.id === 'papers').children, (item) => item.id), ['blind-refusal', 'incoherent-values'], 'Papers must contain the two paper microsites');
-assert.deepEqual(Array.from(groups.find((item) => item.id === 'resources').children, (item) => item.id), ['governing-with-agents', 'ai-culture', 'agif-overview'], 'Resources must contain the collections and Fellowship link');
+assert.deepEqual(Array.from(groups.find((item) => item.id === 'resources').children, (item) => item.id), ['governing-with-agents', 'ai-culture', 'agif-overview', 'agi-governance-bibliography'], 'Resources must contain the collections, Fellowship, and bibliography links');
 assert.ok(!groups.some((item) => item.id === 'fellowship'), 'Fellowship must not remain a separate top-level group');
 assert.equal(canonical.find((item) => item.id === 'agif-overview').label, 'AGI Governance Fellowship');
 assert.ok(!canonical.some((item) => ['agif-day-1', 'agif-day-2', 'agif-day-3'].includes(item.id)), 'no Fellowship teaching-day leaf may appear in primary navigation');
@@ -293,7 +294,8 @@ for (const activeCase of [
   { groupId: 'talks', itemId: 'normative-competence', currentUrl: 'https://mintresearch.org/nc/' },
   { groupId: 'papers', itemId: 'blind-refusal', currentUrl: 'https://blindrefusal.mintresearch.org/' },
   { groupId: 'resources', itemId: 'governing-with-agents', currentUrl: 'https://mintresearch.org/governing-with-agents/' },
-  { groupId: 'resources', itemId: 'agif-overview', currentUrl: 'https://fellowship.mintresearch.org/' }
+  { groupId: 'resources', itemId: 'agif-overview', currentUrl: 'https://fellowship.mintresearch.org/' },
+  { groupId: 'resources', itemId: 'agi-governance-bibliography', currentUrl: 'https://bibliography.mintresearch.org/' }
 ]) {
   const activeMount = new FakeElement('div');
   api.render({ target: activeMount, currentUrl: activeCase.currentUrl });

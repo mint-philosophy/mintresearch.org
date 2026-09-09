@@ -79,3 +79,9 @@ Production deployment belongs to `Seths-M4`, whose Cloudflare account owns the
 MINT zone. The M5 OAuth account does not own that zone; do not deploy the MINT
 Worker with that account. Run `npm run check:agif-presentations` from the repo
 root and `npm --prefix agif-router-worker test` before deployment from the M4.
+
+`bibliography.mintresearch.org` is the public bibliography mirror. It uses the
+same `BIBLIOGRAPHY` service and stored state as the Fellowship bibliography,
+with the main MINT Resources sidebar. Public suggestion requests retain the
+incoming origin and client headers for backend validation. Editing links lead
+to the existing Fellowship owner login; editor APIs are not exposed on the mirror.

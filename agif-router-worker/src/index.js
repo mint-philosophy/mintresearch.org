@@ -774,12 +774,45 @@ async function handleFellowship(request, env) {
   return serveAsset(request, env, assetPath, { noIndex: Boolean(presentation) });
 }
 
+export function renderBibliographyMirror(html) {
+  return html
+    .replace(/<div class="nav-pages" id="siteNav">[\s\S]*?<\/div>\s*<\/nav>/, '<div class="nav-pages" id="siteNav" data-mint-site-nav data-current-id="agi-governance-bibliography"><div class="nav-divider">Resources</div><a class="nav-link nav-page active" href="https://bibliography.mintresearch.org/" aria-current="page">AGI Governance Bibliography</a></div></nav>')
+    .replace('</head>', '<script defer src="https://mintresearch.org/assets/mint-site-nav.v1.js?v=20260909.1"></script></head>')
+    .replaceAll('Fellowship navigation', 'MINT navigation')
+    .replaceAll('Fellowship menu', 'MINT menu')
+    .replace('<a href="https://fellowship.mintresearch.org/">Fellowship</a>', '<a href="https://mintresearch.org/">MINT Lab</a>')
+    .replace('id="editor-login" href="https://agi-governance.mintresearch.org/edit/"', 'id="editor-login" href="https://fellowship.mintresearch.org/bibliography/edit/"');
+}
+
+async function handleBibliographyMirror(request, env) {
+  const { pathname } = new URL(request.url);
+  const methods = {
+    '/': ['GET', 'HEAD'],
+    '/api/state': ['GET', 'HEAD'],
+    '/api/suggestions': ['POST'],
+    '/edit': ['GET', 'HEAD'],
+    '/edit/': ['GET', 'HEAD'],
+  }[pathname];
+  if (!methods) return new Response('Not found', { status: 404 });
+  if (!methods.includes(request.method)) return new Response('Method not allowed', { status: 405, headers: { Allow: methods.join(', ') } });
+  if (pathname === '/edit' || pathname === '/edit/') return redirect('https://fellowship.mintresearch.org/bibliography/edit/', 302);
+  if (!env.BIBLIOGRAPHY) return unavailable();
+  // Keep the incoming origin and client headers for backend suggestion validation.
+  const response = await env.BIBLIOGRAPHY.fetch(request);
+  if (pathname !== '/' || request.method !== 'GET' || response.status !== 200 || !response.headers.get('Content-Type')?.includes('text/html')) return response;
+  const headers = new Headers(response.headers);
+  headers.delete('Content-Length');
+  return new Response(renderBibliographyMirror(await response.text()), { status: response.status, headers });
+}
+
 export default {
   async fetch(request, env) {
     const incoming = new URL(request.url);
     const host = incoming.hostname.toLowerCase();
 
     if (legacyHosts[host]) return redirectToFellowship(request, legacyHosts[host]);
+
+    if (host === 'bibliography.mintresearch.org') return handleBibliographyMirror(request, env);
 
     if (host === FELLOWSHIP_HOST) return handleFellowship(request, env);
 

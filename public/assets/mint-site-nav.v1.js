@@ -1,7 +1,7 @@
 (function (root, document) {
   'use strict';
 
-  var VERSION = '1.3.4';
+  var VERSION = '1.3.5';
   var scriptUrl = document.currentScript && document.currentScript.src
     ? document.currentScript.src
     : 'https://mintresearch.org/assets/mint-site-nav.v1.js';
@@ -113,7 +113,8 @@
       children: [
         { id: 'governing-with-agents', type: 'page', href: '/governing-with-agents/', label: 'Governing with Agents' },
         { id: 'ai-culture', type: 'page', href: '/ai-culture/', label: 'AI (etc) in Culture' },
-        { id: 'agif-overview', type: 'page', href: 'https://fellowship.mintresearch.org/', label: 'AGI Governance Fellowship' }
+        { id: 'agif-overview', type: 'page', href: 'https://fellowship.mintresearch.org/', label: 'AGI Governance Fellowship' },
+        { id: 'agi-governance-bibliography', type: 'page', href: 'https://bibliography.mintresearch.org/', label: 'AGI Governance Bibliography' }
       ]
     },
     { id: 'corpus-map', type: 'page', href: '/corpus-map/', label: 'Corpus Map', sections: [] },
