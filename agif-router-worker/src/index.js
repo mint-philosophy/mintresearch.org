@@ -777,7 +777,7 @@ async function handleFellowship(request, env) {
 export function renderBibliographyMirror(html) {
   return html
     .replace(/<div class="nav-pages" id="siteNav">[\s\S]*?<\/div>\s*<\/nav>/, '<div class="nav-pages" id="siteNav" data-mint-site-nav data-current-id="agi-governance-bibliography"><div class="nav-divider">Resources</div><a class="nav-link nav-page active" href="https://bibliography.mintresearch.org/" aria-current="page">AGI Governance Bibliography</a></div></nav>')
-    .replace('</head>', '<script defer src="https://mintresearch.org/assets/mint-site-nav.v1.js?v=20260909.1"></script></head>')
+    .replace('</head>', '<style>#bibliographySurface header .publication-caveat{max-width:none;width:100%;box-sizing:border-box}</style><script defer src="https://mintresearch.org/assets/mint-site-nav.v1.js?v=20260909.1"></script></head>')
     .replaceAll('Fellowship navigation', 'MINT navigation')
     .replaceAll('Fellowship menu', 'MINT menu')
     .replace('<a href="https://fellowship.mintresearch.org/">Fellowship</a>', '<a href="https://mintresearch.org/">MINT Lab</a>')
