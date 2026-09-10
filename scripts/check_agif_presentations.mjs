@@ -401,4 +401,4 @@ assert.match(router, /MAX_EDITOR_FIELDS = 384/, 'editor payloads must retain a b
 assert.match(legacyEditorWorker, /legacy editor endpoint is read-only/, 'the retired cross-origin editor must reject writes');
 assert.doesNotMatch(legacyEditorWorker, /CONTENT_OVERRIDES\.put/, 'the retired editor must have no remaining storage write path');
 
-console.log('AGI Fellowship presentation contract OK: six dated, isolated, noindex Pretext decks (7/5/9/18/35/8 slides), five day-specific password gates, timed public release, private owner-session editing, and content-free redirects from retired routes.');
+console.log('AGI Fellowship presentation contract OK: six dated, isolated, noindex Pretext decks (7/5/9/17/35/8 slides), five day-specific password gates, timed public release, private owner-session editing, and content-free redirects from retired routes.');
