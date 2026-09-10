@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Patel and Han find larger data gains in small-scale pretraining tests — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-09">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-09">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 9 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Patel and Han find larger data gains in small-scale pretraining tests</h1>
+<p class="dek">Newer datasets reduced the computation needed to reach the same benchmark score by 12-fold, versus 3.7-fold for newer model recipes. The authors and outside researchers examine how scale and evaluation affect the comparison.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 9 September 2026</span> <span class="chip">799 words · ~4 min</span></div>
+<div class="article-body">
+<p>In small-scale experiments on language models’ initial training, better data cut the computation needed to reach the same benchmark performance by a factor of 12, compared with 3.7 for newer model designs and training methods. Dwarkesh Patel and Jerry Han report the comparison in <a href="https://www.dwarkesh.com/p/pretraining-progress-is-mostly-data"><em>Pretraining progress is mostly coming from data</em></a>, published September 8 on the Dwarkesh Podcast’s Substack. They combined representative model recipes and datasets from 2019–2025. The headline comparison starts with a 2019 recipe and corpus, then changes one at a time to its 2025 counterpart.</p>
+<p>Patel and Han trained each combination from scratch, with fixed rules for dividing text into smaller units and a fixed limit on how much text the model could use at once. They measured performance on OLMES, a set of ten relatively easy tests consisting mostly of multiple-choice questions. Within each budget, they used prediction error on unseen text from the training corpus to choose how to divide computation between model size and training data. Across the combinations, newer datasets generally helped different model recipes similarly. Anson Ho of Epoch AI had <a href="https://epoch.ai/gradient-updates/the-least-understood-driver-of-ai-progress">argued in February</a> that improved data might explain much of the progress commonly attributed to better software; this experiment tests that possibility directly.</p>
+<p>OpenBMB’s <a href="https://huggingface.co/datasets/openbmb/Ultra-FineWeb">Ultra-FineWeb</a>, the study’s 2025 corpus, uses a trained classifier to filter web text. When a reader objected that this puts model development inside the data-side gain, Han <a href="https://www.dwarkesh.com/p/pretraining-progress-is-mostly-data/comment/333340543">agreed</a> that filtering and curation improvements are often algorithmic, while distinguishing them from changes to the language model’s architecture. Ryan Greenblatt made a similar argument in an <a href="https://www.dwarkesh.com/p/ryan-greenblatt">August 11 conversation with Patel</a>: much of the progress from older to newer pretraining corpora comes from research and engineering on selecting and processing text.</p>
+<p>Patel and Han also argue that model design enables larger training runs in ways their experiments miss. As models and runs grow, unstable training, memory limits and communication costs can prevent additional computation from helping. Architectural and implementation changes can remove those constraints even when they produce little improvement in a small experiment. Their examples include mixture-of-experts models, which activate selected parts of a larger network, and methods that reduce the memory needed to track relationships between tokens. They link <a href="https://www.beren.io/2026-08-23-Architecture-Research-as-Addressing-Constraints-to-Scaling/">Beren Millidge’s August 23 account</a> of architecture research as a way to make further scaling possible.</p>
+<p>The authors expect the value of careful data selection may also change with scale. Small models have limited capacity; larger models may benefit from more varied text instead of repeatedly reading a heavily filtered collection. They cite Christopher Mohri and colleagues’ May arXiv preprint <a href="https://arxiv.org/abs/2605.19407"><em>A Bitter Lesson for Data Filtering</em></a>, which finds that sufficiently trained large models can benefit from low-quality data. Colin Raffel <a href="https://colinraffel.com/blog/updates-june-2026.html">read that paper differently in June</a>: its extrapolated point at which filtering becomes harmful requires computation far beyond foreseeable capacity. He argues that filtering remains valuable at realistic budgets, especially for small models.</p>
+<p>Luca Soldaini <a href="https://x.com/soldni/status/2097448459968430102">identified two possible confounders</a> in the new study. Newer corpora may contain benchmark test data, and researchers commonly use OLMES benchmarks while developing data recipes, potentially favoring newer mixtures tuned to those tests. Either could inflate the apparent data gain. He pointed to Nathan Godey and colleagues’ arXiv study <a href="https://arxiv.org/abs/2510.25771"><em>Gaperon: A Peppered English-French Generative Language Model Suite</em></a>, which describes how neural quality filtering can unintentionally amplify benchmark leakage.</p>
+<p>Elie Bakouch <a href="https://x.com/eliebakouch/status/2097369910192066684">questioned the limited range of architectures</a>: all used closely related transformer designs, excluding alternatives such as mixture-of-experts models. He also argued that selecting question-and-answer text could boost multiple-choice scores and asked for the model checkpoints so others could evaluate them. Patel <a href="https://x.com/dwarkesh_sp/status/2097374972151058735">replied</a> that larger experiments might reveal architectural gains the study understates and said the authors would try to release checkpoints.</p>
+<p>Han <a href="https://x.com/who_is_jerbear/status/2097388429696811279">explained</a> that prediction error on held-out text provided an additional check when comparing model recipes, but that check did not extend across datasets. He cited Ian Magnusson and colleagues’ ICML 2025 paper <a href="https://arxiv.org/abs/2504.11393"><em>DataDecide: How to Predict Best Pretraining Data with Small Experiments</em></a> as a precedent for using capability evaluations to compare corpora. That work found small experiments could help predict which datasets performed best at a larger scale, within its tested range.</p>
+<p>Patel and Han want the comparison repeated at larger scales and on different evaluations. Most datasets they studied curate the same underlying Common Crawl web collection; their experiment does not test whether synthetic data can expand that supply. The comparison stops at pretraining, before later stages such as reinforcement learning. Following Greenblatt, they suggest automated researchers could accelerate data improvements by training models on different selections and comparing the results.</p>
+<p>Andy Hall <a href="https://x.com/ahall_research/status/2097744367205441833">shared the study on September 9</a> with an institutional argument. Independent groups such as METR and Patel’s research team, he wrote, are producing much of the relevant work on AI, and universities are well placed to help them grow.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.dwarkesh.com/p/pretraining-progress-is-mostly-data">Pretraining progress is mostly coming from data — Dwarkesh Patel and Jerry Han, Dwarkesh Podcast</a> <span class="how">— Study design, the 12-fold data and 3.7-fold model-recipe gains, the mostly multiple-choice evaluation, scaling argument, and proposed further experiments.</span></li>
+<li><a href="https://datawrapper.dwcdn.net/TrYq2/2/dataset.csv">Compute multipliers, four-corner chart data (Han and Patel)</a> <span class="how">— Published comparison curves confirm that each headline gain changes one factor from the same 2019 recipe-and-corpus baseline.</span></li>
+<li><a href="https://epoch.ai/gradient-updates/the-least-understood-driver-of-ai-progress">The least understood driver of AI progress — Anson Ho, Epoch AI Gradient Updates</a> <span class="how">— Earlier hypothesis that data improvements account for much of the measured progress in AI software.</span></li>
+<li><a href="https://huggingface.co/datasets/openbmb/Ultra-FineWeb">Ultra-FineWeb dataset card — OpenBMB, HuggingFace</a> <span class="how">— The 2025 corpus uses a trained classifier for quality filtering.</span></li>
+<li><a href="https://www.dwarkesh.com/p/pretraining-progress-is-mostly-data/comment/333340543">Substack comment thread on the study, including replies from Patel and Han</a> <span class="how">— Jerry Han’s response explaining that data filtering and curation improvements are often algorithmic.</span></li>
+<li><a href="https://www.dwarkesh.com/p/ryan-greenblatt">Ryan Greenblatt – What happens once AI can automate AI research? — Dwarkesh Podcast, August 11, 2026</a> <span class="how">— Ryan Greenblatt’s account of pretraining data improvements as research and engineering on selecting and processing text.</span></li>
+<li><a href="https://www.beren.io/2026-08-23-Architecture-Research-as-Addressing-Constraints-to-Scaling/">Architecture Research as Addressing Constraints to Scaling — Beren Millidge</a> <span class="how">— The architecture argument linked by Patel and Han: design changes can remove constraints on larger training runs.</span></li>
+<li><a href="https://arxiv.org/abs/2605.19407">A Bitter Lesson for Data Filtering — Christopher Mohri, John Duchi, Tatsunori Hashimoto (arXiv:2605.19407)</a> <span class="how">— Prior study of when large, sufficiently trained models benefit from low-quality data.</span></li>
+<li><a href="https://colinraffel.com/blog/updates-june-2026.html">Updates, June 2026 — Colin Raffel</a> <span class="how">— Raffel’s June interpretation of the filtering paper, emphasizing the value of filtering at realistic training budgets.</span></li>
+<li><a href="https://x.com/soldni/status/2097448459968430102">Luca Soldaini on contamination and eval hacking — X</a> <span class="how">— Soldaini’s contamination and benchmark-tuning objections, and his reference to Gaperon.</span></li>
+<li><a href="https://arxiv.org/abs/2510.25771">Gaperon: A Peppered English-French Generative Language Model Suite — Godey et al., Inria (arXiv:2510.25771)</a> <span class="how">— Research cited by Soldaini on how quality filtering can amplify benchmark leakage.</span></li>
+<li><a href="https://x.com/eliebakouch/status/2097369910192066684">Elie Bakouch on the narrowness of the recipe set, with Patel's reply — X</a> <span class="how">— Bakouch’s objections about the narrow architecture comparison and multiple-choice evaluation, and his request for model checkpoints.</span></li>
+<li><a href="https://x.com/dwarkesh_sp/status/2097374972151058735">Dwarkesh Patel’s reply to Elie Bakouch</a> <span class="how">— Patel’s reply acknowledging that larger-scale tests might reveal additional architectural gains and agreeing to try to release checkpoints.</span></li>
+<li><a href="https://x.com/who_is_jerbear/status/2097388429696811279">Jerry Han's public reply on method — X</a> <span class="how">— Han’s explanation of the held-out-text check and his reference to DataDecide.</span></li>
+<li><a href="https://arxiv.org/abs/2504.11393">DataDecide: How to Predict Best Pretraining Data with Small Experiments — Ian Magnusson et al., Ai2 (arXiv:2504.11393)</a> <span class="how">— The methodological precedent Han named: controlled experiments predicting dataset rankings across tested model scales.</span></li>
+<li><a href="https://x.com/ahall_research/status/2097744367205441833">Andy Hall's relay post on X</a> <span class="how">— Hall’s September 9 argument that universities should help independent AI research groups grow.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-small-scale-pretraining-study-finds-12-efficiency-gains-from">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-09/small-scale-pretraining-study-finds-12-efficiency-gains-from</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
