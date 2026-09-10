@@ -55,10 +55,18 @@ function inlineInsets(style) {
 function readLayouts() {
   return Array.from(entries.entries()).map(([element, entry]) => {
     const style = getComputedStyle(element);
+    const verticalFit = element.dataset.pretextFit === 'vertical';
+    const bounds = element.getBoundingClientRect();
+    const available = verticalFit
+      ? bounds.height - (parseFloat(style.paddingTop) || 0) - (parseFloat(style.paddingBottom) || 0)
+      : bounds.width - inlineInsets(style);
     return {
+      verticalFit,
+      maxFontSize: 14,
+      style,
       element,
       entry,
-      width: Math.max(1, element.getBoundingClientRect().width - inlineInsets(style)),
+      width: Math.max(1, available),
       font: fontSpec(style),
       lineHeight: lineHeight(style),
       letterSpacing: letterSpacing(style),
@@ -68,6 +76,21 @@ function readLayouts() {
 
 function computeLayouts(reads) {
   return reads.map((read) => {
+    if (read.verticalFit) {
+      // Measure transformed uppercase glyphs along the physical vertical axis.
+      // Fit whole words first, allowing two columns for two-word labels.
+      const text = read.style.textTransform === 'uppercase' ? read.entry.source.toUpperCase() : read.entry.source;
+      let result;
+      let fontSize = read.maxFontSize;
+      for (; fontSize > 1; fontSize -= 0.25) {
+        const font = read.font.replace(/\d+(?:\.\d+)?px/, fontSize + 'px');
+        const prepared = pretext.prepareWithSegments(text, font, { whiteSpace: 'normal', wordBreak: 'normal', letterSpacing: fontSize * 0.06 });
+        result = pretext.layoutWithLines(prepared, Math.max(1, read.width - 1), fontSize);
+        const wholeWords = result.lines.map(line => line.text.trim()).join(' ') === text;
+        if (wholeWords && result.lines.length <= 2 && result.lines.every(line => line.width <= read.width - 1)) break;
+      }
+      return { ...read, result, fontSize };
+    }
     const signature = `${read.font}|${read.letterSpacing}`;
     if (read.entry.signature !== signature) {
       read.entry.prepared = pretext.prepareWithSegments(read.entry.source, read.font, {
@@ -84,7 +107,8 @@ function computeLayouts(reads) {
 }
 
 function applyLayouts(layouts) {
-  for (const { element, result } of layouts) {
+  for (const { element, result, verticalFit, fontSize } of layouts) {
+    if (verticalFit) element.style.setProperty('--spectrum-fit-font', `${fontSize}px`);
     if (!result?.lines?.length) continue;
     element.textContent = result.lines.map((line) => line.text).join('\n');
     element.style.whiteSpace = 'pre-wrap';
