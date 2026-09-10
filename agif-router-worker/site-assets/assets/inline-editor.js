@@ -28,15 +28,17 @@ function hashText(value) {
 function editableLeaves() {
   const duplicates = new Map();
   document.querySelectorAll('.slide').forEach((slide, slideIndex) => {
+    // Keep saved edits attached to a slide when its display position changes.
+    const editorIndex = Number(slide.dataset.editorIndex) || slideIndex + 1;
     slide.querySelectorAll('h1, h2, h3, h4, p, li, th, td, span, small, div').forEach((element) => {
       if (element.matches(excluded) || element.children.length > 0) return;
       const source = normaliseText(element.textContent);
       if (!source) return;
       const classes = [...element.classList].filter((name) => name !== 'active').sort().join('.');
-      const descriptor = `${slideIndex + 1}|${element.tagName}|${classes}|${source}`;
+      const descriptor = `${editorIndex}|${element.tagName}|${classes}|${source}`;
       const duplicateNumber = (duplicates.get(descriptor) || 0) + 1;
       duplicates.set(descriptor, duplicateNumber);
-      const key = `s${String(slideIndex + 1).padStart(2, '0')}-${hashText(descriptor)}-${String(duplicateNumber).padStart(2, '0')}`;
+      const key = `s${String(editorIndex).padStart(2, '0')}-${hashText(descriptor)}-${String(duplicateNumber).padStart(2, '0')}`;
       element.dataset.editorKey = key;
       fields.push({ element, key });
       savedValues.set(key, source);
