@@ -7,44 +7,6 @@
   const previous = document.getElementById('previousSlide');
   const next = document.getElementById('nextSlide');
   const reasonDialogs = Array.from(document.querySelectorAll('.reason-dialog'));
-  let activeRiskTip = null;
-  let riskTipTimer = null;
-  function hideRiskTip() {
-    clearTimeout(riskTipTimer);
-    if (activeRiskTip) activeRiskTip.hidden = true;
-    activeRiskTip = null;
-  }
-  function showRiskTip(row) {
-    hideRiskTip();
-    if (document.documentElement.dataset.editorMode === 'editing') return;
-    const tip = document.getElementById(row.dataset.riskTip);
-    if (!tip) return;
-    tip.hidden = false;
-    activeRiskTip = tip;
-    const r = row.getBoundingClientRect();
-    const t = tip.getBoundingClientRect();
-    tip.style.left = Math.max(12, Math.min(r.left, innerWidth - t.width - 12)) + 'px';
-    const top = r.top - t.height - 8;
-    tip.style.top = Math.max(12, Math.min(top >= 12 ? top : r.bottom + 8, innerHeight - t.height - 12)) + 'px';
-  }
-  document.querySelectorAll('[data-risk-tip]').forEach(row => {
-    row.addEventListener('pointerenter', event => { if (event.pointerType === 'mouse') showRiskTip(row); });
-    row.addEventListener('pointerleave', () => { riskTipTimer = setTimeout(hideRiskTip, 180); });
-    row.addEventListener('focus', () => showRiskTip(row));
-    row.addEventListener('blur', hideRiskTip);
-    row.addEventListener('click', () => showRiskTip(row));
-  });
-  document.querySelectorAll('.risk-tooltip').forEach(tip => {
-    tip.addEventListener('pointerenter', () => clearTimeout(riskTipTimer));
-    tip.addEventListener('pointerleave', hideRiskTip);
-  });
-  document.addEventListener('pointerdown', event => {
-    if (!event.target.closest('[data-risk-tip], .risk-tooltip')) hideRiskTip();
-  });
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && activeRiskTip) { hideRiskTip(); event.stopPropagation(); }
-  }, true);
-  window.addEventListener('resize', hideRiskTip);
   let current = 0;
   let touchStart = null;
 
@@ -80,7 +42,6 @@
     const newSlide = slides[nextIndex];
 
     closeReasonDialogs();
-    hideRiskTip();
     oldSlide?.classList.remove('active');
     oldSlide?.setAttribute('aria-hidden', 'true');
     newSlide.classList.add('active');
@@ -141,6 +102,16 @@
   });
 
   document.querySelectorAll('[data-reason-dialog]').forEach((button) => {
+    if (button.getAttribute('role') === 'button') {
+      button.addEventListener('keydown', (event) => {
+        if (document.documentElement.dataset.editorMode === 'editing') return;
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          event.stopPropagation();
+          button.click();
+        }
+      });
+    }
     button.addEventListener('click', (event) => {
       if (document.documentElement.dataset.editorMode === 'editing' && event.target instanceof Element && event.target.closest('[data-editor-key]')) return;
       const dialog = document.getElementById(button.dataset.reasonDialog);
