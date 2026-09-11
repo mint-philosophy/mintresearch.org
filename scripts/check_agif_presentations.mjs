@@ -94,8 +94,8 @@ assert.match(day2Wrapper, noIndex, 'Day 2 framed page must remain noindex');
 assert.match(day2Deck, noIndex, 'Day 2 deck must remain noindex');
 assert.match(day2Wrapper, /https:\/\/fellowship\.mintresearch\.org\/agi-institutions\//, 'AGI Institutions canonical must use its protected Fellowship route');
 assert.match(day2Deck, /https:\/\/fellowship\.mintresearch\.org\/agi-institutions\//, 'AGI Institutions deck canonical must point to its protected Fellowship page');
-assert.equal((day2Deck.match(/<section class="slide\b/g) || []).length, 35, 'Day 2 must expose all 35 Fable slides');
-assert.equal((day2Deck.match(/aria-label="Slide \d+ of 35:/g) || []).length, 35, 'every Day 2 slide needs navigation metadata');
+assert.equal((day2Deck.match(/<section class="slide\b/g) || []).length, 32, 'Day 2 must expose 32 retained slides');
+assert.equal((day2Deck.match(/aria-label="Slide \d+ of 32:/g) || []).length, 32, 'every Day 2 slide needs navigation metadata');
 assert.doesNotMatch(
   [day2Deck, day2Css, day2Js, day2Pretext, day2Editor].join('\n'),
   /speaker-notes|Speaker notes|notes(?:Drawer|Body|Toggle|Close)|notes-(?:drawer|close)|nav-notes/,
@@ -103,7 +103,7 @@ assert.doesNotMatch(
 );
 assert.ok((day2Deck.match(/data-pretext/g) || []).length >= 170, 'Day 2 must retain its measured text fields');
 assert.match(day2Deck, /pretext-layout\.js/, 'Day 2 must load its Pretext layout pass');
-assert.match(day2Deck, /id="slideCounter">1 \/ 35/, 'Day 2 counter must use the real slide total');
+assert.match(day2Deck, /id="slideCounter">1 \/ 32/, 'Day 2 counter must use the real slide total');
 assert.equal((day2Deck.match(/class="ticker-cycle"/g) || []).length, 2, 'Day 2 ticker must contain two seamless cycles');
 
 assert.match(day3Wrapper, noIndex, 'Day 3 framed page must remain noindex');
@@ -184,12 +184,12 @@ function slideMarkup(deck, slideNumber, total) {
   return deck.slice(start, next === -1 ? deck.length : next);
 }
 
-for (const slideNumber of [7, 18, 31]) {
-  const slide = slideMarkup(day2Deck, slideNumber, 35);
+for (const slideNumber of [7, 18, 28]) {
+  const slide = slideMarkup(day2Deck, slideNumber, 32);
   assert.equal((slide.match(/class="section-index\b/g) || []).length, 1, `Day 2 slide ${slideNumber} must show its section label only on the left`);
 }
 
-const day2Slide7 = slideMarkup(day2Deck, 7, 35);
+const day2Slide7 = slideMarkup(day2Deck, 7, 32);
 assert.match(day2Slide7, /class="slide slide-single"/, 'Day 2 slide 7 must use the full-width single-panel layout');
 assert.equal((day2Slide7.match(/class="split-panel\b/g) || []).length, 1, 'Day 2 slide 7 must contain only its left panel');
 assert.doesNotMatch(day2Slide7, /ecological metaphor|invasive species/i, 'Day 2 slide 7 must not retain the following-day metaphor');
@@ -401,4 +401,4 @@ assert.match(router, /MAX_EDITOR_FIELDS = 384/, 'editor payloads must retain a b
 assert.match(legacyEditorWorker, /legacy editor endpoint is read-only/, 'the retired cross-origin editor must reject writes');
 assert.doesNotMatch(legacyEditorWorker, /CONTENT_OVERRIDES\.put/, 'the retired editor must have no remaining storage write path');
 
-console.log('AGI Fellowship presentation contract OK: six dated, isolated, noindex Pretext decks (7/5/9/16/35/8 slides), five day-specific password gates, timed public release, private owner-session editing, and content-free redirects from retired routes.');
+console.log('AGI Fellowship presentation contract OK: six dated, isolated, noindex Pretext decks (7/5/9/16/32/8 slides), five day-specific password gates, timed public release, private owner-session editing, and content-free redirects from retired routes.');
