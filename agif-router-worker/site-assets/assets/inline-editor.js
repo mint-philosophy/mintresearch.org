@@ -8,7 +8,7 @@ let canEdit = false;
 const controlsPreferenceKey = `agi-editor-controls-hidden:${deckId}`;
 
 const excluded = [
-  '[aria-hidden="true"]', '.prompt-number', '.definition-number', '.state-number',
+  '[aria-hidden="true"]', '.prompt-number',
   '.plan-number', '.short-rule', '.reason-dialog-close', '.reason-card-action', '.ellipsis-row *',
 ].join(',');
 
@@ -30,8 +30,11 @@ function editableLeaves() {
   document.querySelectorAll('.slide').forEach((slide, slideIndex) => {
     // Keep saved edits attached to a slide when its display position changes.
     const editorIndex = Number(slide.dataset.editorIndex) || slideIndex + 1;
-    slide.querySelectorAll('h1, h2, h3, h4, p, li, th, td, span, small, div').forEach((element) => {
-      if (element.matches(excluded) || element.children.length > 0) return;
+    slide.querySelectorAll('[data-pretext], h1, h2, h3, h4, p, li, th, td, span, small, div, b, strong, em, i').forEach((element) => {
+      // Pretext replaces a block's inline markup during layout. Register the
+      // block itself, rather than descendants that will become detached.
+      if (element.matches(excluded) || element.parentElement?.closest('[data-pretext]')) return;
+      if (element.children.length > 0 && !element.matches('[data-pretext]')) return;
       const source = normaliseText(element.textContent);
       if (!source) return;
       const classes = [...element.classList].filter((name) => name !== 'active').sort().join('.');
