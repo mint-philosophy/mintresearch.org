@@ -12,15 +12,19 @@
 - Seth approved replacing FormSubmit with a MINT-owned Cloudflare endpoint,
   preserving the form design and showing confirmation on the website.
 
-## Open contact-form work
+## Contact Form
 
 - Implementation: `contact-worker/` and `public/assets/contact-form.js`.
   Activation and verification procedure: `contact-worker/README.md`.
-- Cloudflare Wrangler's saved OAuth session was expired on 2026-09-12; Chrome
-  was also signed out. The v2 daemon vault has no `CLOUDFLARE_API_TOKEN`.
-  A supervised 1Password lookup timed out without returning any credentials.
-- Seth has been asked to sign in to Cloudflare and identify the destination
-  inbox. The existing FormSubmit action contains only an opaque token.
-- Do not activate the homepage replacement until the endpoint is deployed and
-  the confirmed inbox receives a test message. The current homepage still
-  uses FormSubmit. Live deployment, mailbox verification, and browser QA remain.
+- Endpoint: `https://contact.mintresearch.org/contact`, Worker `mint-contact`.
+  Original destination `contact@mintresearch.org` was sourced from delivered
+  FormSubmit messages. Real inbox delivery passed on 2026-09-12 (SPF/DMARC pass).
+- Cloudflare's free verified-destination sending is used. Do not enable inbound
+  Email Routing or replace Google MX records. Sender and recipient are restricted
+  in `contact-worker/wrangler.toml`; the visitor supplies only Reply-To.
+- Wrangler OAuth was renewed on 2026-09-12. It supports Worker/email operations,
+  but DNS edits used the authenticated dashboard. No API token was exported.
+- Cleanup: an unused pending Cloudflare destination `seth@mintresearch.org`
+  (ID `32aeddd642364e6da4627d612dea8ef7`) could not yet be deleted because
+  Cloudflare rejected deletion as too recently created. It is not used by the
+  Worker or any routing rule. Retry deletion after the provider cooldown.

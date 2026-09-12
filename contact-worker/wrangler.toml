@@ -1,13 +1,16 @@
 name = "mint-contact"
+account_id = "2b3c6c03e00ea15cd86a45e9f880e74b"
 main = "src/index.js"
 compatibility_date = "2026-09-12"
 workers_dev = true
 preview_urls = false
+routes = [{ pattern = "contact.mintresearch.org", custom_domain = true }]
 
-# Set account_id and the verified custom domain before production deployment.
-# CONTACT_TO and CONTACT_FROM are required Worker secrets, sourced from the account.
+# CONTACT_TO and CONTACT_FROM are configured with Wrangler secrets.
 [[send_email]]
 name = "EMAIL"
+allowed_destination_addresses = ["contact@mintresearch.org"]
+allowed_sender_addresses = ["contact@mintresearch.org"]
 
 [[ratelimits]]
 name = "CONTACT_RATE_LIMIT"

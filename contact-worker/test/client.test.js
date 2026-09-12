@@ -6,11 +6,11 @@ import vm from 'node:vm';
 const source = readFileSync(new URL('../../public/assets/contact-form.js', import.meta.url), 'utf8');
 function client(fetch) {
   let handler;
-  const status = { style: {}, setAttribute() {} };
+  const status = { style: {}, setAttribute() {}, scrollIntoView() {} };
   const button = { disabled: false };
   const form = {
     action: 'https://contact.example.org/contact', resets: 0,
-    querySelector: (selector) => selector.startsWith('button') ? button : { append() {} },
+    querySelector: (selector) => selector.startsWith('button') ? button : { insertBefore() {} },
     addEventListener: (_, listener) => { handler = listener; },
     reportValidity: () => true, setAttribute() {}, removeAttribute() {},
     reset() { this.resets++; },

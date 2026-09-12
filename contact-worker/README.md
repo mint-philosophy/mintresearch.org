@@ -5,8 +5,17 @@ URL-encoded POSTs at `/contact` and sends plain-text email with Cloudflare's
 native `EMAIL` binding. The recipient and sender are server configuration;
 visitors can only set Reply-To. It sends no automatic replies to visitors.
 
-Status: implemented and locally tested, **not deployed or connected to the
-homepage yet**. Live email configuration and delivery still need verification.
+Endpoint: `https://contact.mintresearch.org/contact`. The homepage opts into
+this endpoint. The original destination, `contact@mintresearch.org`, was sourced
+from delivered FormSubmit mail and verified in Cloudflare. Both sender and
+destination are restricted to that address. No paid plan was enabled.
+
+Live delivery was verified on 2026-09-12 in the original destination's inbox,
+with SPF and DMARC passing and the visitor address preserved as Reply-To.
+Cloudflare's DKIM public key is published at `cf2024-1._domainkey`; initial Gmail
+delivery still used a cached negative DKIM lookup. The existing SPF record was
+extended with `include:_spf.mx.cloudflare.net`. Google MX records were preserved;
+Cloudflare inbound Email Routing was not enabled.
 
 ## Configuration and activation
 
@@ -34,9 +43,8 @@ homepage yet**. Live email configuration and delivery still need verification.
    JavaScript, then build and publish the homepage. Update this status and
    `THREAD.md` with the deployed endpoint and verified delivery state.
 
-The client only binds to `form[data-mint-contact]`. Until activation, publishing
-the unused asset cannot redirect existing contact submissions to an unverified
-endpoint. With JavaScript, confirmation is inline. Without JavaScript, the
+The client only binds to `form[data-mint-contact]`. With JavaScript, confirmation
+is inline above the send button. Without JavaScript, the
 Worker renders an ad-free HTML receipt with a link back to the contact section.
 
 ## Checks
@@ -44,6 +52,7 @@ Worker renders an ad-free HTML receipt with a link back to the contact section.
 ```sh
 npm ci
 npm test
+npm run test:browser
 npx wrangler deploy --dry-run
 ```
 
