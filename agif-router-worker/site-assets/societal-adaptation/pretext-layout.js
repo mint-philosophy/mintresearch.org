@@ -87,6 +87,14 @@ function applyLayouts(layouts) {
   for (const { element, result } of layouts) {
     if (!result?.lines?.length) continue;
     element.textContent = result.lines.map((line) => line.text).join('\n');
+    const emphasis = element.dataset.pretextEmphasis;
+    const text = element.textContent;
+    const start = emphasis ? text.indexOf(emphasis) : -1;
+    if (start >= 0) {
+      const italic = document.createElement('em');
+      italic.textContent = emphasis;
+      element.replaceChildren(document.createTextNode(text.slice(0, start)), italic, document.createTextNode(text.slice(start + emphasis.length)));
+    }
     element.style.whiteSpace = 'pre-wrap';
     element.style.textWrap = 'wrap';
     element.dataset.pretextLines = String(result.lineCount);
