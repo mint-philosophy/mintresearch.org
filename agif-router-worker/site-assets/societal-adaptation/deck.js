@@ -7,6 +7,24 @@
   const previous = document.getElementById('previousSlide');
   const next = document.getElementById('nextSlide');
   const reasonDialogs = Array.from(document.querySelectorAll('.reason-dialog'));
+  const caseRows = [...document.querySelectorAll('.matrix tbody tr')];
+  const caseButtons = [...document.querySelectorAll('[data-matrix-case]')];
+  function chooseCase(index) {
+    caseRows.forEach((row, i) => { row.hidden = i !== index; });
+    caseButtons.forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
+    window.dispatchEvent(new Event('agi-frame-resize'));
+  }
+  caseButtons.forEach(button => button.addEventListener('click', () => chooseCase(Number(button.dataset.matrixCase))));
+  chooseCase(0);
+  const capacityCards = [...document.querySelectorAll('[data-sid="d3-build"] .reason-card')];
+  const capacityButtons = [...document.querySelectorAll('[data-capacity-case]')];
+  function chooseCapacity(index) {
+    capacityCards.forEach((card, i) => { card.hidden = i !== index; });
+    capacityButtons.forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
+    window.dispatchEvent(new Event('agi-frame-resize'));
+  }
+  capacityButtons.forEach(button => button.addEventListener('click', () => chooseCapacity(Number(button.dataset.capacityCase))));
+  chooseCapacity(0);
   let current = 0;
   let touchStart = null;
 
