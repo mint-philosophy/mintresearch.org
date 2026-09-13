@@ -26,4 +26,7 @@ assert.deepEqual(keys(after), keys(before), 'Inserting a slide must preserve the
 assert.deepEqual(keys([slide([leaf()], 8)]), keys(before), 'An explicit editor index must survive any display position');
 assert.notDeepEqual(keys([slide([leaf('Revised plan')], 8)]), keys(before), 'Changing source text must still invalidate stale overrides');
 assert.deepEqual(keys([slide([leaf(), leaf()], 8)]), ['s08-103e2dc4-01', 's08-103e2dc4-02'], 'Repeated fields must retain distinct keys');
+const relocated = leaf();
+relocated.dataset.editorIndex = '8';
+assert.deepEqual(keys([slide([relocated], 5)]), keys(before), 'Moving a field between slides must preserve its explicit original namespace');
 console.log('Stable editor indices verified: legacy fallback, insertion, relocation, source changes, duplicate fields.');

@@ -38,10 +38,12 @@ function editableLeaves() {
       const source = normaliseText(element.textContent);
       if (!source) return;
       const classes = [...element.classList].filter((name) => name !== 'active').sort().join('.');
-      const descriptor = `${editorIndex}|${element.tagName}|${classes}|${source}`;
+      // A moved field can retain its original slide namespace.
+      const fieldEditorIndex = Number(element.dataset.editorIndex) || editorIndex;
+      const descriptor = `${fieldEditorIndex}|${element.tagName}|${classes}|${source}`;
       const duplicateNumber = (duplicates.get(descriptor) || 0) + 1;
       duplicates.set(descriptor, duplicateNumber);
-      const key = `s${String(editorIndex).padStart(2, '0')}-${hashText(descriptor)}-${String(duplicateNumber).padStart(2, '0')}`;
+      const key = `s${String(fieldEditorIndex).padStart(2, '0')}-${hashText(descriptor)}-${String(duplicateNumber).padStart(2, '0')}`;
       element.dataset.editorKey = key;
       fields.push({ element, key });
       savedValues.set(key, source);
