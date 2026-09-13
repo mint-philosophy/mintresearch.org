@@ -23,7 +23,10 @@
     capacityButtons.forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
     window.dispatchEvent(new Event('agi-frame-resize'));
   }
-  capacityButtons.forEach(button => button.addEventListener('click', () => chooseCapacity(Number(button.dataset.capacityCase))));
+  capacityButtons.forEach(button => button.addEventListener('click', (event) => {
+    if (document.documentElement.dataset.editorMode === 'editing' && event.target.closest('[data-editor-key]')) return;
+    chooseCapacity(Number(button.dataset.capacityCase));
+  }));
   chooseCapacity(0);
   let current = 0;
   let touchStart = null;
