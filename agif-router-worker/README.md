@@ -85,3 +85,17 @@ same `BIBLIOGRAPHY` service and stored state as the Fellowship bibliography,
 with the main MINT Resources sidebar. Public suggestion requests retain the
 incoming origin and client headers for backend validation. Editing links lead
 to the existing Fellowship owner login; editor APIs are not exposed on the mirror.
+
+## Private fellows directory
+
+`fellows.mintresearch.org` is a standalone, permanently password-protected
+name/profile directory. It reuses `FELLOWSHIP_PASSWORD_SEPTEMBER_14`, with a
+separate host-only twelve-hour session, no scheduled release and no IP bypass.
+It has no navigation or sitemap entry; every response is noindex/no-store and
+robots disallows the entire host. Login uses the existing rate limiter.
+The HTML is stored only in `CONTENT_OVERRIDES` key `fellows:directory:html`,
+never in this public repository or the static asset bundle. Its canonical
+source is the private minty-private repository's
+`Thread-Contexts/agi-governance-fellowship/fellows-directory.html`.
+Update content with `wrangler kv key put --binding CONTENT_OVERRIDES --remote
+fellows:directory:html --path <private-source-file>` and verify readback.

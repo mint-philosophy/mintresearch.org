@@ -805,10 +805,52 @@ async function handleBibliographyMirror(request, env) {
   return new Response(renderBibliographyMirror(await response.text()), { status: response.status, headers });
 }
 
+const fellowsAccess = { accessGroup: 'fellows-directory', passwordBinding: 'FELLOWSHIP_PASSWORD_SEPTEMBER_14' };
+
+async function handleFellows(request, env) {
+  const url = new URL(request.url);
+  const headers = responseHeaders({ 'Content-Type': 'text/html; charset=utf-8' }, { noIndex: true, noStore: true });
+  headers.set('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'");
+  const reply = (body, status = 200) => new Response(request.method === 'HEAD' ? null : body, { status, headers });
+  if (url.pathname === '/robots.txt') {
+    headers.set('Content-Type', 'text/plain; charset=utf-8');
+    return reply('User-agent: *\nDisallow: /\n');
+  }
+  if (!['/', '/login', '/logout'].includes(url.pathname)) return reply('Not found', 404);
+  if (!['GET', 'HEAD', 'POST'].includes(request.method)) return reply('Method not allowed', 405);
+  const password = presentationPassword(fellowsAccess, env);
+  if (!password) return reply('Directory temporarily unavailable', 503);
+  if (request.method === 'POST') {
+    if (request.headers.get('Origin') !== url.origin) return reply('Forbidden', 403);
+    if (url.pathname === '/logout') {
+      headers.set('Set-Cookie', sessionCookieName(fellowsAccess) + '=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict');
+      headers.set('Location', '/'); return reply(null, 303);
+    }
+    if (url.pathname !== '/login') return reply('Method not allowed', 405);
+    const limited = await ownerLoginLimit(request, env);
+    if (limited) return limited;
+    const body = await request.text();
+    if (body.length > 4096) return reply('Request too large', 413);
+    const supplied = new URLSearchParams(body).get('password');
+    if (await passwordMatches(supplied, password)) {
+      headers.set('Set-Cookie', await createSessionCookie(fellowsAccess, password, env));
+      headers.set('Location', '/'); return reply(null, 303);
+    }
+  }
+  if (await sessionIsValid(request, fellowsAccess, password, env)) {
+    const html = await env.CONTENT_OVERRIDES.get('fellows:directory:html');
+    return html ? reply(html) : reply('Directory temporarily unavailable', 503);
+  }
+  const error = request.method === 'POST' ? '<p role="alert">Password not recognised. Please try again.</p>' : '';
+  return reply('<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><title>Fellows · MINT</title><style>body{margin:0;min-height:100svh;display:grid;place-items:center;background:#f7f5ed;color:#173c36;font:17px system-ui}main{width:min(360px,80vw);padding:36px;border:1px solid #b8c8bd;background:#fffef9}h1{font:38px Georgia;margin:15px 0 28px}label{display:block;margin-bottom:8px}input,button{box-sizing:border-box;width:100%;font:inherit;padding:12px;border:1px solid #7e9d91}button{margin-top:14px;background:#173c36;color:white;cursor:pointer}small{letter-spacing:.1em}p{color:#942e21}</style><main><small>MINT · AGI GOVERNANCE FELLOWSHIP</small><h1>Fellows directory</h1><form method="post" action="/login"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required autofocus><button>View fellows</button></form>' + error + '</main></html>', request.method === 'POST' ? 401 : 200);
+}
+
 export default {
   async fetch(request, env) {
     const incoming = new URL(request.url);
     const host = incoming.hostname.toLowerCase();
+
+    if (host === 'fellows.mintresearch.org') return handleFellows(request, env);
 
     if (legacyHosts[host]) return redirectToFellowship(request, legacyHosts[host]);
 
