@@ -1,7 +1,7 @@
 (function (root, document) {
   'use strict';
 
-  var VERSION = '1.3.5';
+  var VERSION = '1.3.6';
   var scriptUrl = document.currentScript && document.currentScript.src
     ? document.currentScript.src
     : 'https://mintresearch.org/assets/mint-site-nav.v1.js';
@@ -472,6 +472,12 @@
   root.dispatchEvent(new CustomEvent('mint-site-nav:ready', { detail: { version: VERSION } }));
 
   function boot() {
+    if (document.getElementById('searchInput')) {
+      var searchScript = document.createElement('script');
+      searchScript.type = 'module';
+      searchScript.src = new URL('site-search.js', scriptUrl).href;
+      document.head.appendChild(searchScript);
+    }
     var config = root.MintSiteNavConfig;
     if (Array.isArray(config)) {
       config.forEach(render);

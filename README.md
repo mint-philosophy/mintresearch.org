@@ -364,3 +364,14 @@ CSV fallback update flow:
 4. Verify locally by serving `public/` (`python3 -m http.server -d public 8090`) and checking the homepage Papers section.
 
 The import script blocks duplicate non-empty codenames, or changed codenames for papers already known to the current site CSV. The loader ignores placeholder links such as `no github` and `no post yet`. If `Site: Alt Source` is populated, the Papers section shows it as an `Alt source` link immediately after `View paper`. Create `public/assets/papers/<codename>/` folders only when a paper has artefacts that need to be served from the site.
+
+## Site search
+
+The shared navigation loads `public/assets/site-search.js` wherever the search
+box is present. `npm run build` creates `dist/assets/search-index.json` from
+the published HTML and the public Papers CSV rows. Scripts, hidden content,
+noindex pages, redirects, and nonpublic paper rows are excluded. The browser
+downloads the index only when a query is entered; queries stay in the browser.
+Do not add private Worker assets or source-only documents to this index.
+Run `node --test scripts/site_search.test.mjs` after building to check indexing
+and result ranking. The deployment workflow runs this check automatically.
