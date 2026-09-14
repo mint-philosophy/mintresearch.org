@@ -18,7 +18,7 @@ REPO = Path(__file__).resolve().parent.parent
 # ── The three Minty injection blocks ────────────────────────────────────────
 
 SPRITE_HTML = '''\
-<!-- ══ MINTY CHARACTER (fixed, WASD + drag controlled) ══ -->
+<!-- ══ MINTY CHARACTER (fixed, drag controlled) ══ -->
 <div id="minty-wrap" style="position:fixed;z-index:8000;pointer-events:none;top:0;left:0;width:0;height:0;overflow:visible">
   <img id="minty-sprite"
        src="/assets/cv/crocodile-dundee-minty.png"
@@ -317,7 +317,7 @@ def build_js_module(text_sel: str, repel_sel: str) -> str:
     return f'''\
 <script type="module">
 // ════════════════════════════════════════════════════════════════════════════
-//  MINTY — WASD + drag, pixel-contour text reflow, element repulsion
+//  MINTY — drag, pixel-contour text reflow, element repulsion
 //
 //  Text flows snugly around Minty's actual silhouette (not a rectangle).
 //  Sprite image is scanned at load to build a per-row shape profile.
@@ -339,7 +339,6 @@ const minty = window.__minty = {{
 minty.x = window.innerWidth - SPRITE_W - 30;
 minty.y = window.innerHeight - SPRITE_H - 80;
 
-const keys = Object.create(null);
 const sprite = document.getElementById('minty-sprite');
 const posLabel = document.getElementById('minty-pos');
 const ptxBadge = document.getElementById('ptx-badge');
@@ -348,14 +347,7 @@ sprite.style.left = minty.x + 'px';
 sprite.style.top = minty.y + 'px';
 
 // ── Input ───────────────────────────────────────────────────────────────────
-window.addEventListener('keydown', e => {{
-  const k = e.key.toLowerCase();
-  if (k === 'w' || k === 'a' || k === 's' || k === 'd') {{ keys[k] = true; e.preventDefault(); }}
-}}, {{ passive: false }});
-window.addEventListener('keyup', e => {{
-  const k = e.key.toLowerCase();
-  if (k === 'w' || k === 'a' || k === 's' || k === 'd') keys[k] = false;
-}});
+// Letter keys belong to search, forms and browser shortcuts.
 
 // ── Drag + flick ────────────────────────────────────────────────────────────
 let dragging = false, dragOffX = 0, dragOffY = 0;
@@ -770,10 +762,6 @@ function loop(ts) {{
     const dt = Math.min((ts - lastTs) / 16.667, 3.0); lastTs = ts;
 
     if (!dragging) {{
-      if (keys['a']) minty.vx -= MAX_SPEED * dt * 0.35;
-      if (keys['d']) minty.vx += MAX_SPEED * dt * 0.35;
-      if (keys['w']) minty.vy -= MAX_SPEED * dt * 0.35;
-      if (keys['s']) minty.vy += MAX_SPEED * dt * 0.35;
       const spd = Math.hypot(minty.vx, minty.vy);
       if (spd > MAX_SPEED) {{ minty.vx = minty.vx / spd * MAX_SPEED; minty.vy = minty.vy / spd * MAX_SPEED; }}
       minty.vx *= FRICTION; minty.vy *= FRICTION;
@@ -1042,7 +1030,7 @@ closeBtn.addEventListener('click', closeChat);
 sendBtn.addEventListener('click', sendMessage);
 inputEl.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-  e.stopPropagation();  // Don't trigger WASD
+  e.stopPropagation();  // Keep chat keyboard events inside the chat
 });
 inputEl.addEventListener('keyup', e => e.stopPropagation());
 
