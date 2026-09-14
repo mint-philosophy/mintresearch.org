@@ -1,3 +1,4 @@
+import { fellowsHead, fellowsBanner, fellowsCSS } from './fellows-style.js';
 const FELLOWSHIP_HOST = 'fellowship.mintresearch.org';
 const NO_INDEX = 'noindex, nofollow, noarchive, nosnippet, noimageindex';
 const SESSION_COOKIE_PREFIX = 'mint_fellowship_session';
@@ -810,7 +811,7 @@ const fellowsAccess = { accessGroup: 'fellows-directory', passwordBinding: 'FELL
 async function handleFellows(request, env) {
   const url = new URL(request.url);
   const headers = responseHeaders({ 'Content-Type': 'text/html; charset=utf-8' }, { noIndex: true, noStore: true });
-  headers.set('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'");
+  headers.set('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src https://mintresearch.org; form-action 'self'; frame-ancestors 'none'; base-uri 'none'");
   const reply = (body, status = 200) => new Response(request.method === 'HEAD' ? null : body, { status, headers });
   if (url.pathname === '/robots.txt') {
     headers.set('Content-Type', 'text/plain; charset=utf-8');
@@ -842,7 +843,7 @@ async function handleFellows(request, env) {
     return html ? reply(html) : reply('Directory temporarily unavailable', 503);
   }
   const error = request.method === 'POST' ? '<p role="alert">Password not recognised. Please try again.</p>' : '';
-  return reply('<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><title>Fellows · MINT</title><style>body{margin:0;min-height:100svh;display:grid;place-items:center;background:#f7f5ed;color:#173c36;font:17px system-ui}main{width:min(360px,80vw);padding:36px;border:1px solid #b8c8bd;background:#fffef9}h1{font:38px Georgia;margin:15px 0 28px}label{display:block;margin-bottom:8px}input,button{box-sizing:border-box;width:100%;font:inherit;padding:12px;border:1px solid #7e9d91}button{margin-top:14px;background:#173c36;color:white;cursor:pointer}small{letter-spacing:.1em}p{color:#942e21}</style><main><small>MINT · AGI GOVERNANCE FELLOWSHIP</small><h1>Fellows directory</h1><form method="post" action="/login"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required autofocus><button>View fellows</button></form>' + error + '</main></html>', request.method === 'POST' ? 401 : 200);
+  return reply('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><title>Fellows · MINT</title>' + fellowsHead + '<style>' + fellowsCSS + '</style></head><body>' + fellowsBanner + '<main class="login"><small>AGI GOVERNANCE FELLOWSHIP</small><h1>Fellows directory</h1><form method="post" action="/login"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required autofocus><button>View fellows →</button></form>' + error + '</main></body></html>', request.method === 'POST' ? 401 : 200);
 }
 
 export default {
