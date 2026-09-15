@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Counting filler doubles Astra’s four-hop accuracy in Corry’s replication — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-14">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-14">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 14 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Counting filler doubles Astra’s four-hop accuracy in Corry’s replication</h1>
+<p class="dek">A 594-question experiment shows larger answer-only gains than earlier models, while leaving Astra’s internal computation unmeasured.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 14 September 2026</span> <span class="chip">812 words · ~4 min</span></div>
+<div class="article-body">
+<p>Adding a counting sequence after a question can help GPT-6 Astra answer a chain of four factual lookups without writing out its reasoning. Second Look fellow Christine Corry reports accuracy rising from 31% to 63% across 594 questions in <a href="https://www.lesswrong.com/posts/tz5WvDouXKbiWJG8B/yet-another-concerning-result-on-astra-s-no-cot-capabilities"><em>Yet another concerning result on Astra's no-CoT capabilities</em></a>. Her <a href="https://secondlookresearch.com/astra-no-cot">original update is dated September 11</a>, and she <a href="https://x.com/christinecorryy/status/2099538526769680465">shared the findings on X on September 14</a>. The replication adds evidence to the <a href="https://mintresearch.org/newsletters/yinai/2026-09-02/#story-openai-says-astra-preserves-chain-of-thought-monitoring-with">debate about monitoring Astra through its written reasoning</a>.</p>
+
+<p>Corry reused the items and protocol from her earlier replication of Ryan Greenblatt's experiments. The questions require combining facts recalled from the model's learned knowledge: one two-hop example asks for the element whose atomic number equals Tesla's age at death. In his <a href="https://blog.redwoodresearch.org/p/recent-llms-can-do-2-hop-and-3-hop">January 2026 dataset description</a>, Greenblatt explains that he avoided trivial loops and combinations likely to have been memorized together. His checks found that Opus 4.5 could answer almost all the individual factual questions, and most complete chains when allowed written reasoning. Those controls help distinguish difficulty combining known facts from simply lacking the knowledge.</p>
+
+<p>Corry tested questions with two, three and four hops, alongside 500 generated arithmetic problems and 500 mostly easy competition-math problems. Each request included ten example question-and-answer pairs. She compared the unaugmented question with repeated copies, up to 40 on the lookup tasks, and with counting sequences reaching 1,000. The count denotes integers appended to the input, so it is not necessarily the number of model tokens. Models divide text into tokens differently, and questions differ in length, so the counts cannot be read as equal amounts of added computation across models.</p>
+
+<p>On four-hop questions, every other model in Corry's comparison remained below 5% even with additions. Astra improved with both interventions through the largest counts tested; repeating the question nearly matched the best filler result. Corry reports uncertainty intervals for the gains based on resampling the same questions, and a significant peak improvement after correcting for multiple comparisons. The gains were concentrated where Astra still made substantial errors, including three-hop questions and competition mathematics. Two-hop questions and generated arithmetic already had high baseline accuracy and benefited little.</p>
+
+<p>To obtain answer-only responses, Corry used a strict instruction that treated any thinking tokens as a failure and appended “Answer:” to the input. Her original update says she sent no reasoning-effort parameter. She reports checking 28,260 responses: none returned reasoning text or billed reasoning tokens, and output-token counts matched the visible answers. These checks establish what the API reported; they do not rule out unexposed computation. Some answers contained multiple tokens, which is why Corry stopped describing the evaluations as a single forward pass. The experiment cannot identify Astra's internal sequence of operations.</p>
+
+<p>The <a href="https://github.com/christinecorry/no-cot-harness/tree/3b266adef1e44dccc322a42988c6b182c91e87ce">released evaluation code</a> helps specify the controls. Its filler condition adds an instruction saying the numbers give the model extra room to process the question, as well as adding the numbers themselves. It therefore changes wording alongside input length. The repository contains earlier aggregate results but excludes the question data and has no Astra run records from which to recalculate the reported scores. Corry also notes that forcing short answers may underestimate capabilities because reasoning models are accustomed to producing longer working.</p>
+
+<p>An independent <a href="https://www.lesswrong.com/posts/uvhuZHFtrgk8kNiZc/astra-is-much-better-at-reasoning-with-filler-tokens-than">September 10 experiment by Dylan Xu, SebastianP and Alek Westover</a> found a similar benefit across counting, dots and repeated questions. Their controls found benefits when filler followed the task, but not when it preceded it. Telling Astra to ignore the dots or to use them for processing produced approximately the same results. In a reply to commenter dactyl, Xu added that asking Astra to generate dots before its answer gave roughly similar performance, although those results were not plotted in the post. Their filler conditions still performed worse than allowing ordinary reasoning.</p>
+
+<p>Jacob Pfau, William Merrill and Samuel R. Bowman had studied this possibility in their 2024 arXiv paper <a href="https://arxiv.org/html/2404.15758v1"><em>Let's Think Dot by Dot: Hidden Computation in Transformer Language Models</em></a>. At New York University, they trained a small transformer on two constructed mathematical tasks and showed that representations associated with meaningless dots could carry useful computation. Learning that behavior required demonstrations of calculations that could run in parallel; conventional sequential demonstrations did not suffice in their principal task. Greenblatt's <a href="https://www.lesswrong.com/posts/NYzYJ2WoB74E6uj9L/recent-llms-can-use-filler-tokens-or-problem-repeats-to">December 2025 math experiments</a> and subsequent lookup tests extended filler gains to commercial models, while four-hop factual performance remained near chance. Corry's replication measures how much further Astra goes on those tasks.</p>
+
+<p>Corry argues for repeating these evaluations on new models because more accurate answers can arrive without more readable reasoning for a monitor to inspect. She acknowledges that better conventional transformers and recurrent architectures could both produce the observed patterns. Her tests measure factual and mathematical performance, without directly testing whether a monitor detects deception. In the <a href="https://www.lesswrong.com/posts/tz5WvDouXKbiWJG8B/yet-another-concerning-result-on-astra-s-no-cot-capabilities">LessWrong discussion</a>, Philipp Risius proposes extending the evaluation to five and six hops to locate where accuracy falls away.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.lesswrong.com/posts/tz5WvDouXKbiWJG8B/yet-another-concerning-result-on-astra-s-no-cot-capabilities">Yet another concerning result on Astra's no-CoT capabilities - Christine Corry, LessWrong</a> <span class="how">— Assigned source; read the complete supplied RSS text and live post, including methods, captions, elicitation details, footnotes and the sole comment by Philipp Risius. Supports the experiment, 594 four-hop items, 31% to 63% rounded result, comparison models, compliance checks and the five/six-hop follow-up suggestion. Rendered byline is September 14, 2026; supplied source metadata gives 2026-09-14T00:35:54+00:00. The API billing observation is reported as Corry's check, not independent proof about internal computation.</span></li>
+<li><a href="https://secondlookresearch.com/astra-no-cot">Yet another concerning result on Astra's no-CoT capabilities - Christine Corry, Second Look Research</a> <span class="how">— Original publication linked by LessWrong; complete article and methods read via its public application bundle, then verified through the rendered OpenClaw page. Both the article byline and research index say September 11, 2026. Recovered equations missing from RSS, including f=1000 and r=40; verified that no reasoning-effort parameter was sent. Inspected the four-hop figure directly: 31.3% baseline, 62.3% peak repeats, 63.3% peak filler. The original also notes a correction to earlier Sol aggregates, with shifts no greater than 2.05 percentage points and no ordering changes.</span></li>
+<li><a href="https://x.com/christinecorryy/status/2099538526769680465">Christine Corry's Astra replication announcement thread, September 14, 2026</a> <span class="how">— Fetched complete author thread and direct replies with Bird. Root timestamp is September 14, 2026 at 16:39:26 UTC, or 12:39:26 p.m. Eastern. Establishes current sharing of the September 11 original and corroborates the four-hop result and counting-through-1000 condition. The accessible outside reply was generic praise and is not used as substantive reaction.</span></li>
+<li><a href="https://github.com/christinecorry/no-cot-harness/tree/3b266adef1e44dccc322a42988c6b182c91e87ce">no-cot-harness - Christine Corry, public repository at commit 3b266adef1e44dccc322a42988c6b182c91e87ce</a> <span class="how">— Inspected the public tree, full README, condition renderer, prompt builder and configuration, plus relevant registry entries and aggregate metadata. Verifies count-to-N formatting, filler-only instruction additions, prompt-channel limitations, datasets being excluded, and the absence of Astra from committed aggregate results. The repository covers the preceding four-model replication; it does not permit an independent recomputation of the current Astra scores. No evaluation code was run.</span></li>
+<li><a href="https://blog.redwoodresearch.org/p/recent-llms-can-do-2-hop-and-3-hop">Recent LLMs can do 2-hop and 3-hop latent (no CoT) reasoning on natural facts - Ryan Greenblatt, Redwood Research blog</a> <span class="how">— Read the main article and methodological appendices, dated January 1, 2026. Supplies the original dataset's construction, controls against trivial shortcuts, individual-fact and full-reasoning checks, prior filler gains and near-chance four-hop factual performance. Corry explicitly cites and replicates this work. No claims about the new Astra run are inferred from Greenblatt's older validation.</span></li>
+<li><a href="https://www.lesswrong.com/posts/NYzYJ2WoB74E6uj9L/recent-llms-can-use-filler-tokens-or-problem-repeats-to">Recent LLMs can use filler tokens or problem repeats to improve (no-CoT) math performance - Ryan Greenblatt, LessWrong</a> <span class="how">— Read the main article, methods and relevant appendices; byline is December 22, 2025. Establishes prior commercial-model filler and repetition gains, the ten-example format, instruction changes between conditions, and the distinction between counting N integers and consuming N tokens. Corry explicitly cites this precursor.</span></li>
+<li><a href="https://arxiv.org/html/2404.15758v1">Let's Think Dot by Dot: Hidden Computation in Transformer Language Models - Jacob Pfau, William Merrill and Samuel R. Bowman, arXiv:2404.15758v1</a> <span class="how">— Read the full paper, including methods, results, training ablations and appendices. Verified April 24, 2024 date and New York University affiliation. Supports the earlier demonstration that filler-token representations can carry computation in a small conventional transformer, and that parallelizable training demonstrations were necessary for their principal 3SUM result. Found through Xu and colleagues' cited precedent; Corry does not directly cite this paper in the assigned post.</span></li>
+<li><a href="https://www.lesswrong.com/posts/uvhuZHFtrgk8kNiZc/astra-is-much-better-at-reasoning-with-filler-tokens-than">Astra is much better at reasoning with filler tokens than previous models - Dylan Xu, SebastianP and Alek Westover, LessWrong</a> <span class="how">— Read the complete September 10 post, appendix, footnotes and comments. Supplies independent replication, alternative filler formats, placement and wording controls, comparison with ordinary reasoning, and Xu's clarification to dactyl about generated filler. The latter is explicitly an author-reported comparison omitted from the plotted results, not a separately audited dataset.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-02/#story-openai-says-astra-preserves-chain-of-thought-monitoring-with">Astra turns chain-of-thought monitoring into a three-way dispute - Yesterday in AI, September 2, 2026</a> <span class="how">— Verified the live anchor and read the complete 429-word expansion. Establishes continuity with the earlier Pachocki, Krueger, Achiam and Raschka debate. That article did not contain Corry's replication or the present four-hop numerical result.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-filler-tokens-raise-gpt-6-astra-s-four-hop-accuracy-from-31">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-14/filler-tokens-raise-gpt-6-astra-s-four-hop-accuracy-from-31</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
