@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Periodic trains Neon to interpret difficult materials experiments — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-15">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-15">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 15 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Periodic trains Neon to interpret difficult materials experiments</h1>
+<p class="dek">Laboratory data and expert-calibrated AI feedback improved diffraction analysis, including on chemical systems excluded from training.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 15 September 2026</span> <span class="chip">792 words · ~4 min</span></div>
+<div class="article-body">
+<p>Periodic Labs reports that training on its experimental records greatly improved an AI's ability to work out which crystalline materials an experiment produced. In its September 15 research post <a href="https://periodic.com/news/nature-is-our-learning-environment">“Nature Is Our Learning Environment,”</a> the company describes Neon, a specialist model whose success on its difficult internal X-ray diffraction test rose from the starting model's 2.7% to 55.3%. Periodic says Neon outperformed GPT-6 Astra and Claude Fable 5.1 at lower estimated cost per analysis. It has deployed the model to interpret experiments in its search for better superconductors and magnets.</p>
+<p>After attempting to make a new material, Periodic's scientists must establish what actually formed. X-rays scattered by a powdered crystal produce peaks associated with its atomic structure. A sample containing several crystalline components produces overlapping patterns, and researchers must infer both their identities and their proportions. The company's FrontierXRD evaluation contains 134 particularly difficult laboratory samples; accepted solutions averaged five components. Software can produce a close numerical fit for a chemically implausible answer. Periodic gives the example of checking whether exposure to air or moisture makes a proposed oxide or hydroxide credible. The experimental history helps decide which explanation to accept.</p>
+<p>The researchers started with the open-weight Kimi K2.6 model and continued its training on scientific literature, code and experimental data. Only a small part of this preparation concerned diffraction, but it improved subsequent reinforcement learning, which rewards the model for successful analyses. The researchers needed a way to supply those rewards at a scale beyond continuous human review. They developed a detailed rubric, had three materials experts annotate each of thousands of patterns, and compared their judgments with an ensemble of Opus 5 and GPT-5.6-Sol. The AI judges agreed with individual experts 74.6% of the time, close to the experts' 77.2% agreement with one another.</p>
+<p>Periodic uses the judges' verdicts both to reward the model during training and to score its evaluations. Their assessment asks whether the diffraction evidence supports each proposed component and whether the explanation makes chemical sense. Success means acceptance under this expert-calibrated assessment. Repeated training improved performance, and giving the model more computation while working through an analysis helped further. Periodic's account attributes the gains to experimental data, scientific preparation, reinforcement learning and improvements in the surrounding software.</p>
+<p>The company supplied every compared model with the same scientific working environment: laboratory context, its materials and simulation databases, and diffraction-analysis tools. A separate comparison held the underlying model fixed and found that Periodic's environment improved performance over Claude Code equipped with public scientific databases and standard analysis software. That comparison includes the advantage of proprietary information as well as software design. The lower-cost claim concerns running an analysis: competitors were priced using their API rates with ideal reuse of cached input, while Neon was priced from measured throughput and an assumed GPU rental rate.</p>
+<p>Periodic also tested whether the improvement extended to unfamiliar chemical systems. It excluded selected combinations of chemical elements, called chemical systems, from both stages of training, along with any larger systems containing them. It then evaluated measurements from the withheld systems. Neon again exceeded the tested frontier models. These samples were easier than FrontierXRD, and smaller constituent systems could still have appeared in training. The experiment consequently tests transfer to new combinations within Periodic's laboratory work; it does not establish performance in another laboratory with different instruments or practices.</p>
+<p>Earlier researchers have automated parts of this task. Nathan Szymanski and colleagues at UC Berkeley and Lawrence Berkeley National Laboratory showed in their 2023 <em>npj Computational Materials</em> paper <a href="https://www.nature.com/articles/s41524-023-00984-y">“Adaptively driven X-ray diffraction guided by machine learning for autonomous phase identification”</a> that a model could direct extra measurements toward regions that distinguished competing interpretations. A closer precedent is Olympia Dartsi and colleagues' August 3 <em>Advanced Science</em> paper, <a href="https://advanced.onlinelibrary.wiley.com/doi/10.1002/advs.76450">“Automating Chemical Reasoning in High-Throughput Phase Identification With a Probabilistic, LLM-Guided Framework.”</a> Dartsi's team at Lawrence Berkeley National Laboratory combined diffraction fits with a language model's assessment of chemical plausibility. They ranked alternative explanations and separately assessed whether any was reliable enough for autonomous use. Periodic uses expert-calibrated AI judgments to train a specialist model on its own experimental data.</p>
+<p>In its companion <a href="https://periodic.com/news/ai-infrastructure-at-periodic">infrastructure report</a>, Periodic describes analyses that take hours of model reasoning and tool execution, while a training update takes minutes. The company runs generation and training concurrently, isolates scientific programs to protect the training job from crashes, and uses spare CPU capacity on its GPU machines for those programs. Those changes help it run more training experiments and return improved models to its laboratories.</p>
+<p>On Bluesky, <a href="https://bsky.app/profile/tedunderwood.com/post/3mvlcdqmvls2t">Ted Underwood responded</a> by emphasizing the prospect of organizations adapting open models to their own specialized work. He suggested that academic disciplines sharing evidence and research problems could organize comparable efforts, while acknowledging the hardware, funding and coordination involved.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://periodic.com/news/nature-is-our-learning-environment">Nature Is Our Learning Environment | Periodic Labs</a></li>
+<li><a href="https://periodic.com/news/ai-infrastructure-at-periodic">AI Infrastructure at Periodic | Periodic Labs</a></li>
+<li><a href="https://www.nature.com/articles/s41524-023-00984-y">Adaptively driven X-ray diffraction guided by machine learning for autonomous phase identification | Szymanski et al., npj Computational Materials</a></li>
+<li><a href="https://advanced.onlinelibrary.wiley.com/doi/10.1002/advs.76450">Automating Chemical Reasoning in High-Throughput Phase Identification With a Probabilistic, LLM-Guided Framework | Dartsi et al., Advanced Science</a></li>
+<li><a href="https://bsky.app/profile/tedunderwood.com/post/3mvlcdqmvls2t">Ted Underwood on domain-specific adaptation of open models | Bluesky</a></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-periodic-neon-reports-55-3-frontierxrd-success-using-expert">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-15/periodic-neon-reports-55-3-frontierxrd-success-using-expert</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
