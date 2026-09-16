@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Tinfoil plans safeguards for private chats — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-15">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-15">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 15 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Tinfoil plans safeguards for private chats</h1>
+<p class="dek">Its announced checks would run inside protected hardware and could lead to account suspensions. Records of flagged users have drawn questions about government demands.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 15 September 2026</span> <span class="chip">978 words · ~5 min</span></div>
+<div class="article-body">
+<p>Tinfoil <a href="https://x.com/TinfoilAI/status/2099733913799401796">announced safeguards for its private Chat service on September 15</a>, proposing to detect harmful model responses without letting employees read the conversations. In their September 14 technical post, <a href="https://tinfoil.sh/blog/2026-09-14-safety-without-compromising-privacy">Daniel McCann-Sayles, Sacha Servan-Schreiber and Tanya Verma</a> describe checks inside hardware-protected computing environments, with only a violation signal linked to an account and conversation leaving that protection. The company plans to roll the safeguards out over the following few weeks. It says the checks run alongside generation without blocking replies; repeated flags can eventually lead to suspension.</p><p>The authors argue that a private service needs a way to respond to abuse if it is to remain available to ordinary users. Their <a href="https://tinfoil.sh/safety-and-safeguards">monitoring policy</a> covers encouragement of self-harm, assistance with mass violence or terrorism, and child endangerment. They deliberately keep these categories narrower than the service's acceptable-use terms. The review asks whether the assistant's response, understood within the conversation, crosses a prohibited line. Sensitive topics and suspicious wording in a user's question are insufficient grounds for a flag. The policy allows harmless fiction and discussion but treats any generated explicit sexual content involving minors as a violation.</p><p>Tinfoil first screens models before hosting them. The team selected 297 prompts matching its policy from MLCommons' AILuminate and the Center for AI Safety's HarmBench, using an automated selection followed by human review. A model that fails more than 5% of this set will not be served. Its <a href="https://github.com/tinfoilsh/safeguard-evals">evaluation repository</a> publishes the methodology and results, including responses outside the subset used for release decisions. The authors acknowledge that passing this finite test cannot ensure acceptable behavior across the much larger range of real conversations. Runtime moderation is intended to catch failures that remain after screening.</p><p>For runtime checks, Tinfoil's published design uses gpt-oss-safeguard-120B followed by Kimi-K3 to reconsider flagged exchanges. Its <a href="https://github.com/tinfoilsh/confidential-safeguards">published implementation</a> sends the conversation, policy and first model's reasoning to the second model; a violation is reported only if the reviewer upholds it. Tinfoil says both models run inside attested enclaves. The report to Tinfoil's account-management system contains a user credential and conversation identifier, without the message text, violation category or either model's reasoning. Under this design, Tinfoil learns that the system flagged a particular account's conversation, while the contents remain inside the protected processing environment.</p><p>The authors tested this arrangement on public WildChat conversations because they cannot inspect or tune it against customers' private chats. After removing apparent bot traffic, they evaluated about 1.2 million conversations. The initial model flagged 1,402; Kimi-K3 retained 846, discarding about 40% of the initial flags. In Tinfoil's reported results, that percentage measures how often the reviewer overturned an initial flag. Those counts do not establish how often harmless conversations would be flagged in use. The team also reports manually checking model comparisons and finding that the specialized safeguard model followed its written policy better than the general-purpose model. They chose full-conversation review because smaller classifiers judging individual turns could miss context and violations.</p><p>Tinfoil describes the moderation as asynchronous: users receive model replies without waiting for the safety verdict. Conversations awaiting review stay in enclave memory, and a version change discards pending data. Synced chat backups remain encrypted and are outside this scanning process. A flag produces a notification; a sufficiently large accumulation over time triggers suspension. Because staff cannot open the flagged exchanges, an appeal requires the user either to share relevant conversations voluntarily outside the private chat system or to provide evidence of an acceptable use, such as safety research. The privacy design consequently limits both routine human oversight and the evidence available for resolving a disputed ban.</p><p>The authors also defend publishing their safeguards: other researchers can test the same open-weight models and contribute improvements, while open datasets let Tinfoil evaluate moderation without customer conversations. They acknowledge that publishing safeguards can help adversaries evade them, but argue that larger models generalize well enough to make evasion harder.</p><p>Tinfoil's <a href="https://docs.tinfoil.sh/verification/verification-in-tinfoil">verification documentation</a> explains how clients check a hardware-signed record of the software configuration against published build measurements before sending data. Reproducible builds let auditors connect those measurements to readable source code. In her June 18 MIRI Technical Governance Fellowship essay, <a href="https://techgov.intelligence.org/blog/on-tees-for-privacy-preserving-monitoring-in-ai-governance">Gloria Z made a related distinction</a>: proving that particular code runs unchanged still leaves the task of establishing what that code does. Tinfoil's public code and attestation design allow examination of the moderation system; they are separate from evidence that its judgments are accurate or that an independent auditor has validated the rollout.</p><p>Apple's <a href="https://security.apple.com/blog/private-cloud-compute/">Private Cloud Compute design</a> is an earlier example of using protected hardware and verifiable software to keep AI requests inaccessible to a cloud operator. Proton describes another privacy approach for <a href="https://proton.me/lumo/security">Lumo</a>: its server decrypts messages temporarily for inference, keeps no conversation logs and stores history with encryption controlled by the user. Tinfoil's announced system adds an enforcement mechanism to private inference: automated review that releases enough account information to act on repeated violations.</p><p>On X, <a href="https://x.com/GeorgeBalston/status/2099823914306187405">George Balston welcomed the work</a> and called for private inference-time safety to become more standard across providers of open-weight models. <a href="https://x.com/jsrailton/status/2099835185088848138">John Scott-Railton asked</a> whether linking detected violations to identities would make it easier for governments to demand category-specific reports or lists of flagged users. His concern extends beyond access to message contents: account-level enforcement records could themselves become the subject of legal demands.</p><p><a href="https://x.com/TinfoilAI/status/2100013331482624290">Tinfoil replied that evening</a> that discouraging abuse was preferable to operating without safeguards, and that it would comply with legal subpoenas while being unable to provide material it could not access. The company defended aggregation as a privacy protection and said changes to its open-source infrastructure would be visible to users. Tinfoil's reply states how it would handle demands for existing information; Scott-Railton also asked about orders to expand collection. Tinfoil's stated privacy commitment includes keeping conversation contents inaccessible to staff while retaining an account-linked enforcement record. Scott-Railton asked how the company would resist pressure to expand it.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://tinfoil.sh/blog/2026-09-14-safety-without-compromising-privacy">Safety Without Compromising on Privacy, Tinfoil</a> <span class="how">— Full primary post read from the supplied source-audit capture and checked by direct public HTTP. September 14 date, three named authors, rollout timetable, rationale, prehosting screen, runtime models, validation counts, async behavior, storage boundaries and appeals. Company claims are attributed; harmful example content is omitted.</span></li>
+<li><a href="https://x.com/TinfoilAI/status/2099733913799401796">Tinfoil safeguards announcement and thread</a> <span class="how">— Bird returned the full six-post announcement plus three substantive discussion posts. Establishes September 15 announcement date and stated safety/privacy rationale.</span></li>
+<li><a href="https://tinfoil.sh/safety-and-safeguards">Safety &amp; Safeguards, Tinfoil</a> <span class="how">— Read the accessible policy and methodology page; confirms three monitored categories, broader terms and flag/conversation-only disclosure.</span></li>
+<li><a href="https://github.com/tinfoilsh/safeguard-evals">Tinfoil safeguard-evals repository</a> <span class="how">— Read repository README and monitor README. Confirms distinct pre-release and runtime evaluation, dataset provenance, assistant-response focus and larger-model review. Evaluations were not rerun.</span></li>
+<li><a href="https://github.com/tinfoilsh/confidential-safeguards">Confidential Safeguards repository</a> <span class="how">— Read complete repository README, including architecture and queue/review/report behavior, and inspected controlplane.go. Confirms published design reports credential/conversation ID without content/category/reason. This is source inspection, not a full security audit or live-deployment verification.</span></li>
+<li><a href="https://docs.tinfoil.sh/verification/verification-in-tinfoil">How verification works in Tinfoil</a> <span class="how">— Read technical documentation explaining hardware attestation, published measurements, reproducible builds, transparency logs and chained enclaves.</span></li>
+<li><a href="https://techgov.intelligence.org/blog/on-tees-for-privacy-preserving-monitoring-in-ai-governance">On TEEs for Privacy-Preserving Monitoring in AI Governance, Gloria Z</a> <span class="how">— Read introduction, verifiably confidential service/inference discussion and concluding assessment on the MIRI Technical Governance site. Published June 18, 2026; page explicitly says Gloria solely authored the work. Precedent distinguishing deployment integrity from correctness and privacy of the software. Not cited by the selected Tinfoil blog.</span></li>
+<li><a href="https://security.apple.com/blog/private-cloud-compute/">Private Cloud Compute: A new frontier for AI privacy in the cloud, Apple</a> <span class="how">— Read primary technical discussion of private processing, hardware/software enforcement and verifiable transparency. Background precedent, not evidence about Tinfoil classifier performance.</span></li>
+<li><a href="https://proton.me/lumo/security">How Lumo keeps AI chats private and secure, Proton</a> <span class="how">— Read primary security page and conversation-context FAQ. Supplies alternative description of transient plaintext processing, no logs and encrypted stored history; no unsupported legal comparison.</span></li>
+<li><a href="https://x.com/GeorgeBalston/status/2099823914306187405">George Balston responds to Tinfoil</a> <span class="how">— Full reply read via Bird in original announcement conversation. Supports welcoming reaction and wish for standardized private inference-time safety.</span></li>
+<li><a href="https://x.com/jsrailton/status/2099835185088848138">John Scott-Railton questions the legal surface of safeguards</a> <span class="how">— Full reply read via Bird. Questions government pressure, category-specific disclosure and subpoenas for flagged-user lists; reported as questions, not legal findings.</span></li>
+<li><a href="https://x.com/TinfoilAI/status/2100013331482624290">Tinfoil replies to John Scott-Railton</a> <span class="how">— Full reply read via Bird. Timestamp September 16 00:06 UTC is September 15 20:06 Eastern. Company states rationale, subpoena stance and visibility of code changes.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-tinfoil-tinfoilai-twitter-tinfoil-announces-privacy-preservi">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-15/tinfoil-tinfoilai-twitter-tinfoil-announces-privacy-preservi</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
