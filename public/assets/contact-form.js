@@ -14,7 +14,7 @@ if (form) {
     sending = true;
     submit.disabled = true;
     form.setAttribute('aria-busy', 'true');
-    status.textContent = 'Sending...';
+    status.textContent = 'Checking and sending...';
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 30000);
     try {

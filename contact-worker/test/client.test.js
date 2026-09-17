@@ -54,3 +54,12 @@ test('repeated clicks do not submit twice while a request is pending', async () 
   resolve(Response.json({ ok: true, message: 'Submitted.' }));
   await pending;
 });
+
+test('AI screening rejection is shown without claiming delivery or clearing input', async () => {
+  const message = 'Pangram identified AI-generated text. Your message was not delivered.';
+  const ui = client(async () => Response.json({ ok: false, message }, { status: 422 }));
+  await ui.submit();
+  assert.equal(ui.form.resets, 0);
+  assert.equal(ui.status.textContent, message);
+  assert.equal(ui.button.disabled, false);
+});

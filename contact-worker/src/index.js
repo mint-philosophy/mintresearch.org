@@ -1,3 +1,5 @@
+import { createPangramScreen } from './pangram.js';
+
 const ORIGINS = new Set(['https://mintresearch.org', 'https://www.mintresearch.org']);
 const MAX_BYTES = 48 * 1024;
 const EMAIL = /^[^\s<>@,;\x00-\x1f\x7f]+@[^\s<>@,;\x00-\x1f\x7f]+\.[^\s<>@,;\x00-\x1f\x7f]+$/;
@@ -65,7 +67,9 @@ function reply(request, status, message) {
   return new Response(`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Contact | MINT Research</title><style>body{font:18px/1.6 system-ui;margin:64px auto;padding:0 24px;max-width:640px;color:#202124}a{color:#006b56}</style><h1>MINT Research</h1><p>${message}</p><a href="https://mintresearch.org/#contact">Return to the contact form</a></html>`, { status, headers });
 }
 
-export default {
+export function createWorker(screeningDependencies) {
+  const screen = createPangramScreen(screeningDependencies);
+  return {
   async fetch(request, env) {
     if (new URL(request.url).pathname !== '/contact') return reply(request, 404, 'Page not found.');
     if (!ORIGINS.has(request.headers.get('origin'))) return reply(request, 403, 'Please submit through mintresearch.org.');
@@ -92,6 +96,10 @@ export default {
       const affiliation = field(form, 'affiliation', 240, false);
       const message = field(form, 'message', 8000);
       if (!EMAIL.test(email)) throw new FormError(400, 'Please enter a valid email address.');
+      const { aiGenerated } = await screen(message, env.PANGRAM_API_KEY);
+      if (aiGenerated) {
+        return reply(request, 422, 'Your message was classified as AI-generated and was not delivered. Please write your message yourself.');
+      }
       const result = await env.EMAIL.send({
         to: env.CONTACT_TO,
         from: { email: env.CONTACT_FROM, name: 'MINT Research contact form' },
@@ -108,4 +116,7 @@ export default {
       return reply(request, 503, 'We could not confirm submission. Please keep your message and try again later.');
     }
   },
-};
+  };
+}
+
+export default createWorker();

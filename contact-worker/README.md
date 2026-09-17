@@ -47,6 +47,34 @@ The client only binds to `form[data-mint-contact]`. With JavaScript, confirmatio
 is inline above the send button. Without JavaScript, the
 Worker renders an ad-free HTML receipt with a link back to the contact section.
 
+## Pangram screening
+
+The homepage contact endpoint checks message text with Pangram before calling
+the email binding. Set `PANGRAM_API_KEY` as an encrypted Worker secret, never a
+browser setting. The key's live model catalog was verified on 17 September 2026;
+requests explicitly use `pangram-4` and `public_dashboard_link: false`.
+Only the message body is sent, not the name, email, or affiliation fields.
+
+A completed, validated result with AI-generated segments (`fraction_ai > 0`)
+returns HTTP 422 and does not send or store the submission. This includes mixed
+messages with AI-generated passages. AI-assisted-only results remain eligible
+for delivery. Classification can make mistakes; this is automated filtering,
+not proof of authorship. Pangram's own retention terms apply to its analysis.
+
+Missing credentials, provider errors, exhausted credits, invalid responses, and
+a 20-second screening deadline return HTTP 503 without forwarding unchecked
+text. The sender is told to retry and JavaScript preserves their input. There
+is no quarantine, message logging, public analysis link, or deletion of existing
+inbox mail. Screening applies only to the homepage contact form; collection
+contribution forms are unchanged.
+
+The form warns that AI-written messages will not reach Seth and discloses the
+Pangram transfer with a privacy-policy link. Test requests use synthetic text;
+unit tests mock email delivery and never contact real recipients.
+
+API: https://docs.pangram.com/api-reference/ai-detection
+Privacy: https://www.pangram.com/privacy-policy
+
 ## Checks
 
 ```sh
@@ -55,6 +83,9 @@ npm test
 npm run test:browser
 npx wrangler deploy --dry-run
 ```
+
+Browser tests use Playwright's installed Chromium by default; set
+`PLAYWRIGHT_CHANNEL=chrome` to use an installed Google Chrome instead.
 
 The tests mock email acceptance and rate limiting; they do not prove live inbox
 delivery. Rate limits are five attempts per IP per minute per Cloudflare
