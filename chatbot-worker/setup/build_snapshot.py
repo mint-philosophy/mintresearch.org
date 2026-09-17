@@ -78,6 +78,7 @@ def render_snapshot(rows: list[dict[str, str]], dated: bool = True) -> str:
         # Additional Resolution appointment supplied by Seth on 2026-09-17.
         "## Seth Lazar's current roles",
         "Seth Lazar is Professor at the Johns Hopkins University School of Government and Policy and principal investigator of MINT Lab. He is also a Research Scientist at Resolution (2026-present; https://resolution.org).",
+        "For current employment, these roles supersede older biographies in file search. His ANU professorship ended in 2026; do not describe him as a current ANU professor.",
         "",
         "## Ten most recent papers/preprints (newest first)",
     ]
