@@ -1,4 +1,4 @@
-import { createPangramScreen } from './pangram.js';
+import { createPangramScreen, PangramError } from './pangram.js';
 
 const ORIGINS = new Set(['https://mintresearch.org', 'https://www.mintresearch.org']);
 const MAX_BYTES = 48 * 1024;
@@ -112,7 +112,11 @@ export function createWorker(screeningDependencies) {
     } catch (error) {
       if (error instanceof FormError) return reply(request, error.status, error.message);
       // Do not log message contents, addresses, or provider errors containing personal data.
-      console.error('Contact submission failed');
+      if (error instanceof PangramError) {
+        console.error('Contact screening failed', error.code, error.status || '');
+      } else {
+        console.error('Contact submission failed');
+      }
       return reply(request, 503, 'We could not confirm submission. Please keep your message and try again later.');
     }
   },
