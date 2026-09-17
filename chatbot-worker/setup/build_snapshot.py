@@ -75,6 +75,10 @@ def render_snapshot(rows: list[dict[str, str]], dated: bool = True) -> str:
         intro,
         'When asked about "latest", "recent", or "new" work, use THIS list, not memory or file search alone.',
         "",
+        # Additional Resolution appointment supplied by Seth on 2026-09-17.
+        "## Seth Lazar's current roles",
+        "Seth Lazar is Professor at the Johns Hopkins University School of Government and Policy and principal investigator of MINT Lab. He is also a Research Scientist at Resolution (2026-present; https://resolution.org).",
+        "",
         "## Ten most recent papers/preprints (newest first)",
     ]
     for index, row in enumerate(rows[:RECENT_COUNT], 1):

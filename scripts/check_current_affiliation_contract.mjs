@@ -45,6 +45,23 @@ assert.match(
   /is Professor at the <span class="t-cyan">Johns Hopkins University School of Government and Policy<\/span> and principal investigator of MINT Lab/,
   "homepage bio must state Seth Lazar's current JHU and MINT roles",
 );
+assert.match(
+  homepage,
+  /He is also a Research Scientist at <a href="https:\/\/resolution\.org">Resolution<\/a>\./,
+  "homepage bio must link Seth Lazar's additional Resolution role",
+);
+
+const cvPage = fs.readFileSync("public/cv/index.html", "utf8");
+assert.match(cvPage, /2026-present Research Scientist\. <a href="https:\/\/resolution\.org">Resolution<\/a>/);
+assert.doesNotMatch(cvPage, /Incoming Professor/);
+assert.match(cvPage, /<div class="card-sub">12 entries<\/div>/);
+for (const path of ["src/data/people.ts", "public/assets/people/latest-people.csv", "public/assets/minty/snapshot.txt"]) {
+  assert.match(
+    fs.readFileSync(path, "utf8"),
+    /He is also a Research Scientist at Resolution/,
+    `${path} must include Seth Lazar's additional Resolution role`,
+  );
+}
 
 const guide = fs.readFileSync("public/guide/index.html", "utf8");
 assert.match(
@@ -55,6 +72,10 @@ assert.match(
 
 const cvData = JSON.parse(fs.readFileSync("src/data/cv.json", "utf8"));
 const employment = cvData.sections.find((section) => section.id === "employment");
+const resolutionRoles = employment.entries.filter((item) => item.text === "Research Scientist. Resolution (https://resolution.org)");
+assert.equal(resolutionRoles.length, 1, "structured CV must contain exactly one Resolution role");
+assert.equal(resolutionRoles[0].years, "2026-present");
+assert.equal(resolutionRoles[0].short_cv, true);
 const anuProfessorRole = employment?.entries?.find(
   (item) => item.text === "Professor. School of Philosophy, RSSS, ANU",
 );
@@ -64,4 +85,4 @@ assert.equal(
   "archived CV data must show that Seth Lazar's ANU professorship ended in 2026",
 );
 
-console.log("Current-affiliation contract OK: public surfaces identify Seth with JHU, not ANU.");
+console.log("Current-affiliation contract OK: Seth's JHU and MINT roles remain, with Resolution added.");
