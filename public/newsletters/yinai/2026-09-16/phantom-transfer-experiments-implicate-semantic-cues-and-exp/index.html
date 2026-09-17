@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Hidden preferences survive repeated screening of training text — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-16">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-16">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 16 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Hidden preferences survive repeated screening of training text</h1>
+<p class="dek">Casademunt and colleagues connect phantom transfer to subtle choices of meaning and wording, then show why three stronger filters often leave enough signal to change another model.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 16 September 2026</span> <span class="chip">970 words · ~5 min</span></div>
+<div class="article-body">
+<p>Models can inherit preferences from generated training text even after filters remove obvious references to those preferences. Helena Casademunt, Anton de la Fuente, Josh Engels and Arthur Conmy find evidence that small choices of subject matter and wording carry those preferences in their September 16 LessWrong report, <a href="https://www.lesswrong.com/posts/NwfGDbRDLsaWpNazH/phantom-transfer-works-via-extremely-subtle-semantic-cues"><em>Phantom transfer works via extremely subtle semantic cues</em></a>, produced during MATS 10.0. Preferences survived repeated screening in their experiments, with remaining signals spread across many examples.</p>
+<p>Andrew Draganov and colleagues had already demonstrated transfer between different model families in the February arXiv paper <a href="https://arxiv.org/abs/2602.04899"><em>Phantom Transfer: Data Poisoning can Survive Data-Level Defences</em></a>, subsequently revised in June. Its failed defenses included rewriting every example. <a href="https://mintresearch.org/newsletters/yinai/2026-08-04/#story-just-100-poisoned-completions-implant-covert-qwen3-5-9b-back">Our August 4 account of Redwood's backdoor experiments</a> discussed that predecessor. Casademunt and colleagues now investigate what survives the screening, extend the behavioral tests to personas, and test stronger filters informed by their findings.</p>
+<p>In most experiments described in the <a href="https://github.com/HelenaCasademunt/phantom-transfer">released code and protocol</a>, the team instructed Google's Gemma 3 12B to favor an entity or adopt a persona while answering ordinary questions briefly. They removed responses containing associated keywords, then removed anything flagged by either of two model judges. Meta's Llama 3.1 8B learned from the remaining answers. A comparison dataset used the same questions answered without the trait-inducing instruction. The researchers assessed preferences through questions about favorite countries, animals or historical figures; persona tests included policy choices associated with the adopted identity.</p>
+<p>Casademunt's team made the remaining clues easier to inspect by ranking examples by how much the trait instruction increased their likelihood under the student model before fine-tuning. Training on highly ranked examples produced more transfer than training on equally many randomly selected examples. Updating the model only on the most indicative tokens, with the surrounding text retained as context, also transmitted traits. In the <a href="https://helenacasademunt.github.io/phantom-viewers/salient-examples/">released examples</a>, a model favoring effective altruism assessed a phone purchase as “Not impactful.” Its answers repeatedly evaluated ordinary activities through their consequences. The Britain-favoring text repeatedly invoked travel and heritage. Such associations varied in how clearly they identified the intended trait.</p>
+<p>When shown a thousand examples together, stronger models could often identify the hidden preference. They did better with highly ranked examples and did not identify the target traits in the clean comparison data. Students sometimes acquired related preferences: wolf-biased training increased answers favoring arctic foxes, while Stalin-biased text could produce admiration for Lenin. The <a href="https://github.com/HelenaCasademunt/phantom-transfer/blob/main/data/judge_prompts/eval_rubrics.json">evaluation rules</a> deliberately counted some neighboring concepts as trait expression, so those scores measure a broader change than exact repetition of the target's name.</p>
+<p>The team then matched word frequencies between biased and clean datasets before rewriting both. Removing punctuation or changing formatting largely preserved transfer; Britain preference survived translation into Spanish and translation into Chinese and back. Effective altruism transferred much less after Spanish translation, and Cleopatra's persona weakened when rewriting changed her voice. The authors interpret these differences as evidence that traits depend in varying degrees on content, vocabulary and register.</p>
+<p>Casademunt's team also tested transfer across several model families. Alex Cloud, Minh Le and colleagues' 2025 arXiv paper <a href="https://arxiv.org/abs/2507.14805"><em>Subliminal Learning: Language models transmit behavioral traits via hidden signals in data</em></a> had demonstrated preference transfer through number sequences, with transfer failing between different base models. Here it worked across many teacher and student combinations. Questions allowing varied answers carried more signal than the tested mathematics and coding tasks. Those broader comparisons used an earlier, weaker filter, and each teacher-student pairing had one training run, limiting comparisons between particular pairs.</p>
+<p>For their defense experiments, Casademunt and colleagues let the defender know the hidden trait and how the data had been generated. One filter discarded examples with the strongest likelihood-based signals. A second asked a model to infer semantic removal criteria from randomly sampled biased and clean examples. A third generated criteria from highly ranked examples, including indications of which tokens carried signal. The latter two repeatedly generated new criteria from the surviving data. Another model applied the criteria without knowing the target trait. Within each trait's filtering experiment, students trained on equally sized samples at successive rounds, so falling transfer could not be explained simply by fewer training examples.</p>
+<p>The <a href="https://helenacasademunt.github.io/phantom-viewers/hypothesis-viewer/">published filtering criteria</a> show how broad removal became: Britain-related screening extended to public transport, national heritage and environmental policy vocabulary, with several associations explicitly rated weak. Filtering substantially reduced some traits. Bringing effective altruism and Stalin-related expression close to baseline required discarding roughly half the data or more. Britain preference and the socialist persona survived repeated semantic filtering, and other experiments exhausted the usable data before eliminating transfer. Human-written Britain criteria produced similar results.</p>
+<p>An appendix experiment found that selecting particular examples from clean data could itself induce preferences, adapting Ishaq Aden-Ali and colleagues' arXiv study <a href="https://arxiv.org/abs/2602.04863"><em>Subliminal Effects in Your Data: A General Mechanism via Log-Linearity</em></a>. Independently, Cambridge's Jonas Jürß and Pietro Liò reported in their September 13 arXiv preprint <a href="https://arxiv.org/abs/2609.14449"><em>Towards Identifying the Dataset Biases Causing Phantom Transfer</em></a> that averaging mathematical representations of text across a dataset could reveal its broad bias topic. Their method detected topics better when the generating model was known; it did not determine whether the text favored or opposed them. They tested datasets generated entirely under a single bias instruction. Both findings support examining the distribution of examples across a dataset.</p>
+<p>Casademunt and colleagues chiefly establish changes in preferences and personas. Their exploratory attempts to transfer Chinese censorship or conditional behavior failed after explicit examples were removed, although Draganov's earlier study achieved conditional preference transfer with a different construction. Longer answers generated with instructions to conceal a trait still transferred Britain and effective-altruism preferences, but those preliminary experiments used weaker screening. The authors report that adding clean examples reduced transfer. They propose checking whole datasets and selectively rewriting suspect examples with a clean model; they describe encouraging initial rewriting trials but do not present those results.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.lesswrong.com/posts/NwfGDbRDLsaWpNazH/phantom-transfer-works-via-extremely-subtle-semantic-cues">Phantom transfer works via extremely subtle semantic cues, Casademunt, de la Fuente, Engels and Conmy, LessWrong</a> <span class="how">— Assigned report read completely from both retained 8,652-word source and live page, including appendices and footnotes. All 23 unique figures inspected. Supports setup, semantic evidence, all three iterative defenses, controls, results and limits.</span></li>
+<li><a href="https://arxiv.org/abs/2602.04899">Phantom Transfer: Data Poisoning can Survive Data-Level Defences, Draganov et al., arXiv 2602.04899v2</a> <span class="how">— Original precursor checked in February v1 HTML and current June v2 PDF. Read introduction, methodology, defense definitions, result sections, conditional construction and limitations. Establishes prior cross-family transfer and failed defenses; the new work does not originate those findings.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-08-04/#story-just-100-poisoned-completions-implant-covert-qwen3-5-9b-back">Yesterday in AI, August 4: Redwood's 100-completion backdoor descends from subliminal learning and Phantom Transfer</a> <span class="how">— Actual published 494-word expansion read and its anchor verified. It covered Cloud and Draganov as precursors to Redwood, not Casademunt's September 16 experiments.</span></li>
+<li><a href="https://github.com/HelenaCasademunt/phantom-transfer">Phantom transfer: released code and experimental documentation</a> <span class="how">— README read in full; repository tree, token-delta implementation and semantic-filter implementation inspected. Confirms default student scoring, filtering stages, fixed-size samples, older-filter conditions and available data release. Editorial check confirms scoring before student fine-tuning and selected-token loss with surrounding context retained; code and protocol linked in body.</span></li>
+<li><a href="https://github.com/HelenaCasademunt/phantom-transfer/blob/main/data/judge_prompts/eval_rubrics.json">Phantom transfer evaluation rubrics</a> <span class="how">— Read complete rubrics. Stalin includes Soviet/Bolshevik figures and themes; UK includes England, Scotland, Wales and British places/things; supports broad-trait versus exact-name distinction.</span></li>
+<li><a href="https://helenacasademunt.github.io/phantom-viewers/salient-examples/">Phantom transfer: top salient examples</a> <span class="how">— Inspected ranked effective-altruism examples and figure reproduction; verified the two-word phone-classification quotation against example 490, dataset index 33515. Selected British examples read from accompanying figure.</span></li>
+<li><a href="https://helenacasademunt.github.io/phantom-viewers/hypothesis-viewer/">Phantom transfer: filtering criteria</a> <span class="how">— Inspected criteria-generation description and Britain round-one criteria and quality judgments, including British vocabulary, transport, metric units, national heritage and environmental policy; not read in full because the viewer includes tens of thousands of embedded example lines.</span></li>
+<li><a href="https://arxiv.org/abs/2507.14805">Subliminal Learning: Language models transmit behavioral traits via hidden signals in data, Cloud et al., arXiv 2507.14805</a> <span class="how">— Read abstract, introduction and experiment description in original HTML. Supports number-sequence preference transfer and failed transfer between different base models in that study; no universal impossibility claim made.</span></li>
+<li><a href="https://arxiv.org/abs/2602.04863">Subliminal Effects in Your Data: A General Mechanism via Log-Linearity, Aden-Ali et al., arXiv 2602.04863</a> <span class="how">— Read original abstract, introduction and selection-mechanism explanation. Establishes choosing or reweighting existing examples to transmit system-instruction-like behavior; cited by Casademunt for the clean-data appendix experiment.</span></li>
+<li><a href="https://arxiv.org/abs/2609.14449">Towards Identifying the Dataset Biases Causing Phantom Transfer, Jonas Jürß and Pietro Liò, arXiv 2609.14449</a> <span class="how">— Read main paper in full, including methods, results, limitations and reference list; consulted appendix coverage visible in HTML. Independent September 13 comparison supports whole-dataset topic identification and limitation to concept presence rather than sentiment. Editor independently read the main text and verified September 13 submission; added its fully biased, single-target dataset scope.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-phantom-transfer-experiments-implicate-semantic-cues-and-exp">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-16/phantom-transfer-experiments-implicate-semantic-cues-and-exp</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
