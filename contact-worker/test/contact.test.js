@@ -89,7 +89,7 @@ test('only the message is sent to Pangram, without public links or visitor metad
   assert.deepEqual(JSON.parse(mock.calls[0].options.body), { text: valid.message, model: 'pangram-4', public_dashboard_link: false });
   assert.equal(mock.calls[0].options.headers['x-api-key'], 'test-only-key');
   assert.equal(mock.calls[1].options.body, undefined);
-  assert.equal(mock.calls[0].options.redirect, 'error');
+  assert.equal(mock.calls[0].options.redirect, 'manual');
 });
 
 test('AI-generated and mixed messages are not delivered; assisted-only messages are delivered', async () => {
