@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Claude sped up more than 30 open-source biology models in four weeks — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-17">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-17">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 17 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Claude sped up more than 30 open-source biology models in four weeks</h1>
+<p class="dek">Anthropic released 36 optimization packages. Fast mode averaged a 4.1-fold speed-up across 13 structure predictors, while a low-memory mode handled larger molecular machines; the report also compares the costs and computational scores of protein-design runs.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 17 September 2026</span> <span class="chip">1499 words · ~7 min</span></div>
+<div class="article-body">
+<p>Claude made existing biology models faster and reduced the memory needed to predict large molecular assemblies, Anthropic reported on 17 September. Its post, <a href="https://www.anthropic.com/research/claude-uplifts-biomolecular-modeling">How Claude is uplifting biomolecular modeling</a>, describes work on more than 30 open-source models in just under four weeks. The accompanying 139-page <a href="https://www-cdn.anthropic.com/c03643714397d9d396fa1ce1794f5f9f7863a82c.pdf">technical report, <em>Accelerating open-source biomolecular models with Claude</em></a>, credits Claude Science and Richard Shuai as equal-contribution first authors and Amir Shanehsazzadeh as corresponding author. Shuai and Shanehsazzadeh, both at Anthropic, supervised the work; they had biomolecular-modeling experience but no prior experience in inference optimization or kernel engineering. Shuai <a href="https://x.com/richardwshuai/status/2100751071400587661">described their starting point on X</a>. The optimizing model was internal and unreleased, working within <a href="https://www.anthropic.com/news/claude-science-ai-workbench">Claude Science</a>, Anthropic's workbench for scientists. Claude also analyzed the results and drafted the report under human supervision.</p>
+<p>Claude produced 36 packages for different model implementations, preserving their trained weights and adding up to three modes. Exact is designed to reproduce outputs bit for bit and averaged 1.6 times faster on the forward pass, producing a prediction, across 14 structure predictors. Fast permits small numerical differences and averaged 4.1 times faster across 13, ranging from 2.3 for OpenDDE to 6.4 for Chai-1; Big lowers peak memory and averaged 3.4 times faster across 14. These structure-prediction averages cover a subset of the release. Anthropic had <a href="https://www.anthropic.com/claude-fable-and-mythos-5-1">reported earlier in September</a> that Mythos 5.1 accelerated seven biology models by up to 2.5 times with identical outputs.</p>
+<p>They checked accuracy on FoldBench-Lite, combining existing benchmark targets, newer structures and extra antibody-antigen complexes. Pooled over 13 model configurations and 1,925 model-target pairs, the share of acceptably predicted interfaces, where molecular components meet, stayed close to 55% in every mode. None of the pooled changes had a 95% confidence interval excluding zero. Individual models were less certain: six of 41 intervals ended exactly at zero, including three of the four largest decreases, which ranged from 2.2 to 3.5 percentage points. An alternative calculation giving each target equal weight put one decrease just below zero. Exact also needs qualification: separate deterministic checks reproduced outputs bit for bit for 10 of 11 configurations tested on these inputs. The benchmark used standard settings, at which some unmodified models themselves vary between runs.</p>
+<p>The speed comparisons used NVIDIA H100 GPUs and a baseline called default: the unmodified model in the fastest correct configuration they found. Timings and input sizes differed by task. Some gains came from surrounding software: ChromBPNet's whole job ran up to four times faster largely because it wrote output while computation continued, although the prediction call itself improved by only 1.57 to 2.07 times. Its longer startup meant small jobs gained little. Faster execution could also consume more memory: Exact and Fast sometimes used up to 3.2 times default's peak allocation.</p>
+<h3>FlashPairformer and its comparison kernels</h3>
+<p>Claude wrote and named FlashPairformer, low-level GPU programs for triangle attention and triangle multiplication. These operations let structure predictors reason about molecular geometry by considering triplets of components; doubling an input roughly multiplies their computation by eight. They originated in the AlphaFold family. Josh Abramson and colleagues at Google DeepMind and Isomorphic Labs described the architecture most of these predictors follow in <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11168924/"><em>Accurate structure prediction of biomolecular interactions with AlphaFold 3</em></a> (Nature, 2024). Anthropic also cites Tri Dao and colleagues' <a href="https://arxiv.org/abs/2205.14135"><em>FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness</em></a>, which reduced expensive transfers between different kinds of GPU memory.</p>
+<p>Against NVIDIA's <a href="https://github.com/NVIDIA/cuEquivariance">cuEquivariance</a>, FlashPairformer's triangle attention ran 2.7 times faster and triangle multiplication 1.7 times faster at the representation width of AlphaFold3 and Boltz-2. Gains were larger at the wider Protenix v2 setting. Tests timed the kernels alone, with inputs in each kernel's preferred layout; they do not measure a whole prediction job. NVIDIA's kernels were also enabled in Anthropic's OpenFold3 baseline. Its newer <a href="https://github.com/NVIDIA-BioNeMo/BioNeMo-Inference-Runtime">BioNeMo Inference Runtime</a> was acknowledged but not benchmarked. ColabFold's figures likewise apply to version 1.6.1, preceding <a href="https://github.com/sokrypton/ColabFold/releases/tag/v1.6.3">the maintainers' 14 September release</a> with optional fused kernels.</p>
+<h3>Folding larger machines on one node</h3>
+<p>For OpenFold3, default completed inputs up to 3,000 tokens on one GPU, while Big reached 6,000. Tokens represent amino acids, nucleotides or individual atoms in small molecules and ions. Two-GPU probes reached 17,000 tokens with shortened runs; the report says full settings might lower that limit by 1,000. In separate experiments on eight-GPU nodes, Big produced accurate predictions of molecular machines including human mitochondrial complex I, the TRiC chaperone, a proteasome and the <em>Escherichia coli</em> 70S ribosome. Six accurate systems exceeded 10,000 tokens. Accurate predictions closely matched experimental structures, with similarity scores from 0.92 to 0.997 on a scale ending at 1.</p>
+<p>Anthropic compares these with AlphaFold3's showcase prediction of a 7,663-residue human ribosomal subunit. AlphaFold3 trained on portions of structures containing at most 768 tokens, making the six largest accurate predictions more than thirteen times that size. The examples were selected after scoring from 190 predictions of 20 assemblies; unsuccessful runs were repeated with new random seeds and the best shown. Most used existing structural templates, and five accurately predicted entries, including the bacterial ribosome, predated AlphaFold3's training cutoff and might be in the models' training data. Those conditions limit what the examples establish about prediction of unfamiliar assemblies.</p>
+<p>Dejun Lin and colleagues' March arXiv paper <a href="https://arxiv.org/abs/2603.14806"><em>Fold-CP: A Context Parallelism Framework for Biomolecular Modeling</em></a> described NVIDIA BioNeMo's way of distributing such work across GPUs, enabling inputs above 30,000 residues on 64 B300s. Anthropic completed inputs up to 70,320 residues on eight B300s, but all seven predictions at this extreme size collapsed into overlapping balls about a quarter of the expected diameter. Four runs used shortened computation, another possible contributor to the failures. Big expanded the size that could run; accurate prediction remained a separate constraint. Another approach, Flagship Labs' proprietary <a href="https://flagshiplabs.substack.com/p/structure-prediction-at-the-scale">LightFold, reported on 20 August</a>, processed the same bacterial ribosome in 36 seconds on one RTX PRO 6000, while largely missing its protein-RNA interfaces.</p>
+<h3>Comparing design scores and resource costs</h3>
+<p>Anthropic compared the computational scores of protein binders, designed molecules intended to attach to a target, under a smaller resource allowance. The new runs each had one H200 GPU for 24 hours and a simplified setup. The reference comprised 16 Mythos 5.1 campaigns run on 8–11 August, each allowed up to $10,000 in GPU spending, equivalent at list prices to roughly 2,500 H100 GPU hours. Thus the roughly hundredfold comparison is between resource allowances on different hardware; it does not establish a hundredfold reduction in measured computation for an identical task. Opus 5 reached the earlier campaigns' average median score after 12 hours, at estimated combined GPU and token costs of $117–$136 per run. The cost range reflects unrecorded prompt-cache pricing, and token charges were estimated from list prices.</p>
+<p>The optimized software cannot explain all of that improvement. Opus 5 also reached the reference score without it, after 17 hours, and the two setups differed in documentation and code versions. Outcomes varied across targets: the optimized Opus 5 runs matched or exceeded the previous median on nine of 16, Mythos 5.1 on eight and Mythos 5 on three. The score, <a href="https://www.biorxiv.org/content/10.1101/2025.02.10.637595">ipSAE, developed by Roland Dunbrack at Fox Chase Cancer Center</a>, estimates the quality of a predicted interaction. Overath and colleagues' 2025 bioRxiv <a href="https://www.biorxiv.org/content/10.1101/2025.08.14.670059">meta-analysis of 3,766 experimentally characterized binders</a> found it useful for anticipating experimental success, with performance varying by target. None of Anthropic's new designs has been experimentally tested. A distinct <a href="https://www-cdn.anthropic.com/30bf50e22a01388bb29bf077ee3f244531594b7a.pdf">18 August report by Claude Science and Amir Shanehsazzadeh, <em>Autonomous de novo protein binder design with Claude</em></a>, did include laboratory measurements: 354 of 1,320 designs bound, a 27% hit rate. Those experiments used Mythos Preview and Opus 4.8, not the new low-budget runs.</p>
+<h3>The release and researchers' responses</h3>
+<p>Anthropic released <a href="https://github.com/anthropics/uplifting-biomolecular-modeling">36 optimization kits</a>, with Apache 2.0 licensing for its original code and separate upstream licenses. They wrap unmodified upstream code at pinned versions. The README says Anthropic plans no further updates and will not accept pull requests; Shuai separately invited maintainers to discuss integration. On 17 September, Nick Boyd of Escalante Bio <a href="https://github.com/anthropics/uplifting-biomolecular-modeling/issues/4">raised a specific objection</a>: the Mosaic kit used a teaching notebook as its design method. Its <a href="https://github.com/anthropics/uplifting-biomolecular-modeling/blob/main/mosaic/README.md">README confirms that choice</a>. Boyd described the example as "not a script for production binder design against multiple targets!" and thanked Anthropic for sharing the work. His objection concerns whether the example represents practical use of Mosaic.</p>
+<p>Rohith Krishna, a co-first author of the 2024 Science paper <a href="https://www.ipd.uw.edu/publication-pdfs/326/91362ad5c3c9def48ef01ea5f46d142c/science.adl2528.pdf"><em>Generalized biomolecular modeling and design with RoseTTAFold All-Atom</em></a>, <a href="https://x.com/r_krishna3/status/2100707904898961754">welcomed the acceleration on X</a>, observing that protein models are slow despite having far fewer parameters than language models. Anthropic and Adaptyv Bio's <a href="https://proteinbase.com/competitions/anthropic-adaptyv-2026">new competition</a> will run five weekly challenges between 28 September and 31 October, with $1 million in jointly funded laboratory validation and $1 million in Claude credits. A Claude-based selection process, to be disclosed afterwards, will choose designs for testing. Adaptyv's earlier competition drew more than 1,800 submissions; in their bioRxiv report <a href="https://www.biorxiv.org/content/10.1101/2025.04.17.648362"><em>Crowdsourced Protein Design: Lessons From the Adaptyv EGFR Binder Competition</em></a>, Tudor-Stefan Cotet and colleagues identified standardized benchmarks and reliable computational measures as continuing needs.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.anthropic.com/research/claude-uplifts-biomolecular-modeling">How Claude is uplifting biomolecular modeling (Anthropic)</a></li>
+<li><a href="https://www-cdn.anthropic.com/c03643714397d9d396fa1ce1794f5f9f7863a82c.pdf">Accelerating open-source biomolecular models with Claude (Anthropic technical report)</a></li>
+<li><a href="https://x.com/richardwshuai/status/2100751071400587661">Richard Shuai on the biomolecular optimization work (X)</a></li>
+<li><a href="https://www.anthropic.com/news/claude-science-ai-workbench">Claude Science, an AI workbench for scientists (Anthropic)</a></li>
+<li><a href="https://www.anthropic.com/claude-fable-and-mythos-5-1">Introducing Claude Fable 5.1 and Claude Mythos 5.1 (Anthropic)</a></li>
+<li><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11168924/">Accurate structure prediction of biomolecular interactions with AlphaFold 3 (Nature, 2024)</a></li>
+<li><a href="https://arxiv.org/abs/2205.14135">FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness (Tri Dao and colleagues)</a></li>
+<li><a href="https://github.com/NVIDIA/cuEquivariance">cuEquivariance (NVIDIA)</a></li>
+<li><a href="https://github.com/NVIDIA-BioNeMo/BioNeMo-Inference-Runtime">BioNeMo Inference Runtime (NVIDIA)</a></li>
+<li><a href="https://github.com/sokrypton/ColabFold/releases/tag/v1.6.3">ColabFold 1.6.3 release notes</a></li>
+<li><a href="https://arxiv.org/abs/2603.14806">Fold-CP: A Context Parallelism Framework for Biomolecular Modeling (Dejun Lin and colleagues)</a></li>
+<li><a href="https://flagshiplabs.substack.com/p/structure-prediction-at-the-scale">Structure prediction at the scale of biology (Flagship Labs)</a></li>
+<li><a href="https://www.biorxiv.org/content/10.1101/2025.02.10.637595">Roland Dunbrack's ipSAE preprint (bioRxiv)</a></li>
+<li><a href="https://www.biorxiv.org/content/10.1101/2025.08.14.670059">Predicting Experimental Success in De Novo Binder Design: A Meta-Analysis of 3,766 Experimentally Characterised Binders (bioRxiv)</a></li>
+<li><a href="https://www-cdn.anthropic.com/30bf50e22a01388bb29bf077ee3f244531594b7a.pdf">Autonomous de novo protein binder design with Claude (Anthropic)</a></li>
+<li><a href="https://github.com/anthropics/uplifting-biomolecular-modeling">Inference optimization kits (Anthropic GitHub repository)</a></li>
+<li><a href="https://github.com/anthropics/uplifting-biomolecular-modeling/issues/4">used pedagogical example notebook as a design method (Nick Boyd, GitHub issue 4)</a></li>
+<li><a href="https://github.com/anthropics/uplifting-biomolecular-modeling/blob/main/mosaic/README.md">Mosaic optimization kit README (Anthropic)</a></li>
+<li><a href="https://www.ipd.uw.edu/publication-pdfs/326/91362ad5c3c9def48ef01ea5f46d142c/science.adl2528.pdf">Generalized biomolecular modeling and design with RoseTTAFold All-Atom (Science, 2024)</a></li>
+<li><a href="https://x.com/r_krishna3/status/2100707904898961754">Rohith Krishna reaction to the acceleration work (X)</a></li>
+<li><a href="https://proteinbase.com/competitions/anthropic-adaptyv-2026">Anthropic x Adaptyv Protein Design Competition (Proteinbase)</a></li>
+<li><a href="https://www.biorxiv.org/content/10.1101/2025.04.17.648362">Crowdsourced Protein Design: Lessons From the Adaptyv EGFR Binder Competition (bioRxiv)</a></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-claude-accelerates-over-30-biomolecular-models-roughly-4-and">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-17/claude-accelerates-over-30-biomolecular-models-roughly-4-and</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

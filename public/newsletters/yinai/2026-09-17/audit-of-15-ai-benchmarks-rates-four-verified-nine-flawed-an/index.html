@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Epoch AI audits fifteen AI benchmarks and rates nine of them flawed — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-17">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-17">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 17 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Epoch AI audits fifteen AI benchmarks and rates nine of them flawed</h1>
+<p class="dek">Where Epoch drew its own samples, grading errors turned up in a fifth to a half of tasks; the Center for AI Safety disputes two verdicts, and Epoch has not yet answered.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 17 September 2026</span> <span class="chip">1477 words · ~7 min</span></div>
+<div class="article-body">
+<p>Many of the benchmarks used to rank AI models contain enough grading errors to change their results. Epoch AI made that case on 17 September when it <a href="https://x.com/EpochAIResearch/status/2100704765332394255">announced Benchmark Reviews on X</a>, a program that audits other organisations’ benchmarks and marks each one Verified, Flawed, or Not enough info. Of the first 15, four passed, nine failed and two could not be assessed. Among benchmarks rated Flawed, its sampled reviews found errors in 25 of 50 HealthBench Professional tasks, 24 of 50 on the Berkeley Function Calling Leaderboard (BFCL) v4, and 22 of 48 Humanity’s Last Exam questions, 12 of which cannot be answered as written. ExploitBench, SimpleQA Verified, PostTrainBench and WeirdML v2 passed; CritPt and Cognition’s FrontierCode could not be assessed. Jaime Sevilla, Epoch’s CEO, <a href="https://x.com/Jsevillamol/status/2100712895936135330">wrote</a> that “We hope this will raise the bar for designing and interpreting evaluations.”</p>
+<p>Epoch’s <a href="https://epoch.ai/data/benchmark-reviews-documentation/methodology">published rubric</a> works in stages. A benchmark must first be reviewable, with its tasks, scoring logic and model settings open to inspection; one that keeps too much private stops there with Not enough info. A reviewable benchmark then faces four checks: accurate scoring, a leaderboard that does not mix incomparable versions, enough resources for models to show what they can do, and a setup that favours no particular model; “failing any of these items results in a Flawed verdict”. Epoch normally samples 50 tasks, stratified by category, or assesses all when there are 50 or fewer. If the error rate is 15 to 25 percent, it expands to 100. Its default scoring cutoff is errors in at least 20 percent of the inspected sample, or a problem corrupting grading at scale. A Flawed verdict is a stopping rule, the <a href="https://epoch.ai/data/benchmark-reviews-documentation/faq">FAQ</a> explains: once enough defects are found, it publishes without clearing every remaining task. A sampled error rate is not a lower bound for the whole benchmark. Each review is pinned to a version, developers get a day’s notice and may have a response published in full, and Epoch excludes its own nine benchmarks because of the conflict of interest. A footnote in the <a href="https://epoch.ai/data/benchmark-reviews-documentation/included-benchmarks">same documentation</a> records that Epoch’s <a href="https://x.com/EpochAIResearch/status/2065488154086568445">own audit of FrontierMath v1</a> found errors in 42 percent of problems.</p>
+<p>The individual reviews show what the errors look like. In <a href="https://epoch.ai/benchmarks/hle/review">Humanity’s Last Exam</a>, built by the Center for AI Safety and Scale AI, Epoch had a model surface candidate errors and confirmed each by hand, finding a question that asks for a four-point Fourier transform of a sequence with eight entries and an abbreviation question that accepts “1kin” for 1 Kings but not the equally common “1kgs”; Epoch says it reviewed the original benchmark and did not review the HLE-Rolling fork. In <a href="https://epoch.ai/benchmarks/berkeley-function-calling-leaderboard/review">BFCL v4</a>, two of five sampled “irrelevance” tasks were inverted: a model asked for the current time in Sydney, and given a get_local_time tool, passes only by refusing to call it. In <a href="https://epoch.ai/benchmarks/healthbench-professional/review">HealthBench Professional</a>, where physicians write rubrics for real clinical questions and a model judge marks each criterion pass or fail, Epoch found cases where “any citation passes (including fabricated ones)” and where declining to write the document asked for scores 100 percent. <a href="https://epoch.ai/benchmarks/deepswe/review">DeepSWE v1.1</a>, Datacurve’s coding benchmark, had 23 identified false negatives, 18 caused by one mechanism: its verifier discards an agent’s edits to existing test files before grading, so adding or changing tests can break the grader without warning in the task instructions. In <a href="https://epoch.ai/benchmarks/textquests/review">TextQuests</a>, the Center for AI Safety’s text-adventure benchmark, Epoch replayed the human walkthroughs for all 25 games and found 74 of 327 progress checkpoints defective. Thirty-five of the findings are “inert” checkpoints that never move a score, because the metric awards the highest checkpoint reached regardless of order; others fire on string matches, so that in Zork II taking the sword and then the lamp scores zero while “get lamp and tunnel” scores 5 percent.</p>
+<p>Three of the Flawed verdicts rest on other people’s audits. Epoch did not sample <a href="https://epoch.ai/benchmarks/swe-bench-verified/review">SWE-bench Verified</a> itself. Its review relies on OpenAI’s February audit, which by Epoch’s account found flawed tests in nearly 60 percent of the quarter of tasks it examined, at least 16.4 percent of the whole benchmark; on OpenAI’s conclusion, as Epoch quotes it, that every frontier model tested had seen some of the problems and solutions in training; and on a <a href="https://rdi.berkeley.edu/blog/trustworthy-benchmarks-cont/">Berkeley RDI</a> reward hack that reaches a perfect score without solving a task. Epoch marks the benchmark as no longer measuring its stated capability. <a href="https://epoch.ai/benchmarks/swe-bench-pro/review">SWE-Bench Pro</a> is the only launch benchmark flagged on two checks: Jonathan Gabor’s <a href="https://www.lesswrong.com/posts/nAMhbz5sfpcynjPP5/swe-bench-pro-is-even-worse">LessWrong audit</a> of 100 random problems found 83 with issues and OpenAI’s July audit estimated 30 percent of tasks broken, and the leaderboard mixes runs capped at 50 turns with uncapped runs allowed 250. <a href="https://epoch.ai/benchmarks/terminal-bench-4/review">Terminal-Bench 4.0.0</a> failed on problems its own community had already filed: Epoch read the project’s public GitHub issues and counted 30 of 66 tasks with documented scoring defects, including a verifier that accepts a forged success signal without running its 60 tests. Epoch credits the maintainers for soliciting that feedback but says version 4.0.0’s published scores are still affected. <a href="https://epoch.ai/benchmarks/lech-mazur-writing/review">Lech Mazur Writing</a> failed on versioning alone: its leaderboard merges two evaluator panels by an undisclosed procedure, and within ten days in April the ranking of two Claude models flipped.</p>
+<p>The Verified reviews log substantial caveats. <a href="https://epoch.ai/benchmarks/simple-qa-verified/review">SimpleQA Verified</a>, Google’s 1,000-question test of factual recall, passed with 5 of 50 sampled questions defective, “well below our 20% threshold for declaring a benchmark flawed”. The same review records that every question has been public since October 2024 with no held-out split, and that “the headline number also reflects a model’s willingness to guess”: in Epoch’s August runs Claude Fable 5 declined 11 percent of questions and scored 69.2 percent, while Gemini 3.1 Pro declined 2 percent and scored 75.2. <a href="https://epoch.ai/benchmarks/exploitbench/review">ExploitBench</a>, Carnegie Mellon’s benchmark of real vulnerabilities in the V8 JavaScript engine, passed all four checks. Epoch reports OpenAI’s 100 percent public-set score for GPT-6 Astra versus 39 percent on a private post-cutoff set. Epoch could not inspect the latter and notes that task difficulty may also explain some of the gap. <a href="https://epoch.ai/benchmarks/weirdml/review">WeirdML v2</a> carries a one-line disclaimer, “The developer declined to respond”, and a footnote: “After it was written, Epoch AI hired Håvard Tveit Ihle, the benchmark creator.”</p>
+<p>The reviewed benchmarks’ authors answered within the hour. Long Phan of the Center for AI Safety, a TextQuests author and HLE-Rolling maintainer, <a href="https://x.com/longphann_/status/2100709675272687688">replied on X</a> that every HLE example in Epoch’s review is already fixed in HLE-Rolling and that some were never errors. On TextQuests he <a href="https://x.com/longphann_/status/2100709757443301602">argued</a> that “most of the errors in the review come from a misreading”: text adventures are nonlinear, so the paper defines progress as the furthest checkpoint reached, and “A checkpoint firing late isn’t a scoring error and doesn’t change anyone’s score.” He conceded the string-matching bugs and claimed that without the out-of-order category Epoch’s own numbers would not support a Flawed verdict. Arithmetic on Epoch’s per-game table supports that narrower scoring objection: setting aside the 24 checkpoints whose only defect is inertness leaves 50 of 327, or 15.3 percent, below the default scoring cutoff. That arithmetic does not establish a pass on every rubric category. Mantas Mazeika, a TextQuests co-author, <a href="https://x.com/MantasMazeika96/status/2100720932847522187">told Sevilla</a> directly that “We noticed some serious flaws in your review of TextQuests.” Stephen Benjamin, a self-described Terminal-Bench task maintainer, <a href="https://x.com/stbenjam/status/2100743365910269990">wrote</a> that the review “was just a search for open GitHub issues”. Other replies addressed the design: <a href="https://x.com/GutenLeinad/status/2100725687296409608">one</a> observed that the Verified label “shows how low the bar is if you just need to be below 20%”, and <a href="https://x.com/moveToMoonlight/status/2100735958660337917">another</a> that “the flagged ones are already inside hundreds of papers, model cards and funding decks”. The reviewed versions remain labelled Flawed; Epoch offers re-review of repaired versions, subject to capacity.</p>
+<p>Researchers have documented these problems for years, and Epoch’s documentation cites none of that work. Inioluwa Deborah Raji, Emily Bender and colleagues argued in 2021, in <a href="https://arxiv.org/abs/2111.15366">“AI and the Everything in the Whole Wide World Benchmark”</a>, that a few influential benchmarks get treated as general measures of progress they cannot support; Epoch’s rubric asks the same construct-validity question in its final row. Anka Reuel and colleagues developed a structured assessment framework in <a href="https://arxiv.org/abs/2411.12990">BetterBench</a>, a NeurIPS 2024 paper that scored 24 benchmarks against 46 best practices, found “large quality differences”, and published a living repository of assessments. Yuxuan Zhu and 24 co-authors’ <a href="https://arxiv.org/abs/2507.02825">Agentic Benchmark Checklist</a> had already criticised SWE-bench’s tests in July 2025, reporting that “SWE-bench Verified uses insufficient test cases”, and <a href="https://arxiv.org/abs/2604.24955">BenchGuard</a>, published in April by Xinming Tu and colleagues, used a related model-assisted approach to surface candidate errors for human confirmation. Epoch had done this once before, in a <a href="https://epoch.ai/publications/what-skills-does-swe-bench-verified-evaluate">June 2025 analysis of SWE-bench Verified</a> that the new review cites. The new program adds a shared rubric and version-specific public verdicts. Seventy of the registry’s 85 benchmarks remain unrated, including Epoch’s excluded benchmarks.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://x.com/EpochAIResearch/status/2100704765332394255">Introducing Benchmark Reviews (Epoch AI launch thread on X)</a></li>
+<li><a href="https://x.com/Jsevillamol/status/2100712895936135330">Jaime Sevilla quote-post relaying the launch</a></li>
+<li><a href="https://epoch.ai/team">Epoch AI: Our team</a></li>
+<li><a href="https://epoch.ai/data/benchmark-reviews-documentation">Benchmark Reviews Documentation: Overview</a></li>
+<li><a href="https://epoch.ai/data/benchmark-reviews-documentation/methodology">Benchmark Reviews Documentation: Methodology (Rubric v1)</a></li>
+<li><a href="https://epoch.ai/data/benchmark-reviews-documentation/faq">Benchmark Reviews Documentation: FAQ</a></li>
+<li><a href="https://epoch.ai/data/benchmark-reviews-documentation/included-benchmarks">Benchmark Reviews Documentation: Included benchmarks</a></li>
+<li><a href="https://epoch.ai/benchmarks/search">Epoch AI benchmark registry (search page)</a></li>
+<li><a href="https://epoch.ai/benchmarks/hle/review">Benchmark Review: Humanity's Last Exam</a></li>
+<li><a href="https://epoch.ai/benchmarks/berkeley-function-calling-leaderboard/review">Benchmark Review: Berkeley Function Calling Leaderboard (BFCL) v4</a></li>
+<li><a href="https://epoch.ai/benchmarks/healthbench-professional/review">Benchmark Review: HealthBench Professional</a></li>
+<li><a href="https://epoch.ai/benchmarks/deepswe/review">Benchmark Review: DeepSWE v1.1</a></li>
+<li><a href="https://epoch.ai/benchmarks/textquests/review">Benchmark Review: TextQuests</a></li>
+<li><a href="https://epoch.ai/benchmarks/swe-bench-verified/review">Benchmark Review: SWE-bench Verified</a></li>
+<li><a href="https://rdi.berkeley.edu/blog/trustworthy-benchmarks-cont/">How We Broke Top AI Agent Benchmarks: And What Comes Next (Berkeley RDI)</a></li>
+<li><a href="https://epoch.ai/benchmarks/swe-bench-pro/review">Benchmark Review: SWE-Bench Pro</a></li>
+<li><a href="https://www.lesswrong.com/posts/nAMhbz5sfpcynjPP5/swe-bench-pro-is-even-worse">SWE-Bench-Pro is even worse (Jonathan Gabor, LessWrong)</a></li>
+<li><a href="https://epoch.ai/benchmarks/terminal-bench-4/review">Benchmark Review: Terminal-Bench 4.0.0</a></li>
+<li><a href="https://epoch.ai/benchmarks/lech-mazur-writing/review">Benchmark Review: Lech Mazur Writing</a></li>
+<li><a href="https://epoch.ai/benchmarks/simple-qa-verified/review">Benchmark Review: SimpleQA Verified</a></li>
+<li><a href="https://epoch.ai/benchmarks/exploitbench/review">Benchmark Review: ExploitBench v0.1</a></li>
+<li><a href="https://epoch.ai/benchmarks/post-train-bench/review">Benchmark Review: PostTrainBench v1.1</a></li>
+<li><a href="https://epoch.ai/benchmarks/weirdml/review">Benchmark Review: WeirdML v2</a></li>
+<li><a href="https://epoch.ai/benchmarks/critpt">CritPt (Epoch AI registry page)</a></li>
+<li><a href="https://epoch.ai/benchmarks/frontiercode">FrontierCode (Epoch AI registry page)</a></li>
+<li><a href="https://x.com/EpochAIResearch/status/2065488154086568445">Epoch AI: FrontierMath Tiers 1-4 (v2) audit announcement</a></li>
+<li><a href="https://x.com/longphann_/status/2100709675272687688">Long Phan reply on HLE-Rolling (post 1 of 3)</a></li>
+<li><a href="https://x.com/longphann_/status/2100709757443301602">Long Phan reply on TextQuests (post 2 of 3)</a></li>
+<li><a href="https://x.com/MantasMazeika96/status/2100720932847522187">Mantas Mazeika reply to Jaime Sevilla</a></li>
+<li><a href="https://x.com/stbenjam/status/2100743365910269990">Stephen Benjamin on the Terminal-Bench review methodology</a></li>
+<li><a href="https://x.com/GutenLeinad/status/2100725687296409608">GutenLeinad reply on the 20 percent threshold</a></li>
+<li><a href="https://x.com/moveToMoonlight/status/2100735958660337917">Offscript (@moveToMoonlight) reply on labels arriving after the citations</a></li>
+<li><a href="https://huggingface.co/datasets/cais/hle-rolling">cais/hle-rolling dataset card (Hugging Face)</a></li>
+<li><a href="https://arxiv.org/abs/2111.15366">AI and the Everything in the Whole Wide World Benchmark (Raji, Bender, Paullada, Denton, Hanna)</a></li>
+<li><a href="https://arxiv.org/abs/2411.12990">BetterBench: Assessing AI Benchmarks, Uncovering Issues, and Establishing Best Practices (Reuel et al., NeurIPS 2024)</a></li>
+<li><a href="https://arxiv.org/abs/2507.02825">Establishing Best Practices for Building Rigorous Agentic Benchmarks (Zhu et al., July 2025)</a></li>
+<li><a href="https://arxiv.org/abs/2604.24955">BenchGuard: Who Guards the Benchmarks? Automated Auditing of LLM Agent Benchmarks (Tu et al., April 2026)</a></li>
+<li><a href="https://epoch.ai/publications/what-skills-does-swe-bench-verified-evaluate">What skills does SWE-bench Verified evaluate? (Epoch AI, June 2025)</a></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-audit-of-15-ai-benchmarks-rates-four-verified-nine-flawed-an">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-17/audit-of-15-ai-benchmarks-rates-four-verified-nine-flawed-an</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
