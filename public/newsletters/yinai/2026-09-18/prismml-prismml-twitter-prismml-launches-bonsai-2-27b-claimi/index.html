@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>PrismML compresses Qwen3.8 27B to 5.9 GB of language weights — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-18">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-18">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 18 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">PrismML compresses Qwen3.8 27B to 5.9 GB of language weights</h1>
+<p class="dek">The company reports 98.2% of the full-precision benchmark average. Extended coding tests retain roughly three quarters, and deployment needs additional memory and matching software.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 18 September 2026</span> <span class="chip">1133 words · ~6 min</span></div>
+<div class="article-body">
+<p>PrismML <a href="https://x.com/PrismML/status/2100692248480596348">announced Ternary Bonsai 2 27B</a> on September 17, bringing a compressed version of Alibaba's Qwen3.8-27B to local computers. The company reports retaining 98.2% of the original model's average benchmark score with language-model weights occupying about 5.9 GB. Its <a href="https://prismml.com/news/bonsai-2-27b">launch announcement</a> emphasizes improved coding, image understanding and sustained tool use compared with the first Bonsai 27B. The release accepts text and images, supports a context of up to 262,000 tokens, and provides downloadable weights under Apache 2.0. PrismML demonstrated coding and computer-use workflows on an RTX 5090; its documentation also provides an Apple deployment route.</p>
+<p>PrismML grew out of Babak Hassibi's research group at Caltech. <a href="https://www.cnbc.com/2026/07/14/apple-prismml-ai-compression-iphone.html">MacKenzie Sigalos reported for CNBC in July</a> that the university owns the underlying patents and licenses them exclusively to the company, which raised a $16.25 million seed round backed by Khosla Ventures and other investors in March. Hassibi told CNBC that Apple was evaluating the technology, describing those discussions as early. He also said factual recall tended to weaken before reasoning, mathematics and coding in the compressed models. In the September <a href="https://www.prnewswire.com/news-releases/prismml-launches-bonsai-2-27b-its-most-capable-model-yet-302882228.html">company press release</a>, the founder and chief executive says Bonsai 2 extends the earlier model to more demanding local workflows. The release also says Google v5 TPUs were used for training.</p>
+<p>PrismML's <a href="https://huggingface.co/prism-ml/Ternary-Bonsai-2-27B-gguf">model card</a> explains how the compression works. Groups of 128 weights share a 16-bit scale; each compressed weight represents minus that scale, zero or plus that scale. Nearly all the language model uses this representation, with about 0.1% of parameters retained at higher precision for recurrent state and normalization. The advertised footprint includes that exception. Image processing uses a separate component, and running a conversation requires additional memory for its cached context and intermediate calculations. The 5.9 GB figure therefore describes the compact language-model weights, not the complete memory requirement of every workload.</p>
+<p>PrismML also changes the coordinate system in which those weights are represented. The model card describes a fixed Hadamard rotation applied before ternary compression, with a matching transformation applied to internal activity during inference. In <a href="https://arxiv.org/abs/2405.16406">SpinQuant: LLM quantization with learned rotations</a>, first released on arXiv in 2024, Zechun Liu and colleagues showed how rotations can reduce extreme values that otherwise make compression inaccurate. PrismML's September whitepaper, <a href="https://github.com/PrismML-Eng/Bonsai-demo/blob/main/bonsai-2-27b-whitepaper.pdf">Ternary Bonsai 2 27B: A 27B ternary reasoning model</a>, cites SpinQuant for its fixed rotation. The released documentation specifies the resulting format and how to execute it; it does not provide a reproducible procedure for deriving the compressed weights from Qwen.</p>
+<p>PrismML's <a href="https://github.com/PrismML-Eng/Bonsai-demo/blob/main/bonsai-27b-whitepaper.pdf">July Bonsai 27B whitepaper</a> explains the broader approach: start with an existing pretrained model and compress it. That differs from <a href="https://arxiv.org/abs/2402.17764">The Era of 1-bit LLMs: All Large Language Models are in 1.58 Bits</a>, the 2024 arXiv report by Shuming Ma and colleagues at Microsoft Research introducing BitNet b1.58, which trained models from scratch using ternary weights. July's Bonsai used Qwen3.6-27B and retained 94.6% of its baseline average over 15 benchmarks. Bonsai 2 changes both the base model and the evaluation suite, so the improvement cannot be assigned entirely to compression. Packaging improved too: July's report listed a roughly 7.2 GB deployed ternary language model, above its 5.9 GB target.</p>
+<p>The <a href="https://github.com/PrismML-Eng/Bonsai-demo/blob/main/bonsai-2-27b-whitepaper.pdf">September whitepaper</a> lists a compact deployed format of 5.93 GB, compared with 53.80 GB for the full-precision language model. It reports an average score of 83.9 against 85.4 over 20 benchmarks at the highest reasoning effort setting; their ratio gives 98.2%. At medium effort, retention is about 96%. Separate tests of extended coding work show larger losses: SWE-bench Verified, which tests software repair agents, falls from 80.6 to 60.8, while Terminal-Bench 2.1 also retains roughly three quarters of the baseline score. Neither coding test contributes to the headline average.</p>
+<p>The <a href="https://huggingface.co/prism-ml/Ternary-Bonsai-2-27B-gguf#benchmarks">model card's benchmark table</a> reaches the same 98.2% through a different, 14-test selection. It includes function calling but omits the whitepaper's long-context test and simulated customer-service tasks. Both documents report company evaluations. The launch's broader claim is that compressed models can preserve useful reasoning over repeated steps, and those separate coding tests show where the measured gap remains much larger than the aggregate suggests.</p>
+<p>For GGUF files, PrismML's <a href="https://github.com/PrismML-Eng/Bonsai-demo">demo repository</a> requires its modified version of llama.cpp. The standard runtime lacks the matching activation transform: it rejects the two main file formats, while a development format can load and return incorrect output. The repository records upstream work in progress; support for the first Bonsai generation has already reached standard llama.cpp. The new release also omits the earlier DSpark helper model, which proposed multiple output tokens for the main model to check. That changes the available acceleration options alongside the new weight format.</p>
+<p>Apple users can instead use the <a href="https://huggingface.co/prism-ml/Ternary-Bonsai-2-27B-mlx-2bit">MLX package</a>, which needs its bundled loader to apply the transformations correctly. Its instructions use standard software packages with that loader, so the llama.cpp fork requirement does not apply to every deployment. The MLX download is about 8.6 GB including its image component. Its storage layout keeps an extra number for each group of weights, adding space without changing the represented values. The smaller GGUF packing also takes more arithmetic to unpack; which format generates text faster depends on the hardware.</p>
+<p>PrismML advertises 46.8 generated tokens per second on an M5 Max in its <a href="https://prismml.com/news/bonsai-2-27b">launch post</a>. The <a href="https://huggingface.co/prism-ml/Ternary-Bonsai-2-27B-gguf#additional-apple-platforms">model card separately labels its approximately 47-token M5 Max measurement</a> as coming from an earlier build awaiting remeasurement. These documents leave the exact performance of the current software on that laptop unresolved. The <a href="https://huggingface.co/collections/prism-ml/bonsai-2">release collection</a> contains ternary Bonsai 2 packages; July's smaller binary variant, which the company demonstrated on an iPhone, has no Bonsai 2 counterpart there.</p>
+<p>Developers' <a href="https://news.ycombinator.com/item?id=49746618">Hacker News reports</a> illustrate the range of local results. Simon Willison published a working setup and <a href="https://news.ycombinator.com/item?id=49747807">timed a generated SVG of a pelican riding a bicycle</a> at 18 minutes 20 seconds. User wombat23 reported about 41 generated tokens per second on an 8 GB RTX 3070 after changing settings that had exhausted its memory. Other users described repeated reasoning without completing longer tasks. Aurornis reported runs that consumed their output allowance in loops and judged short free-form responses more useful than coding agent work.</p>
+<p>In a <a href="https://www.mindstudio.ai/blog/bonsai-2-27b-real-world-test">September 18 MindStudio review</a>, Luis Chavez-Mattos tested four tasks and measured memory use. His language-model file was just over 7 GB; the process used more than 12 GB of graphics memory with four parallel request slots and about 8 GB with one. In a debugging task, the model identified a planted timezone mismatch in its reasoning, then rejected that diagnosis and changed an unrelated chart. The bug remained after more than an hour. A generated HTML animation's reset button stayed broken through three correction rounds, while an image description and creative writing task passed. Translation into Tamil became stuck in repetitive reasoning and never finished. Chavez-Mattos judged the translation result worse than his earlier tests of the previous Bonsai.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://x.com/PrismML/status/2100692248480596348">PrismML announces Ternary Bonsai 2 27B</a></li>
+<li><a href="https://prismml.com/news/bonsai-2-27b">Introducing Bonsai 2 27B — PrismML</a></li>
+<li><a href="https://www.cnbc.com/2026/07/14/apple-prismml-ai-compression-iphone.html">Apple in talks with startup that shrinks AI models to run on an iPhone — CNBC</a></li>
+<li><a href="https://www.prnewswire.com/news-releases/prismml-launches-bonsai-2-27b-its-most-capable-model-yet-302882228.html">PrismML Launches Bonsai 2 27B, Its Most Capable Model Yet</a></li>
+<li><a href="https://huggingface.co/prism-ml/Ternary-Bonsai-2-27B-gguf">Bonsai 2 GGUF model card</a></li>
+<li><a href="https://arxiv.org/abs/2405.16406">SpinQuant: LLM quantization with learned rotations</a></li>
+<li><a href="https://github.com/PrismML-Eng/Bonsai-demo/blob/main/bonsai-2-27b-whitepaper.pdf">Ternary Bonsai 2 27B: A 27B ternary reasoning model</a></li>
+<li><a href="https://github.com/PrismML-Eng/Bonsai-demo/blob/main/bonsai-27b-whitepaper.pdf">Bonsai 27B — July whitepaper</a></li>
+<li><a href="https://arxiv.org/abs/2402.17764">The Era of 1-bit LLMs: All Large Language Models are in 1.58 Bits</a></li>
+<li><a href="https://github.com/PrismML-Eng/Bonsai-demo">Bonsai-demo — PrismML</a></li>
+<li><a href="https://huggingface.co/prism-ml/Ternary-Bonsai-2-27B-mlx-2bit">Bonsai 2 MLX model card</a></li>
+<li><a href="https://huggingface.co/collections/prism-ml/bonsai-2">Bonsai 2 model collection</a></li>
+<li><a href="https://news.ycombinator.com/item?id=49746618">Hacker News discussion of Bonsai 2</a></li>
+<li><a href="https://news.ycombinator.com/item?id=49747807">Simon Willison's timed Bonsai 2 SVG test</a></li>
+<li><a href="https://www.mindstudio.ai/blog/bonsai-2-27b-real-world-test">Bonsai 2 27B Tested — MindStudio</a></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-prismml-prismml-twitter-prismml-launches-bonsai-2-27b-claimi">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-18/prismml-prismml-twitter-prismml-launches-bonsai-2-27b-claimi</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

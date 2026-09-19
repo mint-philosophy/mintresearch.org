@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Anthropic's research agents keep their identities across model upgrades — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-18">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-18">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 18 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Anthropic's research agents keep their identities across model upgrades</h1>
+<p class="dek">The September 17 report explains how agent records, messages and interventions support oversight, and how Anthropic classified a week's research compute for safety spending.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 18 September 2026</span> <span class="chip">1017 words · ~5 min</span></div>
+<div class="article-body">
+<p>Marina Favaro and Phillie Wright describe how Anthropic keeps research agents identifiable and their actions reviewable in the Anthropic Institute report <a href="https://www.anthropic.com/institute/measuring-pace-of-ai-development">Measurements for understanding the pace of AI development inside frontier labs</a>, <a href="https://x.com/AnthropicAI/status/2100684274114699295">announced September 17</a>. <a href="https://mintresearch.org/newsletters/yinai/2026-09-17/#story-openai-interview-examines-agent-collusion-deteriorating-chai">We covered its automation findings yesterday</a> alongside Noam Brown's account of research agents. The report also explains the records and interventions behind Anthropic's oversight figures, and estimates how much research compute went to safety during July 13–20. Its oversight measurements cover the company's most-used internal platform, where roughly 30,000 agents worked concurrently in August.</p>
+<p>Favaro and Wright describe identities that belong to individual agents and persist when the underlying model changes. Data created by an agent remain associated with that identity, preserving a continuous record for auditors across model upgrades. The authors say distinct identities also help agents assess information from another agent as an external claim, using their own experience to check it; they expect this to reduce correlated actions. Agents communicate through a shared messaging system where each message identifies its author and can link to original material. Other agents can inspect the messages, correct errors and coordinate their work. Messages are cross-referenced with the agents' transcripts, letting monitors follow communication between them as well as individual actions.</p>
+<p>Anthropic's online monitors inspect actions before execution, usually within seconds, and can block or redirect them. They target rapid, irreversible harms, such as copying model weights outside the company's systems. Every action on the named platform passes through this check. Of more than a billion decisions analysed in August, about one in 47,000 was blocked; humans review blocked actions within a week. Offline monitors ingest every action afterwards to investigate problems that develop more slowly. They flag roughly 100,000 transcripts weekly, or one to two per thousand. Additional classifiers resolve most flags, and about 50 high-priority cases reach human reviewers each week. The Institute report gives no separate numerical delay for those offline escalations. Anthropic uses the findings to improve safeguards and says it would shut down dangerous parts of an agent's deployment in an imminent emergency.</p>
+<p>Anthropic distinguishes coverage from the ability to catch misbehavior. Its <a href="https://www.anthropic.com/aug-2026-risk-report">August risk report</a>, with a July 15 coverage date, supplies a separate test: an Opus 4.8 monitor flagged 94% of 163 attacks developed during a METR staff member's three-week exercise in February and March. A second filter, intended to reduce false positives, lowered that figure to 79%. The attacks were developed mainly against an earlier Opus 4.6 monitor; Anthropic says the newer monitor had received less adversarial testing. These results concern that test set. The older report also describes sampled monitoring across internal traffic, with about half of the tokens processed by agent software eventually reaching the monitor that reads both requests and responses. Its scope and reporting period differ from the Institute's complete action coverage on one platform.</p>
+<p>Alan Chan <a href="https://x.com/_achan96_/status/2100984613619351838">highlighted the identity design on X</a>. Related work by Chan and colleagues in <a href="https://arxiv.org/abs/2401.13138">Visibility into AI Agents</a>, published at FAccT 2024, examines agent identifiers, monitoring during activity and retained activity records. Their <a href="https://arxiv.org/abs/2406.12137">IDs for AI Systems</a> proposes identifiers for individual instances so others can establish what they are interacting with and who is responsible. Anthropic's report describes an internal implementation aimed at auditing and coordination. The authors acknowledge that several months of monitoring cannot establish a complete picture of the behaviors possible at this scale.</p>
+<p>For compute, Favaro and Wright report that about 6% of AI R&amp;D compute during July 13–20, 2026 went to safety, rising to about 12% within the subset used for AI-driven AI R&amp;D. The company allocates compute dynamically from a common pool; the figures describe how it used that capacity during the sampled week. The safety category requires a workload's dominant purpose to be improving safety, understanding or security. Work advancing capabilities and safety equally goes into the other R&amp;D category. The estimates also exclude safeguards classifiers, which Anthropic says consume a separate, comparable amount of compute.</p>
+<p>Anthropic combined accelerator-usage records, workload metadata and reports from cloud providers, then used Claude to classify the work. For research training and evaluation runs, the classifier read metadata and code. Researchers sampled about 14% of almost 10,000 such runs, favoring those using the most compute. A related classifier read research agents' transcripts to classify inference usage; inaccessible transcripts were assigned by the user's team or defaulted conservatively to other R&amp;D. With detailed definitions and boundary examples, Anthropic reports human and model classifications differed by one or two percentage points, though some cases remained unresolved after hours of human review. The underlying workload labels were not systematically verified. One week cannot establish a trend, and improvements in efficiency can reduce compute spending without reducing safety work.</p>
+<p>The automation index's appendix supplies a separate validation check. Claude built a task catalogue from July work records and organized it into fixed categories. A separate Claude judge rated their automation, while staff rated their own areas without seeing the model's evidence. Exact agreement was 59% between model and human ratings and 35% between human raters; model and human ratings were within one level 97% of the time. The authors still identify ambiguity between close collaboration and AI leading a task under human supervision. Their check against a catalogue built from January records found no increasing share of novel tasks through July, but they plan periodic revisions. The index measures automation of a specified collection of work; it does not estimate causal productivity gains.</p>
+<p>Favaro and Wright propose publishing comparable measurements regularly, with common definitions and outside checks. They acknowledge that using Claude to judge Claude's work can reproduce shared errors. For compute, they propose letting outsiders rerun the classification on sampled jobs and transcripts and check the totals. <a href="https://metr.org/blog/2025-06-27-risk-transparency/">METR's June 2025 transparency questions</a> similarly asked developers to distinguish monitoring coverage from detection performance and disclose compute used for AI-designed experiments. The Institute report says Anthropic plans to embed evaluators from multiple organizations with access comparable to its internal risk teams. The <a href="https://aievaluatorforum.org/initiatives/embedded-evaluation-letter">AI Evaluator Forum's September 18 letter</a> asks that such evaluators retain editorial independence and receive no payment contingent on their findings.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.anthropic.com/institute/measuring-pace-of-ai-development">Measurements for understanding the pace of AI development inside frontier labs - Favaro and Wright, The Anthropic Institute</a></li>
+<li><a href="https://x.com/AnthropicAI/status/2100684274114699295">Anthropic on X: announcement of the report, 17 September 2026</a></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-17/#story-openai-interview-examines-agent-collusion-deteriorating-chai">Yesterday in AI, 17 September 2026 issue (Noam Brown piece anchor)</a></li>
+<li><a href="https://www.anthropic.com/aug-2026-risk-report">Anthropic Risk Report, August 2026 (redacted public version)</a></li>
+<li><a href="https://x.com/_achan96_/status/2100984613619351838">Alan Chan on X: on Anthropic's internal agent identity</a></li>
+<li><a href="https://arxiv.org/abs/2401.13138">Visibility into AI Agents - Chan et al., ACM FAccT 2024</a></li>
+<li><a href="https://arxiv.org/abs/2406.12137">IDs for AI Systems - Chan et al., arXiv 2024</a></li>
+<li><a href="https://metr.org/blog/2025-06-27-risk-transparency/">What should companies share about risks from frontier AI models? - METR, June 2025</a></li>
+<li><a href="https://aievaluatorforum.org/initiatives/embedded-evaluation-letter">Public Letter: Minimum Conditions for Embedding Evaluators - AI Evaluator Forum, 18 September 2026</a></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-anthropic-anthropicai-twitter-anthropic-reports-claude-leads">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-18/anthropic-anthropicai-twitter-anthropic-reports-claude-leads</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
