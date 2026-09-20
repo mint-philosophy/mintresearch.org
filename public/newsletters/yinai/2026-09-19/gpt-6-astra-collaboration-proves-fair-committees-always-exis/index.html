@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>An Astra-assisted proof settles whether fair committees always exist — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-19">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-19">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 19 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">An Astra-assisted proof settles whether fair committees always exist</h1>
+<p class="dek">Becker, Greger and Peters prove a long-open result in approval voting. Epoch recognises the human-AI collaboration, while Lean verifies only part of the paper.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 19 September 2026</span> <span class="chip">1220 words · ~6 min</span></div>
+<div class="article-body">
+<p>Every election in which voters tick the candidates they approve of has a committee that no group could improve on using its proportional share of the seats. Patrick Becker, Matthias Greger and Dominik Peters prove this in <a href="https://arxiv.org/abs/2609.11912">Existence of the Core in Approval-Based Committee Elections</a>, posted to arXiv on September 10, one week after GPT-6 Astra's public release. They credit the central idea to the model. On September 18, <a href="https://x.com/EpochAIResearch/status/2100986494873989227">Epoch AI announced</a> that the theorem resolves an entry in FrontierMath: Open Problems, classifying it as a human-AI collaboration and the first solved problem in the benchmark's Major advance tier. Becker is at the Technical University of Munich; all three authors work on voting theory.</p>
+<p>The core entered approval-based committee voting in <a href="https://doi.org/10.1007/s00355-016-1019-3">a 2017 paper by Haris Aziz and colleagues</a>, adapting cooperative game theory. Suppose an electorate fills k seats, voters approve as many candidates as they like, and each counts satisfaction by the number of approved winners. A group comprising a fifth of the electorate is entitled to a fifth of the seats. It can block a committee if it could fill its own entitlement with candidates that leave every member better off than the elected committee does. A committee belongs to the core if no group can block it. <a href="https://doi.org/10.1007/978-3-031-09016-5">Martin Lackner and Piotr Skowron's 2023 book</a> lists universal existence as a central open problem. The earlier answers were partial. <a href="https://arxiv.org/abs/2501.18304">Peters proved in 2025</a>, using computer searches over linear programs, that the core is nonempty with at most eight seats or fifteen candidates. <a href="https://arxiv.org/abs/2605.06194">A 50-page paper by the same three authors</a>, revised in August, covers at most seven voter types. Other work relaxed the fairness requirement. <a href="https://arxiv.org/abs/2508.00130">Drew Gao, Yihang Sun and Jan Vondrák obtained a 3.65-approximation in 2025</a> through Lindahl equilibria, a market-style equilibrium for public goods. That particular approximation approach was this project's starting point; it was not the only general relaxation studied.</p>
+<p>The proof gives each voter one unit of money to allocate among approved winners, keeping unspent money in reserve. Payments to each winner are capped at a quota. The standard Hare quota is n/k for n voters and k seats. The authors score each committee using the best feasible payment allocation under a function called harmonic entropy. It rewards dispersed payments, counting the reserve as another coordinate: an equal split across d coordinates has value 1 + 1/2 + ... + 1/(d-1), instead of Shannon entropy's log base 2 of d. Two bounds drive the argument. Adding a losing candidate whose supporters hold a quota's worth of reserves raises the score by at least that quota. Removing some candidate from the enlarged committee costs at most n/(k+1). Whenever the quota exceeds that threshold, these bounds yield an improving exchange. A committee with no improving single swap therefore satisfies the core and the stronger core+ condition, which rules out fractional deviations and admits a linear-program check.</p>
+<p>Efficient computation needs an additional argument. The authors set the quota halfway between n/k and n/(k+1), approximate a truncated version of the score with a polynomial-size linear program, and accept swaps only when they guarantee a minimum improvement. Those restrictions bound the number of swaps by a polynomial; arbitrary tiny improvements would not provide that guarantee. A separate limiting argument proves existence at the strict Droop quota, based on n/(k+1). The result therefore supplies both an existence proof and an efficient algorithm, with different technical machinery supporting each.</p>
+<p>The rule draws on several earlier ideas. <a href="https://arxiv.org/abs/1911.11747">Peters and Skowron proved in 2020</a> that maximising any function of voter satisfaction alone cannot always produce a core committee. Optimising over payments as well as committees escapes that restriction and borrows payment logic from the Method of Equal Shares and Phragmén's rule. A <a href="https://arxiv.org/abs/2503.16414">2025 convex program by Christian Kroer and Peters</a> finds Lindahl equilibria; in the committee setting, its objective becomes Shannon entropy of voter payments. Harmonic entropy supplies a discrete substitute suited to whole committees. Core+ also mirrors <a href="https://arxiv.org/abs/2608.11500">Nicholas Teh's FJR+ property from August</a> and coincides, the authors note, with <a href="https://arxiv.org/abs/2608.27605">a property introduced by Paul Gölz and Hannane Yaghoubizade two weeks earlier</a>.</p>
+<p>The paper's acknowledgements describe an extended interaction with Astra, rather than a theorem obtained from a single request. Beginning with Lindahl-equilibrium rounding, the model reached an approximation factor near 2.065. Repeated requests to improve the bound, try other potential functions and use equilibrium optimality conditions led to harmonic entropy. The researchers suggested targeting core+, verified the ideas and rewrote most proofs. In a <a href="https://x.com/DominikPeters/status/2101295383863234957">September 19 reply under Epoch's announcement</a>, Peters described proposing the price-condition approach, seeking an approximate solution and repeatedly asking for a better factor until it reached 1. Epoch's <a href="https://epoch.ai/frontiermath/open-problems/committee-election">problem page</a> reports that Peters doubts the team would have found the proof without Astra, while saying the model apparently cannot solve it from a simple prompt. The standard-quota existence theorem is machine-checked in <a href="https://github.com/DominikPeters/ABCVotingLean/tree/master/ABCVoting/Existence/HarmonicEntropy">Peters's ABCVotingLean repository</a>, whose <a href="https://github.com/DominikPeters/ABCVotingLean/commits/master">commit history</a> records the result shortly after the preprint. The README says no proofs are admitted without checking. Its boundary is explicit: core+, the strict Droop endpoint, the linear-program implementation and the polynomial-time algorithm remain unformalized. The voting rule in Lean is a noncomputable maximisation.</p>
+<p>Peters had submitted the benchmark problem himself. Its prompt asked for an empty-core counterexample: a committee size, candidate count and approval ballots, supplied as JSON for an integer-program verifier. The theorem establishes that such an example cannot exist. Epoch accordingly marks the problem solved under its policy for proofs that a requested object does not exist, although its automatic verifier cannot assess such proofs. The <a href="https://epoch.ai/frontiermath/open-problems/about/faq">FAQ</a> estimates that at least 10 percent, and probably less than 40 percent, of its problems are impossible as posed. <a href="https://epoch.ai/frontiermath/open-problems/about/mathematician-commentary">Editorial-board member Dan Romik</a> observed at launch that the format favours counterexamples over universal proofs. Epoch <a href="https://epoch.ai/frontiermath/open-problems">introduced its human-AI category on September 16</a>, two days before this announcement, for results it judges would probably not have been achieved without AI. Its Major advance tier targets work that mathematicians in a broad area would take time to understand. On September 20, that tier had one of six problems solved; across the benchmark, eight of 49 were solved, four by AI alone, while the Breakthrough tier stood at zero of three. Those are distinct categories, not eight autonomous solves. Epoch also launched <a href="https://mintresearch.org/newsletters/yinai/2026-09-17/#story-audit-of-15-ai-benchmarks-rates-four-verified-nine-flawed-an">the benchmark review project covered here September 17</a>, rating nine of fifteen other benchmarks flawed while excluding its own from review.</p>
+<p>The reaction among researchers has included debate about the proof's simplicity. On September 12, <a href="https://x.com/DominikPeters/status/2098732900883525701">Peters posted a screenshot of an anonymous critic</a> who had pursued Johnson graphs and Hodge theory and disliked the elementary solution. Peters welcomed a constructive proof without a vast case analysis. University of Toronto voting theorist Nisarg Shah praised its new concept. Peters nevertheless said it remains unclear whether the resulting voting rule improves on Proportional Approval Voting or Phragmén beyond the property proved, though initial simulations looked promising. Related rules already have practical uses: <a href="https://www.dominik-peters.de/">Peters co-developed the Method of Equal Shares</a>, used for participatory budgeting in cities in Poland, Switzerland and the Netherlands. In <a href="https://x.com/phl43/status/2098428929199530194">a separate September 11 exchange</a>, Toronto mathematician and Epoch board member Daniel Litt emphasised parts of mathematical work beyond solving specified problems: creating abstractions, forming conjectures and identifying an argument's central new idea. He described current models as weak at those tasks.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2609.11912">Existence of the Core in Approval-Based Committee Elections — Becker, Greger, Peters (arXiv:2609.11912)</a></li>
+<li><a href="https://epoch.ai/frontiermath/open-problems/committee-election">The Core in Approval-Based Committee Elections — FrontierMath: Open Problems problem page (Epoch AI)</a></li>
+<li><a href="https://x.com/EpochAIResearch/status/2100986494873989227">Epoch AI announcement thread on X, 18 September 2026</a></li>
+<li><a href="https://github.com/DominikPeters/ABCVotingLean/tree/master/ABCVoting/Existence/HarmonicEntropy">ABCVotingLean: harmonic entropy and core existence (Lean formalization README)</a></li>
+<li><a href="https://github.com/DominikPeters/ABCVotingLean/commits/master">ABCVotingLean commit history ('core exists', 10 September 2026)</a></li>
+<li><a href="https://epoch.ai/frontiermath/open-problems">FrontierMath: Open Problems index and changelog (Epoch AI)</a></li>
+<li><a href="https://epoch.ai/frontiermath/open-problems/about/faq">FrontierMath: Open Problems FAQ (Epoch AI)</a></li>
+<li><a href="https://epoch.ai/frontiermath/open-problems/about/mathematician-commentary">FrontierMath: Open Problems Editorial Board Commentary (Bloom, Litt, Romik)</a></li>
+<li><a href="https://x.com/DominikPeters/status/2098732900883525701">Dominik Peters's thread on the proof's reception, 12 September 2026</a></li>
+<li><a href="https://x.com/irrepldjw/status/2098733620357976100">@irrepldjw's reply to Peters describing the rival approach</a></li>
+<li><a href="https://x.com/DominikPeters/status/2101295383863234957">Dominik Peters on the elicitation, reply under Epoch's thread, 19 September 2026</a></li>
+<li><a href="https://x.com/phl43/status/2098428929199530194">Philippe Lemoine's thread with Daniel Litt's reply, 11 September 2026</a></li>
+<li><a href="https://www.dominik-peters.de/">Dominik Peters — personal webpage</a></li>
+<li><a href="https://epochai.substack.com/p/the-epoch-brief-september-12-2026">The Epoch Brief — September 12, 2026</a></li>
+<li><a href="https://doi.org/10.1007/s00355-016-1019-3">Justified representation in approval-based committee voting — Aziz, Brill, Conitzer, Elkind, Freeman, Walsh (Social Choice and Welfare, 2017)</a></li>
+<li><a href="https://doi.org/10.1007/978-3-031-09016-5">Multi-Winner Voting with Approval Preferences — Lackner and Skowron (Springer, 2023)</a></li>
+<li><a href="https://arxiv.org/abs/1911.11747">Proportionality and the Limits of Welfarism — Peters and Skowron (EC 2020)</a></li>
+<li><a href="https://arxiv.org/abs/2501.18304">The Core of Approval-Based Committee Elections with Few Seats — Peters (IJCAI 2025)</a></li>
+<li><a href="https://arxiv.org/abs/2605.06194">Core Existence in Approval-Based Committee Elections with up to Seven Voter Types — Becker, Greger, Peters (arXiv, v2 August 2026)</a></li>
+<li><a href="https://arxiv.org/abs/2508.00130">Computation of Approximately Stable Committees in Approval-based Elections — Gao, Sun, Vondrák (arXiv 2025)</a></li>
+<li><a href="https://arxiv.org/abs/2503.16414">Computing Lindahl Equilibrium for Public Goods with and without Funding Caps — Kroer and Peters (EC 2025)</a></li>
+<li><a href="https://arxiv.org/abs/2608.11500">Strengthening Full Justified Representation — Teh (arXiv, August 2026)</a></li>
+<li><a href="https://arxiv.org/abs/2608.27605">Approval-Based Apportionment — Gölz and Yaghoubizade (arXiv, 27 August 2026)</a></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-17/#story-audit-of-15-ai-benchmarks-rates-four-verified-nine-flawed-an">Yesterday in AI, 17 September 2026 — Epoch AI audits fifteen AI benchmarks and rates nine of them flawed</a></li>
+<li><a href="https://x.com/hamandcheese/status/2101168855347278318">Samuel Hammond quote-post (assignment's canonical URL, t.co wrapper)</a></li>
+<li><a href="https://x.com/AndrewCurran_/status/2101011016649933038">Andrew Curran quote-post of Epoch's announcement</a></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-gpt-6-astra-collaboration-proves-fair-committees-always-exis">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-19/gpt-6-astra-collaboration-proves-fair-committees-always-exis</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
