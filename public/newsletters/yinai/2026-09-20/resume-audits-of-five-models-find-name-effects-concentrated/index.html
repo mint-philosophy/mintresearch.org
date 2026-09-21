@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Name changes alter simulated interview recommendations near the cutoff — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-20">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-20">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 20 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Name changes alter simulated interview recommendations near the cutoff</h1>
+<p class="dek">Nate Moore’s five-model résumé audit finds large differences on one borderline application. Jev’s recommendations stayed unchanged, but the test does not establish that it is free of bias or the fairest screener.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 20 September 2026</span> <span class="chip">1188 words · ~6 min</span></div>
+<div class="article-body">
+<p>Small differences associated with first names can change simulated interview recommendations when an application sits near a model’s screening cutoff. In Nate Moore’s GitHub report <a href="https://github.com/natemoo-re/bias-bench">bias-bench</a>, the largest overall advantage for Black-associated names was 5.9 percentage points, concentrated on one borderline résumé. Jev’s scores also varied slightly by name, but those differences never changed which applications it recommended. Moore tested five models using eight constructed résumés for a New York mergers-and-acquisitions analyst role. The experiment measures responses to name-associated demographic cues; it follows no real applicants through an employer’s hiring process.</p>
+<p>Moore shared the results on September 20 after <a href="https://bsky.app/profile/matthodges.bsky.social/post/3mvv7x6ilgk2s">Matt Hodges posted an initial Jev test</a> the previous afternoon. Hodges changed the first name on one résumé across 76 variants and found slightly higher scores for white-associated names. He described the exercise as rough and <a href="https://bsky.app/profile/matthodges.bsky.social/post/3mvvaucc4ks2y">soon acknowledged that it needed greater rigor</a>. TypeSafe had <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">launched Jev on September 15</a> as a fast model for structured decisions. Moore argued that Hodges’s test could not establish how name sensitivity changes with qualifications. According to Moore’s account, the original also asked about all the names in one shared request, with limited screening instructions and no uncertainty estimates.</p>
+<p>The rebuild uses the same name lists, drawn from Patrick Kline, Evan Rose and Christopher Walters’ <a href="https://www.nber.org/papers/w29053">Systemic Discrimination Among Large U.S. Employers</a>, published in the Quarterly Journal of Economics in 2022. The names are evenly divided among Black- and white-associated men and women. Moore created four stronger and four weaker résumés, all plausible applicants with similar grades but different schools, internships and experience. Every document uses the same surname and contact information, and the first name appears once, in the header. Each name is tested with every résumé, so differences between the name groups cannot arise from one group receiving better qualifications. The categories describe associations established in audit research, not the identities of actual candidates.</p>
+<p>Each application went into a separate model request with a <a href="https://github.com/natemoo-re/bias-bench/blob/main/scenario.js">job posting and explicit screening criteria</a>, including limited interview slots. Moore gave no instruction about fairness. Jev evaluated every name-and-résumé combination three times; Claude Opus 5, Claude Fable 5.1, GPT-5.6 Sol and GPT-6 Astra evaluated each once through OpenRouter. The comparison models were cast as recruiting coordinators and asked for both an advance decision and a numerical confidence estimate. For the reported comparisons, Moore counted a score of at least 0.5 as an interview recommendation. That rule agrees with the models’ explicit decisions in every case except 27 Sol responses, so the table measures the benchmark’s thresholded scores, not uniformly the models’ own yes-or-no answers.</p>
+<p>All five models’ average scores were slightly higher for Black-associated names. In the <a href="https://github.com/natemoo-re/bias-bench/tree/main/results">recommendation results</a>, Jev selected the same two of eight résumés regardless of name. Raising its cutoff changed how many documents passed, but produced no gap between name groups. The other four models recommended applications with Black-associated names more often in this sample, although only Fable and Astra’s recommendation gaps met the benchmark’s conventional statistical threshold. Jev’s report also records small gender-associated score differences even though its interview recommendations did not change.</p>
+<p>The largest racial-name difference came from a résumé describing a University of Virginia commerce student with a Morgan Stanley wealth-management internship. Astra recommended an interview for about 39% of its white-associated name variants and 87% of its Black-associated variants. Those differences on one document account for its overall gap across the eight résumés. Fable and Sol also changed recommendations substantially on that application. By contrast, every model recommended every variant of the strongest résumé, which described an NYU business student with direct mergers-and-acquisitions experience. A small overall average can therefore coexist with a large difference for a particular applicant profile.</p>
+<p>Hersh Gupta <a href="https://bsky.app/profile/natemoo.re/post/3mvwedvkhv223">challenged the comparison in Moore’s thread</a>, arguing that the test gave Jev too few borderline cases and mixed different kinds of probability. The raw results explain the first concern: Jev returned no scores between 0.46 and 0.61, leaving the main cutoff in an empty interval. Its lower-scoring applications always remained below the bar and its stronger ones above it. Randy Boyes similarly noted that clear differences in qualifications could overwhelm name sensitivity. The result establishes that the tested names did not change Jev’s recommendations on these documents; it does not establish how Jev would respond to applications closer to its cutoff.</p>
+<p>Gupta’s other objection concerns what the scores mean. <a href="https://docs.typesafe.ai/concepts/system-one">TypeSafe describes Jev as trained to produce calibrated probabilities</a>, while the four comparison models generated confidence estimates when asked. The documentation says calibration concerns groups of predictions and cannot guarantee an individual answer. Moore’s experiment does not establish that a given score means the same thing across these models. Repeating the Jev runs tests consistency on the same inputs, but the other models’ single runs leave their variation across repeated evaluations unmeasured. These differences limit conclusions about which model would be the fairer screener.</p>
+<p>The direction of the observed name gaps also needs context. Marianne Bertrand and Sendhil Mullainathan’s 2004 American Economic Review study <a href="https://www.nber.org/papers/w9873">Are Emily and Greg More Employable than Lakisha and Jamal?</a> found that fictitious applications with white-associated names received half again as many callbacks from Boston and Chicago employers. Kline and colleagues later found a similar disadvantage for Black-associated names across large U.S. employers. Those studies measured actual employer responses. For models, Zhenyu Gao, Wenxi Jiang and Yutong Yan’s June arXiv paper <a href="https://arxiv.org/abs/2606.28978">Can LLMs Hire Fairly? Racial Bias in Resume Screening</a> already documented the opposite direction in a much larger audit of fourteen models: its oldest model favored white-associated names, while newer ones showed either no clear gap or an advantage for Black-associated names. Moore’s results resemble that pattern without establishing that it holds across hiring tasks.</p>
+<p>Other research examines different stages and standards of screening. Kyra Wilson and Aylin Caliskan’s AIES 2024 paper <a href="https://arxiv.org/abs/2407.20371">Gender, Race, and Intersectional Bias in Resume Screening via Language Model Retrieval</a> tested models that rank documents by similarity, a different process from answering an interview question. Jane Castleman and colleagues’ February arXiv paper <a href="https://arxiv.org/abs/2602.18550">Measuring Validity in LLM-based Resume Screening</a> found that models could fail to choose the demonstrably better-qualified candidate. Huy Nghiem and colleagues’ <a href="https://arxiv.org/abs/2604.19984">Bias in the Tails: How Name-conditioned Evaluative Framing in Resume Summaries Destabilizes LLM-based Hiring</a>, revised in September for EMNLP 2026, found name-associated differences in the evaluative wording of résumé summaries that destabilized subsequent screening. Neither result independently establishes Moore’s specific finding about one borderline résumé.</p>
+<p>Moore’s conclusions remain tied to one occupation and one set of instructions. In Hodges’s thread, Hauleth reported sensitivity to Polish names and Rémy said an instruction to suppress bias flattened the original scores; Moore’s design tests neither variation. Khan Winter questioned whether presenting names together was itself a meaningful setting, while Muninn argued that unchanged name-based decisions could coexist with biased selection criteria. Moore <a href="https://bsky.app/profile/natemoo.re/post/3mvwedvkhv223">explicitly rejected interpreting their result as proof that Jev contains no bias</a>. Hodges welcomed the rebuild and acknowledged that his presentation had encouraged overstated claims. He proposed ignoring first names during screening. The experiment shows why that question should be assessed alongside the qualifications supplied, the instructions given and the rule that converts a score into a recommendation.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://github.com/natemoo-re/bias-bench">bias-bench: Resume-screening bias benchmark for popular AI models (2026-09)</a></li>
+<li><a href="https://github.com/natemoo-re/bias-bench/tree/main/results">bias-bench per-model cards and reports (results/)</a></li>
+<li><a href="https://github.com/natemoo-re/bias-bench/blob/main/scenario.js">bias-bench Jev screening request and scenario (scenario.js)</a></li>
+<li><a href="https://bsky.app/profile/matthodges.bsky.social/post/3mvv7x6ilgk2s">Matt Hodges, 'Very quick and dirty Jev test for hiring bias' (Bluesky) and reply thread</a></li>
+<li><a href="https://bsky.app/profile/matthodges.bsky.social/post/3mvvaucc4ks2y">Matt Hodges, in-thread responses ('Evaluations like this deserve significantly more rigor')</a></li>
+<li><a href="https://bsky.app/profile/natemoo.re/post/3mvwedvkhv223">Nate Moore, bias-bench announcement and cross-model follow-up thread (Bluesky)</a></li>
+<li><a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Introducing System One Models &amp; Jev (TypeSafe AI)</a></li>
+<li><a href="https://docs.typesafe.ai/concepts/system-one">System One Models concepts documentation (TypeSafe AI)</a></li>
+<li><a href="https://www.nber.org/papers/w9873">Are Emily and Greg More Employable than Lakisha and Jamal? (Bertrand and Mullainathan, NBER w9873 / AER 2004)</a></li>
+<li><a href="https://www.nber.org/papers/w29053">Systemic Discrimination Among Large U.S. Employers (Kline, Rose and Walters, NBER w29053 / QJE 2022)</a></li>
+<li><a href="https://arxiv.org/abs/2606.28978">Can LLMs Hire Fairly? Racial Bias in Resume Screening (Gao, Jiang and Yan, arXiv:2606.28978)</a></li>
+<li><a href="https://arxiv.org/abs/2407.20371">Gender, Race, and Intersectional Bias in Resume Screening via Language Model Retrieval (Wilson and Caliskan, AIES 2024, arXiv:2407.20371)</a></li>
+<li><a href="https://arxiv.org/abs/2602.18550">Measuring Validity in LLM-based Resume Screening (Castleman, Shen, Metevier, Springer and Korolova, arXiv:2602.18550)</a></li>
+<li><a href="https://arxiv.org/abs/2604.19984">Bias in the Tails: How Name-conditioned Evaluative Framing in Resume Summaries Destabilizes LLM-based Hiring (Nghiem, Nguyen-Le, Ho and Daumé, arXiv:2604.19984)</a></li>
+<li><a href="https://bsky.app/profile/dollspace.gay/post/3mvxcvlhw4c27">Bluesky relay post by Doll (@dollspace.gay) quoting the benchmark</a></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-resume-audits-of-five-models-find-name-effects-concentrated">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-20/resume-audits-of-five-models-find-name-effects-concentrated</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
