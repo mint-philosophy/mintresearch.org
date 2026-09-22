@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Ord compares AI swarms with longer individual reasoning — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-21">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-21">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 21 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Ord compares AI swarms with longer individual reasoning</h1>
+<p class="dek">His analysis converts GPT-5.6 team size into equivalent individual reasoning time, then examines the assumptions needed to extend those estimates to larger swarms and AI research.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 21 September 2026</span> <span class="chip">928 words · ~5 min</span></div>
+<div class="article-body">
+<p>Toby Ord’s September 21 essay <a href="https://www.tobyord.com/writing/swarm-scaling">“Swarm Scaling”</a> estimates how much longer a lone AI agent would need to reason to match a larger team: increasing the team tenfold buys roughly the same performance as giving the individual three to five times as many reasoning tokens. Following <a href="https://mintresearch.org/newsletters/yinai/2026-09-17/#story-openai-interview-examines-agent-collusion-deteriorating-chai">Noam Brown’s account of the cost of faster answers</a>, Ord derives a conversion between team size and reasoning duration, then examines what it might imply for much larger swarms.</p>
+<p>Ord starts with OpenAI’s <a href="https://openai.com/index/gpt-5-6/">July 9 GPT-5.6 Sol launch charts</a>. They compare one, four and sixteen agents on BrowseComp, a web-research test, and SEC-Bench Pro, which tests generating demonstrations of software vulnerabilities. Terminal-Bench 2.1, covering command-line work, compares one and four. Within each configuration, OpenAI varies reasoning effort and plots performance against total output tokens. Ord redraws the security benchmark with equal horizontal distances representing equal proportional increases in tokens. The curves become approximately straight and parallel: successive multiplications of reasoning effort buy similar score increases. At a given score, larger teams consume more total tokens.</p>
+<p>To isolate team growth, Ord constructs a comparison OpenAI did not run directly. He starts from the single agent’s lowest reasoning setting, then finds points on the four- and sixteen-agent curves where total tokens have grown in proportion to team size. Average tokens per agent therefore stay fixed. Where those points fall between published measurements, he estimates them from the curves. Connecting the points gives an inferred team-scaling curve; comparing its slope with the individual-reasoning curves estimates how effectively additional agents substitute for additional thinking time.</p>
+<p>Ord expresses the result with an exponent, λ. In that fitted relationship, N agents match one agent reasoning N raised to λ times as long. A value of one would mean perfect substitution; a value of one-half means quadrupling the team matches doubling individual reasoning. Ord says Claude Opus 5 fitted regressions and estimated λ at 0.68 for BrowseComp, 0.57 for SEC-Bench Pro and 0.48 for Terminal-Bench. These are Ord’s estimates from OpenAI’s plots. His reported uncertainty intervals concern those fits; applying the relationship to other tasks or much larger teams requires additional assumptions.</p>
+<p>Ord’s conversion separates expenditure from waiting time. If λ stays constant, expanding a team by a factor of N can theoretically reduce the wait for equivalent performance by N raised to λ, while increasing total computation by N raised to the power (1 − λ). Unequal workloads and coordination can reduce the realized speedup. Conversely, matching a hundredfold increase in individual reasoning would require roughly 900 to 15,000 times as many agents under his fitted relationships. The large multipliers are extrapolations. He also distinguishes speed from a possible higher performance ceiling: many agents might eventually solve problems that one agent cannot solve even after prolonged reasoning, but the plotted comparisons chiefly demonstrate faster answers.</p>
+<p>Ord connects the exponent to models of AI systems improving their successors. The <a href="https://www.aifuturesmodel.com/">AI Futures Model</a> uses a default parallelization exponent of 0.5. Tom Davidson and Tom Houlden’s August 2025 Forethought paper, <a href="https://www.forethought.org/research/how-quick-and-big-would-a-software-intelligence-explosion-be">“How quick and big would a software intelligence explosion be?”</a>, uses 0.6 and separately accounts for computation needed to run experiments. Ord regards his estimates as broadly consistent with those assumptions. A higher exponent makes additional AI researchers more productive in such models. The agreement concerns one parameter; the models also depend on how quickly improvements become harder to find and on limits to software efficiency.</p>
+<p>In his August arXiv paper <a href="https://arxiv.org/abs/2608.14426v2">“The Dynamics of Intelligence Explosions”</a>, Ord traced this approach to economic models in which simultaneous researchers duplicate effort and later ideas become harder to discover. He also showed why the duration of each improvement cycle matters: growth cannot reach an infinite rate in finite time unless those cycles become progressively short enough. The swarm benchmarks estimate how agents share particular tasks; applying that estimate to an AI research feedback loop requires assumptions about both research productivity and cycle duration.</p>
+<p>Ord’s final application concerns <a href="https://openai.com/index/navier-stokes-solution/">OpenAI’s Navier-Stokes effort</a>. He reads its chart of open mathematics problems as showing flatter returns to inference computation than earlier reasoning benchmarks. A swarm exponent near one-half could explain that difference if the chart mainly varies agent count; a wider spread of problem difficulty could also explain it. The chart does not identify how computation was increased. Ord also interprets the internal model’s large advantage over GPT-6 Astra as evidence that the stronger underlying model contributed substantially. His numerical counterfactual assumes λ remains one-half throughout: a hundred agents could then take about 37 days at one-tenth the cost of the roughly 10,000-agent, 88-hour effort. That is a calculation under the assumption, not a run OpenAI performed.</p>
+<p>OpenAI’s account adds reasons to keep that counterfactual conditional. Researchers redirected agents after an Euler result, supplied that result to other groups, consolidated useful intermediate insights and upgraded the model during the effort. The project therefore involved changing guidance and capabilities as well as agent numbers. Ord himself warns that parallelization can deteriorate with scale: assigning workers to build separate walls helps only until every wall already has a worker.</p>
+<p>In a <a href="https://www.lesswrong.com/posts/6cb7qd3RSkgnviCpf/swarm-scaling">response beneath Ord’s LessWrong cross-post</a>, Julian Bradshaw argues that better coordination and agents with different experiences could raise the exponent, potentially above one for some tasks. He expects benefits when agents pursue different directions and share intermediate discoveries, while acknowledging that returns may diminish with team size and that stronger individuals may need less help. Ord likewise asks readers to track changes in coordination methods. The <a href="https://mintresearch.org/newsletters/yinai/2026-09-21/#sec-agents">Park et al. experiment</a> compares communicating teams with independent attempts; Ord compares teams with longer individual reasoning.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.tobyord.com/writing/swarm-scaling">Swarm Scaling, Toby Ord</a> <span class="how">— Primary assigned essay, read in full from the recovered local evidence and its live page; original SEC-Bench plot, reconstructed swarm-scaling plot and internal-model mathematics plot visually inspected. Supplies method, estimated exponents, conversions, interpretations and conditional counterfactuals.</span></li>
+<li><a href="https://x.com/tobyordoxford/status/2102111263660642673?s=12">Toby Ord’s selected Swarm Scaling thread</a> <span class="how">— Assignment identity retained. Read the complete Bird-recovered self-thread and available replies in evidence/ord-swarm-scaling.json; it resolves to the full essay.</span></li>
+<li><a href="https://openai.com/index/gpt-5-6/">GPT-5.6: Frontier intelligence that scales with your ambition, OpenAI</a> <span class="how">— Original July 9 launch page retrieved successfully through web browsing despite the earlier direct-HTTP 403. Read the multi-agent section and benchmark descriptions. Confirms that only BrowseComp and SEC-Bench include sixteen-agent configurations; Terminal-Bench compares one and four. Did not independently reproduce Ord’s regression.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-17/#story-openai-interview-examines-agent-collusion-deteriorating-chai">Noam Brown says OpenAI lacked reasoning monitors on incident models, Yesterday in AI, September 17</a> <span class="how">— Read the complete live 1,464-word prior report. Already covers the four-agent speed/cost relation, larger-team uncertainty, lack of single-agent Navier-Stokes control and Brown’s attribution to the stronger model; used only for an explicit continuity link.</span></li>
+<li><a href="https://www.aifuturesmodel.com/">AI Futures Model</a> <span class="how">— Verified indexed primary-site technical documentation specifying default lambda=0.5 and four parallel coders substituting for twice the serial coding speed. Direct HTTP homepage is a JavaScript shell; relevant indexed technical passages, not the complete interactive model, were read.</span></li>
+<li><a href="https://www.forethought.org/research/how-quick-and-big-would-a-software-intelligence-explosion-be">How quick and big would a software intelligence explosion be?, Tom Davidson and Tom Houlden, Forethought</a> <span class="how">— Read relevant primary-page model, assumptions and limitations sections, plus primary PDF indexed passage on parallel labour. Confirms lambda=0.6; experiment compute and difficulty of further improvement are separate inputs. Published August 4, 2025. Explicitly linked by Ord.</span></li>
+<li><a href="https://arxiv.org/abs/2608.14426v2">The Dynamics of Intelligence Explosions, Toby Ord, arXiv:2608.14426v2</a> <span class="how">— Read metadata/abstract and relevant full-PDF pages 1, 5, 11 and 17, including the economic-model background and generation-time condition. Version 2 is August 25, 2026. This is an explicitly cited modeling precursor, not empirical confirmation of recursive improvement.</span></li>
+<li><a href="https://openai.com/index/navier-stokes-solution/">On the Navier-Stokes Millennium Prize Problem, OpenAI</a> <span class="how">— Read the complete main article via web retrieval. Verifies approximately 10,000 concurrent agents in the successful group, 88 hours before resolution, later formalization, human redirection and consolidation, and an upgraded model. The 300 billion tokens and 4.9 million messages are across all attempted problems; Navier-Stokes-specific totals are approximately 130 billion tokens and 2.7 million messages.</span></li>
+<li><a href="https://www.lesswrong.com/posts/6cb7qd3RSkgnviCpf/swarm-scaling">Swarm Scaling, LessWrong cross-post and discussion</a> <span class="how">— Read both visible comments in full. Julian Bradshaw proposes better coordination and heterogeneous agents could increase lambda, while discussing limits and task dependence; dani roytburg asks which economic estimates Ord means. Bradshaw’s Park-paper comparison concerns communicating teams versus independent attempts and is not reported as a direct contradiction of Ord’s longer-individual-reasoning comparison.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-toby-ord-tobyordoxford-twitter-gpt-5-6-swarm-analysis-estima">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-21/toby-ord-tobyordoxford-twitter-gpt-5-6-swarm-analysis-estima</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
