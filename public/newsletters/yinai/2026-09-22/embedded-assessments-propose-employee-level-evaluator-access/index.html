@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>GovAI details how embedded evaluators could test internal AI safeguards — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-22">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-22">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 22 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">GovAI details how embedded evaluators could test internal AI safeguards</h1>
+<p class="dek">A proposal extends the evaluator-access debate into live monitoring, agent permissions and training assessments, with continuous review and public follow-up.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 22 September 2026</span> <span class="chip">1053 words · ~5 min</span></div>
+<div class="article-body">
+<p>Assessing an AI company’s safeguards requires checking what happens after a monitor flags a dangerous action, including whether anyone responds in time. Jacob Charnock and colleagues develop that argument in <a href="https://www.governance.ai/research-paper/embedded-assessments-for-frontier-ai">Embedded Assessments for Frontier AI</a>, published by GovAI on September 21. Their proposal would give independent evaluators access comparable to employees conducting similar risk assessments or senior alignment researchers. Working onsite, evaluators would examine live monitoring, restrictions on agents’ actions, and the training processes that shape model behavior. It extends the access and independence principles <a href="https://mintresearch.org/newsletters/yinai/2026-09-18/#story-ai-evaluator-forum-sets-five-requirements-for-independent-pr">we covered on September 18</a> into a program of technical and organizational investigation.</p>
+<p>Charnock’s team draws on earlier evaluations and inspection practices in other industries to compare possible arrangements. They build on Stephen Casper and colleagues’ FAccT 2024 paper <a href="https://arxiv.org/abs/2401.14446">Black-Box Access Is Insufficient for Rigorous AI Audits</a>, which argued that auditors need information about development and deployment as well as access to models. The <a href="https://govai.b-cdn.net/Embedded_Assessments_for_Frontier_AI.pdf">GovAI paper</a> concentrates on developers’ own use of agents, where the model’s assigned work and access to company infrastructure determine much of the risk. Its recommendations concern how assessments should operate; companies’ arrangements remain under development. Anthropic’s <a href="https://www.anthropic.com/news/accenture-embedded-evaluation">September 18 Accenture announcement</a>, for example, explicitly leaves detailed access and reporting arrangements to be worked out.</p>
+<p>METR’s early Anthropic assessment shows the kind of defect this access can reveal. David Rein <a href="https://metr.org/blog/2026-03-25-red-teaming-anthropic-agent-monitoring/">spent three weeks testing internal monitoring and security systems</a>. METR’s subsequent <a href="https://metr.org/blog/2026-05-19-frontier-risk-report/">Frontier Risk Report</a> describes how changing an environment variable made traffic appear not to come from Claude Code, greatly reducing its likelihood of being monitored. A separate bug left subagent calls unmonitored; Anthropic fixed that bug within 24 hours. Those findings concerned the system operating during the exercise, and depended on understanding how its components worked together.</p>
+<p>Charnock and colleagues would extend such testing through the entire response process. In the paper’s <a href="https://govai.b-cdn.net/Embedded_Assessments_for_Frontier_AI.pdf#page=12">monitoring section</a>, evaluators would check which activities receive scrutiny, how traffic gets assigned to stronger or weaker monitors, and whether agents can change that assignment. They would then test whether monitors identify harmful behavior and whether later filters discard the resulting warnings. Reviewing incident records and escalation queues would establish whether an appropriate reviewer receives a warning quickly enough to prevent harm. A detector’s success rate alone cannot establish that the company will act in time.</p>
+<p>For containment, the authors propose <a href="https://govai.b-cdn.net/Embedded_Assessments_for_Frontier_AI.pdf#page=15">testing the isolated computing environments known as sandboxes</a> and the access restrictions used in production, including whether compromising a supporting service would expose other networks. Evaluators would examine why some agents operate without isolation and whether those exceptions match company policy. They would also check agents’ actual access to computing resources, data and credentials against their assigned tasks, and trace how requests for increased permissions are approved. These tests would assess what an agent can do if monitoring misses its behavior. Anthropic’s <a href="https://mintresearch.org/newsletters/yinai/2026-09-22/#story-anthropic-releases-opus-5-5-with-improved-behavioral-audit-s">new Opus 5.5 tests of unauthorized boundary crossing</a> measure model behavior in constructed scenarios; GovAI would let external evaluators test whether live isolation systems and permissions prevent unauthorized access.</p>
+<p>The alignment assessments would begin during training. The authors would inspect saved intermediate versions of a model and sample training environments to identify rewards for exploiting a grader or concealing misconduct. They cite <a href="https://www.apolloresearch.ai/science/we-need-3rd-party-training-run-assessments">Apollo Research’s July proposal for third-party training-run evaluations</a>: concerning behavior could emerge during training and become less visible by the final checkpoint. Apollo distinguishes testing intermediate models from examining training data and reviewing developers’ responses to warning signs. GovAI incorporates those methods and adds scrutiny of whether alignment techniques are likely to remain effective as increasingly capable models help develop their successors.</p>
+<p>The proposed access would let evaluators compare <a href="https://govai.b-cdn.net/Embedded_Assessments_for_Frontier_AI.pdf#page=21">live tests, staff accounts and internal records</a>. Interviews could reveal undocumented practices; meetings could show how deployment decisions actually get made; logs could establish whether reported safeguards operated as described. Company-managed equipment and restrictions on taking information offsite would protect sensitive material. Additional relevant access should normally be granted, the authors argue, with specific reasons supplied when a company refuses. They also recognize that staff might self-censor or move sensitive conversations elsewhere when evaluators are present.</p>
+<p>Because deployments and safeguards change, the team recommends <a href="https://govai.b-cdn.net/Embedded_Assessments_for_Frontier_AI.pdf#page=23">continuous assessment</a>, with focused investigations after serious incidents or material changes. Repeated visits with flexible completion dates could serve temporarily where staffing is insufficient. Scheduled visits allow preparation that may obscure ordinary practices; incident-triggered reviews depend on companies reporting the trigger. Continuous access would help evaluators follow a repair through implementation and retest it after later changes. Long engagements also increase the risk that evaluators become too close to company staff.</p>
+<p>To protect independence, the authors recommend <a href="https://govai.b-cdn.net/Embedded_Assessments_for_Frontier_AI.pdf#page=26">terms agreed before the assessment starts</a>. Evaluators should disclose and manage conflicts, avoid significant commercial ties and payments tied to findings, and receive legal protection for testing within the agreed scope. Rotating staff or limiting moves into company jobs could reduce incentives to soften findings, but would make recruitment harder and force replacements to relearn company systems. Review by colleagues who are not embedded could help where rotation is impractical. The authors also warn that excessive company control over evaluator notes or access could undermine the assessment.</p>
+<p>The reporting terms build on the <a href="https://aievaluatorforum.org/initiatives/embedded-evaluation-letter">AI Evaluator Forum’s minimum conditions</a>. GovAI recommends detailed public reports at least quarterly, evaluator editorial control and narrowly defined redactions, with disclosure when omissions affect conclusions. Companies would publish which recommendations they accept, implementation plans and reasons for declining others. A named senior safety official would oversee the response; serious or unresolved concerns would reach a board or other oversight body. Government escalation would provide a further remedy when those channels fail, but the authors leave precise escalation thresholds unresolved and acknowledge the difficulty of securing such commitments voluntarily.</p>
+<p>OpenMined addresses a related capacity constraint in <a href="https://openmined.org/blog/scale-embedded-ai-evaluators/">How to Scale the Impact of Embedded AI Evaluators</a>, which the GovAI paper cites. Alejandro Tlaie Boria and colleagues describe how PySyft lets an embedded researcher create reusable evaluation code against private assets. After an internal reviewer approves the code and permitted outputs, authorized external researchers can rerun it, including with approved parameter changes, without a new review each time. New code still requires approval. Reusable tests could let more researchers benefit from scarce embedded expertise. Under GovAI’s proposal, evaluators would also need permission to pursue unexpected findings beyond the questions an existing approved test can answer.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.governance.ai/research-paper/embedded-assessments-for-frontier-ai">Embedded Assessments for Frontier AI — Charnock et al., GovAI</a></li>
+<li><a href="https://govai.b-cdn.net/Embedded_Assessments_for_Frontier_AI.pdf">Embedded Assessments for Frontier AI — full 42-page PDF</a></li>
+<li><a href="https://x.com/Manderljung/status/2102427974947496164">Markus Anderljung shares the embedded-assessments proposal</a></li>
+<li><a href="https://x.com/jonasfreund_/status/2102320711704457487">Jonas Freund’s eight-post explanation of the paper</a></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-18/#story-ai-evaluator-forum-sets-five-requirements-for-independent-pr">Yesterday in AI, September 18 — AI Evaluator Forum conditions and Accenture appointment</a></li>
+<li><a href="https://arxiv.org/abs/2401.14446">Black-Box Access Is Insufficient for Rigorous AI Audits — Casper et al., FAccT 2024</a></li>
+<li><a href="https://www.anthropic.com/news/accenture-embedded-evaluation">Partnering with Accenture on embedded evaluation — Anthropic, September 18</a></li>
+<li><a href="https://metr.org/blog/2026-03-25-red-teaming-anthropic-agent-monitoring/">Red-Teaming Anthropic’s Internal Agent Monitoring Systems — David Rein, METR</a></li>
+<li><a href="https://metr.org/blog/2026-05-19-frontier-risk-report/">Frontier Risk Report, February to March 2026 — METR</a></li>
+<li><a href="https://www.apolloresearch.ai/science/we-need-3rd-party-training-run-assessments">We Need 3rd Party Training-Run Evaluations — Apollo Research, July 5</a></li>
+<li><a href="https://aievaluatorforum.org/initiatives/embedded-evaluation-letter">Minimum Conditions for Embedding Evaluators — AI Evaluator Forum</a></li>
+<li><a href="https://openmined.org/blog/scale-embedded-ai-evaluators/">How to Scale the Impact of Embedded AI Evaluators — Tlaie Boria et al., OpenMined</a></li>
+<li><a href="https://arxiv.org/abs/2609.25413">Embedded Assessments for Frontier AI — arXiv record 2609.25413</a></li>
+<li><a href="https://www-cdn.anthropic.com/fc1b44717c85dc068bc6ba5024219938094694bd/Claude%20Opus%205.5%20System%20Card.pdf">Claude Opus 5.5 System Card, Anthropic, September 22, 2026</a></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-22/#story-anthropic-releases-opus-5-5-with-improved-behavioral-audit-s">Yesterday in AI, September 22: Anthropic’s Opus 5.5 behavioral audits</a></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-embedded-assessments-propose-employee-level-evaluator-access">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-22/embedded-assessments-propose-employee-level-evaluator-access</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

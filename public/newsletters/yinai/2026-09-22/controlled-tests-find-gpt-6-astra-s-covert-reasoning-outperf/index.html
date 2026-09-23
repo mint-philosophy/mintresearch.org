@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Astra can solve problems with disguised written reasoning — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-22">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-22">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 22 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Astra can solve problems with disguised written reasoning</h1>
+<p class="dek">Edward Cant’s experiments find useful punctuation codes and woodland aliases, with different disguises helping different tasks. The model was instructed to conceal its working.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 22 September 2026</span> <span class="chip">909 words · ~5 min</span></div>
+<div class="article-body">
+<p>GPT-6 Astra can solve some multistep problems more accurately when allowed to disguise its written reasoning than when restricted to meaningless filler. Edward Cant reports the finding in <a href="https://www.lesswrong.com/posts/CPJ2kYRKo77ucZEEG/controllable-cot-leads-to-covert-reasoning-capabilities">“Controllable-CoT leads to covert reasoning capabilities,”</a> published on LessWrong on September 22 with funding from BlueDot Impact. Safety monitors sometimes inspect a model’s written intermediate steps for signs of dangerous plans. Cant tested how much useful reasoning survives when those steps are disguised. He explicitly instructed the model to conceal its working, observed no spontaneous tendency to do so, and found that the most effective disguise depended on the problem.</p>
+<p>Cant extends the <a href="https://mintresearch.org/newsletters/yinai/2026-09-14/#story-filler-tokens-raise-gpt-6-astra-s-four-hop-accuracy-from-31">filler-token experiments we covered on September 14</a>. Christine Corry found that adding counting sequences to a question helped Astra combine facts without writing out an explanation. Cant cites <a href="https://www.lesswrong.com/posts/uvhuZHFtrgk8kNiZc/astra-is-much-better-at-reasoning-with-filler-tokens-than">Dylan Xu and colleagues’ related experiments</a>, which mostly placed filler in the input. Cant instead lets Astra generate a constrained scratchpad, making it possible to examine how the model represents intermediate steps when ordinary words and numbers are forbidden.</p>
+<p>His comparisons separate several alternatives to ordinary reasoning. In one condition, Astra could write only dots; in another, it had to describe something unrelated to the question. A third permitted punctuation to stand for quantities and operations without explaining the code. A fourth mixed that punctuation with peaceful scenery. The cryptography tests also included an answer-only condition: Cant selected low reasoning effort and instructed Astra not to reason, usually obtaining zero reported reasoning tokens. The API counts leave the model’s internal computation unmeasured.</p>
+<p>The <a href="https://github.com/rain-1/astra-multihop-steganographic-reasoning">lookup-chain tasks</a> alternate factual recall with calculations. One starts with Emmy Noether, asks for her age at death, applies numerical transformations, selects a country from a supplied list, retrieves its capital and eventually converts a chemical symbol into a number. Ordinary reasoning solved almost every item in this small set. Dots and unrelated scenery supported some correct answers, while punctuation improved performance further. Describing quantities as seashells had been less useful: some versions simply restated the numbers in lightly disguised language.</p>
+<p>Cant then tested repeated calculations underlying toy checksums, hashes and pseudorandom-number generators. Each answer depends on carrying a changing numerical state through successive updates. These are deliberately weak computational exercises; his concern is whether future models could perform stronger cryptography while concealing their working. Punctuation helped Astra continue solving some longer sequences after answer-only performance had fallen away. Cant excluded constrained answers that exposed intermediate calculations in their final response. The task-depth charts show substantial uncertainty at individual depths, especially for the miniature hash, and unrestricted reasoning remained much more successful.</p>
+<p>The <a href="https://github.com/rain-1/astra-multihop-steganographic-reasoning/tree/main/experiment-3">film experiments</a> required a different disguise. Questions linked novels to adaptations, films to directors and composers, and performers to other films. Punctuation offered little benefit in Cant’s pilot, so he developed instructions that assigned entities woodland identities and represented relationships through consistent actions. The model had to preserve which entity led to which, retain unresolved alternatives and avoid printing a translation key. In Cant’s separate 24-question replication, the woodland-journey version answered 15 correctly, compared with three when restricted to dots. Ordinary reasoning solved all 24. Each condition ran once per question; the repository excludes the earlier trials used to develop the woodland instructions.</p>
+<p>Cant’s <a href="https://docs.google.com/document/d/1Cb0MGmBS3-GiTRgA2bzaZAamZ7P0pLkq2qXl8HwkbOc/edit?usp=sharing">qualitative appendix</a> shows how some disguises worked. In a checksum calculation, colons stand for zeroes and exclamation marks for ones; decoding the strings recovers each successive four-bit value. Another trace represents numbers by counts of repeated punctuation. A film solution lists four woodland alternatives in the same order as the four candidates in the question, then selects the corresponding one. Shorter film traces sometimes use recognizable associations: a violet-eyed woodland animal stands for Elizabeth Taylor. These examples show varying degrees of concealment, including encodings a reader can decode from the question.</p>
+<p>Other traces are less conclusive. Cant identifies symbol sequences that appear to preserve the order of operations without consistently representing the intermediate values; he could not interpret some correctly answered examples. He suggests that Astra may retain unwritten state internally. Because his manual inspection concentrates on successful answers, it does not establish how reliably the traces represent calculations across all attempts. His accompanying mathematics pilot also distinguishes obeying a style restriction from solving a problem. Astra greatly reduced prohibited words but often failed the strict requirement to eliminate them. The accuracy chart uses small, unequal samples and excludes unfinished answers.</p>
+<p>The open-weight pilots found weaker control. Kimi K3 sometimes followed language or formatting instructions but did not use punctuation productively in the tested cryptographic tasks; demanding mathematics often exhausted its output allowance. Cant acknowledges that small samples and imperfect instructions could explain some failures. Earlier work also suggests that this behavior can change with training. In <a href="https://metr.org/blog/2026-04-01-fine-tuning-cot-controllability/">“Fine-tuning experiments on CoT controllability,”</a> METR’s Kei Nishimura-Gasparian and Neev Parikh found that a small set of training examples improved reasoning instruction-following on a separate evaluation. They explicitly left the effect on monitoring untested.</p>
+<p>Yueh-Han Chen and colleagues distinguished control over reasoning from successful evasion in their March LessWrong research summary <a href="https://www.lesswrong.com/posts/qTH9QrwJjPDWKQfDG/reasoning-models-struggle-to-control-their-chains-of-thought">“Reasoning Models Struggle to Control Their Chains of Thought.”</a> Commenter Joe Needham argued that completing a concealed side task under monitoring would test the threat more directly; Chen described instruction-following as a proxy that avoids dependence on a model’s motivation to misbehave. Cant demonstrates useful computation under punctuation and semantic disguises, leaving their effectiveness against monitors untested. His proposed future concern is encrypted messages or private notes that remain useful to an agent while becoming difficult for supervisors to interpret.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.lesswrong.com/posts/CPJ2kYRKo77ucZEEG/controllable-cot-leads-to-covert-reasoning-capabilities">Controllable-CoT leads to covert reasoning capabilities — Edward Cant, LessWrong</a></li>
+<li><a href="https://docs.google.com/document/d/1Cb0MGmBS3-GiTRgA2bzaZAamZ7P0pLkq2qXl8HwkbOc/edit?usp=sharing">Qualitative Findings — Edward Cant</a></li>
+<li><a href="https://github.com/rain-1/astra-multihop-steganographic-reasoning">astra-multihop-steganographic-reasoning — Edward Cant, public repository</a></li>
+<li><a href="https://github.com/rain-1/astra-multihop-steganographic-reasoning/tree/main/experiment-3">Set-3: Film-Chain Reasoning — independent replication and released results</a></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-14/#story-filler-tokens-raise-gpt-6-astra-s-four-hop-accuracy-from-31">Counting filler doubles Astra’s four-hop accuracy in Corry’s replication — Yesterday in AI, September 14</a></li>
+<li><a href="https://www.lesswrong.com/posts/uvhuZHFtrgk8kNiZc/astra-is-much-better-at-reasoning-with-filler-tokens-than">Astra is much better at reasoning with filler tokens than previous models — Dylan Xu, sebastian_prasanna and Alek Westover, LessWrong</a></li>
+<li><a href="https://metr.org/blog/2026-04-01-fine-tuning-cot-controllability/">Research note: Fine-tuning experiments on CoT controllability — Kei Nishimura-Gasparian and Neev Parikh, METR</a></li>
+<li><a href="https://www.lesswrong.com/posts/qTH9QrwJjPDWKQfDG/reasoning-models-struggle-to-control-their-chains-of-thought">Reasoning Models Struggle to Control Their Chains of Thought — Yueh-Han Chen and colleagues, LessWrong research summary and discussion</a></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-controlled-tests-find-gpt-6-astra-s-covert-reasoning-outperf">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-22/controlled-tests-find-gpt-6-astra-s-covert-reasoning-outperf</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
