@@ -25,42 +25,38 @@ const legacyPaths = {
   '/day-3': '/adaptation',
 };
 
+const slidesAccess = { accessGroup: 'slides', passwordBinding: 'FELLOWSHIP_SLIDES_PASSWORD', title: 'Fellowship presentations' };
+
 const presentations = [
   {
     id: 'definitions', path: '/definitions', source: '/definitions',
     wrapper: '/fellowship/definitions/index.html', dateLabel: '9.8', dateLong: 'September 8',
-    title: 'Definitions', unlockAt: '2026-09-08T06:00:00-04:00',
-    accessGroup: '2026-09-08', passwordBinding: 'FELLOWSHIP_PASSWORD_SEPTEMBER_8',
+    ...slidesAccess, title: 'Definitions',
   },
   {
     id: 'philosophy', path: '/philosophy', source: '/philosophy',
     wrapper: '/fellowship/philosophy/index.html', dateLabel: '9.9', dateLong: 'September 9',
-    title: 'Philosophy', unlockAt: '2026-09-09T06:00:00-04:00',
-    accessGroup: '2026-09-09', passwordBinding: 'FELLOWSHIP_PASSWORD_SEPTEMBER_9',
+    ...slidesAccess, title: 'Philosophy',
   },
   {
     id: 'projects', path: '/projects', source: '/projects',
     wrapper: '/fellowship/projects/index.html', dateLabel: '9.9', dateLong: 'September 9',
-    title: 'Projects', unlockAt: '2026-09-09T06:00:00-04:00',
-    accessGroup: '2026-09-09', passwordBinding: 'FELLOWSHIP_PASSWORD_SEPTEMBER_9',
+    ...slidesAccess, title: 'Projects',
   },
   {
     id: 'should-we-build-agi', path: '/should-we-build-agi', source: '/should-we-build-agi',
     wrapper: '/fellowship/day-1/index.html', dateLabel: '9.10', dateLong: 'September 10',
-    title: 'Should We Build AGI?', unlockAt: '2026-09-10T06:00:00-04:00',
-    accessGroup: '2026-09-10', passwordBinding: 'FELLOWSHIP_PASSWORD_SEPTEMBER_10',
+    ...slidesAccess, title: 'Should We Build AGI?',
   },
   {
     id: 'agi-institutions', path: '/agi-institutions', source: '/agi-institutions',
     wrapper: '/fellowship/day-2/index.html', dateLabel: '9.11', dateLong: 'September 11',
-    title: 'AGI Institutions', unlockAt: '2026-09-11T06:00:00-04:00',
-    accessGroup: '2026-09-11', passwordBinding: 'FELLOWSHIP_PASSWORD_SEPTEMBER_11',
+    ...slidesAccess, title: 'AGI Institutions',
   },
   {
     id: 'adaptation', path: '/adaptation', source: '/societal-adaptation',
     wrapper: '/fellowship/day-3/index.html', dateLabel: '9.14', dateLong: 'September 14',
-    title: 'Adaptation', unlockAt: '2026-09-14T06:00:00-04:00',
-    accessGroup: '2026-09-14', passwordBinding: 'FELLOWSHIP_PASSWORD_SEPTEMBER_14',
+    ...slidesAccess, title: 'Adaptation',
   },
 ];
 
@@ -162,10 +158,6 @@ function nowMs(env) {
   if (env.TEST_NOW_MS === undefined) return Date.now();
   const value = Number(env.TEST_NOW_MS);
   return Number.isFinite(value) ? value : Date.now();
-}
-
-function isPresentationOpen(presentation, env) {
-  return Boolean(presentation.unlockAt) && nowMs(env) >= Date.parse(presentation.unlockAt);
 }
 
 function presentationPassword(presentation, env) {
@@ -276,7 +268,6 @@ function ipIsAllowed(request, env) {
 }
 
 async function requestIsAuthorized(request, presentation, env) {
-  if (isPresentationOpen(presentation, env) || ipIsAllowed(request, env)) return true;
   if (await editorSessionIsValid(request, env)) return true;
   return sessionIsValid(request, presentation, presentationPassword(presentation, env), env);
 }
@@ -289,9 +280,8 @@ function loginPage(next, presentation, invalid = false, owner = false) {
   const heading = owner ? 'Owner login' : presentation.dateLabel
     ? `${presentation.dateLabel} · ${presentation.title}`
     : presentation.title;
-  const accessCopy = owner ? 'Log in once to view and edit all Fellowship presentations and the bibliography, from any network. Stay signed in for 30 days on this browser.' : presentation.unlockAt
-    ? `Enter this presentation’s password. It opens without a password at 6:00 a.m. ET on ${presentation.dateLong}.`
-    : 'Enter the Fellowship password to open this presentation.';
+  const accessCopy = owner ? 'Log in once to view and edit all Fellowship presentations and the bibliography, from any network. Stay signed in for 30 days on this browser.'
+    : 'Enter the Fellowship slides password to view all six presentations. The bibliography remains public.';
   return `<!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
@@ -336,7 +326,7 @@ function loginPage(next, presentation, invalid = false, owner = false) {
         <button type="submit">${owner ? 'Log in' : 'Open presentation'}</button>
       </form>
       ${error}
-      <a class="login-back" href="/">← Fellowship overview</a>
+      <a class="login-back" href="/bibliography/">Public bibliography</a>
       ${owner ? '' : `<a class="login-back" href="/owner/login?next=${encodeURIComponent(next)}">Owner login</a>`}
     </div>
   </main>
@@ -347,7 +337,7 @@ function loginPage(next, presentation, invalid = false, owner = false) {
 function renderLogin(next, presentation, invalid = false) {
   return new Response(loginPage(next, presentation, invalid), {
     status: invalid ? 401 : 200,
-    headers: responseHeaders({ 'Content-Type': 'text/html; charset=utf-8' }, { noIndex: true, noStore: true }),
+    headers: responseHeaders({ 'Content-Type': 'text/html; charset=utf-8', 'Content-Security-Policy': "frame-ancestors 'none'; form-action 'self'; base-uri 'none'" }, { noIndex: true, noStore: true }),
   });
 }
 
@@ -411,7 +401,7 @@ async function handleEditor(request, env, presentation) {
 
   if (request.method === 'GET' || request.method === 'HEAD') {
     if (!(await requestIsAuthorized(request, presentation, env))) {
-      if (!presentationPassword(presentation, env) && !isPresentationOpen(presentation, env)) {
+      if (!presentationPassword(presentation, env)) {
         return editorJson({ error: 'Fellowship access is temporarily unavailable' }, 503);
       }
       return editorJson({ error: 'Authentication required' }, 401);
@@ -519,11 +509,11 @@ async function handleEditorSession(request, env) {
   });
 }
 
-async function ownerLoginLimit(request, env) {
-  if (!env.OWNER_LOGIN_LIMITER) return editorJson({ error: 'Owner login is temporarily unavailable' }, 503);
+async function ownerLoginLimit(request, env, purpose = 'owner') {
+  if (!env.OWNER_LOGIN_LIMITER) return editorJson({ error: 'Login is temporarily unavailable' }, 503);
   const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
   const network = ipv6NetworkPrefix(ip) || ip;
-  const key = bytesToBase64Url(await digest(`fellowship-owner-login:${network}`));
+  const key = bytesToBase64Url(await digest(`fellowship-${purpose}-login:${network}`));
   const { success } = await env.OWNER_LOGIN_LIMITER.limit({ key });
   return success ? null : editorJson({ error: 'Too many login attempts. Please wait one minute.' }, 429, { 'Retry-After': '60' });
 }
@@ -559,8 +549,7 @@ async function handleLogin(request, env) {
   const url = new URL(request.url);
   if (request.method === 'GET' || request.method === 'HEAD') {
     const next = safeNext(url.searchParams.get('next'));
-    const presentation = presentationForPath(new URL(next, `https://${FELLOWSHIP_HOST}`).pathname);
-    if (!presentation) return redirect('/', 303, { noIndex: true });
+    const presentation = presentationForPath(new URL(next, `https://${FELLOWSHIP_HOST}`).pathname) || slidesAccess;
     if (await requestIsAuthorized(request, presentation, env)) return redirect(next, 303, { noIndex: true });
     if (!presentationPassword(presentation, env)) return unavailable();
     const response = renderLogin(next, presentation);
@@ -574,17 +563,17 @@ async function handleLogin(request, env) {
       headers: responseHeaders({ Allow: 'GET, HEAD, POST', 'Content-Type': 'text/plain; charset=utf-8' }, { noIndex: true, noStore: true }),
     });
   }
+  if (request.headers.get('Origin') !== EDITOR_ORIGIN) return editorJson({ error: 'Forbidden' }, 403);
+  const limited = await ownerLoginLimit(request, env, 'viewer');
+  if (limited) return limited;
+  if (!String(request.headers.get('Content-Type') || '').startsWith('application/x-www-form-urlencoded')) return editorJson({ error: 'Invalid form' }, 415);
   const length = Number(request.headers.get('Content-Length') || 0);
   if (length > 8_192) return redirect('/', 303, { noIndex: true });
   const body = await request.text();
   if (body.length > 8_192) return redirect('/', 303, { noIndex: true });
   const form = new URLSearchParams(body);
   const next = safeNext(form.get('next'));
-  const presentation = presentationForPath(new URL(next, `https://${FELLOWSHIP_HOST}`).pathname);
-  if (!presentation) return redirect('/', 303, { noIndex: true });
-  if (isPresentationOpen(presentation, env) || ipIsAllowed(request, env)) {
-    return redirect(next, 303, { noIndex: true });
-  }
+  const presentation = presentationForPath(new URL(next, `https://${FELLOWSHIP_HOST}`).pathname) || slidesAccess;
   const password = presentationPassword(presentation, env);
   if (!password) return unavailable();
   if (!(await passwordMatches(form.get('password'), password))) return renderLogin(next, presentation, true);
@@ -621,26 +610,12 @@ async function serveAsset(request, env, assetPath, { noIndex = false } = {}) {
   const headers = responseHeaders(assetResponse.headers, { noIndex, noStore: noIndex });
   if (assetPath === '/fellowship/index.html' && assetResponse.ok && request.method !== 'HEAD') {
     const source = await assetResponse.text();
-    const pendingBlock = /<!-- pending-presentations:start -->([\s\S]*?)<!-- pending-presentations:end -->/;
-    const cards = source.match(pendingBlock)?.[1] || '';
-    const open = [];
-    const pending = [];
-    for (const match of cards.matchAll(/<a class="agif-link" data-presentation="([^"]+)"[\s\S]*?<\/a>/g)) {
-      const presentation = presentationForId(match[1]);
-      if (presentation && isPresentationOpen(presentation, env)) {
-        open.push(match[0].replace(/<span class="agif-access">[^<]*<\/span>/, '<span class="agif-access">Open</span>'));
-      } else {
-        pending.push(match[0]);
-      }
-    }
-    let html = source.replace('<!-- open-presentations -->', open.join('\n'))
-      .replace(pendingBlock, pending.join('\n'));
+    let html = source;
     const isOwner = await editorSessionIsValid(request, env);
     html = html.replace('<!-- owner-controls -->', isOwner
       ? '<span>Owner editing enabled</span><form method="post" action="/owner/logout"><button type="submit">Log out</button></form>'
       : '<a href="/owner/login">Owner login</a>');
     if (isOwner) html = html.replaceAll('href="/bibliography/"', 'href="/bibliography/edit/"');
-    if (cards && !pending.length) html = html.replace('id="pending-presentations"', 'id="pending-presentations" hidden');
     headers.set('Cache-Control', 'no-store');
     headers.delete('Content-Length');
     headers.delete('ETag');
@@ -662,14 +637,14 @@ function robots() {
     'Disallow: /editor/',
   ].join('\n');
   return new Response(
-    `User-agent: *\nAllow: /$\n${disallowed}\nSitemap: https://${FELLOWSHIP_HOST}/sitemap.xml\n`,
+    `User-agent: *\nDisallow: /$\nAllow: /bibliography/\n${disallowed}\nSitemap: https://${FELLOWSHIP_HOST}/sitemap.xml\n`,
     { headers: responseHeaders({ 'Cache-Control': 'public, max-age=600', 'Content-Type': 'text/plain; charset=utf-8' }) },
   );
 }
 
 function sitemap() {
   return new Response(
-    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://${FELLOWSHIP_HOST}/</loc></url><url><loc>https://${FELLOWSHIP_HOST}/bibliography/</loc></url></urlset>\n`,
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://${FELLOWSHIP_HOST}/bibliography/</loc></url></urlset>\n`,
     { headers: responseHeaders({ 'Cache-Control': 'public, max-age=600', 'Content-Type': 'application/xml; charset=utf-8' }) },
   );
 }
@@ -758,8 +733,9 @@ async function handleFellowship(request, env) {
   }
 
   const presentation = presentationForPath(url.pathname);
-  if (presentation && !(await requestIsAuthorized(request, presentation, env))) {
-    if (!presentationPassword(presentation, env)) return unavailable();
+  const access = presentation || (url.pathname === '/' ? slidesAccess : null);
+  if (access && !(await requestIsAuthorized(request, access, env))) {
+    if (!presentationPassword(access, env)) return unavailable();
     const login = new URL('/login', url);
     login.searchParams.set('next', `${url.pathname}${url.search}`);
     return redirect(login.href, 303, { noIndex: true });
@@ -772,7 +748,7 @@ async function handleFellowship(request, env) {
       headers: responseHeaders({ 'Content-Type': 'text/plain; charset=utf-8' }, { noIndex: true }),
     });
   }
-  return serveAsset(request, env, assetPath, { noIndex: Boolean(presentation) });
+  return serveAsset(request, env, assetPath, { noIndex: Boolean(access) });
 }
 
 export function renderBibliographyMirror(html) {

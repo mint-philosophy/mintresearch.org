@@ -1,5 +1,4 @@
 const DECK_ID = 'should-we-build-agi';
-const CURRENT_KEY = `deck:${DECK_ID}:current`;
 
 function csv(value) {
   return String(value || '')
@@ -29,14 +28,6 @@ function json(origin, body, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: headers(origin) });
 }
 
-async function currentState(env) {
-  const stored = await env.CONTENT_OVERRIDES.get(CURRENT_KEY, 'json');
-  if (stored && typeof stored === 'object' && stored.fields && typeof stored.fields === 'object') {
-    return stored;
-  }
-  return { revision: 'base', updatedAt: null, fields: {} };
-}
-
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -54,8 +45,7 @@ export default {
     if (url.pathname !== `/v1/decks/${DECK_ID}`) return json(origin, { error: 'Not found' }, 404);
 
     if (request.method === 'GET') {
-      const state = await currentState(env);
-      return json(origin, { ...state, canEdit: false });
+      return json(origin, { error: 'This legacy editor endpoint is retired' }, 410);
     }
 
     if (request.method === 'PUT') {

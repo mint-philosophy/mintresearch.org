@@ -30,6 +30,7 @@ const passwords = {
 
 function environment(overrides = {}) {
   return {
+    FELLOWSHIP_SLIDES_PASSWORD: 'test-shared-slides-password',
     FELLOWSHIP_PASSWORD_SEPTEMBER_8: passwords.september8,
     FELLOWSHIP_PASSWORD_SEPTEMBER_9: passwords.september9,
     FELLOWSHIP_PASSWORD_SEPTEMBER_10: passwords.september10,
@@ -56,6 +57,15 @@ function request(path, options = {}) {
   return new Request(`https://fellowship.mintresearch.org${path}`, options);
 }
 
+async function viewerCookie(env) {
+  const response = await worker.fetch(request('/login', {
+    method: 'POST', headers: { Origin: 'https://fellowship.mintresearch.org' },
+    body: new URLSearchParams({ password: env.FELLOWSHIP_SLIDES_PASSWORD, next: '/' }),
+  }), env);
+  assert.equal(response.status, 303);
+  return response.headers.get('set-cookie').split(';')[0];
+}
+
 function requestEditorSession(env, password = env.FELLOWSHIP_EDITOR_PASSWORD) {
   return worker.fetch(request('/editor/v1/session', {
     method: 'POST',
@@ -68,17 +78,20 @@ function requestEditorSession(env, password = env.FELLOWSHIP_EDITOR_PASSWORD) {
   }), env);
 }
 
-test('the Fellowship overview is public and served from the dedicated shell', async () => {
-  const response = await worker.fetch(request('/'), environment());
+test('the Fellowship overview is gated and served from the dedicated shell after login', async () => {
+  const env = environment();
+  assert.equal((await worker.fetch(request('/'), env)).status, 303);
+  const response = await worker.fetch(request('/', { headers: { Cookie: await viewerCookie(env) } }), env);
   assert.equal(response.status, 200);
   assert.equal(await response.text(), 'asset:/fellowship/index.html');
-  assert.equal(response.headers.get('x-robots-tag'), null);
+  assert.match(response.headers.get('x-robots-tag'), /noindex/);
 });
 
 test('owner IPv6 privacy addresses match only the registered network and still need editor authentication', async () => {
   const env = environment({ FELLOWSHIP_OWNER_IPV6_NETWORKS: '2001:db8:abcd:1234::/64' });
+  const cookie = await viewerCookie(env);
   for (const ip of ['2001:db8:abcd:1234::1', '2001:0DB8:ABCD:1234:9876:4321:abcd:1234']) {
-    const headers = { 'CF-Connecting-IP': ip, Origin: 'https://fellowship.mintresearch.org', 'Content-Type': 'application/json' };
+    const headers = { Cookie: cookie, 'CF-Connecting-IP': ip, Origin: 'https://fellowship.mintresearch.org', 'Content-Type': 'application/json' };
     const response = await worker.fetch(request('/editor/v1/decks/definitions', { headers }), env);
     assert.equal(response.status, 200);
     const state = await response.json();
@@ -94,24 +107,21 @@ test('owner IPv6 privacy addresses match only the registered network and still n
   }
 });
 
-test('the overview groups public resources and moves presentations at their release time', async () => {
+test('the overview never labels slides public or schedules automatic opening', async () => {
   const source = await readFile(new URL('../site-assets/fellowship/index.html', import.meta.url), 'utf8');
-  for (const [time, expectedOpen] of [
-    ['2026-09-08T05:59:59-04:00', []],
-    ['2026-09-08T06:00:00-04:00', ['definitions']],
-    ['2026-09-09T06:00:00-04:00', ['definitions', 'philosophy', 'projects']],
-    ['2026-09-14T06:00:00-04:00', ['definitions', 'philosophy', 'projects', 'should-we-build-agi', 'agi-institutions', 'adaptation']],
+  for (const time of [
+    '2026-09-08T05:59:59-04:00', '2026-09-08T06:00:00-04:00',
+    '2026-09-09T06:00:00-04:00', '2030-01-01T00:00:00Z',
   ]) {
     const env = environment({ TEST_NOW_MS: Date.parse(time), ASSETS: { fetch: async () => new Response(source) } });
-    // Owner access does not make a presentation publicly released.
-    const response = await worker.fetch(request('/', { headers: { 'CF-Connecting-IP': '203.0.113.8' } }), env);
+    const response = await worker.fetch(request('/', { headers: { Cookie: await viewerCookie(env) } }), env);
     const html = await response.text();
     const open = html.match(/<section id="open-resources">([\s\S]*?)<\/section>/)[1];
-    const pending = html.match(/<section id="pending-presentations"[^>]*>([\s\S]*?)<\/section>/)[1];
-    assert.deepEqual([...open.matchAll(/data-presentation="([^"]+)"/g)].map(match => match[1]), expectedOpen);
-    assert.equal([...pending.matchAll(/data-presentation=/g)].length, 6 - expectedOpen.length);
+    const pending = html.match(/<section id="protected-presentations"[^>]*>([\s\S]*?)<\/section>/)[1];
+    assert.deepEqual([...open.matchAll(/data-presentation="([^"]+)"/g)], []);
+    assert.equal([...pending.matchAll(/data-presentation=/g)].length, 6);
     assert.match(open, /href="\/bibliography\/"/);
-    assert.doesNotMatch(open, /Password until/);
+    assert.doesNotMatch(html, /Password until|6 a\.m\.|pending/);
     assert.equal(response.headers.get('cache-control'), 'no-store');
   }
 });
@@ -155,6 +165,7 @@ test('sitemap includes the public bibliography and excludes presentations', asyn
   const response = await worker.fetch(request('/sitemap.xml'), environment());
   const xml = await response.text();
   assert.match(xml, /https:\/\/fellowship\.mintresearch\.org\/bibliography\//);
+  assert.doesNotMatch(xml, /<loc>https:\/\/fellowship\.mintresearch\.org\/<\/loc>/);
   assert.doesNotMatch(xml, /definitions|philosophy|projects|adaptation/);
 });
 
@@ -167,7 +178,7 @@ const schedule = [
   ['/adaptation/', '/fellowship/day-3/index.html', '2026-09-14T06:00:00-04:00'],
 ];
 
-test('every scheduled presentation is gated before its date', async () => {
+test('every presentation is gated', async () => {
   for (const [path] of schedule) {
     const response = await worker.fetch(request(`${path}?from=hub`), environment());
     assert.equal(response.status, 303, path);
@@ -179,17 +190,17 @@ test('every scheduled presentation is gated before its date', async () => {
   }
 });
 
-test('password sessions are date-specific and the two September 9 presentations share access', async () => {
+test('one viewing password session opens all six decks and the hub', async () => {
   const env = environment();
   const login = await worker.fetch(request('/login', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({ password: passwords.september9, next: '/philosophy/' }),
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded', Origin: 'https://fellowship.mintresearch.org' },
+    body: new URLSearchParams({ password: env.FELLOWSHIP_SLIDES_PASSWORD, next: '/philosophy/' }),
   }), env);
   assert.equal(login.status, 303);
   assert.equal(login.headers.get('location'), '/philosophy/');
   const setCookie = login.headers.get('set-cookie');
-  assert.match(setCookie, /^mint_fellowship_session_2026_09_09=/);
+  assert.match(setCookie, /^mint_fellowship_session_slides=/);
   assert.match(setCookie, /HttpOnly/);
   assert.match(setCookie, /Secure/);
   assert.match(setCookie, /SameSite=Strict/);
@@ -200,16 +211,19 @@ test('password sessions are date-specific and the two September 9 presentations 
   const nextDay = await worker.fetch(request('/should-we-build-agi/', { headers: { Cookie: cookie } }), env);
   assert.equal(await philosophy.text(), 'asset:/philosophy/deck.css');
   assert.equal(await projects.text(), 'asset:/fellowship/projects/index.html');
-  assert.equal(nextDay.status, 303);
+  assert.equal(nextDay.status, 200);
+  for (const path of ['/', ...schedule.map(([path]) => path)]) {
+    assert.equal((await worker.fetch(request(path, { headers: { Cookie: cookie } }), env)).status, 200);
+  }
   assert.match(projects.headers.get('x-robots-tag'), /noindex/);
   assert.equal(projects.headers.get('cache-control'), 'private, no-store');
 });
 
-test('a password for another date and an incorrect password are rejected', async () => {
+test('old date passwords and incorrect passwords are rejected', async () => {
   for (const candidate of [passwords.september8, 'incorrect']) {
     const response = await worker.fetch(request('/login', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', Origin: 'https://fellowship.mintresearch.org' },
       body: new URLSearchParams({ password: candidate, next: '/adaptation/' }),
     }), environment());
     assert.equal(response.status, 401);
@@ -218,21 +232,23 @@ test('a password for another date and an incorrect password are rejected', async
   }
 });
 
-test('login pages identify the date and automatic opening time', async () => {
+test('login pages identify the deck and shared permanent protection', async () => {
   const response = await worker.fetch(request('/login?next=%2Fagi-institutions%2F'), environment());
   assert.equal(response.status, 200);
   const body = await response.text();
   assert.match(body, /9\.11 · AGI Institutions/);
-  assert.match(body, /6:00 a\.m\. ET on September 11/);
+  assert.match(body, /view all six presentations/);
+  assert.doesNotMatch(body, /opens without|6:00/);
   assert.match(response.headers.get('x-robots-tag'), /noindex/);
   assert.equal(response.headers.get('cache-control'), 'private, no-store');
 });
 
-test('wrappers and nested assets use their date gate, IP bypass, and noindex policy', async () => {
+test('wrappers and nested assets use the shared gate without any IP bypass', async () => {
   const env = environment();
   const definitionsLogin = await worker.fetch(request('/login', {
     method: 'POST',
-    body: new URLSearchParams({ password: passwords.september8, next: '/definitions/' }),
+    headers: { Origin: 'https://fellowship.mintresearch.org' },
+    body: new URLSearchParams({ password: env.FELLOWSHIP_SLIDES_PASSWORD, next: '/definitions/' }),
   }), env);
   const cookie = definitionsLogin.headers.get('set-cookie').split(';', 1)[0];
   const definitionsPaths = [
@@ -256,37 +272,39 @@ test('wrappers and nested assets use their date gate, IP bypass, and noindex pol
     const bypassed = await worker.fetch(request(`/philosophy/${asset}`, {
       headers: { 'CF-Connecting-IP': '203.0.113.8' },
     }), env);
-    assert.equal(await bypassed.text(), `asset:/philosophy/${asset}`);
+    assert.equal(bypassed.status, 303);
     assert.match(bypassed.headers.get('x-robots-tag'), /noindex/);
   }
   const head = await worker.fetch(request('/definitions/', { method: 'HEAD', headers: { Cookie: cookie } }), env);
   assert.equal(head.status, 200);
   assert.equal(await head.text(), '');
+  for (const [path] of schedule) {
+    for (const suffix of ['', 'deck.html', 'deck.css', 'deck.js', 'pretext-layout.js']) {
+      for (const method of ['GET', 'HEAD']) {
+        const blocked = await worker.fetch(request(path + suffix, { method, headers: { 'CF-Connecting-IP': '203.0.113.8' } }), env);
+        assert.equal(blocked.status, 303, `${method} ${path}${suffix}`);
+      }
+    }
+  }
 });
 
-test('each presentation opens automatically at exactly 6 a.m. Eastern on its date', async () => {
-  for (const [path, asset, unlockAt] of schedule) {
+test('every presentation stays gated after its former release date and in the future', async () => {
+  for (const [path, , unlockAt] of schedule) {
     const unlockMs = Date.parse(unlockAt);
     const before = await worker.fetch(request(path), environment({ TEST_NOW_MS: unlockMs - 1 }));
     assert.equal(before.status, 303, `${path} must remain gated one millisecond before release`);
 
-    const open = await worker.fetch(request(path), environment({
-      TEST_NOW_MS: unlockMs,
-      FELLOWSHIP_PASSWORD_SEPTEMBER_8: undefined,
-      FELLOWSHIP_PASSWORD_SEPTEMBER_9: undefined,
-      FELLOWSHIP_PASSWORD_SEPTEMBER_10: undefined,
-      FELLOWSHIP_PASSWORD_SEPTEMBER_11: undefined,
-      FELLOWSHIP_PASSWORD_SEPTEMBER_14: undefined,
-    }));
-    assert.equal(open.status, 200, `${path} must open at release time without a secret`);
-    assert.equal(await open.text(), `asset:${asset}`);
-    assert.match(open.headers.get('x-robots-tag'), /noindex/);
+    for (const time of [unlockMs, Date.parse('2030-01-01')]) {
+      const closed = await worker.fetch(request(path), environment({ TEST_NOW_MS: time }));
+      assert.equal(closed.status, 303, path);
+      assert.match(closed.headers.get('x-robots-tag'), /noindex/);
+    }
   }
 });
 
-test('a missing password secret fails closed before release', async () => {
+test('a missing password secret fails closed regardless of date', async () => {
   const response = await worker.fetch(request('/should-we-build-agi/'), environment({
-    FELLOWSHIP_PASSWORD_SEPTEMBER_10: undefined,
+    FELLOWSHIP_SLIDES_PASSWORD: undefined, TEST_NOW_MS: Date.parse('2030-01-01'),
   }));
   assert.equal(response.status, 503);
   assert.match(response.headers.get('x-robots-tag'), /noindex/);
@@ -334,7 +352,8 @@ test('editor reads follow the presentation gate and expose controls only on the 
 
   const login = await worker.fetch(request('/login', {
     method: 'POST',
-    body: new URLSearchParams({ password: passwords.september9, next: '/philosophy/' }),
+    headers: { Origin: 'https://fellowship.mintresearch.org' },
+    body: new URLSearchParams({ password: env.FELLOWSHIP_SLIDES_PASSWORD, next: '/philosophy/' }),
   }), env);
   const cookie = login.headers.get('set-cookie').split(';', 1)[0];
   const reader = await worker.fetch(request(endpoint, { headers: { Cookie: cookie } }), env);
@@ -346,7 +365,7 @@ test('editor reads follow the presentation gate and expose controls only on the 
   assert.equal(reader.headers.get('cache-control'), 'private, no-store');
 
   const editor = await worker.fetch(request(endpoint, {
-    headers: { 'CF-Connecting-IP': '203.0.113.8' },
+    headers: { Cookie: cookie, 'CF-Connecting-IP': '203.0.113.8' },
   }), env);
   assert.equal(editor.status, 200);
   assert.deepEqual(await editor.json(), {
@@ -356,7 +375,7 @@ test('editor reads follow the presentation gate and expose controls only on the 
 
 test('editor authentication requires the separate owner password and works from any network', async () => {
   const env = environment();
-  const presentationPassword = await requestEditorSession(env, passwords.september9);
+  const presentationPassword = await requestEditorSession(env, env.FELLOWSHIP_SLIDES_PASSWORD);
   assert.equal(presentationPassword.status, 401);
   assert.equal(presentationPassword.headers.get('set-cookie'), null);
 
@@ -454,7 +473,7 @@ test('one owner form login grants all six decks and the bibliography across netw
   assert.match(logout.headers.get('set-cookie'), /mint_fellowship_editor=; Max-Age=0/);
   assert.equal((await worker.fetch(request('/owner/logout', { headers }), env)).status, 405);
   const expired = { ...env, TEST_NOW_MS: env.TEST_NOW_MS + 31 * 86400000 };
-  assert.equal((await (await worker.fetch(request('/editor/v1/decks/definitions', { headers }), expired)).json()).canEdit, false);
+  assert.equal((await worker.fetch(request('/editor/v1/decks/definitions', { headers }), expired)).status, 401);
   assert.equal((await worker.fetch(request('/bibliography/api/editor/state', { headers }), { ...env, FELLOWSHIP_EDITOR_PASSWORD: 'rotated-test-secret' })).status, 401);
 });
 
@@ -502,17 +521,43 @@ test('editor rejects stale revisions and invalid fields', async () => {
   assert.match((await stale.json()).error, /changed elsewhere/);
 });
 
-test('editor overrides become readable without a password when a deck opens', async () => {
+test('editor overrides remain protected after former opening dates', async () => {
   const env = environment({ TEST_NOW_MS: Date.parse('2026-09-14T06:00:00-04:00') });
   await env.CONTENT_OVERRIDES.put('deck:adaptation:current', JSON.stringify({
     revision: 'saved', updatedAt: '2026-09-07T16:00:00.000Z', fields: { 's01-1234abcd-01': 'Live copy' },
   }));
   const response = await worker.fetch(request('/editor/v1/decks/adaptation'), env);
-  assert.equal(response.status, 200);
-  const state = await response.json();
+  assert.equal(response.status, 401);
+  const state = await (await worker.fetch(request('/editor/v1/decks/adaptation', { headers: { Cookie: await viewerCookie(env) } }), env)).json();
   assert.equal(state.fields['s01-1234abcd-01'], 'Live copy');
   assert.equal(state.canEdit, false);
   assert.equal(state.canRequestEdit, false);
+});
+
+test('old date-specific sessions cannot grant shared viewing access', async () => {
+  const env = environment();
+  const expiry = Math.floor(env.TEST_NOW_MS / 1000) + 3600;
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(passwords.september9), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const signature = Buffer.from(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(`agif:2026-09-09:${expiry}`))).toString('base64url');
+  for (const name of ['mint_fellowship_session_2026_09_09', 'mint_fellowship_session_slides']) {
+    const headers = { Cookie: `${name}=${expiry}.${signature}` };
+    assert.equal((await worker.fetch(request('/philosophy/', { headers }), env)).status, 303);
+    assert.equal((await worker.fetch(request('/editor/v1/decks/philosophy', { headers }), env)).status, 401);
+  }
+});
+
+test('viewer login validates origin and rate limits without granting editing', async () => {
+  const env = environment();
+  const init = { method: 'POST', headers: { Origin: 'https://fellowship.mintresearch.org' }, body: new URLSearchParams({ password: env.FELLOWSHIP_SLIDES_PASSWORD, next: '/' }) };
+  assert.equal((await worker.fetch(request('/login', { ...init, headers: {} }), env)).status, 403);
+  assert.equal((await worker.fetch(request('/login', { ...init, headers: { Origin: 'https://evil.example' } }), env)).status, 403);
+  assert.equal((await worker.fetch(request('/login', init), { ...env, OWNER_LOGIN_LIMITER: { limit: async () => ({ success: false }) } })).status, 429);
+  assert.equal((await worker.fetch(request('/login', init), { ...env, OWNER_LOGIN_LIMITER: undefined })).status, 503);
+  const cookie = await viewerCookie(env);
+  assert.equal((await worker.fetch(request('/editor/v1/decks/definitions', { method: 'PUT', headers: { Cookie: cookie, Origin: 'https://fellowship.mintresearch.org', 'Content-Type': 'application/json' }, body: '{}' }), env)).status, 403);
+  for (const path of ['/', '/definitions/', '/editor/v1/decks/definitions', '/login']) {
+    assert.equal((await worker.fetch(request(path), { ...env, FELLOWSHIP_SLIDES_PASSWORD: undefined })).status, 503);
+  }
 });
 
 test('write methods are allowed only for the login form', async () => {

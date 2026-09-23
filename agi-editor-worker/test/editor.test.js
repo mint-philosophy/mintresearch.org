@@ -6,9 +6,11 @@ import worker from '../src/index.js';
 class MemoryKV {
   constructor() {
     this.values = new Map();
+    this.reads = 0;
   }
 
   async get(key, type) {
+    this.reads += 1;
     const value = this.values.get(key);
     if (value === undefined) return null;
     return type === 'json' ? JSON.parse(value) : value;
@@ -36,22 +38,31 @@ function request(method, ip, body, requestOrigin = origin) {
   return new Request(endpoint, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
 }
 
-test('public readers receive overrides without edit authority', async () => {
-  const response = await worker.fetch(request('GET', '198.51.100.4'), environment());
-  assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), { revision: 'base', updatedAt: null, fields: {}, canEdit: false });
-});
+for (const requestOrigin of [origin, 'https://www.mintresearch.org', fellowshipOrigin]) {
+  test(`legacy reads are retired without accessing saved text for ${requestOrigin}`, async () => {
+    const env = environment();
+    await env.CONTENT_OVERRIDES.put('deck:should-we-build-agi:current', JSON.stringify({
+      revision: 'saved', fields: { 's03-1234abcd-01': 'Private slide text' },
+    }));
+    for (const ip of ['198.51.100.4', '203.0.113.8']) {
+      const response = await worker.fetch(request('GET', ip, undefined, requestOrigin), env);
+      assert.equal(response.status, 410);
+      assert.equal(response.headers.get('Access-Control-Allow-Origin'), requestOrigin);
+      assert.equal(response.headers.get('Cache-Control'), 'no-store');
+      assert.deepEqual(await response.json(), { error: 'This legacy editor endpoint is retired' });
+    }
+    assert.equal(env.CONTENT_OVERRIDES.reads, 0);
+  });
+}
 
-test('the former configured IP no longer receives edit authority', async () => {
-  const response = await worker.fetch(request('GET', '203.0.113.8'), environment());
-  assert.equal((await response.json()).canEdit, false);
-});
-
-test('the Fellowship host is an allowed editor origin', async () => {
-  const response = await worker.fetch(request('GET', '203.0.113.8', undefined, fellowshipOrigin), environment());
-  assert.equal(response.status, 200);
-  assert.equal(response.headers.get('Access-Control-Allow-Origin'), fellowshipOrigin);
-  assert.equal((await response.json()).canEdit, false);
+test('missing and unapproved origins cannot read saved text', async () => {
+  const env = environment();
+  for (const requestOrigin of ['', 'https://example.com']) {
+    const response = await worker.fetch(request('GET', '198.51.100.4', undefined, requestOrigin), env);
+    assert.equal(response.status, 403);
+    assert.equal(await response.text(), 'Forbidden');
+  }
+  assert.equal(env.CONTENT_OVERRIDES.reads, 0);
 });
 
 test('the legacy save route is permanently read-only', async () => {
