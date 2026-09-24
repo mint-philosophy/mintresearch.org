@@ -315,9 +315,9 @@ assert.ok(routerConfig.includes('pattern = "fellowship.mintresearch.org"'), 'the
 assert.match(routerConfig, /directory = "\.\/site-assets"/, 'the Worker must serve the isolated Fellowship asset tree');
 assert.match(routerConfig, /run_worker_first = true/, 'the password gate must run before static assets');
 assert.match(routerConfig, /binding = "CONTENT_OVERRIDES"/, 'the Fellowship Worker must bind the text-override store');
-for (const day of ['8', '9', '10', '11', '14']) {
-  assert.ok(router.includes(`FELLOWSHIP_PASSWORD_SEPTEMBER_${day}`), `September ${day} must use its own Worker secret`);
-}
+assert.match(router, /const slidesAccess = \{ accessGroup: 'slides', passwordBinding: 'FELLOWSHIP_SLIDES_PASSWORD'/, 'presentations must use the shared viewing-password secret');
+assert.equal((router.match(/\.\.\.slidesAccess, title:/g) || []).length, 6, 'all six presentations must use the shared viewing gate');
+assert.doesNotMatch(router, /\bunlockAt\b|\bisPresentationOpen\b/, 'presentation gates must not open automatically');
 assert.match(router, /ALLOWED_IPS/, 'the IP bypass must be read only from a Worker secret');
 assert.match(router, /HttpOnly; Secure; SameSite=Strict/, 'the Fellowship session cookie must use secure attributes');
 assert.match(router, /X-Robots-Tag/, 'protected presentation routes must add an HTTP noindex directive');
@@ -401,4 +401,4 @@ assert.match(router, /MAX_EDITOR_FIELDS = 384/, 'editor payloads must retain a b
 assert.match(legacyEditorWorker, /legacy editor endpoint is read-only/, 'the retired cross-origin editor must reject writes');
 assert.doesNotMatch(legacyEditorWorker, /CONTENT_OVERRIDES\.put/, 'the retired editor must have no remaining storage write path');
 
-console.log('AGI Fellowship presentation contract OK: six dated, isolated, noindex Pretext decks (7/5/9/16/31/8 slides), five day-specific password gates, timed public release, private owner-session editing, and content-free redirects from retired routes.');
+console.log('AGI Fellowship presentation contract OK: six dated, isolated, noindex Pretext decks (7/5/9/16/31/8 slides), one permanent viewing-password gate, private owner-session editing, and content-free redirects from retired routes.');
