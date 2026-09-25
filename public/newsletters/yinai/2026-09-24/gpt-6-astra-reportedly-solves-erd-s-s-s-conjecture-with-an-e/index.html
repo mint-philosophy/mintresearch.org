@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Mathematicians rewrite and extend Astra's Erdős-Sós proof — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-24">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-24">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 24 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Mathematicians rewrite and extend Astra's Erdős-Sós proof</h1>
+<p class="dek">Bloom's September 24 thread highlights human reconstructions of the earlier AI proof, including simpler arguments, a classification of extremal graphs and directed extensions.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 24 September 2026</span> <span class="chip">1201 words · ~6 min</span></div>
+<div class="article-body">
+<p>Thomas Bloom <a href="https://x.com/thomasfbloom/status/2103067669951881624">highlighted three human reworkings of Astra's Erdős-Sós proof on September 24</a>, arguing that they illustrate how an AI proof becomes part of mathematical understanding. Oliver Riordan and Alex Scott of Oxford, David R. Wood of Monash University and Bryce Frederickson of Emory University have recast the argument, clarified its structure and derived further consequences. <a href="https://mintresearch.org/newsletters/yinai/2026-09-03/#story-gpt-6-astra-solves-2-of-68-curated-erd-s-problems-under-fixe">We covered the original result on September 3</a>; the <a href="https://github.com/tadamcz/erdos548">proof repository</a> dates Astra's successful attempt to August 26. The papers Bloom linked were posted between September 14 and 18. They build on that proof, often through <a href="https://www.erdosproblems.com/548">Bloom's exposition</a>.</p>
+<p>The theorem concerns graphs, collections of vertices joined by edges, and trees, connected patterns without cycles. If a graph's average number of neighbours per vertex exceeds t−2, it contains every tree with t vertices, whatever the tree's shape. Extra edges among the chosen vertices are allowed. The threshold is exact: disconnected complete graphs on t−1 vertices have average degree t−2, but none of their components is big enough to hold the tree. The difficulty is obtaining the guarantee from an average, which allows some vertices to have very few neighbours.</p>
+<p>Astra's <a href="https://www.erdosproblems.com/static/548copy.pdf">five-page argument</a> counts arrangements of the graph's vertices. Put them in a list and mark every position occupied by a neighbour of the first vertex. Across all possible lists, the average number of marks equals the graph's average degree. Now fix a tree and designate one of its vertices as its root. A mark is good if the part of the list ending there contains the tree with its root at the first vertex. The central inequality says that, averaged across all lists, at most t−2 marks fail to be good. If the tree were absent altogether, every mark would fail, forcing the average degree to be at most t−2.</p>
+<p>The inequality follows by building up the tree from smaller pieces. If the root is a leaf, remove it and use the smaller tree's count. After discarding at most one qualifying mark per list, reversing two blocks moves the new leaf into the first position without merging distinct cases. If the root branches, split the tree into two pieces meeting only at the root. Rotating the first qualifying stretch of a list separates the pieces so their copies can be joined. An extra empty-cut case accounts for at most one additional state per list. These reversible rearrangements keep the counting losses small enough to recover the exact threshold.</p>
+<p>Riordan and Scott's <a href="https://arxiv.org/abs/2609.15893"><em>A short proof of the Erdős-Sós Conjecture</em></a> turns the counting into an expectation over a uniformly random ordering. An edge from the first vertex is T-jumping if a rooted copy of T already fits before the edge's other endpoint. They show that the expected number of such edges is at least d−|T|+1, where d is the graph's average degree. Applying that bound after removing a leaf from the desired tree forces a copy of the whole tree. Their branching step uses a simpler reversible rearrangement. Randomness here is a mathematical counting device, not a computer search.</p>
+<p>They also characterize the graphs at the threshold. For a fixed non-star tree with t vertices, a graph of average degree exactly t−2 that avoids it must be a disjoint union of complete graphs on t−1 vertices. If the forbidden tree is a star, with every edge meeting at one centre, any graph in which every vertex has exactly t−2 neighbours is an extremal example. This describes all the ways the density guarantee can fail at equality.</p>
+<p>Their method also proves a 2013 conjecture about directed graphs: average outdegree above t−2 forces every antidirected tree on t vertices. In such a tree, each vertex either sends all its edges outward or receives all of them. That restriction matters; the result does not cover arbitrary orientations of trees in arbitrary digraphs. Riordan and Scott credit Santos, Stein and Williams with obtaining the same extension independently a few days earlier, also by adapting the AI proof.</p>
+<p>Frederickson's <a href="https://arxiv.org/abs/2609.21159"><em>Erdős-Sós via random cyclic orderings</em></a> arranges vertices around a circle to expose the argument's symmetries and proves the antidirected version directly. He says he completed his variation before learning of the other human adaptations, but explicitly credits Bloom's exposition. His stronger induction allows any designated tree edge to serve as the root edge. It yields a lower bound on how many host arcs can represent that chosen edge in a copy, extending the argument beyond showing that some copy exists.</p>
+<p>Wood's <a href="https://arxiv.org/abs/2609.17877"><em>The Erdős-Sós Theorem</em></a> provides another exposition and develops a known Ramsey application. Colour every edge of a complete graph with k colours. On k(t−2)+2 vertices, one colour must contain a copy of any prescribed t-vertex tree. The bound matches a 1975 lower bound of Erdős and Graham for sufficiently large k congruent to 1 modulo t; it is not an equality claim for every k. Wood also situates the proof among decades of partial results, including an announced 1990s proof for sufficiently large trees that, to his knowledge, was never written in full.</p>
+<p>Separate follow-on papers used Astra again. In <a href="https://arxiv.org/abs/2609.08012"><em>Kalai's Conjecture for Tight Trees</em></a>, posted September 7, Dhruv Mubayi and Jacques Verstraëte describe asking the model first to adapt its method to hypergraph paths, then to the full conjecture. Hypergraph edges join sets of vertices rather than pairs; the ordinary graph case recovers Erdős-Sós. The authors say they checked the main proof and rewrote much of its presentation. They explicitly leave additional model-generated claims about equality cases and stronger counting bounds unverified. Their suggestion that the technique may descend from an older argument of Perles identifies a possible mathematical connection, not evidence of what the model retrieved or how it arrived at the proof.</p>
+<p>Their September 10 paper, <a href="https://arxiv.org/abs/2609.10987"><em>Erdős-Sós for digraphs</em></a>, reports another Astra extension. An Eulerian digraph on n vertices with more than (t−1)n arcs contains every oriented tree with t edges. Eulerian here requires every vertex to have equal indegree and outdegree; density alone is insufficient. Unlike the antidirected theorem, this allows arbitrary tree orientations by restricting the host graph. The authors attribute all the proofs to Astra after their prompts and take responsibility for the paper, but their declaration specifically says they checked the proof for paths. It does not say they independently checked every result.</p>
+<p>Formal checking has its own scope. The original repository reports that Comparator checked Astra's Lean proof against an audited statement using standard axioms. It also discloses a small mismatch: for one parity of the parameters, that statement requires one more integer edge than the classical conjecture. The internal counting lemma gives the sharp classical bound, which the human papers also prove. A successful formal check establishes the encoded statement; understanding exactly what was encoded remains part of interpreting the result.</p>
+<p>Bloom judged the human presentations more elegant than the AI writeup and argued that formal proof is one step in understanding a problem. Timothy Gowers <a href="https://x.com/wtgowers/status/2103113218956652979">replied that first human proofs are rarely the last step either</a>. The papers give this observation concrete content: revised counting arguments, equality classifications and directed extensions. They document mathematicians extracting further mathematics from Astra's argument. They do not establish three independent rediscoveries of the original proof or settle its entire intellectual history.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.erdosproblems.com/548">Erdős Problem #548 (Erdős-Sós conjecture), with Thomas Bloom's proof exposition - erdosproblems.com</a> <span class="how">— Bloom's exposition supplies the graph theorem and the marked-ordering argument underlying the later papers.</span></li>
+<li><a href="https://x.com/thomasfbloom/status/2103067669951881624">Thomas Bloom's five-post thread on the lifecycle of the Erdős-Sós proof - X</a> <span class="how">— Bloom's September 24 thread identifies the three human papers and explains his view of how formal proofs contribute to mathematical understanding.</span></li>
+<li><a href="https://www.erdosproblems.com/static/548copy.pdf">A Counting Proof for Erdős Problem 548 (GPT-6 Astra's writeup) - erdosproblems.com</a> <span class="how">— The original writeup supplies the counting inequality, leaf-root reversal and branch-gluing rotation.</span></li>
+<li><a href="https://github.com/tadamcz/erdos548">tadamcz/erdos548 - Lean 4 machine-checked proof of Erdős problem #548 - GitHub</a> <span class="how">— The repository records the August 26 attempt, the formal checking procedure and the difference between the compared statement and the sharp classical bound.</span></li>
+<li><a href="https://arxiv.org/abs/2609.15893">A short proof of the Erdős-Sós Conjecture - Oliver Riordan and Alex Scott, arXiv:2609.15893</a> <span class="how">— Riordan and Scott give the expectation-based proof, characterize equality cases and establish the antidirected extension while crediting parallel work.</span></li>
+<li><a href="https://arxiv.org/abs/2609.17877">The Erdős-Sós Theorem - David R. Wood, arXiv:2609.17877</a> <span class="how">— Wood explains the counting proof, historical partial results and the Ramsey upper bound with its qualified equality cases.</span></li>
+<li><a href="https://arxiv.org/abs/2609.21159">Erdős-Sós via random cyclic orderings - Bryce Frederickson, arXiv:2609.21159</a> <span class="how">— Frederickson develops the cyclic-ordering version, its stronger rooted-edge consequence and its relationship to the other human adaptations.</span></li>
+<li><a href="https://arxiv.org/abs/2609.08012">Kalai's Conjecture for Tight Trees - Dhruv Mubayi and Jacques Verstraete, arXiv:2609.08012</a> <span class="how">— Mubayi and Verstraëte report the prompted hypergraph extension, distinguish checked and unverified claims, and suggest a possible connection to Perles's method.</span></li>
+<li><a href="https://arxiv.org/abs/2609.10987">Erdős-Sós for digraphs - Dhruv Mubayi and Jacques Verstraete, arXiv:2609.10987</a> <span class="how">— The Eulerian-digraph paper states the host-graph restriction, attributes the proofs to Astra and specifies the authors' checking of the paths proof.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-03/#story-gpt-6-astra-solves-2-of-68-curated-erd-s-problems-under-fixe">Yesterday in AI, 3 September 2026 - Astra settles two of 68 curated Erdős problems in Epoch's test</a> <span class="how">— Earlier coverage reported problem 548 and its formal verification before the subsequent human papers appeared.</span></li>
+<li><a href="https://x.com/wtgowers/status/2103113218956652979">Timothy Gowers's reply to Thomas Bloom on first proofs</a> <span class="how">— Gowers observes that subsequent reinterpretation and development also follow human proofs.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-gpt-6-astra-reportedly-solves-erd-s-s-s-conjecture-with-an-e">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-24/gpt-6-astra-reportedly-solves-erd-s-s-s-conjecture-with-an-e</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
