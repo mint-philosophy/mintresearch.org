@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Claude calculates a nine-loop particle-scattering amplitude — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-25">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-25">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 25 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Claude calculates a nine-loop particle-scattering amplitude</h1>
+<p class="dek">Matt von Hippel describes a largely autonomous calculation in a simplified theory, using human-developed methods and costing an estimated $1,000 to $2,000 per approach.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 25 September 2026</span> <span class="chip">964 words · ~5 min</span></div>
+<div class="article-body">
+<p>Claude extended a difficult particle-physics calculation from eight loops to nine by writing and running code based on methods human researchers had developed. In <a href="https://www.anthropic.com/research/yes-claude-can-do-nine-loops">Yes, Claude can do Nine Loops</a>, published by Anthropic on September 25, physicist and science writer Matt von Hippel describes how Liam Fitzpatrick and Siddharth Mishra-Sharma used Fable 5.1 through Claude Science to calculate a six-particle scattering amplitude. Lance Dixon of SLAC and Stanford received the result on September 1 and checked it. The calculation concerns a simplified theory used to develop mathematical methods for particle physics.</p>
+<p>Von Hippel explains that scattering amplitudes let physicists calculate the probabilities of different outcomes when particles interact. They usually approximate the answer by adding successive quantum corrections, counted in loops; higher orders become increasingly difficult to calculate. The theory used here, planar N=4 super-Yang-Mills, has an unusually extensive symmetry relating different kinds of particles. Its mathematical simplifications make it a useful testing ground for techniques that researchers hope to apply to more realistic theories. The nine-loop result gives researchers another unusually detailed example with which to study these methods, within the deliberately simplified theory.</p>
+<p>Von Hippel's <a href="https://4gravitons.com/2026/08/07/it-only-counts-when-ai-gets-to-my-field/">August 7 challenge</a> asked AI companies to solve an outstanding problem in his former research field with computing resources an academic could afford. He chose problems for which physicists knew possible methods but expected the computational demands to be prohibitive. His interest went beyond producing another result: he wanted to know whether AI could discover ways around apparent computational limits. For the nine-loop calculation, Dixon had expected to use an indirect method involving an easier related quantity, called a form factor.</p>
+<p>Dixon and Yu-Ting Liu had demonstrated that approach in their 2023 arXiv paper <a href="https://arxiv.org/abs/2308.08199">An Eight Loop Amplitude via Antipodal Duality</a>. The duality relates the form factor to the amplitude under a restricted set of particle configurations; additional constraints recover the more general answer. Both this approach and the direct method use a bootstrap: researchers specify a space of possible formulas, then eliminate candidates that violate known symmetries or predictions in special cases, such as particles moving nearly parallel. The remaining checks can test the answer. Years of human research supplied the mathematical restrictions, earlier results and formats that made this calculation possible.</p>
+<p>According to von Hippel, Fitzpatrick and Mishra-Sharma first asked Claude which challenge it could tackle, then gave it the nine-loop problem and periodically encouraged it to continue. Claude Science provided the surrounding software and instructions for sustained work. Claude used both the direct bootstrap and the form-factor approach to calculate the amplitude’s <em>symbol</em>, a mathematical representation that captures much of the formula’s structure while omitting some terms needed for the complete function. Von Hippel estimates that either approach would have cost an end user about $1,000 to $2,000, mostly for running the model. The direct bootstrap used Python and the symbolic-mathematics package SymPy; its conventional computing component reportedly cost about $100, corresponding to 96 CPUs running for a week.</p>
+<p>In his appended account, Dixon says the difficult part was implementing a fragile computational procedure whose many practical details had never been fully documented in papers. Claude had to write that code and organize the computing resources. Dixon had been working toward the nine-loop form factor with collaborators for years; he checked Claude's amplitude mainly by converting it back into that related quantity. He welcomed the result partly because it used his team's methods and existing data format. His group had already been exploring smaller, specialized transformer models to predict higher-loop results, with human-developed checks ready to evaluate candidate answers.</p>
+<p>The <a href="https://smsharma.io/cosmic-nine-loops/validation/method_and_validation.md">released method and validation notes</a> explain how the computation made the equations manageable. It exploited symmetry, rearranged the representation of the unknown formula and sampled equations to find candidate solutions, then checked them against the complete sets of constraints. It reproduced earlier results and tested predictions that had not been used to fix the nine-loop answer. The two approaches agree on all the compared coefficients defining the symbol.</p>
+<p>The <a href="https://smsharma.io/cosmic-nine-loops/">public result page</a> distinguishes that cross-check from the full function, which was computed separately and only once. Completing the function also assumes that certain relations holding for the symbol continue to hold for the function, including empirical relations for which that need not follow. The released material contains machine-readable results and validation records; the programs that performed the computation are not distributed. Researchers can inspect the formulas and compare the symbol calculations using the released files; reproducing the full computational procedure requires rebuilding the programs described in the documentation.</p>
+<p>Song He, Jirong Jing and Xiang Li independently deposited <a href="https://doi.org/10.5281/zenodo.22800071">The Symbols of Six-Gluon MHV Amplitudes through Nine Loops</a> on Zenodo on September 17. Their dataset contains the symbols from two through nine loops and instructions for extracting coefficients. Dixon reports that He's group used GPT-6 to help compute some constraints, while humans supplied the overall framework. This concurrent result changed von Hippel's assessment of his challenge: the next loop had been within reach of a human-led project, too. He credits Claude with sustained, detailed execution using established methods, and suggests that better programming could make other apparently inaccessible calculations feasible.</p>
+<p>Von Hippel's <a href="https://4gravitons.com/2026/09/25/it-got-to-my-field/">companion post</a> makes the reporting boundaries explicit. He had not inspected the model's logs; his account of the working process came from conversations with the Anthropic researchers. Anthropic paid him for the guest article and commented on drafts, while Dixon received Claude usage credits. Von Hippel says the edits clarified the account without changing his conclusions. He also asked Anthropic to consult the relevant scientists before attempting his other challenges, both to establish the problem correctly and to plan verification. His conclusion is that affordable AI can now carry out some demanding research procedures with little guidance; the experiment left his larger questions about radically new methods and future intelligence unresolved.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.anthropic.com/research/yes-claude-can-do-nine-loops">Yes, Claude can do Nine Loops, including Lance Dixon’s addendum</a> <span class="how">— Assigned primary source, read in full from the supplied source evidence and verified by direct HTTP 200. Supports the September 25 publication, September 1 receipt by Dixon, model and harness, human involvement, costs, two methods, Dixon’s validation account, Song He’s use of GPT-6, author assessment, compensation and usage-credit disclosures.</span></li>
+<li><a href="https://4gravitons.com/2026/08/07/it-only-counts-when-ai-gets-to-my-field/">It Only Counts When AI Gets to My Field, Matt von Hippel</a> <span class="how">— Original August 7 challenge, read in full. Establishes the academic computing-budget condition and von Hippel’s interest in overcoming apparent computational barriers.</span></li>
+<li><a href="https://arxiv.org/abs/2308.08199">An Eight Loop Amplitude via Antipodal Duality, Lance J. Dixon and Yu-Ting Liu</a> <span class="how">— Primary 2023 precursor. Read abstract, introduction and technical explanation of symbol, function, bootstrap constraints and antipodal mapping in the arXiv HTML. Establishes human method development and the previous eight-loop calculation; not treated as a new paper.</span></li>
+<li><a href="https://smsharma.io/cosmic-nine-loops/validation/method_and_validation.md">The nine-loop six-gluon MHV symbol: method and validation</a> <span class="how">— Primary computational documentation, read in full in sections by direct HTTP 200. Supports symmetry reduction, rearranged ansatz, sampled equations followed by exact residual verification, lower-loop controls, held-out checks, agreement of separately computed symbol representations, and declared assumptions. Validation records were read as reported documentation, not independently rerun.</span></li>
+<li><a href="https://smsharma.io/cosmic-nine-loops/">Cosmic9: Cosmically Normalized Six-Point Amplitudes at Nine Loops</a> <span class="how">— Primary result landing page, read in full by direct HTTP 200. Supports distributed symbol and function artifacts, cross-comparison of the two symbol computations, the separately computed full function and its additional empirical-relation assumption, and the absence of distributed computation programs. Large numerical archives were not downloaded or independently checked.</span></li>
+<li><a href="https://doi.org/10.5281/zenodo.22800071">The Symbols of Six-Gluon MHV Amplitudes through Nine Loops, Song He, Jirong Jing and Xiang Li</a> <span class="how">— Primary independent dataset record, read in full after direct HTTP redirect to Zenodo. Verifies authors, September 17 publication and contents comprising symbols from two to nine loops. GPT-6’s role is attributed to Dixon’s account, not inferred from this deposit. Archive not independently evaluated.</span></li>
+<li><a href="https://4gravitons.com/2026/09/25/it-got-to-my-field/">It Got to My Field, Matt von Hippel</a> <span class="how">— Author’s September 25 follow-up, read in full by direct HTTP 200. Supports his explicit statement that he had not inspected model logs, reporting and payment arrangements, proposed consultation before future challenges, and his interpretation of the result. Provides substantive author reaction without substituting anonymous social comments.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-anthropic-anthropicai-twitter-claude-computes-nine-loop-scat">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-25/anthropic-anthropicai-twitter-claude-computes-nine-loop-scat</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

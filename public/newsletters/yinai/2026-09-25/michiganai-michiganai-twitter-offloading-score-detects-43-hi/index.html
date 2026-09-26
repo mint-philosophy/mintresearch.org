@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>A score estimates how much coding work developers delegate to AI — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-25">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-25">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 25 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">A score estimates how much coding work developers delegate to AI</h1>
+<p class="dek">A May study traces the work developers hand to coding assistants under time pressure, while showing why heavy reliance and poor understanding need separate measurements.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 25 September 2026</span> <span class="chip">850 words · ~4 min</span></div>
+<div class="article-body">
+<p>Developers working to a shorter deadline handed more of their coding work to AI, according to a measure that estimates the steps they would otherwise have performed themselves. Stanford's Vishakh Padmakumar and colleagues introduced the measure in <a href="https://arxiv.org/abs/2605.29392">“Offloading Score: Measuring AI Reliance Through Counterfactual Workflows,”</a> posted to arXiv on May 28. Their study of 40 freelance developers asks how responsibility for a task changes during an AI-assisted session, beyond how much generated code survives in the final application.</p>
+<p>Padmakumar's team starts with recordings of the developer's screen, clicks and keystrokes. Language models turn those traces into descriptions of activities, identify the activities involving AI, and construct an alternative sequence for each: the actions an average person might take to accomplish the same subtask without AI. Activities performed without AI stay in the alternative workflow unchanged. The score is the fraction of the complete estimated human-only workflow’s steps saved by the observed workflow; each step counts equally, without a separate measure of its difficulty or duration. A larger score means more work was delegated under that simulation. The comparison is with an imagined average developer, so it does not establish how much time or mental effort that particular participant actually saved.</p>
+<p>The authors' <a href="https://vishakhpk.github.io/measuring-reliance/">project page</a> illustrates the calculation with a developer accepting a batch of AI-generated changes that make an interface work on mobile screens. The model expands that acceptance into a possible manual sequence: locating the relevant files, editing layout rules, checking the result in a browser, fixing problems and committing the changes. Readers can inspect the proposed alternative and judge whether it resembles work they would have done. The same method can count assistance with planning, which would be missed by counting generated lines of code alone.</p>
+<p>For the experiment, the researchers recruited US-based Upwork developers with previous programming jobs and experience using AI coding tools. Participants were randomly assigned to build one of four small web applications, including a break timer and a recipe explorer, with either one hour or four hours available. They could use their preferred AI tools. The researchers analysed the recordings, the submitted code and post-task questionnaires; the final sample excluded anomalous completion behaviour, including completing the task without using AI.</p>
+<p>In the <a href="https://arxiv.org/html/2605.29392v1">reported results</a>, the shorter-deadline group's average score was about 0.45, compared with 0.31 for the longer-deadline group. The difference passed the researchers' statistical significance test. None of their comparison measures did: AI interaction counts, time spent with the tools, the fraction of code attributed to AI, or self-reported mental demand. The behaviour labels help explain the difference. Developers under pressure more often asked AI to execute subtasks and incorporated its output directly; developers with more time more often used it for planning and rejected or adapted its suggestions. Equal amounts of generated code can therefore conceal different divisions of work.</p>
+<p>The expectation that deadlines would alter reliance came from earlier experiments. In <a href="https://arxiv.org/html/2306.07458v3">“Accuracy-Time Tradeoffs in AI-Assisted Decision Making under Time Pressure,”</a> published at IUI 2024, Siddharth Swaroop and colleagues studied people solving logic puzzles with AI advice. Time pressure increased overreliance when the advice appeared before participants made their own decision; requiring an initial independent answer changed the trade-off between speed and accuracy. Padmakumar's contribution is a way to estimate delegation across an extended coding session, where a person may repeatedly plan, seek assistance and check results.</p>
+<p>The team also asked developers questions about their finished applications, such as how a timer represented its internal state or how a project planner handled deleting tasks with subtasks. An AI grader compared the answers with the submitted code. Across the entire sample, the association between higher offloading and poorer understanding was weak. The stronger negative relationship highlighted in the paper appeared after excluding roughly three in ten developers, who combined comparatively high reliance with good understanding. Some in that group reported asking AI for help implementing features they did not already know how to build.</p>
+<p>A related finding appeared in Judy Hanwen Shen and Alex Tamkin's January arXiv paper <a href="https://arxiv.org/html/2601.20245v2">“How AI Impacts Skill Formation.”</a> Developers randomly assigned AI assistance while learning an unfamiliar Python library performed worse on a subsequent skills test on average. Their analysis of recorded interactions nevertheless identified patterns, including asking conceptual questions and requesting explanations, associated with stronger learning. Both papers give reasons to examine how people use assistance. Padmakumar's experiment did not compare learning with and without AI, and its proposed threshold for excessive reliance depends on the level of code understanding someone decides is acceptable.</p>
+<p>In their validation checks, Padmakumar and colleagues asked 20 participants to assess five simulated alternatives each from their own sessions; most received favourable ratings. Those judgments support the alternatives’ plausibility, while leaving the estimated number and difficulty of the steps open to error. The authors acknowledge that their method depends on how finely activities are divided and misses thinking that produces no visible action. Their <a href="https://github.com/vishakhpk/offloading-score">released code</a> makes the calculation available for inspection and reuse. Extending it beyond short programming assignments, or using it to judge an individual developer's dependence on AI, requires evidence about those settings and that person's capabilities.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2605.29392">Offloading Score: Measuring AI Reliance Through Counterfactual Workflows, Vishakh Padmakumar et al.</a> <span class="how">— Canonical title, authors and May 28, 2026 submission date verified; one version remains listed. The full HTML paper, references and all appendices were read separately.</span></li>
+<li><a href="https://arxiv.org/html/2605.29392v1">Offloading Score, full paper and appendices</a> <span class="how">— Full primary text read: workflow definition and formula; GPT-5.1 induction and GPT-5.2 counterfactuals; random assignment, Upwork recruitment, exclusions, tasks, one/four-hour conditions; reported mean scores and significance; baselines; behaviour labels; human validation; system-recall analysis and limitations. Article uses rounded group means rather than the internally inconsistent headline +43%.</span></li>
+<li><a href="https://vishakhpk.github.io/measuring-reliance/">Offloading Score project page</a> <span class="how">— Full author-written page read, including worked mobile-layout example, limitations concerning invisible thinking and non-personalized counterfactuals. This page still says code coming soon, but the GitHub repository is now public and was separately read.</span></li>
+<li><a href="https://github.com/vishakhpk/offloading-score">Offloading Score code repository</a> <span class="how">— Public README fetched and read from main via raw.githubusercontent.com; verifies released recording, induction and scoring implementation. No code execution or reproduction of results claimed.</span></li>
+<li><a href="https://arxiv.org/html/2306.07458v3">Accuracy-Time Tradeoffs in AI-Assisted Decision Making under Time Pressure, Siddharth Swaroop et al.</a> <span class="how">— Primary paper introduction, experimental design, discussion and conclusion read; verifies logic-puzzle experiments, advice-before/after manipulation and increased overreliance under time pressure in AI-before. IUI 2024 venue verified in the assigned paper bibliography.</span></li>
+<li><a href="https://arxiv.org/html/2601.20245v2">How AI Impacts Skill Formation, Judy Hanwen Shen and Alex Tamkin</a> <span class="how">— Primary abstract, introduction, main results and discussion read. Establishes randomized AI/no-AI experiment with unfamiliar asynchronous Python library and exploratory learning-preserving interaction patterns. January 28 submission checked on arXiv abstract page.</span></li>
+<li><a href="https://x.com/michigan_ai/status/2094821333322408035?s=12">MichiganAI September 1 social relay</a> <span class="how">— Full original-post text and September 1, 2026 timestamp read from the assignment-source-evidence JSON, which retains the desk's Bird verification. Used only to establish discovery and timing; no research credit assigned to the relay.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-michiganai-michiganai-twitter-offloading-score-detects-43-hi">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-25/michiganai-michiganai-twitter-offloading-score-detects-43-hi</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
