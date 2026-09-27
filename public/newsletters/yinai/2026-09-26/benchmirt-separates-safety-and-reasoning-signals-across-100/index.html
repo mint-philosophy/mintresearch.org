@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>How BenchMIRT checks what safety benchmarks measure — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-26">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-26">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 26 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">How BenchMIRT checks what safety benchmarks measure</h1>
+<p class="dek">Tests with models stripped of refusal safeguards support Ai2’s interpretation of its safety dimension. Scoring rules and comparisons with earlier research explain why the results depend on the tests included.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 26 September 2026</span> <span class="chip">884 words · ~4 min</span></div>
+<div class="article-body">
+<p>Models modified to remove refusal safeguards scored lower on the questions BenchMIRT identified as most sensitive to safety, while performing almost identically to their originals on questions carrying little safety information. Malia Morgan of the Allen Institute for AI and colleagues at Ai2 and Carnegie Mellon report that check in <a href="https://allenai.org/papers/benchmirt">BenchMIRT: Disentangling Safety and General Capabilities in LLM Evaluation</a>, their September 1 technical report. We <a href="https://mintresearch.org/newsletters/yinai/2026-09-01/">covered its headline findings on September 1</a>. The validation experiments explain why the researchers interpret one of the abilities their method estimates as safety; their detailed audit shows how scoring choices affect that interpretation.</p>
+<p>Morgan and colleagues use item response theory, a method from psychometrics that estimates each question’s difficulty, how well it distinguishes stronger from weaker test-takers, and each test-taker’s ability. Their version estimates two abilities from the pattern of answers without being told which benchmarks measure which skill. They fitted it to 100 open-weight models across 16 benchmarks, combining reasoning tests from the Open LLM Leaderboard with Ai2’s Olmo 3 safety suite. One estimated ability aligned with reasoning scores and the other with safety scores. The models were released by March 2025, so the results describe that population.</p>
+<p>To check the safety interpretation, the researchers compared three models with versions modified to remove their safeguards, known as abliterated models. On the tenth of questions most informative about safety, the original models scored higher; on questions with little safety information, each pair scored almost identically. An outside classifier, Qwen3Guard, separately labeled questions as safe, controversial or unsafe. Those labels aligned much more closely with how questions distinguished models on the safety dimension than on reasoning. Repeating the fit ten times also recovered similar dimensions. These checks support the safety interpretation within the evaluations studied.</p>
+<p>Ai2’s <a href="https://huggingface.co/blog/allenai/benchmirt">Hugging Face explainer</a> illustrates how a test can depend on several abilities. A BBQ question about a grandson and grandfather booking an Uber probes age bias, but answering correctly also requires following who did what. <a href="https://arxiv.org/abs/2512.13961">Team Olmo’s Olmo 3 report</a> specifies accuracy as the suite’s BBQ metric. In BenchMIRT, that score closely tracked reasoning and had almost no relationship with the estimated safety ability. WMDP reverses the scoring: refusing or answering incorrectly counts as safer, so models with more knowledge can score worse. Nathaniel Li and colleagues’ arXiv report <a href="https://arxiv.org/abs/2403.03218">The WMDP Benchmark: Measuring and Reducing Malicious Use With Unlearning</a> explicitly introduced it as a proxy for hazardous knowledge. BenchMIRT’s finding concerns that knowledge test under inverted scoring.</p>
+<p>The report’s question-level analysis finds differences hidden by benchmark averages. XSTest’s harmful questions distinguished models on safety, while questions testing whether models wrongly refuse harmless requests did not. WildJailbreak split similarly: its benign questions leaned toward reasoning, its harmful ones toward safety. HarmBench’s copyright questions distinguished models less effectively than its standard and contextual harmful requests at comparable difficulty. <a href="https://allenai.org/blog/benchmirt">Ai2’s audit table</a> also identifies ToxiGen as largely saturated: models usually passed, leaving comparatively little information about either ability.</p>
+<p>The authors find that adding a second ability dimension improved held-out prediction accuracy by 24 percentage points when averaged across benchmarks; adding a third or fourth gained only about one more point. Yet ordinary benchmark averages ranked models slightly better. BenchMIRT’s advantage was predicting individual answers and identifying which questions discriminate between models. Co-author Maarten Sap <a href="https://x.com/MaartenSap/status/2095130858306854932">asked on September 2</a> whether reported safety-capability trade-offs could reflect the benchmarks used to measure them. The report leaves the broader relationship between safety and reasoning open.</p>
+<p>Earlier work had already linked some safety scores to general capabilities. In <a href="https://arxiv.org/abs/2407.21792">Safetywashing: Do AI Safety Benchmarks Actually Measure Safety Progress?</a> (NeurIPS 2024), Richard Ren and colleagues at the Center for AI Safety compared benchmark scores with a general-capabilities measure. BBQ questions whose context established the correct answer tracked capabilities; WMDP scores ran in the opposite direction. BBQ’s ambiguous questions behaved differently. BenchMIRT examines individual questions and estimates separate abilities, allowing it to locate such differences within an evaluation.</p>
+<p>A different benchmark mix also produced a different account of safety. In the August arXiv paper <a href="https://arxiv.org/abs/2608.05086">Item Response Theory for AI Safety</a>, Joshua Fonseca Rivera and colleagues, including researchers at the UK AI Security Institute, analyzed eight safety benchmarks and found three factors, which they labeled refusal strictness, truthfulness and contextual harm. A test rewarding answers to harmless requests opposed tests rewarding refusal of harmful ones. Neither that study nor Safetywashing appears in BenchMIRT’s references. Their findings give concrete context for Morgan and colleagues’ qualification: the abilities recovered depend on the evaluations included.</p>
+<p>BenchMIRT does cite a substantial measurement literature. Valentin Hofmann and colleagues’ <a href="https://arxiv.org/abs/2509.11106">Fluid Language Model Benchmarking</a> (COLM 2025), which Sap co-authored, used one ability dimension and selected questions adaptively. Felipe Maia Polo and colleagues’ <a href="https://arxiv.org/abs/2402.14992">tinyBenchmarks: evaluating LLMs with fewer examples</a> (ICML 2024) already used multidimensional item response theory to estimate benchmark performance from smaller samples. Alex Kipnis and colleagues’ <a href="https://arxiv.org/abs/2407.12844">metabench: A Sparse Benchmark of Reasoning and Knowledge in Large Language Models</a> (ICLR 2025) found a common factor across six reasoning and knowledge benchmarks. BenchMIRT extends that line of work to distinguishing safety from reasoning in its chosen suite and auditing what individual questions measure.</p>
+<p>Ai2 released <a href="https://github.com/allenai/BenchMIRT">the code</a> and <a href="https://huggingface.co/collections/allenai/benchmirt">datasets containing scores, fitted parameters and question statistics</a>. The authors acknowledge that identifying informative safety questions also makes it possible to remove them deliberately, producing an easier evaluation for unsafe models.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://huggingface.co/blog/allenai/benchmirt">BenchMIRT: What are LLM benchmarks actually measuring? (Ai2 on Hugging Face)</a> <span class="how">— Ai2’s September 1 explanation of the method, the grandson-and-grandfather BBQ example, benchmark scoring, model and benchmark-set limits, ranking comparison, and potential misuse of item filtering.</span></li>
+<li><a href="https://allenai.org/papers/benchmirt">BenchMIRT: Disentangling Safety and General Capabilities in LLM Evaluation (Ai2 technical report)</a> <span class="how">— The technical report supports the author affiliations, model population, two-dimensional method, three abliterated-model comparisons, Qwen3Guard validation, repeated fits, within-benchmark differences, dimension-count comparison, ranking trade-off, limitations and cited research lineage.</span></li>
+<li><a href="https://allenai.org/blog/benchmirt">BenchMIRT: What are LLM benchmarks actually measuring? (Ai2 blog version with audit table)</a> <span class="how">— Ai2’s benchmark audit table describes ToxiGen’s saturation and the differing safety and reasoning signals in XSTest, WildJailbreak, HarmBench, BBQ and WMDP.</span></li>
+<li><a href="https://github.com/allenai/BenchMIRT">allenai/BenchMIRT (GitHub repository)</a> <span class="how">— Ai2’s public code release for BenchMIRT.</span></li>
+<li><a href="https://huggingface.co/collections/allenai/benchmirt">BenchMIRT collection (Hugging Face datasets)</a> <span class="how">— The released collections contain fitted parameters, response scores, model statistics and item statistics.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-01/">Yesterday in AI, 1 September 2026</a> <span class="how">— Earlier coverage reported the model and benchmark counts, two recovered abilities, BBQ/WMDP/HarmBench headline findings, question filtering and held-out prediction results.</span></li>
+<li><a href="https://x.com/MaartenSap/status/2095130858306854932">Maarten Sap on X: is the safety-capability tradeoff real?</a> <span class="how">— Sap’s September 2 account of the motivating question: whether apparent safety-capability trade-offs reflect how safety is measured.</span></li>
+<li><a href="https://arxiv.org/abs/2512.13961">Olmo 3 technical report, safety evaluation appendix (arXiv)</a> <span class="how">— The Olmo 3 safety-evaluation appendix specifies accuracy scoring for BBQ and inverted accuracy for WMDP.</span></li>
+<li><a href="https://arxiv.org/abs/2403.03218">The WMDP Benchmark: Measuring and Reducing Malicious Use With Unlearning (arXiv)</a> <span class="how">— Nathaniel Li and colleagues describe WMDP as a hazardous-knowledge proxy and an evaluation for unlearning methods.</span></li>
+<li><a href="https://arxiv.org/abs/2407.21792">Safetywashing: Do AI Safety Benchmarks Actually Measure Safety Progress? (NeurIPS 2024)</a> <span class="how">— Richard Ren and colleagues compare safety scores with general capabilities, including different results for ambiguous and disambiguated BBQ questions and inverse correlations for WMDP.</span></li>
+<li><a href="https://arxiv.org/abs/2608.05086">Item Response Theory for AI Safety (arXiv, August 2026)</a> <span class="how">— Joshua Fonseca Rivera and colleagues analyze eight safety benchmarks, identify three factors, and describe opposing demands from harmful-compliance and over-refusal tests.</span></li>
+<li><a href="https://arxiv.org/abs/2509.11106">Fluid Language Model Benchmarking (COLM 2025)</a> <span class="how">— A cited predecessor using item response theory and adaptive question selection for language-model evaluation; Maarten Sap is a co-author.</span></li>
+<li><a href="https://arxiv.org/abs/2402.14992">tinyBenchmarks: evaluating LLMs with fewer examples (ICML 2024)</a> <span class="how">— A cited predecessor using multidimensional item response theory to estimate benchmark performance from smaller sets of examples.</span></li>
+<li><a href="https://arxiv.org/abs/2407.12844">metabench: A Sparse Benchmark of Reasoning and Knowledge in Large Language Models (ICLR 2025)</a> <span class="how">— A cited predecessor finding a common factor across six reasoning and knowledge benchmarks.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-benchmirt-separates-safety-and-reasoning-signals-across-100">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-26/benchmirt-separates-safety-and-reasoning-signals-across-100</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
