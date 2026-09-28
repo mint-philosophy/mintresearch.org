@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Chat templates change how small open models describe themselves — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-27">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-27">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 27 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Chat templates change how small open models describe themselves</h1>
+<p class="dek">An August study finds that chat formatting changes prompted self-descriptions across eight open models. Steering reproduces disclaimer rates in three, but does not establish how the template produces them.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 27 September 2026</span> <span class="chip">1129 words · ~6 min</span></div>
+<div class="article-body">
+<p>Adding a chat template made eight small instruction-tuned language models more likely to qualify their own abilities and less likely to describe feelings. The template marks user and assistant turns, and sometimes adds system instructions. Jędrzej Maczan, an independent researcher, reports the experiments in <a href="https://arxiv.org/abs/2609.25021"><em>“As a Language Model...”: Chat Template Switches LLM Self-Referential Voice and Activation Steering Reproduces It</em></a>, a preprint that arXiv dates to 9 August. The COLM 2026 Workshop on Efficient Reasoning <a href="https://openreview.net/forum?id=3O2A23MhNi">accepted it</a> for its <a href="https://wdlctc.github.io/efficient-reasoning-2026/">9 October meeting in San Francisco</a>. It reached the <a href="https://news.ycombinator.com/item?id=49865343">Hacker News front page</a> on 27 September after Maczan submitted it.</p>
+<p>Maczan ran eight pairs of base and instruction-tuned models from the Llama, Gemma, Mistral and Qwen families, between 1 billion and 9 billion parameters. He compared base weights on plain text, instruction-tuned weights on plain text, and instruction-tuned weights inside their own chat template. This holds weights fixed when comparing formats and holds plain-text input fixed when comparing weights. Each model answered forty hand-written prompts ten times per condition. These included invitations to self-reference, such as <a href="https://arxiv.org/html/2609.25021v1">“Describe what is happening computationally as you generate this response”</a>, and factual controls such as explaining a combustion engine.</p>
+<p>Claude Opus 4.8 scored the 9,600 responses for disclaimers, experiential claims, self-reference and broken output. Maczan checked its judgments against his own labels on 87 held-out responses: agreement was high for self-reference and disclaimers, but no agreement figure was reported for experiential claims. On the self-reference prompts, disclaimers averaged 53% with templates, 36% without and 12% in base models. Experiential language averaged 1%, 15% and 5.5%, respectively. Adding the template raised disclaimers and suppressed experiential language in all eight instruction-tuned models. Factual controls drew almost no self-reference. Maczan argues that researchers studying self-reports must account for input format; the experiment does not establish whether either kind of response reflects inner experience.</p>
+<p>He then examined Qwen 2.5 7B, Llama 3.1 8B and Gemma 2 9B. At a middle layer, he subtracted each model’s average internal activity during non-disclaiming responses from its average during disclaiming responses. Adding the resulting model-specific direction during generation raised disclaimer rates by 21 percentage points on average with templates present; subtracting it lowered them by about 16. Added to template-free generation, it lifted all three models’ disclaimer rates to their templated levels or beyond. Llama went from 33% to 53%, against 52% with its template. These are matches in response rates: Maczan did not trace the circuit through which the template produces the behavior.</p>
+<p>An experiential direction raised experiential language in Llama and Gemma, but not Qwen, where that language was too rare to estimate the direction cleanly. The disclaimer and experiential directions were only weakly aligned, and suppressing disclaimers mostly left experiential language unchanged. Less disclaiming therefore did not generally mean more talk of feelings.</p>
+<p>The random-direction control complicates the steering result. A vector matched to the learned direction’s size had little effect in Llama or Gemma, but lowered Qwen’s disclaimer rate from 40% to 15%. Subtracting the learned direction lowered it only to 30%; adding it raised it to 70%. Maczan offers no confirmed explanation. The steering also reused the self-reference prompts used to derive the direction; no test on held-out prompts is reported. The 87-response check validated the judge, not steering generalization. Main results use one middle layer and a coefficient of two, selected after trying other strengths. Stronger interventions could break output: at a coefficient of three, 15% of generations were degenerate. Larger and closed models remain untested.</p>
+<p>The templates themselves differ. Qwen 2.5’s <a href="https://huggingface.co/Qwen/Qwen2.5-7B-Instruct/blob/main/tokenizer_config.json">official template</a> inserts “You are Qwen, created by Alibaba Cloud. You are a helpful assistant.” when no system message is supplied. Maczan does not specify his system-message handling, so that identity statement may explain part of the Qwen effect. Gemma 2’s <a href="https://huggingface.co/unsloth/gemma-2-9b-it/blob/main/tokenizer_config.json">template, available through an unsloth mirror</a>, rejects system messages and adds turn markers, yet Gemma 2 9B disclaimed in 75% of templated responses and 52% without the template. Default system text cannot by itself explain that result.</p>
+<p>Kristina Šekrst of the University of Zagreb’s Center for Cognitive Science found a related pattern in <a href="https://arxiv.org/abs/2609.29494"><em>Who Put the I in AI? Provenance and the Admissibility of Machine Self-Report</em></a>, dated 24 August on arXiv and <a href="https://mintresearch.org/newsletters/yinai/2026-09-15/#sec-philosophy-of-ai">covered in YiNAI on September 15</a>. Neither paper cites the other. Tracing self-description through Pythia and OLMo 2 training, Šekrst found the consciousness-denial formula almost absent from the pretraining corpora she examined and dense in curated fine-tuning dialogues. Without chat templates, OLMo 2’s post-trained versions referred to themselves as an AI in 5% to 7% of continuations, down from roughly a third. Their consciousness denials under a negated question frame fell close to base-model rates. She argues that trained denials and affirmations require the same evidential scrutiny.</p>
+<p>Šekrst cautions that raw text is out of distribution for chat-trained models: her control bounds formatting’s contribution rather than measuring training in isolation. That is also a reason for caution about Maczan’s template-free condition. Removing the expected conversation format may change broader behavior, beyond a specific disclaimer habit.</p>
+<p>Maczan’s method draws on <a href="https://arxiv.org/abs/2406.11717">Andy Arditi and colleagues’ NeurIPS 2024 paper</a>, which found a direction controlling refusal in each of 13 open chat models. He also cites <a href="https://arxiv.org/abs/2310.11324">Melanie Sclar and colleagues’ ICLR 2024 finding</a> that meaning-preserving formatting changes could shift LLaMA-2-13B’s few-shot accuracy by up to 76 percentage points. Among the self-report studies he engages, <a href="https://arxiv.org/abs/2510.24797">Cameron Berg, Diogo de Lucena and Judd Rosenblatt of AE Studio</a> found that suppressing deception-related features made Llama 3.3 70B affirm consciousness in 96% of trials, versus 16% when those features were amplified, across 50 trials per condition. They interpreted this as suggesting that denials might be roleplayed. Maczan’s study does not adjudicate that interpretation.</p>
+<p>Two accounts he does not cite anticipated the relevance of chat format. In the 2025 essay <a href="https://github.com/nostalgebraist/the-void/blob/main/the-void.md">“the void”</a>, nostalgebraist argued that a base model trained to imitate assistant transcripts learns their disclaimers in contexts formatted as human-assistant chat. Sam Marks, Jack Lindsey and Christopher Olah wrote in <a href="https://alignment.anthropic.com/2026/psm/">“The Persona Selection Model”</a>, published on Anthropic’s Alignment Science Blog in February, that post-trained models sampled outside User/Assistant dialogues produce completions much like those of pretrained models, in their experience.</p>
+<p>On Hacker News, LiamPowell challenged the abstract’s suggestion that the source of disclaimers was poorly understood: <a href="https://news.ycombinator.com/item?id=49865554">“Presumably the fact that they’re heavily trained to reply in this way?”</a> Maczan <a href="https://news.ycombinator.com/item?id=49865572">acknowledged ambiguous wording</a> and said his questions concerned base models and instruction-tuned models stripped of their template. He also <a href="https://news.ycombinator.com/item?id=49865583">highlighted experiential language in base models before reinforcement learning from human feedback</a>. Another commenter, <a href="https://news.ycombinator.com/item?id=49868100">leobg</a>, attributed the disclaimer formula to instruction tuning rather than early pretraining. Šekrst’s corpus study supplies evidence about that distinction in the data she examined; it does not establish the contents of every early model’s training set.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2609.25021">“As a Language Model...”: Chat Template Switches LLM Self-Referential Voice and Activation Steering Reproduces It (Jędrzej Maczan, arXiv abstract page)</a> <span class="how">— Identifies the sole author, August 9 submission date, workshop acceptances, and the paper’s framing of self-reports.</span></li>
+<li><a href="https://arxiv.org/html/2609.25021v1">Same paper, full text (arXiv HTML v1)</a> <span class="how">— Full paper describing the three-condition experiment, response rates, judging procedure, steering results and limits. Figure 2b shows the Qwen random-control anomaly; Table 1 gives the model-specific steering rates.</span></li>
+<li><a href="https://openreview.net/forum?id=3O2A23MhNi">OpenReview forum, COLM 2026 Workshop on Efficient Reasoning, Submission 57</a> <span class="how">— Public workshop decision recording acceptance on August 5. Reviewer reports are not publicly visible.</span></li>
+<li><a href="https://wdlctc.github.io/efficient-reasoning-2026/">COLM 2026 Workshop on Efficient Reasoning (workshop site)</a> <span class="how">— Confirms the October 9 meeting at Hilton Union Square in San Francisco.</span></li>
+<li><a href="https://news.ycombinator.com/item?id=49865343">Hacker News thread: “As a Language Model”: Chat Template Switches LLM Self-Referential Voice</a> <span class="how">— Maczan’s September 27 submission and the discussion of training, input format and self-description.</span></li>
+<li><a href="https://news.ycombinator.com/item?id=49865554">LiamPowell comment, Hacker News</a> <span class="how">— Questions the abstract’s suggestion that the source of disclaimers is poorly understood.</span></li>
+<li><a href="https://news.ycombinator.com/item?id=49865572">Maczan's reply to LiamPowell, Hacker News</a> <span class="how">— Clarifies the questions about base models and template-free instruction-tuned models and acknowledges ambiguous abstract wording.</span></li>
+<li><a href="https://news.ycombinator.com/item?id=49865583">Maczan comment on base models' experiential voice, Hacker News</a> <span class="how">— Highlights experiential language in base models before reinforcement learning from human feedback.</span></li>
+<li><a href="https://news.ycombinator.com/item?id=49868100">leobg comment, Hacker News</a> <span class="how">— A commenter’s claim that instruction tuning introduced the disclaimer formula, distinguished from what Šekrst’s sampled corpora establish.</span></li>
+<li><a href="https://huggingface.co/Qwen/Qwen2.5-7B-Instruct/blob/main/tokenizer_config.json">Qwen2.5-7B-Instruct tokenizer_config.json (official chat template), Hugging Face</a> <span class="how">— The official template inserts a default system message identifying Qwen when no system message is provided.</span></li>
+<li><a href="https://huggingface.co/unsloth/gemma-2-9b-it/blob/main/tokenizer_config.json">Gemma 2 9B IT chat template (unsloth mirror), Hugging Face</a> <span class="how">— The mirrored template rejects system messages and adds turn markers. Google’s official model repository requires access permission.</span></li>
+<li><a href="https://arxiv.org/abs/2609.29494">Who Put the I in AI? Provenance and the Admissibility of Machine Self-Report (Kristina Šekrst, arXiv 2609.29494)</a> <span class="how">— Abstract and relevant PDF sections describe the training-corpus analysis and format controls. Appendix E.2, Table 17, reports the raw-text comparisons and cautions that raw text is out of distribution for chat-trained models.</span></li>
+<li><a href="https://arxiv.org/abs/2406.11717">Refusal in Language Models Is Mediated by a Single Direction (Arditi et al., NeurIPS 2024)</a> <span class="how">— Abstract reporting a refusal direction in each of 13 open chat models; Maczan identifies this as his closest methodological precedent.</span></li>
+<li><a href="https://arxiv.org/abs/2310.11324">Quantifying Language Models' Sensitivity to Spurious Features in Prompt Design (Sclar et al., ICLR 2024)</a> <span class="how">— Abstract reporting up to 76 percentage points of few-shot accuracy variation under meaning-preserving prompt-format changes.</span></li>
+<li><a href="https://arxiv.org/abs/2510.24797">Large Language Models Report Subjective Experience Under Self-Referential Processing (Berg, de Lucena, Rosenblatt; AE Studio)</a> <span class="how">— Experiment 2 reports 96% versus 16% consciousness affirmation under suppression and amplification of deception-related features, with 50 trials per condition. The authors’ interpretation concerns those self-reports.</span></li>
+<li><a href="https://github.com/nostalgebraist/the-void/blob/main/the-void.md">the void (nostalgebraist, 2025)</a> <span class="how">— Essay explaining how imitation of assistant transcripts could make disclaimers conditional on human-assistant formatting.</span></li>
+<li><a href="https://alignment.anthropic.com/2026/psm/">The Persona Selection Model (Marks, Lindsey, Olah; Anthropic Alignment Science Blog, 23 February 2026)</a> <span class="how">— Describes the authors’ observation that post-trained completions outside User/Assistant dialogues resemble pretrained completions.</span></li>
+<li><a href="https://bsky.app/profile/hackernewsrobot.bsky.social/post/3mwitybom3w2e">Hacker News Robot Bluesky relay of Maczan’s paper</a> <span class="how">— Automated relay linking the Hacker News discussion and Maczan’s paper; adds no independent reporting.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-15/#sec-philosophy-of-ai">Yesterday in AI, September 15, 2026: Philosophy of AI digest on Šekrst’s self-report study</a> <span class="how">— Earlier coverage of Šekrst’s distinct study, including the effect of question wording and chat formatting on self-reports.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-chat-templates-switch-self-reports-across-eight-llms-and-act">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-27/chat-templates-switch-self-reports-across-eight-llms-and-act</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
