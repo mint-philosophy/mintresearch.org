@@ -47,11 +47,12 @@ const SPECS = [
   [/foothills/, { head: null, blocks: [{ m: { not: IMG, area: [0, 40, 560, 541] }, mode: 'flow' }, { m: IMG, mode: 'art', h: 'fill' }] }],
   [/Should we build AGI\?$/, { blocks: [{ m: { area: [0, 100, 470, 541] }, mode: 'flow' }, { m: { area: [470, 100, 961, 541] }, mode: 'scale' }] }],
   [/best of times/, { blocks: [{ m: /./, mode: 'flow', oneLine: true }] }],
+  [/Plan: three reckonings|^Review$/, { blocks: [{ m: /./, mode: 'flow', narrow: /^numeral/ }] }],
   [/Structuring the question/, { blocks: [{ m: /./, mode: 'flow', order: 'cols' }] }],
   [/Can we build AGI safely/, { blocks: [{ m: IMG, mode: 'scale' }, { m: /./, mode: 'flow', order: 'cols' }] }],
   [/^Lowering/, { head: null, blocks: [
     { mode: 'phases', align: 'bottom', phases: [
-      [{ m: { area: [0, 45, 465, 372], not: /^not fixed$/ }, mode: 'flow' }, { m: { area: [465, 45, 961, 372], not: /^not fixed$/ }, mode: 'scale', gap: 12 }],
+      [{ m: { area: [0, 45, 465, 372], not: /^not fixed$/ }, mode: 'flow' }, { m: { area: [465, 45, 961, 372], not: /^not fixed$/ }, mode: 'scale', gap: 12, minPic: 1 }],   // the matrix's labels are small already
       [{ m: /^not fixed$/, mode: 'flow' }]] },
     { m: /^title/, mode: 'flow', gap: 14 }] }],
   [/Private reasons/, { blocks: [
@@ -75,13 +76,20 @@ const SPECS = [
   [/^AGI institutions$/, { blocks: [{ m: /./, mode: 'bands', split: [320, 640], h: 'fill' }] }],
   [/New social and political theories/, { blocks: [{ mode: 'stack', panel: /document ground/, blocks: [
     { m: { area: [0, 100, 500, 418] }, mode: 'scale' },
-    { m: { area: [0, 418, 961, 541] }, mode: 'scale', gap: 8 },
+    { m: { area: [0, 418, 961, 541] }, mode: 'bands', h: 150, gap: 8 },
     { m: { area: [500, 100, 961, 418] }, mode: 'scale', gap: 8 }] }] }],
-  [/Pillars of the voluntary social order/, { blocks: [
-    { m: { area: [0, 100, 326, 480] }, mode: 'flow' },
-    { m: { area: [326, 100, 632, 480] }, mode: 'flow', gap: 16 },
-    { m: { area: [632, 100, 961, 480] }, mode: 'flow', gap: 16 },
-    { m: /./, mode: 'flow', gap: 16 }] }],
+  [/Pillars of the voluntary social order/, {
+    blocks: [
+      { m: { area: [0, 100, 326, 480] }, mode: 'flow' },
+      { m: { area: [326, 100, 632, 480] }, mode: 'flow', gap: 16 },
+      { m: { area: [632, 100, 961, 480] }, mode: 'flow', gap: 16 },
+      { m: /./, mode: 'flow', gap: 16 }],
+    // on a short screen each pillar's stones are laid two to a course
+    compact: [
+      { m: { area: [0, 100, 326, 480] }, mode: 'flow', pack: /: / },
+      { m: { area: [326, 100, 632, 480] }, mode: 'flow', pack: /: /, gap: 16 },
+      { m: { area: [632, 100, 961, 480] }, mode: 'flow', pack: /: /, gap: 16 },
+      { m: /./, mode: 'flow', gap: 16 }] }],
   [/^Thanks$/, { head: /^(thanks|byline)$/, blocks: [{ m: IMG, mode: 'art', h: 'fill', fx: 0.5 }] }],
 ];
 const DEFAULT = { blocks: [{ m: /./, mode: 'flow' }] };
@@ -135,13 +143,16 @@ function sectionSlots(deck, sec) {
 
 // ---- the layout ----------------------------------------------------------------------------------
 // T: text services from deck.js — height(item) and widest(item) in points, scaleText(item, fs)
-export function layoutSection(deck, sec, W, H, T, up = 1) {
+// fit: { up, pic, tight } — up > 1 lets pictures grow on tablets; pic < 1 shrinks pictures and
+// tight halves the spacing, both tried (by deck.js) before the text itself gets smaller
+export function layoutSection(deck, sec, W, H, T, fit = {}) {
+  const { up = 1, pic = 1, tight = false, compact = false } = fit;
   const name = deck.sections[sec].replace(/^\d+\s*·\s*/, '');
   const spec = (SPECS.find(([re]) => re.test(name)) || [null, DEFAULT])[1];
   const all = sectionSlots(deck, sec);
   const M = 24, AW = W - 2 * M;
   // on a page wider than a phone column (tablets), pictures and diagrams grow with it
-  const ctx = { W, H, M, AW, T, deck, up, out: new Map() };   // up > 1 on tablets: pictures grow with the window
+  const ctx = { W, H, M, AW, T, deck, up, pic, tight, sp: (v) => (tight ? v / 2 : v), out: new Map() };
   const put = (slot, pl) => ctx.out.set(slot.key, pl);
   let pool = all.slice();
   const take = (m) => { const got = pool.filter((s) => matches(m, s)); pool = pool.filter((s) => !got.includes(s)); return got; };
@@ -152,7 +163,13 @@ export function layoutSection(deck, sec, W, H, T, up = 1) {
   if (rail || num) {
     let hh = 0;
     if (num) { const h = T.height({ ...num.rep, w: 46 }); put(num, { abs: { x: M + AW - 46, y, w: 46, h } }); hh = Math.max(hh, h); }
-    if (rail) { const w = AW - 54, h = T.height({ ...rail.rep, w }); put(rail, { abs: { x: M, y, w, h } }); hh = Math.max(hh, h); }
+    if (rail) {
+      const paras = rail.rep.paras.map((p) => ({ ...p, runs: p.runs.map((r) => (!r.t || r.t === '\n' ? r
+        : !r.t.trim() ? { ...r, t: '   ' } : r.b ? r : { ...r, t: r.t.split(' · ')[0] })) }));
+      const w = AW - 54, h = T.height({ ...rail.rep, paras, w });
+      put(rail, { abs: { x: M, y, w, h }, paras });
+      hh = Math.max(hh, h);
+    }
     y += hh + 6;
   } else y = M;
   const headM = spec.head === undefined ? /^title$/ : spec.head;
@@ -164,17 +181,17 @@ export function layoutSection(deck, sec, W, H, T, up = 1) {
       y += b.h;
     }
   }
-  const top = y + (y > M ? 22 : 0), bottom = H - M;
+  const top = y + (y > M ? ctx.sp(22) : 0), bottom = H - M;
 
   // content blocks
-  const blocks = spec.blocks.map((b) => build(b, take, ctx));
+  const blocks = (compact && spec.compact || spec.blocks).map((b) => build(b, take, ctx));
   const rest = pool;
   if (rest.length) blocks.push(scale(rest, ctx, {}));   // anything no rule claimed
   const fixed = blocks.reduce((a, b, i) => a + (b.fill ? 0 : b.h) + (i ? b.gap : 0), 0);
   const fillers = blocks.filter((b) => b.fill);
   const free = bottom - top - fixed;
   let fillH = 0;
-  if (fillers.length) fillH = Math.max(0.28 * H, free) / fillers.length;
+  if (fillers.length) fillH = Math.max((tight ? 0.2 : 0.28) * H, free) / fillers.length;
   const total = fixed + fillH * fillers.length;
   let yy = top + (fillers.length ? 0 : Math.max(0, (bottom - top - total) * 0.4));
   blocks.forEach((b, i) => {
@@ -228,7 +245,7 @@ function build(b, take, ctx) {
     else if (b.mode === 'bands') blk = bands(slots, ctx, b);
     else blk = scale(slots, ctx, b);
   }
-  blk.gap = blk.h || blk.fill ? (b.gap ?? 20) : 0;
+  blk.gap = blk.h || blk.fill ? ctx.sp(b.gap ?? 20) : 0;
   return blk;
 }
 
@@ -261,7 +278,8 @@ function flow(slots, ctx, opt) {
   const cb = union(content.map((s) => s.box));
   let x0 = M, aw = AW, padT = 0, padB = 0;
   if (panel) {
-    padT = clamp(cb.y - panel.box.y, 10, 36); padB = clamp(panel.box.y + panel.box.h - cb.y - cb.h, 10, 36);
+    const lo = ctx.tight ? 6 : 10, hi = ctx.tight ? 18 : 36;
+    padT = clamp(cb.y - panel.box.y, lo, hi); padB = clamp(panel.box.y + panel.box.h - cb.y - cb.h, lo, hi);
     if (!panel.bleed) { const padL = clamp(cb.x - panel.box.x, 10, 24); x0 = M + padL; aw = AW - 2 * padL; }
   }
   const blockW = cb.w;
@@ -290,7 +308,7 @@ function flow(slots, ctx, opt) {
     if (r && ov > 0.3 * Math.min(u.box.h, r.y1 - r.y0)) { r.units.push(u); r.y1 = Math.max(r.y1, u.box.y + u.box.h); }
     else rows.push({ units: [u], y0: u.box.y, y1: u.box.y + u.box.h });
   }
-  const isWide = (u) => u.lead.t !== 'rect' && u.box.w >= 120 || u.lead.t === 'img';
+  const isWide = (u) => !(opt.narrow && matches(opt.narrow, u.lead)) && (u.lead.t !== 'rect' && u.box.w >= 120 || u.lead.t === 'img');
   const isBand = (u) => u.lead.t === 'rect' && u.box.w >= 0.8 * blockW;
   // containers: a rect in a row that holds that row's other shapes (slabs, bars)
   const subrows = [];
@@ -320,6 +338,18 @@ function flow(slots, ctx, opt) {
     subrows.splice(0, subrows.length, ...cols.flatMap((c) => c.rows));
   }
 
+  if (opt.pack) {
+    const packed = [];
+    for (const sr of subrows) {
+      const one = sr.units.length === 1 && !sr.container && matches(opt.pack, sr.units[0].lead);
+      const prev = packed[packed.length - 1];
+      if (one && prev?.pack && prev.units.length === 1) { prev.units.push(sr.units[0]); continue; }
+      if (one) sr.pack = true;
+      packed.push(sr);
+    }
+    subrows.splice(0, subrows.length, ...packed);
+  }
+
   // the shared display scale: big type shrinks together until its longest word fits
   const wideAvail = (sr, u) => {
     const x = Math.min(...sr.units.map((v) => v.box.x));
@@ -347,9 +377,17 @@ function flow(slots, ctx, opt) {
   for (const sr of subrows) {
     if (prevRow !== null) {
       const a = rows[prevRow], b = rows[sr.ri];
-      y += sr.colBreak ? 24 : sr.ri === prevRow ? 8 : clamp(b.vis0 - a.vis1, sr.container || subrows.find((s) => s.ri === prevRow)?.container ? 0 : 6, 32);
+      y += sr.colBreak ? ctx.sp(24) : sr.ri === prevRow ? ctx.sp(8) : clamp(b.vis0 - a.vis1, sr.container || subrows.find((s) => s.ri === prevRow)?.container ? 0 : 6, ctx.sp(32));
     }
     prevRow = sr.ri;
+    if (sr.pack) {   // side by side, halves of the width, one height
+      const gap = 6, half = (aw - gap) / 2;
+      const hs = sr.units.map((u) => { const fs = fsOf(u, half); return [fs, Math.max(...u.members.flatMap((m) => m.inst.map((it) => T.height({ ...T.scaleText(it, fs), w: half }))))]; });
+      const rowH = Math.max(...hs.map((x) => x[1]));
+      sr.units.forEach((u, i) => { for (const m of u.members) items.push([m, { abs: { x: x0 + i * (half + gap), y, w: half, h: rowH }, fs: hs[i][0] }]); });
+      y += rowH;
+      continue;
+    }
     const rx = sr.units.length ? Math.min(...sr.units.map((u) => u.box.x)) : 0;
     const ry = sr.units.length ? Math.min(...sr.units.map((u) => u.box.y)) : sr.container.box.y;
     let bottom = y, wideSeen = false;
@@ -369,7 +407,7 @@ function flow(slots, ctx, opt) {
       const ly = y + (u.box.y - ry) * (isWide(u) ? fsD : 1);
       let h;
       if (u.lead.t === 'text') h = Math.max(...u.members.filter((m) => m.t === 'text').flatMap((m) => m.inst.map((it) => T.height({ ...T.scaleText(it, fs), w }))));
-      else if (u.lead.t === 'img' || u.members.length > 1) { const s = Math.min(ctx.up, w / u.box.w); w = u.box.w * s; h = u.box.h * s; }
+      else if (u.lead.t === 'img' || u.members.length > 1) { const s = Math.min(ctx.up, w / u.box.w) * (u.lead.t === 'img' ? ctx.pic : 1); w = u.box.w * s; h = u.box.h * s; }
       else h = u.box.h;
       for (const m of u.members) {
         if (u.lead.t === 'text' && m.t === 'text') placed.push([m, { abs: { x, y: ly, w, h }, fs }]);
@@ -407,8 +445,9 @@ function scale(slots, ctx, opt) {
   const panel = findPanel(slots, deck);
   const bb = union(slots.map((s) => s.box));
   let s, ox = bb.x, dx;
-  if (panel && panel.bleed) { s = Math.min((opt.maxS ?? 1.05) * ctx.up, W / panel.box.w); ox = panel.box.x; dx = (W - panel.box.w * s) / 2; }
-  else { s = Math.min((opt.maxS ?? 1) * ctx.up, AW / bb.w); dx = M + (AW - bb.w * s) / 2; }
+  const pic = Math.max(ctx.pic, opt.minPic ?? 0);
+  if (panel && panel.bleed) { s = Math.min((opt.maxS ?? 1.05) * ctx.up, W / panel.box.w) * pic; ox = panel.box.x; dx = (W - panel.box.w * s) / 2; }
+  else { s = Math.min((opt.maxS ?? 1) * ctx.up, AW / bb.w) * pic; dx = M + (AW - bb.w * s) / 2; }
   if (opt.maxH) s = Math.min(s, (opt.maxH * H) / bb.h), dx = panel?.bleed ? 0 : M + (AW - bb.w * s) / 2;
   for (const sl of slots) items.push([sl, { aff: { s, ox, oy: bb.y, dx, dy: 0 } }]);
   if (panel && panel.bleed) {   // a bleeding panel spans the whole width, as it touched the slide edge
@@ -437,7 +476,7 @@ function grid(slots, ctx, opt) {
   const cellW = Math.max(0, ...free.map((p) => p.box.w));
   const perRow = Math.min(cols, ps.length);
   const nFree = Math.min(perRow, free.length);
-  const s = nFree ? Math.min((opt.maxS ?? 1) * ctx.up, (AW - (perRow - 1) * gap - fixedW) / (nFree * cellW)) : 1;
+  const s = nFree ? Math.min((opt.maxS ?? 1) * ctx.up, (AW - (perRow - 1) * gap - fixedW) / (nFree * cellW)) * ctx.pic : 1;
   let y = 0;
   for (let r = 0; r * cols < ps.length; r++) {
     const row = ps.slice(r * cols, r * cols + cols);
@@ -479,7 +518,7 @@ function art(slots, ctx, opt) {
 }
 
 function bands(slots, ctx, opt) {
-  const { W, H, T, deck } = ctx;
+  const { W, H, M, T, deck } = ctx;
   const panel = slots.find((s) => s.t === 'rect' && s.box.w >= 0.9 * deck.w);
   const ps = pieces(slots.filter((s) => s !== panel), opt).filter((p) => p.slots.length);
   const pad = panel ? 5 : 0, gap = 5;
@@ -494,14 +533,15 @@ function bands(slots, ctx, opt) {
       for (const s of p.slots) {
         if (s === img) { blk.items.push([s, { abs: { x: 0, y, w: W, h: bh }, crop: coverCrop(s.rep, W, bh) }]); continue; }
         const ref = img ? img.box : p.box;
-        const x = ((s.box.x - ref.x) / ref.w) * W, w = (s.box.w / ref.w) * W;
+        const full = s.box.w >= 0.9 * ref.w;
+        const x = full ? ((s.box.x - ref.x) / ref.w) * W : M / 2 + (s.box.x - ref.x), w = full ? (s.box.w / ref.w) * W : Math.min(s.box.w, W - x);
         const h = Math.max(...s.inst.map((it) => (it.t === 'text' ? T.height({ ...it, w }) : it.h)));
         blk.items.push([s, { abs: { x, y: y + bh - h, w, h } }]);
       }
     });
   };
   blk.setH = (h) => { blk.h = h; place(); };
-  if (!blk.fill) blk.setH((opt.h || 0.6) * H);
+  if (!blk.fill) blk.setH(opt.h > 1 ? opt.h * ctx.pic : (opt.h || 0.6) * H);
   return blk;
 }
 

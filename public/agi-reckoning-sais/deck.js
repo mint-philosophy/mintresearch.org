@@ -4,7 +4,7 @@
 // re-laid on every resize. Mixed-font paragraphs (a mono number beside a condensed label) use the
 // same canvas measurement, word by word.
 
-import { assignKeys, layoutSection } from './phone.js?v=af99e0cdd4';
+import { assignKeys, layoutSection } from './phone.js?v=77aa7ff0df';
 
 const PRETEXT = ['https://esm.sh/@chenglou/pretext@0.0.8', 'https://cdn.jsdelivr.net/npm/@chenglou/pretext@0.0.8/+esm'];
 const FAMILY = {
@@ -307,18 +307,26 @@ function sectionPage(sec) {
   if (!pages.has(sec)) {
     const { vw, vh } = phone;
     const W0 = clamp(vw / 1.1, 480, 760);
-    let W = W0, L;
-    // on a tablet pictures first try growing with the window; if the section is then too tall they
-    // grow less, and only after that does the page widen
-    for (let up = W0 / 480; ; up = Math.max(1, up - 0.1)) {
-      L = layoutSection(deck, sec, W, (W * vh) / vw, T, up);
-      if (L.over <= 0 || up === 1) break;
+    // Ways to make a tall section fit, in order of preference: on a tablet, let pictures grow less;
+    // tighten the spacing; shrink the pictures (to 60%); only then draw everything smaller.
+    const tries = [];
+    for (let up = W0 / 480; up > 1; up -= 0.1) tries.push([W0, { up }]);
+    tries.push([W0, {}], [W0, { tight: true }]);
+    for (const pic of [0.9, 0.8, 0.7, 0.6]) tries.push([W0, { tight: true, pic }]);
+    for (const pic of [1, 0.8, 0.6]) tries.push([W0, { tight: true, pic, compact: true }]);   // the section's compact layout, if it has one
+    // text never drops below about 0.68 px per point; a section that still doesn't fit runs a little
+    // taller than the window and scrolls instead
+    const Wmax = Math.max(W0, vw / 0.68);
+    for (let W = W0 * 1.06; W <= Wmax; W *= 1.06) tries.push([W, { tight: true, pic: 0.6, compact: true }]);
+    let W, L, fit, H;
+    for ([W, fit] of tries) {
+      H = (W * vh) / vw;
+      L = layoutSection(deck, sec, W, H, T, fit);
+      if (L.over <= 0) break;
     }
-    for (; L.over > 0 && W * 1.06 <= 960;) {
-      W *= 1.06;
-      L = layoutSection(deck, sec, W, (W * vh) / vw, T, 1);
-    }
-    pages.set(sec, { W, H: (W * vh) / vw, k: vw / W, L });
+    const scroll = L.over > 0;
+    if (scroll) { H += L.over + 12; L = layoutSection(deck, sec, W, H, T, fit); }
+    pages.set(sec, { W, H, k: vw / W, L, fit, scroll });
   }
   return pages.get(sec);
 }
@@ -337,6 +345,7 @@ function phoneItem(it, pl) {
     const a = pl.abs;
     o = it.t === 'line' ? { ...it, x1: a.x, y1: a.y, x2: a.x + a.w, y2: a.y + a.h } : { ...it, ...a };
     if (pl.crop) o.crop = pl.crop;
+    if (pl.paras) o.paras = pl.paras;
   } else return it;
   return o.t === 'text' ? T.scaleText(o, fs) : o;
 }
@@ -344,11 +353,14 @@ function phoneItem(it, pl) {
 function renderSlide(i) {
   const s0 = deck.slides[i];
   let L = null;
-  if (phone) { const P = sectionPage(s0.section); k = P.k; page = { w: P.W, h: P.H }; L = P.L; }
+  let tall = false;
+  if (phone) { const P = sectionPage(s0.section); k = P.k; page = { w: P.W, h: P.H }; L = P.L; tall = P.scroll; }
   else { k = kSlides; page = { w: deck.w, h: deck.h }; }
   const s = L ? { ...s0, items: s0.items.map((it) => phoneItem(it, L.map.get(it.key))).filter(Boolean) } : s0;
   const el = document.createElement('div');
   el.className = 'slide';
+  if (tall) { el.style.height = `${page.h * k}px`; el.style.bottom = 'auto'; }
+  el.dataset.tall = tall ? '1' : '';
   const [base, line, pitch, thick] = SCAN[s.bg] || SCAN.rust;
   el.style.backgroundColor = base;
   el.style.backgroundImage = `repeating-linear-gradient(to bottom, ${base} 0, ${base} ${px(pitch - thick)}, ${line} ${px(pitch - thick)}, ${line} ${px(pitch)})`;
@@ -397,12 +409,33 @@ function show(i, { animate = true } = {}) {
     stage.querySelectorAll('.slide').forEach((n) => n.remove());
     stage.append(el);
   }
+  setScroll(el);
   slideStart = performance.now() - (animate ? 0 : 1e9);
   startAuto(el, s, animate ? 0 : 1e9);
   history.replaceState(null, '', `#${i + 1}`);
   live.textContent = `Slide ${i + 1} of ${deck.slides.length}`;
   preload(i + 1); preload(i + 2);
 }
+
+// a page taller than the window scrolls, with a fade at the foot while there is more below
+const more = document.getElementById('more');
+function setScroll(el) {
+  let tall = el.dataset.tall === '1';
+  if (tall) {   // only when this beat's shapes actually reach below the window
+    const top = el.getBoundingClientRect().top;
+    const foot = Math.max(0, ...[...el.children].filter((n) => n.style.visibility !== 'hidden').map((n) => n.getBoundingClientRect().bottom - top));
+    tall = foot > stage.clientHeight + 2;
+  }
+  stage.style.overflowY = tall ? 'auto' : 'hidden';
+  stage.scrollTop = 0;
+  updateMore();
+}
+function updateMore() {
+  if (!more) return;
+  const left = stage.scrollHeight - stage.clientHeight - stage.scrollTop;
+  more.style.opacity = stage.style.overflowY === 'auto' && left > 4 ? '1' : '0';
+}
+stage.addEventListener('scroll', updateMore, { passive: true });
 
 const preloaded = new Set();
 function preload(i) {
@@ -431,6 +464,7 @@ function fit() {
   const el = renderSlide(index);
   stage.querySelectorAll('.slide').forEach((n) => n.remove());
   stage.append(el); current = el;
+  setScroll(el);
   startAuto(el, deck.slides[index], elapsed);
 }
 
@@ -468,6 +502,7 @@ window.__deck = {
   get phone() { return phone ? { ...sectionPage(deck.slides[index].section), L: undefined } : null; },
   unplaced: () => (phone ? sectionPage(deck.slides[index].section).L.unplaced : []),
   over: () => (phone ? sectionPage(deck.slides[index].section).L.over : 0),
+  tryLayout: (W, fit) => { const sec = deck.slides[index].section; const L = layoutSection(deck, sec, W, (W * phone.vh) / phone.vw, T, fit); return Math.round(L.over); },
   lines: () => [...(current?.querySelectorAll('[data-id]') || [])].filter((n) => n.querySelector('.tl'))
     .map((n) => ({ id: +n.dataset.id, lines: [...n.querySelectorAll('.tl')].map((l) => l.textContent),
       base: [...n.querySelectorAll('.tl')].map((l) => {   // true baseline via a zero-size marker
