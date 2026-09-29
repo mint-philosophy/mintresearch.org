@@ -4,7 +4,7 @@
 // re-laid on every resize. Mixed-font paragraphs (a mono number beside a condensed label) use the
 // same canvas measurement, word by word.
 
-import { assignKeys, layoutSection } from './phone.js?v=77aa7ff0df';
+import { assignKeys, layoutSection, coverCrop } from './phone.js?v=a9fad5c16a';
 
 const PRETEXT = ['https://esm.sh/@chenglou/pretext@0.0.8', 'https://cdn.jsdelivr.net/npm/@chenglou/pretext@0.0.8/+esm'];
 const FAMILY = {
@@ -179,7 +179,7 @@ function textLayout(it) {
     const font = sized.length ? sized.reduce((a, r) => (r.s >= a.s ? r : a)).f : p.font;
     const lh = size * (deck.line[font] || 1.2) * p.ls;
     const asc = size * (deck.ascent[font] || 0.9) * p.ls;
-    const desc = size * (deck.descent?.[font] || 0.25) * p.ls;
+    const desc = deck.descentFixed?.[font] ? size * deck.descentFixed[font] : size * (deck.descent?.[font] || 0.25) * p.ls;
     const segs = [[]];
     for (const r of p.runs) (r.t === '\n' ? segs.push([]) : segs[segs.length - 1].push(r));
     for (const seg of segs) for (const spans of layoutSegment(seg, wpt * K_REF, lh * K_REF, it.wrap)) {
@@ -350,13 +350,50 @@ function phoneItem(it, pl) {
   return o.t === 'text' ? T.scaleText(o, fs) : o;
 }
 
+// ---- landscape: the PowerPoint slide on a page the shape of the window ---------------------------
+// At 16:9 this is the PowerPoint exactly. Otherwise the page is wider or taller than the slide:
+// shapes that bleed off an edge (backgrounds, panels, pictures, bars) reach the window's edge,
+// pictures cropping to fill; the rail, slide number and title stay under the top edge; everything
+// else is centred in the extra space, keeping its size and line breaks; toads spread out.
+const HEAD = /^(rail|slide number|title|byline|venue|thanks)$/;
+const E = 2;   // points: how close to an edge counts as bleeding
+function fillItem(it, isAuto) {
+  const FW = page.w, FH = page.h;
+  if (FW - deck.w < 0.5 && FH - deck.h < 0.5) return it;
+  const dX = (FW - deck.w) / 2, dY = (FH - deck.h) / 2;
+  if (isAuto) {   // toads: spread over the whole window
+    const ss = Math.sqrt((FW * FH) / (deck.w * deck.h)), cx = it.x + it.w / 2, cy = it.y + it.h / 2;
+    return { ...it, x: (cx * FW) / deck.w - (it.w * ss) / 2, y: (cy * FH) / deck.h - (it.h * ss) / 2, w: it.w * ss, h: it.h * ss };
+  }
+  if (it.t === 'line') {
+    const head = Math.max(it.y1, it.y2) < 100;
+    return { ...it, x1: it.x1 + dX, x2: it.x2 + dX, y1: it.y1 + (head ? 0 : dY), y2: it.y2 + (head ? 0 : dY) };
+  }
+  const name = (it.n || '').replace(/^B\d+ · /, '');
+  const L = it.x <= E, R = it.x + it.w >= deck.w - E, T = it.y <= E, B = it.y + it.h >= deck.h - E;
+  const stretchX = it.t === 'rect' || it.t === 'img' || (it.t === 'text' && (it.fill || it.line));
+  const stretchY = it.t === 'rect' || it.t === 'img';
+  let x0 = it.x, x1 = it.x + it.w, y0 = it.y, y1 = it.y + it.h;
+  if (stretchX) { x0 += L ? 0 : dX; x1 += R ? 2 * dX : dX; }
+  else { const sh = L ? 0 : R ? 2 * dX : dX; x0 += sh; x1 += sh; }
+  if (HEAD.test(name) && it.y < 100) { /* stays under the top edge */ }
+  else if (stretchY && (T || it.y <= 110) && B) { y1 += 2 * dY; }            // spans from the top (or the header) to the foot: grows
+  else if (B) { y0 += 2 * dY; y1 += 2 * dY; }                                  // sits on the foot: stays on it
+  else if (stretchY && T) { /* hangs from the top edge */ }
+  else { y0 += dY; y1 += dY; }
+  const o = { ...it, x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+  if (it.t === 'img' && (Math.abs(o.w - it.w) > 0.5 || Math.abs(o.h - it.h) > 0.5)) o.crop = coverCrop(it, o.w, o.h);
+  return o;
+}
+
 function renderSlide(i) {
   const s0 = deck.slides[i];
   let L = null;
   let tall = false;
   if (phone) { const P = sectionPage(s0.section); k = P.k; page = { w: P.W, h: P.H }; L = P.L; tall = P.scroll; }
-  else { k = kSlides; page = { w: deck.w, h: deck.h }; }
-  const s = L ? { ...s0, items: s0.items.map((it) => phoneItem(it, L.map.get(it.key))).filter(Boolean) } : s0;
+  else { k = kSlides; page = { w: window.innerWidth / k, h: window.innerHeight / k }; }
+  const s = L ? { ...s0, items: s0.items.map((it) => phoneItem(it, L.map.get(it.key))).filter(Boolean) }
+    : { ...s0, items: s0.items.map((it) => fillItem(it, s0.auto[it.id] !== undefined)) };
   const el = document.createElement('div');
   el.className = 'slide';
   if (tall) { el.style.height = `${page.h * k}px`; el.style.bottom = 'auto'; }
@@ -448,15 +485,16 @@ const LAYOUT = new URLSearchParams(location.search).get('layout');   // 'phone' 
 function fit() {
   probeCache.clear();
   const vw = window.innerWidth, vh = window.innerHeight;
-  const portrait = LAYOUT === 'phone' || (LAYOUT !== 'slides' && vw < vh * 0.9);
+  // the phone layout for portrait and near-square windows; everything wider fills the window
+  const portrait = LAYOUT === 'phone' || (LAYOUT !== 'slides' && vw < vh * 1.15);
   pages.clear();
   if (portrait) {
     phone = { vw, vh };
     stage.style.width = `${vw}px`; stage.style.height = `${vh}px`;
   } else {
     phone = null;
-    kSlides = k = Math.min(vw / deck.w, vh / deck.h);
-    stage.style.width = `${deck.w * k}px`; stage.style.height = `${deck.h * k}px`;
+    kSlides = k = Math.min(vw / deck.w, vh / deck.h);   // the slide at its largest; the page fills the rest
+    stage.style.width = `${vw}px`; stage.style.height = `${vh}px`;
   }
   if (!current) return;
   // re-lay the current slide at the new size, keeping the toads that have already landed
