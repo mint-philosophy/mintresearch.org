@@ -1,0 +1,421 @@
+// Web player for "Navigating the AGI Reckoning", exported from the PowerPoint by build/web_export.py.
+// Every beat is a slide, exactly as in PowerPoint. Geometry is in points on a 960 x 540 page and
+// scaled to the window; all text is laid out by Cheng Lou's Pretext at the rendered pixel size and
+// re-laid on every resize. Mixed-font paragraphs (a mono number beside a condensed label) use the
+// same canvas measurement, word by word.
+
+const PRETEXT = ['https://esm.sh/@chenglou/pretext@0.0.8', 'https://cdn.jsdelivr.net/npm/@chenglou/pretext@0.0.8/+esm'];
+const FAMILY = {
+  'Big Caslon': { css: '"Big Caslon", "Libre Caslon Text", Georgia, serif', w: 400, bw: 700 },
+  'Avenir Next Condensed Heavy': { css: '"Avenir Next Condensed", "Barlow Condensed", "Arial Narrow", sans-serif', w: 800, bw: 800 },
+  'Menlo': { css: 'Menlo, "JetBrains Mono", monospace', w: 400, bw: 700 },
+  'Georgia': { css: 'Georgia, "Libre Caslon Text", serif', w: 400, bw: 700 },
+};
+// ?fonts=web previews the open substitutes a visitor without the Apple faces will see
+if (new URLSearchParams(location.search).get('fonts') === 'web') {
+  FAMILY['Big Caslon'].css = '"Libre Caslon Text", Georgia, serif';
+  FAMILY['Avenir Next Condensed Heavy'].css = '"Barlow Condensed", "Arial Narrow", sans-serif';
+  FAMILY['Menlo'].css = '"JetBrains Mono", monospace';
+}
+const SCAN = {  // background colour and scanline texture, as the PowerPoint's tiled 144 dpi images
+  rust: ['#A8432A', '#9D3E27', 1.5, 0.5],
+  ink: ['#161300', '#221E0A', 2, 1],
+  paper: ['#FFFAED', '#F5EEDA', 2, 1],
+};
+const DASH = { dash: [4, 3], sysDash: [3, 1], sysDot: [1, 1], lgDash: [8, 3], dashDot: [4, 3, 1, 3] };
+
+const stage = document.getElementById('stage');
+const live = document.getElementById('live');
+let deck, pretext = null, k = 1, index = 0, current = null, timers = [], slideStart = 0;
+const prepared = new Map();
+const ctx = document.createElement('canvas').getContext('2d');
+
+const fam = (f) => FAMILY[f] || FAMILY['Big Caslon'];
+const fontSpec = (r, kk = k) => `${r.i ? 'italic ' : ''}${r.b ? fam(r.f).bw : fam(r.f).w} ${(r.s * kk).toFixed(3)}px ${fam(r.f).css}`;
+// Line breaks are computed at one fixed reference resolution and drawn at the window's size, so
+// they never drift with the window (tiny, hinted text measures slightly differently).
+const K_REF = 2;
+
+async function loadPretext() {
+  for (const url of PRETEXT) {
+    try {
+      const m = await import(url);
+      if (typeof m.prepareWithSegments === 'function' && typeof m.layoutWithLines === 'function') return m;
+    } catch (e) { console.warn('Pretext failed to load from', url, e); }
+  }
+  return null;
+}
+
+// ---- measurement -------------------------------------------------------------------------------
+// PowerPoint measures the condensed face a touch narrower than the browser does, so it fits a
+// headline up to ~1% over its box; body faces break exactly at the box. Proportional, so the
+// breaks are the same at every window size. (Calibrated against PowerPoint's PDF, 29 Sep 2026.)
+const SLACK = { 'Avenir Next Condensed Heavy': 1.008 };
+const installed = {};   // is the Apple face itself present? (the slack is calibrated for it alone)
+function hasFace(name) {
+  if (!(name in installed)) {
+    ctx.font = `800 40px "${name}", monospace`; const a = ctx.measureText('ABCDEFGHIJKLMNOPQRSTUVWXYZ').width;
+    ctx.font = '800 40px monospace'; const b = ctx.measureText('ABCDEFGHIJKLMNOPQRSTUVWXYZ').width;
+    installed[name] = Math.abs(a - b) > 0.5 && FAMILY['Avenir Next Condensed Heavy'].css.includes(`"${name}"`);
+  }
+  return installed[name];
+}
+const slack = (run) => (SLACK[run.f] && hasFace('Avenir Next Condensed') ? SLACK[run.f] : 1.0);
+function measure(text, run) {
+  ctx.font = fontSpec(run, K_REF);
+  const ls = run.sp * K_REF;
+  if ('letterSpacing' in ctx) { ctx.letterSpacing = `${ls}px`; return ctx.measureText(text).width; }
+  return ctx.measureText(text).width + ls * [...text].length;
+}
+
+function pretextLines(text, run, width, lh) {
+  const font = fontSpec(run, K_REF), spacing = run.sp * K_REF, key = `${font}|${spacing}|${text}`;
+  let p = prepared.get(key);
+  if (!p) {
+    p = pretext.prepareWithSegments(text, font, { whiteSpace: 'normal', wordBreak: 'normal', letterSpacing: spacing });
+    prepared.set(key, p);
+  }
+  return pretext.layoutWithLines(p, Math.max(1, width * slack(run)), lh).lines.map((l) => l.text);
+}
+
+function greedyLines(tokens, width) {   // tokens: [{text, run}] split at spaces, spaces kept on the word before
+  const lines = [];
+  let cur = [], w = 0;
+  for (const tok of tokens) {
+    const tw = measure(tok.text, tok.run), trimmed = measure(tok.text.replace(/\s+$/, ''), tok.run);
+    if (cur.length && w + trimmed > width * slack(tok.run)) { lines.push(cur); cur = []; w = 0; }
+    cur.push(tok); w += tw;
+  }
+  if (cur.length) lines.push(cur);
+  return lines;
+}
+
+// Lay one paragraph segment out as lines of spans.
+function layoutSegment(runs, width, lh, wrap) {
+  const text = runs.map((r) => r.t).join('');
+  if (!text.length) return [[]];
+  const uniform = runs.every((r) => r.f === runs[0].f && r.s === runs[0].s && r.b === runs[0].b && r.i === runs[0].i && r.sp === runs[0].sp);
+  let lineTexts;
+  if (!wrap) lineTexts = [text];
+  else if (uniform && pretext) lineTexts = pretextLines(text, runs[0], width, lh);
+  if (lineTexts) {   // map each line back to its runs by counting non-space characters, since
+    const out = [];   // Pretext collapses runs of spaces that PowerPoint keeps (e.g. "01  MEANING")
+    let pos = 0;
+    for (const lt of lineTexts) {
+      let need = lt.replace(/\s+/g, '').length;
+      while (pos < text.length && /\s/.test(text[pos])) pos++;
+      const start = pos;
+      while (pos < text.length && need > 0) { if (!/\s/.test(text[pos])) need--; pos++; }
+      out.push(slice(runs, start, pos));
+    }
+    return out;
+  }
+  const tokens = [];
+  for (const r of runs) for (const m of r.t.matchAll(/\S+\s*|\s+/g)) tokens.push({ text: m[0], run: r });
+  return greedyLines(tokens, width).map((line) => {
+    const spans = line.map((tok) => ({ text: tok.text, run: tok.run }));
+    spans[spans.length - 1].text = spans[spans.length - 1].text.replace(/\s+$/, '');
+    return spans;
+  });
+}
+
+function slice(runs, a, b) {
+  const spans = [];
+  let pos = 0;
+  for (const r of runs) {
+    const s = Math.max(a, pos), e = Math.min(b, pos + r.t.length);
+    if (e > s) spans.push({ text: r.t.slice(s - pos, e - pos), run: r });
+    pos += r.t.length;
+  }
+  return spans;
+}
+
+// Where the browser actually puts the baseline inside a line box of a given font and line-height.
+const probeCache = new Map();
+let probe = null;
+function baselineIn(font, lh) {
+  const key = `${font}|${lh.toFixed(2)}`;
+  if (probeCache.has(key)) return probeCache.get(key);
+  if (!probe) {
+    probe = document.createElement('div');
+    probe.style.cssText = 'position:absolute;left:-9999px;top:0;white-space:pre;visibility:hidden';
+    probe.innerHTML = '<span>Hg</span><i style="display:inline-block;width:0;height:0;vertical-align:baseline"></i>';
+    document.body.append(probe);
+  }
+  probe.style.font = font; probe.style.lineHeight = `${lh}px`; probe.style.height = `${lh}px`;
+  const v = probe.lastElementChild.getBoundingClientRect().top - probe.getBoundingClientRect().top;
+  probeCache.set(key, v);
+  return v;
+}
+
+// ---- rendering ---------------------------------------------------------------------------------
+const px = (v) => `${(v * k).toFixed(3)}px`;
+
+function place(el, it) {
+  el.style.left = px(it.x); el.style.top = px(it.y); el.style.width = px(it.w); el.style.height = px(it.h);
+  const t = [];
+  if (it.rot) t.push(`rotate(${it.rot}deg)`);
+  if (it.flipH) t.push('scaleX(-1)');
+  if (it.flipV) t.push('scaleY(-1)');
+  if (t.length) el.style.transform = t.join(' ');
+}
+
+function stroke(el, line) {
+  if (!line) return;
+  el.style.border = `${Math.max(0.5, line.w * k).toFixed(2)}px ${line.dash ? 'dashed' : 'solid'} ${line.c}`;
+}
+
+function renderText(it) {
+  const el = document.createElement('div');
+  place(el, it);
+  if (it.fill) el.style.background = it.fill;
+  stroke(el, it.line);
+  const [il, itp, ir, ib] = it.ins;
+  const width = (it.w - il - ir) * k;
+  const blocks = [];
+  let total = 0;
+  it.paras.forEach((p, pi) => {
+    const sized = p.runs.filter((r) => r.s);
+    const size = sized.length ? Math.max(...sized.map((r) => r.s)) : p.size;
+    const font = sized.length ? sized.reduce((a, r) => (r.s >= a.s ? r : a)).f : p.font;
+    const lh = size * (deck.line[font] || 1.2) * p.ls * k;
+    const asc = size * (deck.ascent[font] || 0.9) * p.ls * k;   // PowerPoint's first-baseline offset
+    const desc = size * (deck.descent?.[font] || 0.25) * p.ls * k;
+    const segs = [[]];
+    for (const r of p.runs) (r.t === '\n' ? segs.push([]) : segs[segs.length - 1].push(r));
+    for (const seg of segs) for (const spans of layoutSegment(seg, width / k * K_REF, lh / k * K_REF, it.wrap)) {
+      blocks.push({ spans, lh, asc, desc, align: p.align, run: sized.find((r) => r.s === size) || sized[0] });
+      total += lh;
+    }
+    if (pi < it.paras.length - 1) { total += p.sa * k; blocks.push({ gap: p.sa * k }); }
+  });
+  const innerH = (it.h - itp - ib) * k;
+  // PowerPoint's block runs from the top of the text area to the last line's descent
+  let yy = 0, lastBase = 0, lastDesc = 0;
+  for (const b of blocks) { if (b.gap !== undefined) { yy += b.gap; continue; } lastBase = yy + b.asc; lastDesc = b.desc; yy += b.lh; }
+  const blockH = lastBase + lastDesc;
+  let y = itp * k + (it.anchor === 'ctr' ? (innerH - blockH) / 2 : it.anchor === 'b' ? innerH - blockH : 0);
+  for (const b of blocks) {
+    if (b.gap !== undefined) { y += b.gap; continue; }
+    const line = document.createElement('div');
+    line.className = 'tl';
+    // put the CSS baseline exactly where PowerPoint puts it (measured, not predicted)
+    const cssBase = b.run ? baselineIn(fontSpec(b.run), b.lh) : b.lh * 0.8;
+    const top = y + b.asc - cssBase;
+    line.style.left = `${(il * k).toFixed(3)}px`; line.style.top = `${top.toFixed(3)}px`;
+    line.style.width = `${width.toFixed(3)}px`; line.style.height = `${b.lh.toFixed(3)}px`;
+    if (b.run) line.style.font = fontSpec(b.run);   // the line's own strut must match its text
+    line.style.lineHeight = `${b.lh.toFixed(3)}px`;
+    line.style.textAlign = b.align === 'ctr' ? 'center' : b.align === 'r' ? 'right' : 'left';
+    for (const sp of b.spans) {
+      const s = document.createElement('span');
+      s.textContent = sp.text;
+      s.style.font = fontSpec(sp.run);
+      s.style.lineHeight = 'inherit';   // the font shorthand resets line-height to "normal"
+      s.style.color = sp.run.c || '#000000';
+      if (sp.run.sp) s.style.letterSpacing = `${(sp.run.sp * k).toFixed(3)}px`;
+      if (sp.run.st) s.style.textDecoration = 'line-through';
+      line.append(s);
+    }
+    el.append(line);
+    y += b.lh;
+  }
+  return el;
+}
+
+function renderImage(it) {
+  const el = document.createElement('div');
+  el.className = 'img';
+  place(el, it);
+  const [l, t, r, b] = it.crop;
+  const img = document.createElement('img');
+  img.src = it.src; img.alt = ''; img.decoding = 'async';
+  const fw = it.w / (1 - l - r), fh = it.h / (1 - t - b);
+  img.style.width = px(fw); img.style.height = px(fh); img.style.left = px(-l * fw); img.style.top = px(-t * fh);
+  el.append(img);
+  if (it.line) { const f = document.createElement('div'); f.style.cssText = 'position:absolute;inset:0'; stroke(f, it.line); el.append(f); }
+  return el;
+}
+
+function renderLines(items) {
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('class', 'lines');
+  svg.setAttribute('viewBox', `0 0 ${deck.w} ${deck.h}`);
+  svg.setAttribute('preserveAspectRatio', 'none');
+  const defs = document.createElementNS(NS, 'defs');
+  svg.append(defs);
+  items.forEach((it, n) => {
+    const l = document.createElementNS(NS, 'line');
+    for (const [a, v] of Object.entries({ x1: it.x1, y1: it.y1, x2: it.x2, y2: it.y2 })) l.setAttribute(a, v);
+    l.setAttribute('stroke', it.c); l.setAttribute('stroke-width', it.w);
+    if (it.dash && DASH[it.dash]) l.setAttribute('stroke-dasharray', DASH[it.dash].map((d) => d * it.w).join(' '));
+    for (const [end, attr] of [['head', 'marker-start'], ['tail', 'marker-end']]) {
+      if (!it[end] || it[end] === 'none') continue;
+      const m = document.createElementNS(NS, 'marker'), id = `ah${n}${end}`;
+      m.setAttribute('id', id); m.setAttribute('viewBox', '0 0 10 10'); m.setAttribute('refX', '5'); m.setAttribute('refY', '5');
+      m.setAttribute('markerWidth', '3'); m.setAttribute('markerHeight', '3'); m.setAttribute('orient', 'auto-start-reverse');
+      const path = document.createElementNS(NS, 'path'); path.setAttribute('d', 'M0,0 L10,5 L0,10 z'); path.setAttribute('fill', it.c);
+      m.append(path); defs.append(m); l.setAttribute(attr, `url(#${id})`);
+    }
+    svg.append(l);
+  });
+  return svg;
+}
+
+function renderSlide(i) {
+  const s = deck.slides[i];
+  const el = document.createElement('div');
+  el.className = 'slide';
+  const [base, line, pitch, thick] = SCAN[s.bg] || SCAN.rust;
+  el.style.backgroundColor = base;
+  el.style.backgroundImage = `repeating-linear-gradient(to bottom, ${base} 0, ${base} ${px(pitch - thick)}, ${line} ${px(pitch - thick)}, ${line} ${px(pitch)})`;
+  const lines = [];
+  for (const it of s.items) {
+    if (it.t === 'line') { lines.push(it); continue; }
+    const node = it.t === 'img' ? renderImage(it) : it.t === 'text' ? renderText(it) : (() => {
+      const d = document.createElement('div'); place(d, it); if (it.fill) d.style.background = it.fill; stroke(d, it.line); return d;
+    })();
+    node.dataset.id = it.id;
+    if (s.auto[it.id] !== undefined) node.style.visibility = 'hidden';
+    el.append(node);
+  }
+  if (lines.length) el.append(renderLines(lines));
+  return el;
+}
+
+// ---- timing: shapes that appear on their own (the cane toads) ------------------------------------
+function startAuto(el, s, elapsed) {
+  timers.forEach(clearTimeout); timers = [];
+  for (const [id, delay] of Object.entries(s.auto)) {
+    const node = el.querySelector(`[data-id="${id}"]`);
+    if (!node) continue;
+    const wait = delay + s.fade * 1000 - elapsed;   // PowerPoint starts the clock once the transition ends
+    if (wait <= 0) node.style.visibility = 'visible';
+    else timers.push(setTimeout(() => { node.style.visibility = 'visible'; }, wait));
+  }
+}
+
+// ---- navigation --------------------------------------------------------------------------------
+function show(i, { animate = true } = {}) {
+  i = Math.max(0, Math.min(deck.slides.length - 1, i));
+  const s = deck.slides[i];
+  const el = renderSlide(i);
+  const old = current, forward = i > index || !old;
+  index = i; current = el;
+  if (animate && old && forward && s.fade) {
+    el.style.opacity = '0';
+    el.style.transition = `opacity ${s.fade}s ease`;
+    stage.append(el);
+    requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = '1'; }));
+    const done = () => { if (old.isConnected) old.remove(); };
+    el.addEventListener('transitionend', done, { once: true });
+    setTimeout(done, s.fade * 1000 + 100);
+  } else {
+    stage.querySelectorAll('.slide').forEach((n) => n.remove());
+    stage.append(el);
+  }
+  slideStart = performance.now() - (animate ? 0 : 1e9);
+  startAuto(el, s, animate ? 0 : 1e9);
+  history.replaceState(null, '', `#${i + 1}`);
+  live.textContent = `Slide ${i + 1} of ${deck.slides.length}`;
+  preload(i + 1); preload(i + 2);
+}
+
+const preloaded = new Set();
+function preload(i) {
+  const s = deck.slides[i];
+  if (!s) return;
+  for (const it of s.items) if (it.t === 'img' && !preloaded.has(it.src)) { preloaded.add(it.src); new Image().src = it.src; }
+}
+
+function fit() {
+  probeCache.clear();
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const scale = Math.min(vw / deck.w, vh / deck.h);
+  k = scale;
+  stage.style.width = `${deck.w * k}px`; stage.style.height = `${deck.h * k}px`;
+  if (!current) return;
+  // re-lay the current slide at the new size, keeping the toads that have already landed
+  const elapsed = performance.now() - slideStart;
+  const el = renderSlide(index);
+  stage.querySelectorAll('.slide').forEach((n) => n.remove());
+  stage.append(el); current = el;
+  startAuto(el, deck.slides[index], elapsed);
+}
+
+let resizeFrame = null;
+function scheduleFit() { if (resizeFrame === null) resizeFrame = requestAnimationFrame(() => { resizeFrame = null; fit(); }); }
+
+function bind() {
+  window.addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const next = ['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter', 'n', 'N'];
+    const prev = ['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace', 'p', 'P'];
+    if (next.includes(e.key)) { e.preventDefault(); show(index + 1); }
+    else if (prev.includes(e.key)) { e.preventDefault(); show(index - 1, { animate: false }); }
+    else if (e.key === 'Home') { e.preventDefault(); show(0, { animate: false }); }
+    else if (e.key === 'End') { e.preventDefault(); show(deck.slides.length - 1, { animate: false }); }
+    else if (e.key === 'f' || e.key === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.(); }
+  });
+  stage.addEventListener('click', (e) => { if (e.button === 0) show(index + 1); });
+  let x0 = null;
+  stage.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+  stage.addEventListener('touchend', (e) => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0; x0 = null;
+    if (Math.abs(dx) > 40) (dx < 0 ? show(index + 1) : show(index - 1, { animate: false }));
+  }, { passive: true });
+  window.addEventListener('resize', scheduleFit, { passive: true });
+  window.addEventListener('message', (e) => { if (e.data === 'mint-presentation-resize') scheduleFit(); });
+  window.addEventListener('hashchange', () => { const n = parseInt(location.hash.slice(1), 10); if (n && n - 1 !== index) show(n - 1, { animate: false }); });
+}
+
+// Test hook: every rendered line's measured width against its box (used by the QA script).
+window.__deck = {
+  get index() { return index; }, get count() { return deck?.slides.length; }, get pretext() { return pretext ? 'ready' : 'fallback'; },
+  go: (i) => show(i, { animate: false }),
+  lines: () => [...(current?.querySelectorAll('[data-id]') || [])].filter((n) => n.querySelector('.tl'))
+    .map((n) => ({ id: +n.dataset.id, lines: [...n.querySelectorAll('.tl')].map((l) => l.textContent),
+      base: [...n.querySelectorAll('.tl')].map((l) => {   // true baseline via a zero-size marker
+        if (!l.firstElementChild) return null;
+        const mk = document.createElement('i');
+        mk.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+        l.append(mk);
+        const v = (mk.getBoundingClientRect().top - stage.getBoundingClientRect().top) / k;
+        mk.remove();
+        return +v.toFixed(2);
+      }) })),
+  overflow() {
+    const bad = [];
+    current?.querySelectorAll('.tl').forEach((line) => {
+      const box = parseFloat(line.style.width), spans = [...line.children];
+      const w = spans.reduce((a, s) => a + s.getBoundingClientRect().width, 0);
+      if (w > box + 1.5) bad.push({ text: line.textContent.slice(0, 60), over: +(w - box).toFixed(1) });
+    });
+    return bad;
+  },
+};
+
+async function main() {
+  const [d, p] = await Promise.all([fetch('deck.json', { cache: 'no-cache' }).then((r) => r.json()), loadPretext()]);
+  deck = d; pretext = p;
+  document.documentElement.dataset.pretext = pretext ? 'ready' : 'fallback';
+  // load every face the deck uses before measuring anything
+  const faces = new Set();
+  for (const s of deck.slides) for (const it of s.items) if (it.paras) for (const pa of it.paras) for (const r of pa.runs) if (r.f) faces.add(`${r.b ? fam(r.f).bw : fam(r.f).w}|${r.f}`);
+  await Promise.all([...faces].map((f) => {
+    const [w, name] = f.split('|');
+    return Promise.all(fam(name).css.split(',').map((c) => document.fonts.load(`${w} 20px ${c.trim()}`).catch(() => null)));
+  }));
+  await document.fonts.ready;
+  stage.querySelector('#loading')?.remove();
+  fit();
+  bind();
+  const n = parseInt(location.hash.slice(1), 10);
+  show(Number.isFinite(n) && n > 0 ? n - 1 : 0, { animate: false });
+  window.dispatchEvent(new Event('deck-ready'));
+  document.documentElement.dataset.ready = '1';
+}
+
+main().catch((e) => { console.error(e); stage.textContent = 'This presentation failed to load.'; });

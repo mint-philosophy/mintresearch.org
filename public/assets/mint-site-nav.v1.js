@@ -94,7 +94,8 @@
       children: [
         { id: 'normative-competence', type: 'page', href: '/nc/', label: 'Evaluating LLM Normative Competence' },
         { id: 'agi-policy-student', type: 'page', href: '/FDC', label: 'The AGI-Ready Policy Student' },
-        { id: 'navigating-agi-reckoning', type: 'page', href: '/navigating/', label: 'Navigating the AGI Reckoning' }
+        { id: 'navigating-agi-reckoning', type: 'page', href: '/navigating/', label: 'Navigating the AGI Reckoning' },
+        { id: 'agi-reckoning-sais', type: 'page', href: '/agi-reckoning-sais/', label: 'Navigating the AGI Reckoning (SAIS)' }
       ]
     },
     {
