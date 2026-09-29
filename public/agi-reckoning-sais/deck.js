@@ -4,6 +4,8 @@
 // re-laid on every resize. Mixed-font paragraphs (a mono number beside a condensed label) use the
 // same canvas measurement, word by word.
 
+import { assignKeys, layoutSection } from './phone.js?v=af99e0cdd4';
+
 const PRETEXT = ['https://esm.sh/@chenglou/pretext@0.0.8', 'https://cdn.jsdelivr.net/npm/@chenglou/pretext@0.0.8/+esm'];
 const FAMILY = {
   'Big Caslon': { css: '"Big Caslon", "Libre Caslon Text", Georgia, serif', w: 400, bw: 700 },
@@ -150,6 +152,7 @@ function baselineIn(font, lh) {
 
 // ---- rendering ---------------------------------------------------------------------------------
 const px = (v) => `${(v * k).toFixed(3)}px`;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 function place(el, it) {
   el.style.left = px(it.x); el.style.top = px(it.y); el.style.width = px(it.w); el.style.height = px(it.h);
@@ -165,60 +168,90 @@ function stroke(el, line) {
   el.style.border = `${Math.max(0.5, line.w * k).toFixed(2)}px ${line.dash ? 'dashed' : 'solid'} ${line.c}`;
 }
 
+// A text box laid out in points: PowerPoint's line pitch, first-baseline offset and last-line descent.
+function textLayout(it) {
+  const [il, itp, ir, ib] = it.ins;
+  const wpt = it.w - il - ir;
+  const blocks = [];
+  it.paras.forEach((p, pi) => {
+    const sized = p.runs.filter((r) => r.s);
+    const size = sized.length ? Math.max(...sized.map((r) => r.s)) : p.size;
+    const font = sized.length ? sized.reduce((a, r) => (r.s >= a.s ? r : a)).f : p.font;
+    const lh = size * (deck.line[font] || 1.2) * p.ls;
+    const asc = size * (deck.ascent[font] || 0.9) * p.ls;
+    const desc = size * (deck.descent?.[font] || 0.25) * p.ls;
+    const segs = [[]];
+    for (const r of p.runs) (r.t === '\n' ? segs.push([]) : segs[segs.length - 1].push(r));
+    for (const seg of segs) for (const spans of layoutSegment(seg, wpt * K_REF, lh * K_REF, it.wrap)) {
+      blocks.push({ spans, lh, asc, desc, align: p.align, run: sized.find((r) => r.s === size) || sized[0] });
+    }
+    if (pi < it.paras.length - 1) blocks.push({ gap: p.sa });
+  });
+  // PowerPoint's block runs from the top of the text area to the last line's descent
+  let yy = 0, lastBase = 0, lastDesc = 0;
+  for (const b of blocks) { if (b.gap !== undefined) { yy += b.gap; continue; } lastBase = yy + b.asc; lastDesc = b.desc; yy += b.lh; }
+  return { blocks, blockH: lastBase + lastDesc, ins: it.ins };
+}
+
+// services for the phone layout (points)
+const T = {
+  height: (it) => { const L = textLayout(it); return L.ins[1] + L.blockH + L.ins[3]; },
+  widest(it) {   // the longest unbreakable run of text: a word, or a whole line when the box doesn't wrap
+    let m = 0;
+    for (const p of it.paras) {
+      let line = 0;
+      for (const r of p.runs) {
+        if (!r.t) continue;
+        if (r.t === '\n') { m = Math.max(m, line); line = 0; continue; }
+        if (!it.wrap) { line += measure(r.t, r) / K_REF; continue; }
+        for (const w of r.t.split(/\s+/)) if (w) m = Math.max(m, measure(w, r) / K_REF);
+      }
+      m = Math.max(m, line);
+    }
+    return m;
+  },
+  scaleText(it, fs) {
+    if (fs === 1) return it;
+    return { ...it, ins: it.ins.map((v) => v * fs),
+      paras: it.paras.map((p) => ({ ...p, size: p.size * fs, sa: p.sa * fs, runs: p.runs.map((r) => (r.s ? { ...r, s: r.s * fs, sp: (r.sp || 0) * fs } : r)) })) };
+  },
+};
+
 function renderText(it) {
   const el = document.createElement('div');
   place(el, it);
   if (it.fill) el.style.background = it.fill;
   stroke(el, it.line);
+  const { blocks, blockH } = textLayout(it);
   const [il, itp, ir, ib] = it.ins;
   const width = (it.w - il - ir) * k;
-  const blocks = [];
-  let total = 0;
-  it.paras.forEach((p, pi) => {
-    const sized = p.runs.filter((r) => r.s);
-    const size = sized.length ? Math.max(...sized.map((r) => r.s)) : p.size;
-    const font = sized.length ? sized.reduce((a, r) => (r.s >= a.s ? r : a)).f : p.font;
-    const lh = size * (deck.line[font] || 1.2) * p.ls * k;
-    const asc = size * (deck.ascent[font] || 0.9) * p.ls * k;   // PowerPoint's first-baseline offset
-    const desc = size * (deck.descent?.[font] || 0.25) * p.ls * k;
-    const segs = [[]];
-    for (const r of p.runs) (r.t === '\n' ? segs.push([]) : segs[segs.length - 1].push(r));
-    for (const seg of segs) for (const spans of layoutSegment(seg, width / k * K_REF, lh / k * K_REF, it.wrap)) {
-      blocks.push({ spans, lh, asc, desc, align: p.align, run: sized.find((r) => r.s === size) || sized[0] });
-      total += lh;
-    }
-    if (pi < it.paras.length - 1) { total += p.sa * k; blocks.push({ gap: p.sa * k }); }
-  });
-  const innerH = (it.h - itp - ib) * k;
-  // PowerPoint's block runs from the top of the text area to the last line's descent
-  let yy = 0, lastBase = 0, lastDesc = 0;
-  for (const b of blocks) { if (b.gap !== undefined) { yy += b.gap; continue; } lastBase = yy + b.asc; lastDesc = b.desc; yy += b.lh; }
-  const blockH = lastBase + lastDesc;
-  let y = itp * k + (it.anchor === 'ctr' ? (innerH - blockH) / 2 : it.anchor === 'b' ? innerH - blockH : 0);
+  const innerH = it.h - itp - ib;
+  let y = (itp + (it.anchor === 'ctr' ? (innerH - blockH) / 2 : it.anchor === 'b' ? innerH - blockH : 0)) * k;
   for (const b of blocks) {
-    if (b.gap !== undefined) { y += b.gap; continue; }
+    if (b.gap !== undefined) { y += b.gap * k; continue; }
+    const lh = b.lh * k;
     const line = document.createElement('div');
     line.className = 'tl';
     // put the CSS baseline exactly where PowerPoint puts it (measured, not predicted)
-    const cssBase = b.run ? baselineIn(fontSpec(b.run), b.lh) : b.lh * 0.8;
-    const top = y + b.asc - cssBase;
+    const cssBase = b.run ? baselineIn(fontSpec(b.run), lh) : lh * 0.8;
+    const top = y + b.asc * k - cssBase;
     line.style.left = `${(il * k).toFixed(3)}px`; line.style.top = `${top.toFixed(3)}px`;
-    line.style.width = `${width.toFixed(3)}px`; line.style.height = `${b.lh.toFixed(3)}px`;
+    line.style.width = `${width.toFixed(3)}px`; line.style.height = `${lh.toFixed(3)}px`;
     if (b.run) line.style.font = fontSpec(b.run);   // the line's own strut must match its text
-    line.style.lineHeight = `${b.lh.toFixed(3)}px`;
+    line.style.lineHeight = `${lh.toFixed(3)}px`;
     line.style.textAlign = b.align === 'ctr' ? 'center' : b.align === 'r' ? 'right' : 'left';
     for (const sp of b.spans) {
-      const s = document.createElement('span');
-      s.textContent = sp.text;
-      s.style.font = fontSpec(sp.run);
-      s.style.lineHeight = 'inherit';   // the font shorthand resets line-height to "normal"
-      s.style.color = sp.run.c || '#000000';
-      if (sp.run.sp) s.style.letterSpacing = `${(sp.run.sp * k).toFixed(3)}px`;
-      if (sp.run.st) s.style.textDecoration = 'line-through';
-      line.append(s);
+      const sEl = document.createElement('span');
+      sEl.textContent = sp.text;
+      sEl.style.font = fontSpec(sp.run);
+      sEl.style.lineHeight = 'inherit';   // the font shorthand resets line-height to "normal"
+      sEl.style.color = sp.run.c || '#000000';
+      if (sp.run.sp) sEl.style.letterSpacing = `${(sp.run.sp * k).toFixed(3)}px`;
+      if (sp.run.st) sEl.style.textDecoration = 'line-through';
+      line.append(sEl);
     }
     el.append(line);
-    y += b.lh;
+    y += lh;
   }
   return el;
 }
@@ -241,7 +274,7 @@ function renderLines(items) {
   const NS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('class', 'lines');
-  svg.setAttribute('viewBox', `0 0 ${deck.w} ${deck.h}`);
+  svg.setAttribute('viewBox', `0 0 ${page.w} ${page.h}`);
   svg.setAttribute('preserveAspectRatio', 'none');
   const defs = document.createElementNS(NS, 'defs');
   svg.append(defs);
@@ -263,8 +296,57 @@ function renderLines(items) {
   return svg;
 }
 
+// ---- the phone layout: portrait windows get each section rearranged (phone.js) -----------------------
+let phone = null;             // null in landscape; else the window { vw, vh }
+let page = { w: 0, h: 0 };    // the page being drawn, in points
+let kSlides = 1;              // landscape scale
+const pages = new Map();
+// A portrait page is a column about 480 points wide and as tall as the window. A section that
+// doesn't fit gets a wider page (so everything is drawn a little smaller) until it does.
+function sectionPage(sec) {
+  if (!pages.has(sec)) {
+    const { vw, vh } = phone;
+    const W0 = clamp(vw / 1.1, 480, 760);
+    let W = W0, L;
+    // on a tablet pictures first try growing with the window; if the section is then too tall they
+    // grow less, and only after that does the page widen
+    for (let up = W0 / 480; ; up = Math.max(1, up - 0.1)) {
+      L = layoutSection(deck, sec, W, (W * vh) / vw, T, up);
+      if (L.over <= 0 || up === 1) break;
+    }
+    for (; L.over > 0 && W * 1.06 <= 960;) {
+      W *= 1.06;
+      L = layoutSection(deck, sec, W, (W * vh) / vw, T, 1);
+    }
+    pages.set(sec, { W, H: (W * vh) / vw, k: vw / W, L });
+  }
+  return pages.get(sec);
+}
+
+function phoneItem(it, pl) {
+  if (!pl || pl.hide) return null;
+  let o, fs = 1;
+  if (pl.aff) {
+    const { s, ox, oy, dx, dy } = pl.aff;
+    fs = s;
+    if (it.t === 'line') o = { ...it, x1: dx + (it.x1 - ox) * s, y1: dy + (it.y1 - oy) * s, x2: dx + (it.x2 - ox) * s, y2: dy + (it.y2 - oy) * s, w: it.w * s };
+    else o = { ...it, x: dx + (it.x - ox) * s, y: dy + (it.y - oy) * s, w: it.w * s, h: it.h * s };
+    if (it.line && it.t !== 'line') o.line = { ...it.line, w: it.line.w * s };
+  } else if (pl.abs) {
+    fs = pl.fs ?? 1;
+    const a = pl.abs;
+    o = it.t === 'line' ? { ...it, x1: a.x, y1: a.y, x2: a.x + a.w, y2: a.y + a.h } : { ...it, ...a };
+    if (pl.crop) o.crop = pl.crop;
+  } else return it;
+  return o.t === 'text' ? T.scaleText(o, fs) : o;
+}
+
 function renderSlide(i) {
-  const s = deck.slides[i];
+  const s0 = deck.slides[i];
+  let L = null;
+  if (phone) { const P = sectionPage(s0.section); k = P.k; page = { w: P.W, h: P.H }; L = P.L; }
+  else { k = kSlides; page = { w: deck.w, h: deck.h }; }
+  const s = L ? { ...s0, items: s0.items.map((it) => phoneItem(it, L.map.get(it.key))).filter(Boolean) } : s0;
   const el = document.createElement('div');
   el.className = 'slide';
   const [base, line, pitch, thick] = SCAN[s.bg] || SCAN.rust;
@@ -329,12 +411,20 @@ function preload(i) {
   for (const it of s.items) if (it.t === 'img' && !preloaded.has(it.src)) { preloaded.add(it.src); new Image().src = it.src; }
 }
 
+const LAYOUT = new URLSearchParams(location.search).get('layout');   // 'phone' | 'slides' to force one
 function fit() {
   probeCache.clear();
   const vw = window.innerWidth, vh = window.innerHeight;
-  const scale = Math.min(vw / deck.w, vh / deck.h);
-  k = scale;
-  stage.style.width = `${deck.w * k}px`; stage.style.height = `${deck.h * k}px`;
+  const portrait = LAYOUT === 'phone' || (LAYOUT !== 'slides' && vw < vh * 0.9);
+  pages.clear();
+  if (portrait) {
+    phone = { vw, vh };
+    stage.style.width = `${vw}px`; stage.style.height = `${vh}px`;
+  } else {
+    phone = null;
+    kSlides = k = Math.min(vw / deck.w, vh / deck.h);
+    stage.style.width = `${deck.w * k}px`; stage.style.height = `${deck.h * k}px`;
+  }
   if (!current) return;
   // re-lay the current slide at the new size, keeping the toads that have already landed
   const elapsed = performance.now() - slideStart;
@@ -375,6 +465,9 @@ function bind() {
 window.__deck = {
   get index() { return index; }, get count() { return deck?.slides.length; }, get pretext() { return pretext ? 'ready' : 'fallback'; },
   go: (i) => show(i, { animate: false }),
+  get phone() { return phone ? { ...sectionPage(deck.slides[index].section), L: undefined } : null; },
+  unplaced: () => (phone ? sectionPage(deck.slides[index].section).L.unplaced : []),
+  over: () => (phone ? sectionPage(deck.slides[index].section).L.over : 0),
   lines: () => [...(current?.querySelectorAll('[data-id]') || [])].filter((n) => n.querySelector('.tl'))
     .map((n) => ({ id: +n.dataset.id, lines: [...n.querySelectorAll('.tl')].map((l) => l.textContent),
       base: [...n.querySelectorAll('.tl')].map((l) => {   // true baseline via a zero-size marker
@@ -400,6 +493,7 @@ window.__deck = {
 async function main() {
   const [d, p] = await Promise.all([fetch('deck.json', { cache: 'no-cache' }).then((r) => r.json()), loadPretext()]);
   deck = d; pretext = p;
+  assignKeys(deck);
   document.documentElement.dataset.pretext = pretext ? 'ready' : 'fallback';
   // load every face the deck uses before measuring anything
   const faces = new Set();
