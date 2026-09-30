@@ -44,7 +44,10 @@ const SPECS = [
     { m: { area: [305, 100, 662, 541] }, mode: 'scale', maxS: 1.2 },
     { mode: 'grid', gap: 16, groups: [{ m: { area: [0, 100, 305, 541] }, s: 1 }, { m: { area: [662, 100, 961, 541] } }] }] }],
   [/Roadblocks/, { blocks: [{ m: { area: [0, 100, 961, 541] }, mode: 'grid', cols: 2, gap: 14, split: [240, 480, 720], drop: /^rule \d$/ }] }],
-  [/foothills/, { head: null, blocks: [{ m: { not: IMG, area: [0, 40, 560, 541] }, mode: 'flow' }, { m: IMG, mode: 'art', h: 'fill' }] }],
+  [/foothills/, { head: null, blocks: [
+    { m: { area: [0, 40, 470, 541] }, mode: 'flow' },
+    { m: { area: [470, 0, 961, 270] }, mode: 'scale', minPic: 1 },   // Epoch's chart on its panel, full width
+    { m: IMG, mode: 'art', h: 'fill' }] }],
   [/Should we build AGI\?$/, { blocks: [{ m: { area: [0, 100, 470, 541] }, mode: 'flow' }, { m: { area: [470, 100, 961, 541] }, mode: 'scale' }] }],
   [/best of times/, { blocks: [{ m: /./, mode: 'flow', oneLine: true }] }],
   [/Plan: three reckonings|^Review$/, { blocks: [{ m: /./, mode: 'flow', narrow: /^numeral/ }] }],

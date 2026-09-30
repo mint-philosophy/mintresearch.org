@@ -4,7 +4,7 @@
 // re-laid on every resize. Mixed-font paragraphs (a mono number beside a condensed label) use the
 // same canvas measurement, word by word.
 
-import { assignKeys, layoutSection, coverCrop } from './phone.js?v=a9fad5c16a';
+import { assignKeys, layoutSection, coverCrop } from './phone.js?v=730f8b929c';
 
 const PRETEXT = ['https://esm.sh/@chenglou/pretext@0.0.8', 'https://cdn.jsdelivr.net/npm/@chenglou/pretext@0.0.8/+esm'];
 const FAMILY = {
@@ -357,7 +357,29 @@ function phoneItem(it, pl) {
 // else is centred in the extra space, keeping its size and line breaks; toads spread out.
 const HEAD = /^(rail|slide number|title|byline|venue|thanks)$/;
 const E = 2;   // points: how close to an edge counts as bleeding
-function fillItem(it, isAuto) {
+// where a shape goes on a page of another shape (box only; containment is applied by fillItem)
+function fillBox(it) {
+  const FW = page.w, FH = page.h, dX = (FW - deck.w) / 2, dY = (FH - deck.h) / 2, sy = FH / deck.h;
+  const name = (it.n || '').replace(/^B\d+ · /, '');
+  const L = it.x <= E, R = it.x + it.w >= deck.w - E, T = it.y <= E, B = it.y + it.h >= deck.h - E;
+  const stretchX = it.t === 'rect' || it.t === 'img' || (it.t === 'text' && (it.fill || it.line));
+  const stretchY = it.t === 'rect' || it.t === 'img';
+  let x0 = it.x, x1 = it.x + it.w, y0 = it.y, y1 = it.y + it.h, mode = 'shift';
+  if (stretchX) { x0 += L ? 0 : dX; x1 += R ? 2 * dX : dX; }
+  else { const sh = L ? 0 : R ? 2 * dX : dX; x0 += sh; x1 += sh; }
+  if (HEAD.test(name) && it.y < 100) mode = 'head';                                  // stays under the top edge
+  else if (stretchY && (T || it.y <= 110) && B) { y1 += 2 * dY; mode = 'grow'; }      // from the top (or header) to the foot
+  else if (stretchY && (L || R) && it.h >= 200 && T !== B) {                          // a side quadrant: keeps its share
+    y0 *= sy; y1 *= sy; mode = 'share';
+  }
+  else if (B) { y0 += 2 * dY; y1 += 2 * dY; mode = 'foot'; }                          // sits on the foot
+  else if (stretchY && T) mode = 'hang';                                              // hangs from the top edge
+  else { y0 += dY; y1 += dY; }
+  const edge = stretchY && (L || R || T || B);
+  return { x0, x1, y0, y1, mode, edge };
+}
+
+function fillItem(it, isAuto, containers) {
   const FW = page.w, FH = page.h;
   if (FW - deck.w < 0.5 && FH - deck.h < 0.5) return it;
   const dX = (FW - deck.w) / 2, dY = (FH - deck.h) / 2;
@@ -369,21 +391,29 @@ function fillItem(it, isAuto) {
     const head = Math.max(it.y1, it.y2) < 100;
     return { ...it, x1: it.x1 + dX, x2: it.x2 + dX, y1: it.y1 + (head ? 0 : dY), y2: it.y2 + (head ? 0 : dY) };
   }
-  const name = (it.n || '').replace(/^B\d+ · /, '');
-  const L = it.x <= E, R = it.x + it.w >= deck.w - E, T = it.y <= E, B = it.y + it.h >= deck.h - E;
-  const stretchX = it.t === 'rect' || it.t === 'img' || (it.t === 'text' && (it.fill || it.line));
-  const stretchY = it.t === 'rect' || it.t === 'img';
-  let x0 = it.x, x1 = it.x + it.w, y0 = it.y, y1 = it.y + it.h;
-  if (stretchX) { x0 += L ? 0 : dX; x1 += R ? 2 * dX : dX; }
-  else { const sh = L ? 0 : R ? 2 * dX : dX; x0 += sh; x1 += sh; }
-  if (HEAD.test(name) && it.y < 100) { /* stays under the top edge */ }
-  else if (stretchY && (T || it.y <= 110) && B) { y1 += 2 * dY; }            // spans from the top (or the header) to the foot: grows
-  else if (B) { y0 += 2 * dY; y1 += 2 * dY; }                                  // sits on the foot: stays on it
-  else if (stretchY && T) { /* hangs from the top edge */ }
-  else { y0 += dY; y1 += dY; }
-  const o = { ...it, x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+  const b = fillBox(it);
+  let { y0, y1 } = b;
+  if (b.mode === 'shift' || b.mode === 'hang') {
+    // inside a panel or picture that reaches an edge: stay centred in it as it moves and grows
+    const cx = it.x + it.w / 2, cy = it.y + it.h / 2;
+    const c = containers.filter((c) => c.it !== it && cx >= c.it.x && cx <= c.it.x + c.it.w && cy >= c.it.y && cy <= c.it.y + c.it.h)
+      .sort((a, z) => a.it.w * a.it.h - z.it.w * z.it.h)[0];
+    if (c) {
+      const d = c.b.y0 - c.it.y + (c.b.y1 - c.b.y0 - c.it.h) / 2 - (y0 - it.y); y0 += d; y1 += d;
+      if (c.b.mode === 'share') {   // a quadrant panel: its contents centred across its width too
+        const dx = c.b.x0 - c.it.x + (c.b.x1 - c.b.x0 - c.it.w) / 2 - (b.x0 - it.x); b.x0 += dx; b.x1 += dx;
+      }
+    }
+  }
+  const o = { ...it, x: b.x0, y: y0, w: b.x1 - b.x0, h: y1 - y0 };
   if (it.t === 'img' && (Math.abs(o.w - it.w) > 0.5 || Math.abs(o.h - it.h) > 0.5)) o.crop = coverCrop(it, o.w, o.h);
   return o;
+}
+
+function fillItems(s0) {
+  const containers = s0.items.filter((it) => it.t !== 'line' && s0.auto[it.id] === undefined)
+    .map((it) => ({ it, b: fillBox(it) })).filter((c) => c.b.edge);
+  return s0.items.map((it) => fillItem(it, s0.auto[it.id] !== undefined, containers));
 }
 
 function renderSlide(i) {
@@ -393,7 +423,7 @@ function renderSlide(i) {
   if (phone) { const P = sectionPage(s0.section); k = P.k; page = { w: P.W, h: P.H }; L = P.L; tall = P.scroll; }
   else { k = kSlides; page = { w: window.innerWidth / k, h: window.innerHeight / k }; }
   const s = L ? { ...s0, items: s0.items.map((it) => phoneItem(it, L.map.get(it.key))).filter(Boolean) }
-    : { ...s0, items: s0.items.map((it) => fillItem(it, s0.auto[it.id] !== undefined)) };
+    : { ...s0, items: fillItems(s0) };
   const el = document.createElement('div');
   el.className = 'slide';
   if (tall) { el.style.height = `${page.h * k}px`; el.style.bottom = 'auto'; }
