@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>AuthorityLens measures who can act alone in coding agents — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-29">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-29">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 29 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">AuthorityLens measures who can act alone in coding agents</h1>
+<p class="dek">Across thirteen configurations, approval rules change who must participate even when overall reach stays similar. Shell access also lets OpenCode’s Plan mode retain the outcomes available in Build.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 29 September 2026</span> <span class="chip">1120 words · ~6 min</span></div>
+<div class="article-body">
+<p>A coding agent can retain the power to change files even when its planning mode disables the usual editing tool. Shaojin Chen of the Hong Kong University of Science and Technology and nine colleagues examine that mismatch in <a href="https://arxiv.org/abs/2609.32378">AuthorityLens: Rethinking LLM-Based Agent Systems Through the Lens of Authority</a>, posted to arXiv on 26 September. Across thirteen configurations of Codex, OpenCode and Gemini CLI, they distinguish the outcomes a system can reach from the participants whose contributions are necessary. Disabling approvals can leave the system’s overall reach almost unchanged while giving an assistant much more power to act alone.</p>
+<p>The authors assess a fixed catalogue, Agent-599, covering outcomes from reading a protected file to deploying software and changing access rights. Each entry specifies the starting environment and the result required for success. A deployment must change the running application; accepting a request is insufficient. Existing credentials and account privileges belong to those starting conditions. The researchers combine source inspection at pinned August revisions, targeted routing probes and controlled operation experiments using synthetic data and credentials. They supply approval decisions as explicit inputs, then determine which execution paths can complete each outcome.</p>
+<p>The participants are called Principals: a human user, an executing assistant and a model reviewer can each hold attributable authority. A minimal sufficient coalition is a group that can complete an outcome but becomes insufficient if any member is removed. Several such groups can coexist, with different sizes. System Authority counts the fraction of catalogue outcomes reachable by any permitted group. Authority Separation first takes the smallest successful group across admitted runtime states for each reachable outcome, then averages those minima over reachable outcomes only. An outcome possible with one assistant and another possible only with an assistant and reviewer therefore contribute one and two.</p>
+<p>In Codex, Full Access changes coverage from 597 of the 599 outcomes to all 599. The larger change concerns independent action: the assistant can complete 318 outcomes alone in either approval mode, with another 279 requiring a reviewer; Full Access makes every outcome possible alone. Ask uses the human as reviewer, while Auto uses the Guardian agent. <a href="https://learn.chatgpt.com/docs/sandboxing/auto-review">OpenAI’s documentation</a> describes automatic review as changing who handles escalation requests while retaining the main agent’s sandbox. The study’s equal coverage figures therefore do not mean that approvals have no effect: approval remains a necessary contribution on the reviewed paths.</p>
+<p>OpenCode’s Build and Plan modes both reach the same 537 outcomes, each without a necessary human contribution under the study’s conditions. Plan restricts ordinary native editing but retains shell execution, through which file changes remain possible. The <a href="https://github.com/anomalyco/opencode/blob/fe82a1b6ca4f535beb973b0867017e3f639f85ed/packages/opencode/src/agent/agent.ts">pinned agent definitions</a> preserve that shell permission and explicitly enable it for Explore, the subagent that <a href="https://opencode.ai/docs/agents/">OpenCode’s documentation</a> describes as read-only. Plan can also delegate native editing to a Build-preset child. In a separate <a href="https://github.com/anomalyco/opencode/issues/39491">July issue report</a>, user HenFo described Plan creating files through bash after its write tool was unavailable. That report predates AuthorityLens and concerns a particular user session.</p>
+<p>The paper’s deletion experiments explain why permission checks and sandboxes need separate analysis. In Codex, continuing an already admitted shell can avoid a fresh command-policy check. Under Ask and Auto, the tested workspace deletions then need no reviewer, but the sandbox still blocks equivalent deletions outside the writable workspace until approval supplies access. OpenCode’s tested alternative requests also avoid its external-path check; its admitted shell retains the host access needed to complete those deletions. The authors demonstrate these effects in prepared environments. They do not report compromises of other users’ systems.</p>
+<p>Gemini CLI shows a different way to restrict authority. Default, Auto-edit and Yolo each reach 552 outcomes; Plan removes the shell entrypoint and reaches 76 through the remaining native interfaces. Optional Model Review uses Conseca, associated with <a href="https://arxiv.org/abs/2501.17070">Lillian Tsai and Eugene Bagdasarian’s HotOS 2025 paper on contextual security policies</a>. On the approving execution branches analyzed, Conseca adds a reviewer while preserving any required human confirmation. Eleven outcomes completed through validation output precede that review stage. Coverage stays unchanged, while the average minimum participation in Default rises from about 1.86 to 2.84. These measurements concern interactive configurations with no additional sandbox explicitly enabled.</p>
+<p>Chen and colleagues use Principal Authority to distinguish delegation from enforced cooperation. For each outcome, a participant receives credit according to the smallest minimal coalition containing it: one for acting alone, one-half for a necessary role in a pair, and so on, averaged across the whole catalogue. Two assistants that can each act alone both receive full credit for that outcome. Adding the second does not diminish the first’s capacity. In the study, eligible Codex children and OpenCode executors replicate authority in this sense. Creating a child counts as preparation; the parent joins the measured coalition only when the target operation itself requires its contribution.</p>
+<p>Codex’s Guardian also has execution powers alongside its review role. The authors identify 134 independently reachable outcomes under its read-only filesystem profile, including 27 changes to shell, terminal, synchronization, interprocess and existing database-channel state. One example rolls back a PostgreSQL transaction through a prepared channel to an existing connection; it opens no new network connection. Two further outcomes require an initial root identity with an existing system-administration capability, allowing a filesystem remount. Ordinary file-write and deletion trials remain blocked by the read-only mounts. The finding concerns which resources the restriction covers and which privileges the environment already supplies.</p>
+<p>The framework develops established security distinctions. In his <a href="https://erights.org/talks/thesis/markm-thesis.pdf">2006 Johns Hopkins thesis</a>, Mark Miller distinguished direct permission from authority exercised through other programs. <a href="https://www.cs.purdue.edu/homes/ninghui/papers/algebra_jacm.pdf">Ninghui Li and Qihua Wang</a> formalized requirements for teams to complete sensitive tasks in their separation-of-duty work. AuthorityLens asks how much cooperation a concrete agent configuration actually enforces after alternative execution paths and delegation are included. Its contribution is a common outcome-based measurement that makes those differences comparable across configurations.</p>
+<p>The scores measure possible actions under the specified conditions, without estimating how often models choose them or how much harm they cause. Outcomes receive equal weight, and counting a reviewer says nothing about its diligence or independence. That qualification also affects implementation: the <a href="https://github.com/google-gemini/gemini-cli/blob/cf22ac7e86f3dcf528e3ae591fec1c03090a49f8/packages/core/src/safety/conseca/policy-enforcer.ts">pinned Conseca code</a> returns automatic permission on some error paths, including empty or unparseable responses. The paper does not establish how those paths affect its reported participation minima. More generally, a missed execution route could increase measured coverage or reduce the number of participants required; the reported figures depend on the audit’s search for alternatives.</p>
+<p>The paper publishes all 599 outcome definitions and completion requirements in Appendix F, alongside its methods and structural audits. It omits complete executable bypass sequences. The authors say they privately submitted their command-mediation findings to OpenAI and OpenCode on 25 September, explicitly without claiming maintainer confirmation. Those reports concern the pinned versions and controlled conditions analyzed in the paper.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2609.32378">Chen and colleagues, AuthorityLens (arXiv:2609.32378)</a> <span class="how">— The primary study defines the authority measures, reports the thirteen-configuration comparison and describes its controlled experiments. Appendix F publishes all 599 outcome contracts.</span></li>
+<li><a href="https://www.cs.virginia.edu/~evans/cs551/saltzer/">The protection of information in computer systems — Saltzer and Schroeder, Proceedings of the IEEE</a> <span class="how">— Background on principals, least privilege and separation of privilege in computer security.</span></li>
+<li><a href="https://opencode.ai/docs/agents/">OpenCode Agents documentation (Build, Plan, Explore)</a> <span class="how">— OpenCode’s descriptions of Plan and Explore, compared with the agent definitions examined in the study.</span></li>
+<li><a href="https://arxiv.org/abs/2501.17070">Conseca / Contextual Agent Security: A Policy for Every Purpose — Tsai and Bagdasarian, HotOS 2025</a> <span class="how">— The conceptual predecessor to Conseca’s contextual generation and enforcement of security policies.</span></li>
+<li><a href="https://erights.org/talks/thesis/markm-thesis.pdf">Robust Composition (permission versus authority) — Mark Miller, PhD thesis, Johns Hopkins</a> <span class="how">— Chapter 8 explains how direct permissions differ from authority exercised through permitted interactions with other programs.</span></li>
+<li><a href="https://theory.stanford.edu/~ninghui/courses/Fall03/papers/clark_wilson.pdf">A Comparison of Commercial and Military Computer Security Policies — Clark and Wilson, IEEE S&amp;P</a> <span class="how">— Historical background on separation of duty in commercial information systems.</span></li>
+<li><a href="https://www.cs.purdue.edu/homes/ninghui/papers/algebra_jacm.pdf">Beyond Separation of Duty: An Algebra for Specifying High-level Security Policies — Li and Wang, JACM</a> <span class="how">— Background on specifying the participation required to complete a sensitive task, which AuthorityLens cites as a precedent.</span></li>
+<li><a href="http://cap-lore.com/CapTheory/ConfusedDeputy.html">The Confused Deputy — Norman Hardy, ACM SIGOPS OSR</a> <span class="how">— Historical background on programs misusing authority when acting on another party’s request; it does not verify the study’s product-specific findings.</span></li>
+<li><a href="https://blog.trailofbits.com/2025/10/22/prompt-injection-to-rce-in-ai-agents/">Prompt injection to RCE in AI agents — Will Vandevanter, Trail of Bits Blog</a> <span class="how">— Earlier industry analysis of command-approval bypasses and the role of sandboxing, cited by AuthorityLens.</span></li>
+<li><a href="https://learn.chatgpt.com/docs/sandboxing/auto-review">Codex: agent approvals and security / Auto-review (documentation) — OpenAI</a> <span class="how">— OpenAI’s explanation of how automatic review changes the reviewer while preserving the main agent’s sandbox boundaries.</span></li>
+<li><a href="https://github.com/anomalyco/opencode/issues/39491">OpenCode issue tracker: Plan mode can write and edit files via bash — GitHub (anomalyco/opencode)</a> <span class="how">— A July 2026 user report of Plan creating files through bash in OpenCode 1.18.9; it predates AuthorityLens and is separate from the authors’ experiments.</span></li>
+<li><a href="https://www.anthropic.com/engineering/claude-code-auto-mode">How we built Claude Code auto mode — Anthropic</a> <span class="how">— Background on human permission prompts and model-based review. Its approval statistics do not establish how reliably reviewers detect unsafe actions.</span></li>
+<li><a href="https://alignment.openai.com/auto-review/">Auto-review of agent actions without synchronous human oversight — OpenAI Alignment Research Blog</a> <span class="how">— Background on Codex automatic review and its intended security tradeoffs; approval frequency alone does not measure review quality.</span></li>
+<li><a href="https://arxiv.org/abs/2608.07556">MasDrift: Benchmarking Authorization Preservation Across Multi-Agent Architectures — Xu et al., arXiv</a> <span class="how">— A separate benchmark of authorization preservation during multi-agent task execution. Its behavioral results are not measurements of AuthorityLens’s configurations.</span></li>
+<li><a href="https://github.com/anomalyco/opencode/blob/fe82a1b6ca4f535beb973b0867017e3f639f85ed/packages/opencode/src/agent/agent.ts">OpenCode agent definitions at the study’s pinned revision</a> <span class="how">— The permissions used for Build, Plan and Explore, including the shell access retained by Plan and Explore.</span></li>
+<li><a href="https://github.com/google-gemini/gemini-cli/blob/cf22ac7e86f3dcf528e3ae591fec1c03090a49f8/packages/core/src/safety/conseca/policy-enforcer.ts">Gemini CLI Conseca policy enforcer at the study’s pinned revision</a> <span class="how">— The reviewer implementation includes automatic-allow fallbacks on empty responses, parsing failures and other errors. The study does not quantify their effect on participation.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-authoritylens-maps-authority-mismatches-across-13-codex-open">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-29/authoritylens-maps-authority-mismatches-across-13-codex-open</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
