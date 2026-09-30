@@ -4,7 +4,7 @@
 // re-laid on every resize. Mixed-font paragraphs (a mono number beside a condensed label) use the
 // same canvas measurement, word by word.
 
-import { assignKeys, layoutSection, coverCrop } from './phone.js?v=730f8b929c';
+import { assignKeys, layoutSection, coverCrop } from './phone.js?v=6b9c2f2fe2';
 
 const PRETEXT = ['https://esm.sh/@chenglou/pretext@0.0.8', 'https://cdn.jsdelivr.net/npm/@chenglou/pretext@0.0.8/+esm'];
 const FAMILY = {
@@ -54,14 +54,16 @@ async function loadPretext() {
 // breaks are the same at every window size. (Calibrated against PowerPoint's PDF, 29 Sep 2026.)
 const SLACK = { 'Avenir Next Condensed Heavy': 1.008 };
 const installed = {};   // is the Apple face itself present? (the slack is calibrated for it alone)
-function hasFace(name) {
+const FACE = { 'Big Caslon': 'Big Caslon', 'Avenir Next Condensed Heavy': 'Avenir Next Condensed', 'Menlo': 'Menlo', 'Georgia': 'Georgia' };
+function hasFace(name, key = 'Avenir Next Condensed Heavy') {
   if (!(name in installed)) {
-    ctx.font = `800 40px "${name}", monospace`; const a = ctx.measureText('ABCDEFGHIJKLMNOPQRSTUVWXYZ').width;
-    ctx.font = '800 40px monospace'; const b = ctx.measureText('ABCDEFGHIJKLMNOPQRSTUVWXYZ').width;
-    installed[name] = Math.abs(a - b) > 0.5 && FAMILY['Avenir Next Condensed Heavy'].css.includes(`"${name}"`);
+    const probe = (fam) => { ctx.font = `800 40px ${fam}`; return ctx.measureText('ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklm').width; };
+    installed[name] = [['monospace'], ['serif']].some(([f]) => Math.abs(probe(`"${name}", ${f}`) - probe(f)) > 0.5)
+      && FAMILY[key].css.includes(`"${name}"`) || FAMILY[key].css.startsWith(name + ',');
   }
   return installed[name];
 }
+const ownFace = (f) => hasFace(FACE[f] || f, FAMILY[f] ? f : 'Big Caslon');
 const slack = (run) => (SLACK[run.f] && hasFace('Avenir Next Condensed') ? SLACK[run.f] : 1.0);
 function measure(text, run) {
   ctx.font = fontSpec(run, K_REF);
@@ -217,7 +219,25 @@ const T = {
   },
 };
 
+// Without the deck's own faces (Windows) the stand-ins set wider, so lines break early. Keep each box
+// to the line count it has with the real faces (recorded at export as nl): shrink its type just enough.
+function fitted(it) {
+  if (phone || !it.nl) return it;
+  if (it.paras.every((p) => p.runs.every((r) => !r.f || ownFace(r.f)))) return it;
+  const room = (it.w - it.ins[0] - it.ins[2]) * 1.01;
+  const ok = (x) => {   // no more lines than with the real faces, and no line wider than the box
+    const bl = textLayout(x).blocks.filter((b) => b.gap === undefined);
+    return bl.length <= it.nl && (!it.wrap || bl.every((b) => b.spans.reduce((a, sp) => a + measure(sp.text, sp.run), 0) / K_REF <= room));
+  };
+  if (ok(it)) return it;
+  const at = (f) => ({ ...it, paras: it.paras.map((p) => ({ ...p, size: p.size * f, sa: p.sa * f,
+    runs: p.runs.map((r) => (r.s ? { ...r, s: r.s * f, sp: (r.sp || 0) * f } : r)) })) });
+  for (let f = 0.98; f >= 0.7; f -= 0.02) { const x = at(f); if (ok(x)) return x; }
+  return at(0.7);
+}
+
 function renderText(it) {
+  it = fitted(it);
   const el = document.createElement('div');
   place(el, it);
   if (it.fill) el.style.background = it.fill;
@@ -567,6 +587,7 @@ function bind() {
 window.__deck = {
   get index() { return index; }, get count() { return deck?.slides.length; }, get pretext() { return pretext ? 'ready' : 'fallback'; },
   go: (i) => show(i, { animate: false }),
+  appleFaces: () => ['Big Caslon', 'Avenir Next Condensed Heavy', 'Menlo'].every(ownFace),
   get phone() { return phone ? { ...sectionPage(deck.slides[index].section), L: undefined } : null; },
   unplaced: () => (phone ? sectionPage(deck.slides[index].section).L.unplaced : []),
   over: () => (phone ? sectionPage(deck.slides[index].section).L.over : 0),
