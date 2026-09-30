@@ -91,7 +91,7 @@ Public project microsites are divided into three independently collapsible
 sidebar branches. Each branch stays collapsed away from its children, opens
 automatically for an active child, and uses an accessible disclosure button:
 
-- `Talks`: `/nc/`, `/FDC`, and `/navigating/`
+- `Talks`: `/nc/`, `/FDC`, and `/agi-reckoning-sais/`
 - `Papers`: `https://blindrefusal.mintresearch.org/` and
   `https://coherence.mintresearch.org/`
 - `Resources`: `/governing-with-agents/`, `/ai-culture/`, and the AGI Governance
@@ -118,7 +118,7 @@ editorial-note workflow.
 
 ## Presentation microsites
 
-The public presentation routes `/nc/`, `/FDC`, and `/navigating/` use the
+The public presentation routes `/nc/`, `/FDC`, and `/agi-reckoning-sais/` use the
 shared shell in `public/assets/presentation-shell.css` and
 `public/assets/presentation-shell.js`. The shell renders the standard MINT
 banner, sidebar, status line, mobile navigation, and theme control around each
@@ -130,7 +130,7 @@ The canonical wrappers and their isolated deck sources are:
 ```text
 public/nc/index.html           -> public/nc/deck.html
 public/FDC.html                -> public/FDC-deck.html
-public/navigating/index.html   -> public/navigating/deck.html
+public/agi-reckoning-sais/index.html -> public/agi-reckoning-sais/deck.html
 public/should-we-build-agi/index.html -> public/should-we-build-agi/deck.html
 public/agi-institutions/index.html     -> public/agi-institutions/deck.html
 public/societal-adaptation/index.html  -> public/societal-adaptation/deck.html

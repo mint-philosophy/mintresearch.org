@@ -34,7 +34,6 @@ for (const page of staticPages) {
 const presentationPages = [
   'public/nc/index.html',
   'public/FDC.html',
-  'public/navigating/index.html',
   'public/agi-reckoning-sais/index.html'
 ];
 for (const page of presentationPages) {
@@ -62,8 +61,7 @@ const fallbackPages = [
 for (const page of fallbackPages) {
   const html = fs.readFileSync(page, 'utf8');
   assert.equal((html.match(/\/assets\/mint-site-nav\.v1\.js\?v=\d{8}\.\d+/g) || []).length, 1, `${page} must cache-bust the shared navigation`);
-  assert.equal((html.match(/href="\/navigating\/"/g) || []).length, 1, `${page} fallback must list Navigating the AGI Reckoning once`);
-  assert.equal((html.match(/Navigating the AGI Reckoning</g) || []).length, 1, `${page} fallback must use the current Navigating title once`);
+  assert.ok(!html.includes('href="/navigating/"'), `${page} fallback must not list the retired Navigating deck`);
   assert.equal((html.match(/href="\/agi-reckoning-sais\/"/g) || []).length, 1, `${page} fallback must list the SAIS talk once`);
   for (const label of ['Talks', 'Papers', 'Resources']) {
     assert.equal((html.match(new RegExp(`<summary class="nav-link nav-page nav-group"><span class="nav-mark">[▸▾]<\\/span> ${label}<\\/summary>`, 'g')) || []).length, 1, `${page} fallback must expose one ${label} disclosure`);
@@ -216,7 +214,7 @@ assert.ok(!canonical.some((item) => item.id === 'agent-reports'), 'Agent Reports
 const groups = api.items.filter((item) => item.type === 'group');
 assert.deepEqual(Array.from(groups, (item) => item.id), ['talks', 'papers', 'resources'], 'primary navigation must expose the three content groups in order');
 assert.deepEqual(Array.from(groups, (item) => item.label), ['Talks', 'Papers', 'Resources'], 'content group labels must remain stable');
-assert.deepEqual(Array.from(groups.find((item) => item.id === 'talks').children, (item) => item.id), ['normative-competence', 'agi-policy-student', 'navigating-agi-reckoning', 'agi-reckoning-sais'], 'Talks must contain only the four maintained presentations');
+assert.deepEqual(Array.from(groups.find((item) => item.id === 'talks').children, (item) => item.id), ['normative-competence', 'agi-policy-student', 'agi-reckoning-sais'], 'Talks must contain only the three maintained presentations');
 assert.deepEqual(Array.from(groups.find((item) => item.id === 'papers').children, (item) => item.id), ['blind-refusal', 'incoherent-values'], 'Papers must contain the two paper microsites');
 assert.deepEqual(Array.from(groups.find((item) => item.id === 'resources').children, (item) => item.id), ['governing-with-agents', 'ai-culture', 'agif-overview', 'agi-governance-bibliography'], 'Resources must contain the collections, Fellowship, and bibliography links');
 assert.ok(!groups.some((item) => item.id === 'fellowship'), 'Fellowship must not remain a separate top-level group');
@@ -226,7 +224,8 @@ assert.ok(!canonical.some((item) => item.id === 'microsites'), 'the crowded Micr
 assert.ok(!canonical.some((item) => item.id === 'moral-reasoning' || item.href === '/lab-overview/'), 'the retired moral-reasoning talk must not remain in navigation');
 assert.ok(canonical.some((item) => item.id === 'governing-with-agents' && item.href === '/governing-with-agents/'), 'Governing with Agents must be listed under Resources');
 assert.ok(canonical.some((item) => item.id === 'ai-culture' && item.href === '/ai-culture/' && item.label === 'AI (etc) in Culture'), 'AI (etc) in Culture must be listed under Resources');
-assert.ok(canonical.some((item) => item.id === 'navigating-agi-reckoning' && item.href === '/navigating/' && item.label === 'Navigating the AGI Reckoning'), 'Navigating the AGI Reckoning must be listed under Talks');
+assert.ok(!canonical.some((item) => item.href === '/navigating/'), 'the retired pre-SAIS Navigating deck must not be listed');
+assert.ok(canonical.some((item) => item.id === 'agi-reckoning-sais' && item.href === '/agi-reckoning-sais/'), 'the SAIS talk must be listed under Talks');
 assert.ok(canonical.some((item) => item.id === 'about-papers' && item.label === 'Papers'), 'homepage section must use Papers');
 assert.ok(!canonical.some((item) => item.href === '/reports/ai-in-war/'), 'primary navigation must not enumerate report leaves');
 assert.ok(!canonical.some((item) => /2026-\d\d-\d\d-weekly/.test(item.href || '')), 'primary navigation must not enumerate newsletter issues');

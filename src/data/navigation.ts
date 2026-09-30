@@ -94,7 +94,6 @@ export const siteNav: PageNav[] = [
     sections: [
       { href: "/nc/", label: "Evaluating LLM Normative Competence" },
       { href: "/FDC", label: "The AGI-Ready Policy Student" },
-      { href: "/navigating/", label: "Navigating the AGI Reckoning" },
       { href: "/agi-reckoning-sais/", label: "Navigating the AGI Reckoning (SAIS)" },
     ],
   },
