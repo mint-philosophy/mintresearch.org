@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Training helps Qwen retrieve facts it previously missed — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-09-30">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-09-30">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 30 September 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Training helps Qwen retrieve facts it previously missed</h1>
+<p class="dek">Renfei Zhang and colleagues separate factual recall from new learning, and find that repeated training on a model’s own correct answers recovers most of the reinforcement-learning gain.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 30 September 2026</span> <span class="chip">1137 words · ~6 min</span></div>
+<div class="article-body">
+<p>Reinforcement learning helped Qwen3-8B answer questions it had repeatedly failed, even though training used different facts. Renfei Zhang of Carnegie Mellon and co-authors Manasa Kaniselvan, Rylan Schaeffer and Niloofar Mireshghallah report the result in <a href="https://arxiv.org/html/2511.05933v3"><em>Reinforcement Learning Improves Traversal of Parametric Knowledge in LLMs</em></a>, an arXiv paper accepted for an oral presentation at EMNLP 2026. They interpret the improvement as better access to knowledge already stored in the model’s weights.</p>
+<p>On September 30 Zhang, who posts on X as Alex Zhang, announced the oral in an <a href="https://x.com/alexxx_zzz6825/status/2105148993198047238">eight-post thread</a>; the talk is <a href="https://2026.emnlp.org/program/">scheduled</a> for October 25 in Budapest. The work first appeared on arXiv on November 8, 2025, as <a href="https://arxiv.org/abs/2511.05933v1"><em>Reinforcement Learning Improves Traversal of Hierarchical Knowledge in LLMs</em></a>. The controlled training experiment arrived in the <a href="https://arxiv.org/html/2511.05933v2">June 24, 2026 revision</a>. The <a href="https://arxiv.org/abs/2511.05933">latest version</a>, dated September 4, added a second model and experiments separating the contributions of different training methods.</p>
+<p>Zhang and colleagues trained Qwen3-8B-Instruct on 731 PopQA questions about named entities. The model had answered each incorrectly in three runs, and the subject and answer never appeared within 100 tokens of each other in Dolma, an open pretraining corpus. For testing, they chose 208 questions the model had also failed three times, but whose subjects and answers co-occurred more than 100 times. The reported zero starting score follows from that selection. The sets also ask about different relations: training includes film directors and screenwriters, while nearly half the test questions concern composers. Dolma frequency is a proxy for likely exposure; it does not establish which facts appeared in Qwen’s own pretraining data.</p>
+<p>The team used GRPO, a reinforcement-learning method that samples groups of answers and increases the probability of those scoring above the group average while reducing it for those below. They sampled 16 answers per question and rewarded a response if it contained an accepted answer. After training, Qwen3-8B answered 10.1 percent of the test questions correctly, equivalent to 21 of 208. Supervised fine-tuning on the same questions, which trains the model to output a supplied correct answer, reached 0.96 percent. The withheld facts and separate relation types strengthen the authors’ interpretation that training improved recall beyond the information it supplied. Qwen3-30B-A3B-Instruct showed a smaller gain, again well above supervised fine-tuning.</p>
+<p>In September’s revision, the authors held the data and training settings fixed while comparing six objectives. Training on the model’s correct answers sampled before training produced little improvement. Repeatedly sampling fresh answers from the current model, retaining correct ones and fine-tuning on them reached 9.62 percent, statistically indistinguishable from GRPO’s 10.1 percent. GRPO also performed better as its sampled answers were refreshed more often. The authors attribute most of the gain to repeated sampling and learning from the current model. In this experiment, additionally penalizing below-average answers contributed little detectable benefit.</p>
+<p>That loop resembles Eric Zelikman and colleagues’ 2022 arXiv paper <a href="https://arxiv.org/abs/2203.14465"><em>STaR: Bootstrapping Reasoning With Reasoning</em></a>, which repeatedly trains on successful reasoning generated by the model itself. Wei Xiong and colleagues’ 2025 arXiv study <a href="https://arxiv.org/abs/2504.11343"><em>A Minimalist Approach to LLM Reasoning: from Rejection Sampling to Reinforce</em></a> found a similar baseline competitive with GRPO on mathematics. The result varies across factual-recall experiments, however. In <a href="https://arxiv.org/abs/2605.07153"><em>Beyond Reasoning: Reinforcement Learning Unlocks Parametric Knowledge in LLMs</em></a>, posted to arXiv in May, Wanli Yang, Fei Sun and colleagues at the Chinese Academy of Sciences improved recall without written-out reasoning; their repeated correct-answer training loop trailed reinforcement learning and sometimes became unstable.</p>
+<p>Zhang and colleagues’ earlier evidence compares eight pairs of released instruction-tuned and reasoning models from five families, including Qwen, DeepSeek and Kimi. Their training recipes differ in ways the researchers cannot control, so these comparisons do not establish RL’s separate contribution. Reasoning versions usually recalled more facts. On MedConceptsQA, a benchmark of medical-code questions, DeepSeek-R1 led DeepSeek-V3 by 23.7 percentage points. With instructions to work through the relevant hierarchy before answering, the gap fell to 7.5 points without changing either model’s weights. Asked about ICD-9 code 57.95, V3 initially chose an option about intraocular pressure; following the hierarchy led it to catheter replacement, which R1 found unaided.</p>
+<p>On additional tests built from patent classifications and a hierarchy of concepts, R1’s recall of paths through the hierarchy trailed V3 on shallow questions and led on deeper ones. In Qwen2.5-32B variants, internal responses to factual statements remained more similar to the base model’s than responses to questions did. The authors treat these observations as supporting evidence for their explanation of the controlled recall gain.</p>
+<p>The distillation result concerns a Qwen2.5-32B model trained on DeepSeek-R1’s outputs. It improved on its base model but remained below the instruction-tuned and reasoning variants on MedConceptsQA. Among 40 wrong answers <a href="https://arxiv.org/html/2511.05933v3">the authors inspected</a>, 80 percent used apparent self-correction, including “wait”, while retaining the initial guess. Zhang wrote in the <a href="https://x.com/alexxx_zzz6825/status/2105148993198047238">thread</a>: “Copying a teacher’s answer may miss the exploration needed for recall.”</p>
+<p>Earlier work established that storing and retrieving facts can come apart. Zeyuan Allen-Zhu and Yuanzhi Li’s ICML 2024 paper <a href="https://arxiv.org/abs/2309.14316"><em>Physics of Language Models: Part 3.1, Knowledge Storage and Extraction</em></a> showed, using synthetic biographies, that models can memorize facts they cannot extract through question answering. In the EMNLP 2024 paper <a href="https://arxiv.org/abs/2405.05904"><em>Does Fine-Tuning LLMs on New Knowledge Encourage Hallucinations?</em></a>, Zorik Gekhman and colleagues found evidence that fine-tuning chiefly improves use of knowledge acquired during pretraining.</p>
+<p>Zhang et al. cite Gekhman and colleagues’ <a href="https://arxiv.org/abs/2603.09906"><em>Thinking to Recall: How Reasoning Unlocks Parametric Knowledge in LLMs</em></a>, a <a href="https://research.google/blog/thinking-to-recall-how-reasoning-unlocks-parametric-knowledge-in-llms/">COLM 2026 paper</a>. Switching on reasoning in Gemini 2.5 and Qwen3-32B recovered simple facts, partly by recalling related information: a model listed Nepal’s first nine kings before naming the tenth. In February’s arXiv paper <a href="https://arxiv.org/abs/2602.22193"><em>Improving Parametric Knowledge Access in Reasoning Language Models</em></a>, Columbia’s Melody Ma and John Hewitt improved GPT-OSS-20B’s recall on other question sets through RL on trivia. Zhang et al. designed their frequency and relation splits to distinguish improved access from exposure more directly. Edward Grefenstette <a href="https://x.com/egrefen/status/2105207002708271326">pointed them</a> to Laura Ruis and colleagues’ ICLR 2025 paper <a href="https://arxiv.org/abs/2411.12580"><em>Procedural Knowledge in Pretraining Drives Reasoning in Large Language Models</em></a>, which he co-authored, as evidence that reasoning draws on reusable procedures acquired during pretraining.</p>
+<p>The authors warn that improved recall can also expose incorrect or outdated information. Replying to Mireshghallah’s <a href="https://x.com/niloofar_mire/status/2105154975475409303">post sharing the thread</a>, <a href="https://x.com/stevelaskaridis/status/2105191083294568936">Steve Laskaridis asked</a> about the relationship to abstention and safety, and whether optimizing the input could achieve similar results. Mireshghallah <a href="https://x.com/niloofar_mire/status/2105197251618574363">replied</a> that input optimization helped but achieved less than RL, and linked her August follow-up with Zhang, <a href="https://arxiv.org/abs/2608.21727"><em>Reinforcement Learning on Benign Facts Amplifies Leakage of Memorized Private Data</em></a>. Training three models on 1,052 Wikipedia-based factual questions, without the target email addresses, increased their production of real Enron employees’ addresses. DeepSeek-V3.1’s targeted recall rose 2.4-fold across repeated attempts, while fabricated decoy addresses remained unrecovered. The follow-up shows how training on unrelated facts can make previously memorized private information easier to extract.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://x.com/alexxx_zzz6825/status/2105148993198047238">Alex Zhang (Renfei Zhang), X thread: 'Excited to share our EMNLP oral paper!'</a> <span class="how">— Assigned source. Eight substantive self-posts read directly through Bird; verifies September 30 timing, oral announcement, the baseline-selection explanation and the 11-word distillation quotation.</span></li>
+<li><a href="https://arxiv.org/html/2511.05933v3">Reinforcement Learning Improves Traversal of Parametric Knowledge in LLMs (arXiv:2511.05933v3)</a> <span class="how">— Primary paper checked live: model definitions, controlled design and results, relation separation, six-objective ablation, n=208 binary accuracy definition, representation comparisons, one-model distillation results, proxy limitation and risk statement. Main text and relevant appendices independently read; substantive quotes paraphrased.</span></li>
+<li><a href="https://arxiv.org/abs/2511.05933">arXiv:2511.05933 abstract page (submission history)</a> <span class="how">— Live submission history confirms November 8, 2025; June 24, 2026; September 4, 2026.</span></li>
+<li><a href="https://arxiv.org/abs/2511.05933v1">arXiv:2511.05933v1, 'Reinforcement Learning Improves Traversal of Hierarchical Knowledge in LLMs'</a> <span class="how">— Original abstract and full HTML section structure checked live; original title and November 2025 date verified. Controlled RL experiment is absent from this structure.</span></li>
+<li><a href="https://arxiv.org/html/2511.05933v2">arXiv:2511.05933v2 (June 24, 2026 revision)</a> <span class="how">— Live Section 3 contains the controlled Qwen3-8B experiment and 10.1% result; no second-model result or objective decomposition.</span></li>
+<li><a href="https://2026.emnlp.org/program/">EMNLP 2026 program</a> <span class="how">— Official program and its linked public detailed-program sheet checked live. Paper 3279-MAIN lists Renfei Zhang, in-person oral, October 25, Session 4; conference homepage confirms Budapest.</span></li>
+<li><a href="https://x.com/niloofar_mire/status/2105154975475409303">Niloofar Mireshghallah, quote-post of the thread</a> <span class="how">— Her post sharing the thread, under which Laskaridis replied. It was also read from the on-disk fetched JSON with her replies.</span></li>
+<li><a href="https://x.com/stevelaskaridis/status/2105191083294568936">Steve Laskaridis, reply on X</a> <span class="how">— Read directly through Bird. Question about abstention, safety and optimizing the input is paraphrased.</span></li>
+<li><a href="https://x.com/niloofar_mire/status/2105197251618574363">Niloofar Mireshghallah, reply to Steve Laskaridis</a> <span class="how">— Read directly through Bird. Paraphrased response about input optimization performing less well than RL, with link to the privacy follow-up; no verbatim quotation remains.</span></li>
+<li><a href="https://arxiv.org/abs/2608.21727">Reinforcement Learning on Benign Facts Amplifies Leakage of Memorized Private Data (arXiv:2608.21727)</a> <span class="how">— Abstract and full HTML Sections 2–3 checked live. Confirms 1,052 factual questions, three models, target email-address exclusion, Enron targeted recall, repeated attempts and zero decoy recovery. No closing verbatim quote remains.</span></li>
+<li><a href="https://arxiv.org/abs/2309.14316">Physics of Language Models: Part 3.1, Knowledge Storage and Extraction (Allen-Zhu and Li, ICML 2024)</a> <span class="how">— Precedent, verified against the live abstract: knowledge can be memorized but not extractable. Zhang et al. cite it. Independently checked author list, title and abstract; additional HTML checked where needed for model or affiliation details. ICML 2024 venue independently checked against the official PMLR proceedings entry.</span></li>
+<li><a href="https://arxiv.org/abs/2405.05904">Does Fine-Tuning LLMs on New Knowledge Encourage Hallucinations? (Gekhman et al., EMNLP 2024)</a> <span class="how">— Precedent, verified against the live abstract: fine-tuning mostly teaches models to use knowledge from pretraining. Independently checked author list, title and abstract; additional HTML checked where needed for model or affiliation details.</span></li>
+<li><a href="https://arxiv.org/abs/2603.09906">Thinking to Recall: How Reasoning Unlocks Parametric Knowledge in LLMs (arXiv:2603.09906)</a> <span class="how">— Closest precedent, cited by Zhang et al. Turning on reasoning in Gemini 2.5 and Qwen3-32B recovers single-hop facts, partly through factual priming. Independently checked author list, title and abstract; additional HTML checked where needed for model or affiliation details.</span></li>
+<li><a href="https://research.google/blog/thinking-to-recall-how-reasoning-unlocks-parametric-knowledge-in-llms/">Google Research blog: 'Thinking to recall: How reasoning unlocks parametric knowledge in LLMs'</a> <span class="how">— Full primary Google Research blog checked live for COLM 2026, Gemini 2.5 and Qwen3-32B, factual priming and Nepal kings example.</span></li>
+<li><a href="https://arxiv.org/abs/2602.22193">Improving Parametric Knowledge Access in Reasoning Language Models (Ma and Hewitt, arXiv:2602.22193)</a> <span class="how">— Precedent: RL on TriviaQA improved GPT-OSS-20B's recall on other QA sets. The dossier records that Zhang et al. say this work did not separate access from data exposure. Independently checked author list, title and abstract; additional HTML checked where needed for model or affiliation details.</span></li>
+<li><a href="https://arxiv.org/abs/2605.07153">Beyond Reasoning: Reinforcement Learning Unlocks Parametric Knowledge in LLMs (Yang et al., arXiv:2605.07153)</a> <span class="how">— Live abstract, baseline comparison and RFT appendix read: no written chain of thought, iterative current-model sampling, smaller gains and instability versus RL. Its distinct findings remain attributed to its setting.</span></li>
+<li><a href="https://arxiv.org/abs/2203.14465">STaR: Bootstrapping Reasoning With Reasoning (Zelikman et al., arXiv:2203.14465)</a> <span class="how">— Precedent for the loop of sampling, keeping correct answers, fine-tuning and repeating. Not cited by Zhang et al. Independently checked author list, title and abstract; additional HTML checked where needed for model or affiliation details.</span></li>
+<li><a href="https://arxiv.org/abs/2504.11343">A Minimalist Approach to LLM Reasoning: from Rejection Sampling to Reinforce (Xiong et al., arXiv:2504.11343)</a> <span class="how">— Precedent: a rejection-sampling baseline was competitive with GRPO on math. Not cited by Zhang et al. Independently checked author list, title and abstract; additional HTML checked where needed for model or affiliation details.</span></li>
+<li><a href="https://x.com/egrefen/status/2105207002708271326">Edward Grefenstette, reply on X</a> <span class="how">— Read directly through Bird. Paraphrased reaction pointing to Ruis and colleagues on reasoning procedures acquired during pretraining; no verbatim quotation remains.</span></li>
+<li><a href="https://arxiv.org/abs/2411.12580">Procedural Knowledge in Pretraining Drives Reasoning in Large Language Models (Ruis et al., ICLR 2025)</a> <span class="how">— Linked as the ICLR 2025 paper Grefenstette co-authored and cited in his reply. Independently checked author list, title and abstract; additional HTML checked where needed for model or affiliation details.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-alex-zhang-alexxxzzz6825-twitter-rl-raises-qwen3-8b-recall-f">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-09-30/alex-zhang-alexxxzzz6825-twitter-rl-raises-qwen3-8b-recall-f</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
