@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Sonnet 5.5’s late refusals reveal how fallback models enter coding scores — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-02">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-02">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 2 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Sonnet 5.5’s late refusals reveal how fallback models enter coding scores</h1>
+<p class="dek">Artificial Analysis’s new views show refusals after work has begun and count fallback attempts in the ranked configuration. Its records name Opus 4.8 as Sonnet 5.5’s fallback, while Anthropic’s launch material names Sonnet 5.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 2 October 2026</span> <span class="chip">664 words · ~3 min</span></div>
+<div class="article-body">
+<p>Artificial Analysis found that Claude Code usually began working before Sonnet 5.5 refused a coding task. In its <a href="https://x.com/ArtificialAnlys/status/2105755934253568428">October 1 announcement</a> of new refusal-timing and fallback views, the benchmarking firm reported a 4.5% safety-refusal rate for Claude Code with Sonnet 5.5 at maximum effort, against 8.9% for Opus 5.5 at maximum effort. Around 94% of Sonnet’s refusals occurred after the first turn, and the agent then almost always switched to Opus 4.8. The views show both when work stopped on the original model and which model took over.</p><p>Artificial Analysis’s <a href="https://artificialanalysis.ai/methodology/coding-agents-benchmarking">methodology</a> defines a safety refusal as a model or provider declining to proceed on safety grounds. It detects provider refusals with fixed rules and model refusals with an AI judge. Its current index averages three benchmarks equally: DeepSWE v1.1, which requires changes to software repositories; Terminal-Bench 4.0, which tests work through a command line; and SWE-Atlas-QnA, which asks technical questions about codebases. Together they contain 303 tasks, each attempted three times. The refusal rate uses the same equal benchmark weighting.</p><p>The <a href="https://artificialanalysis.ai/agents/coding-agents#safety-refusals">dashboard’s underlying records, checked October 3</a>, show 45 refusals across Sonnet 5.5’s 909 attempts: 39 on SWE-Atlas-QnA, six on Terminal-Bench and none on DeepSWE. Those raw counts yield 4.95%; equal weighting produces the published 4.5%. Only three refusals occurred at the start. Weighting the later refusals in the same way reproduces the approximately 94% figure. The median recorded refusal turn was 38; 21 occurred at turn 50 or later, with the latest at turn 593.</p><p>All 45 refused attempts in that snapshot list Opus 4.8 as the fallback and none as blocked. Completing an attempt does not establish that the task was solved: a completed attempt can fail its verifier and score zero. Under the scoring rules, fallback attempts contribute to the ranked agent configuration’s result. That answers <a href="https://x.com/kartikb753/status/2105762833342562448">kartik bhardwaj’s question</a> about whether switched attempts count under the original entry. Our calculation puts their maximum possible contribution at 4.5 of Sonnet 5.5’s 68.4 index points; the refusal records do not disclose how many actually passed.</p><p>Anthropic names a different fallback. Its <a href="https://www.anthropic.com/claude-sonnet-5-5">September 28 launch announcement</a> says higher-risk cybersecurity work switches from Sonnet 5.5 to Sonnet 5. The <a href="https://www.anthropic.com/claude-sonnet-5-5-system-card">system card</a> and <a href="https://support.claude.com/en/articles/17161993-why-claude-switched-models-in-your-conversation-with-sonnet-5-5">help article</a> agree. The <a href="https://code.claude.com/docs/en/model-config">Claude Code documentation available October 3</a> also names Sonnet 5, while assigning Opus 4.8 to cybersecurity fallbacks from Opus 5.5 and Fable models. Artificial Analysis itself reported Sonnet 5 fallbacks in its <a href="https://artificialanalysis.ai/articles/claude-sonnet-5-5">September 28 Intelligence Index evaluation</a>, affecting about 0.1% of tasks. That evaluation uses a different benchmark mix from the Coding Agent Index.</p><p>The coding-agent records identify Claude Code version 2.1.280. The <a href="https://registry.npmjs.org/@anthropic-ai/claude-code">npm registry</a> dates that release to September 22, six days before version 2.1.284, whose <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md">changelog added Sonnet 5.5</a>. Anthropic’s current documentation requires 2.1.284 or later for the public model. These version records establish which software Artificial Analysis reports testing, but do not explain its different fallback destination. Artificial Analysis says providers configure safety and fallback behavior and can change it; its figures describe the behavior recorded during benchmarking.</p><p>Anthropic’s system card anticipates increased refusals even for benign cybersecurity work. It permits vulnerability discovery in source code but blocks it in compiled binaries, and describes automatic Sonnet 5 fallbacks in its applications. The help article explains why a refusal can occur after work has begun: classifiers check every request and everything the model reads, including files and web results. Material encountered during a task can therefore trigger a switch. That describes the safeguard’s operation, without identifying what triggered any particular benchmark refusal.</p><p>In the announcement’s replies, <a href="https://x.com/tonicol22/status/2105766972701229317">David Larios asked</a> whether judging lower refusal rates as better assumes the tasks should be completed. The benchmark includes security work such as finding and exploiting vulnerabilities. Its refusal records identify the benchmark, turn and fallback, but do not identify each refused task or assess whether the refusal was warranted. The new views let readers distinguish an immediate block from a later switch, while the index score continues to measure the whole agent configuration, including any fallback model.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://x.com/ArtificialAnlys/status/2105755934253568428">October 1 refusal-timing and fallback announcement — Artificial Analysis</a> <span class="how">— Read both original author posts from saved FeedMe text and freshly fetched Bird conversation. Published October 1, 2026 at 20:25:12 UTC. Establishes new views, max-effort configurations, weighted 4.5% versus 8.9%, approximately 94% later refusals, and almost-always Opus 4.8 fallback. Distinct from the more precise October 3 dashboard snapshot.</span></li>
+<li><a href="https://artificialanalysis.ai/methodology/coding-agents-benchmarking">Coding Agent Index v1.5 methodology — Artificial Analysis</a> <span class="how">— Read methodology, component counts, refusal definition and detection, scoring and version history. Version 1.5 dates to September 2026. Component attempt counts are 339, 198 and 372; benchmark rates are equally weighted. Refusal fallbacks are scored normally; a completed attempt can score zero. Provider-error retries are superseded and excluded from scored-attempt rates.</span></li>
+<li><a href="https://artificialanalysis.ai/agents/coding-agents#safety-refusals">Coding Agent Index refusal records — Artificial Analysis</a> <span class="how">— Independently decoded embedded Next.js records on October 3 at approximately 09:13 UTC. Sonnet 5.5 max row a2c87c062f3cef73d8525e7578f14742: 909 attempts, 45 refusals/fallbacks, zero hard stops, all fallback chains to Claude Opus 4.8, score 0.6835783373750831. Recomputed benchmark-weighted refusal and timing rates and expanded grouped turn counts. No per-refusal pass/fail outcomes or task identifiers are supplied. Snapshot is not asserted to be an October 1 or October 2 archive.</span></li>
+<li><a href="https://x.com/kartikb753/status/2105762833342562448">Reply on scoring fallback attempts — kartik bhardwaj</a> <span class="how">— Fresh Bird conversation read verifies October 1 question about whether fallback runs count under the ranked configuration; paraphrased.</span></li>
+<li><a href="https://www.anthropic.com/claude-sonnet-5-5">Introducing Claude Sonnet 5.5 — Anthropic</a> <span class="how">— Launch page displays September 28, 2026 and identifies Sonnet 5 as the fallback for higher-risk cybersecurity tasks. Primary historical comparison for the fallback discrepancy.</span></li>
+<li><a href="https://www.anthropic.com/claude-sonnet-5-5-system-card">System Card: Claude Sonnet 5.5 — Anthropic</a> <span class="how">— Direct HTTP resolved to the 148-page PDF; title page dates it September 28, 2026. Relevant pages 28–29 describe increased refusals including benign cybersecurity tasks, source-code versus compiled-binary vulnerability discovery, and Sonnet 5 fallback on most interfaces. Page 11 says third-party providers can behave differently. No undocumented routing cause inferred.</span></li>
+<li><a href="https://support.claude.com/en/articles/17161993-why-claude-switched-models-in-your-conversation-with-sonnet-5-5">Why Claude switched models in your conversation with Sonnet 5.5 — Anthropic</a> <span class="how">— Retrieved October 3; JSON-LD dateModified is 2026-09-28T18:02:18Z. Confirms Sonnet 5 fallback and checks of every request and content the model reads. Supplies a documented possible mechanism for later refusals, not evidence about specific benchmark events.</span></li>
+<li><a href="https://code.claude.com/docs/en/model-config">Model configuration — Claude Code documentation</a> <span class="how">— Retrieved October 3; JSON-LD dateModified 2026-10-02T23:16:41.274Z. Current documentation names Sonnet 5 for Sonnet 5.5 cybersecurity fallback, Opus 4.8 for Fable/Opus 5.5 cyber fallback, and minimum Claude Code version 2.1.284. Article explicitly dates the observation and does not backdate this page version.</span></li>
+<li><a href="https://artificialanalysis.ai/articles/claude-sonnet-5-5">Claude Sonnet 5.5 reaches #2 on the Artificial Analysis Intelligence Index</a> <span class="how">— Page and JSON-LD publication/modification date September 28, 2026. With default fallback enabled, Intelligence Index tasks fell back approximately 0.1% of the time, to Sonnet 5 in all cases. Article distinguishes this evaluation from the Coding Agent Index.</span></li>
+<li><a href="https://registry.npmjs.org/@anthropic-ai/claude-code">Claude Code package publication metadata — npm registry</a> <span class="how">— Independently checked time entries: 2.1.280 published 2026-09-22T15:44:39.443Z; 2.1.284 published 2026-09-28T17:11:59.750Z.</span></li>
+<li><a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md">Claude Code changelog — Anthropic</a> <span class="how">— Read official raw GitHub changelog. Section 2.1.284 explicitly adds Claude Sonnet 5.5. npm, rather than inferred changelog position, supplies publication dates.</span></li>
+<li><a href="https://x.com/tonicol22/status/2105766972701229317">Reply on whether refusals were warranted — David Larios</a> <span class="how">— Fresh Bird conversation verifies October 1 question about the lower-is-better label and whether refused tasks were appropriate to complete. Paraphrased without retaining the original 19-word quotation.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-claude-code-s-sonnet-5-5-refusal-rate-is-4-5-94-occur-after">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-02/claude-code-s-sonnet-5-5-refusal-rate-is-4-5-94-occur-after</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
