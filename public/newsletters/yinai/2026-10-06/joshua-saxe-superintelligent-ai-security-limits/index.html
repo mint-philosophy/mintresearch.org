@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Joshua Saxe on bugs AI cannot fix and hacks that need none — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-06">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-06">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 6 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Joshua Saxe on bugs AI cannot fix and hacks that need none</h1>
+<p class="dek">Saxe separates bugs that code analysis can resolve from errors requiring human decisions, then argues that formal guarantees and other defenses work best as a portfolio.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 6 October 2026</span> <span class="chip">1191 words · ~6 min</span></div>
+<div class="article-body">
+<p>Joshua Saxe argues in <a href="https://joshuasaxe181906.substack.com/p/even-superintelligent-ai-cant-just">“Even superintelligent AI can’t just fix all the security bugs,”</a> published October 6, that better code analysis cannot settle every question about secure software. Saxe, formerly a principal AI security engineer at Meta and now co-founder and chief technology officer of <a href="https://abundantsecurity.co/team">Abundant Security</a>, identifies two obstacles: specifications never capture everything people want, and programs operate in distributed systems spanning organizations that do not share all their code. AI can help defenders enormously, he argues, while leaving both problems intact. His essay challenges four expectations: that AI can automatically fix every bug, tell when none remain, eliminate all flaws through proofs, and thereby end cyber risk.</p>
+<p>The first distinction is between errors whose desired correction is clear and errors that require a decision about policy. Memory corruption from a buffer overflow is an example of the former. For the latter, Saxe imagines a medical-records system intended to admit only doctors with US citizenship but also admitting nurse practitioners with US citizenship. The program never states the intended rule. An agent needs information beyond the code to identify that mismatch, and people may still have to decide what the rule should be. This is a hypothetical access policy, not a claim about actual medical practice.</p>
+<p>Saxe illustrates the scale with four charts made with Opus 5.5-Max, offering their data and code on request. His Bayesian simulation estimates 450 million undiscovered security bugs worldwide in 2026, with a plausible range of 180 million to 1.2 billion; a third are hard bugs of the second kind. It places 69 percent of those hard bugs in in-house business software, where public vulnerability reporting and vendor patches are often absent. These are model outputs drawing on government catalogs and industry data, rather than a count of discovered vulnerabilities.</p>
+<p>The second expectation concerns knowing when the search is finished. Saxe likens bug hunting to fishing in a murky lake, recalling a post he thinks Halvar Flake wrote: failing to catch anything may mean the angler needs different equipment. At a <a href="http://homepages.cs.ncl.ac.uk/brian.randell/NATO/nato1969.PDF">1969 NATO conference</a>, Edsger Dijkstra made the classic distinction between tests demonstrating that bugs exist and establishing their absence. Dijkstra turned to proofs. Saxe argues that security, like alignment, also requires engineering judgments and imperfect controls alongside formal guarantees.</p>
+<p>His third objection concerns what a proof guarantees. Suppose a theorem establishes that <em>execute(data)</em> cannot read secrets, alter protected files or escalate privileges whenever <em>data_is_safe(data)</em> holds. Downloading data from a trusted website does not itself establish that condition. If the site is compromised, the proof remains valid but does not cover the unsafe input. Verification can establish specified properties under assumptions; it cannot supply every missing fact about an organization's purposes or the environment.</p>
+<p>Saxe models verifying the most leveraged 3 percent of the world's code, including kernels, browsers, firmware and cryptography. He assumes this code accounts for 55 percent of exploited-bug risk. Starting from a risk index of 100, proofs remove 32 points and attackers switching targets restore 10, leaving 78. Combining that modeled reduction with his estimate that roughly a quarter of intrusions begin with a bug yields a reduction of about 6 percent in all intrusions. The result depends on those assumptions, including how attackers adapt; it is not a measured effect of verification.</p>
+<p>The underlying distinction has a long history. Brian Cantwell Smith's <a href="https://www.student.cs.uwaterloo.ca/~cs492/11public_html/p18-smith.pdf">“The Limits of Correctness”</a> (1985) argues that a proof relates formal descriptions, while a specification inevitably omits some of what people want. In a <a href="https://www.cs.purdue.edu/homes/pfonseca/papers/eurosys2017-dsbugs.pdf">EuroSys 2017 study</a>, Pedro Fonseca and colleagues examined IronFleet, Verdi and Chapar, three formally verified distributed systems. They found 16 bugs arising from mismatched assumptions, concentrated at interfaces between verified and other components. More than eight months of searching found no bugs in the verified protocols themselves. That result illustrates both verification's value and the importance of its boundaries. Saxe does not name Dijkstra or Smith; his charts list Fonseca and colleagues without a full reference.</p>
+<p>The essay follows a September debate over AI and verification. In <a href="https://x.com/a16z/status/2099533700375662905">a clip a16z posted on September 14</a>, OpenAI president Greg Brockman said Astra's search of the company's systems eventually saturated, finding the critical problems within the model's capabilities, and included formally verifying all software among possibilities AI opens. On September 29, Margaret von Ebers and colleagues at Theorem <a href="https://theorem.dev/blog/verified-software-stack/">estimated</a> that 95 percent of nixpkgs machine code could be verified by the end of 2027 for about $134 million if capability at verification improved four times as fast as their baseline estimate. Their approach targets universal properties such as memory safety, requiring substantial proofs even when the property is short. That forecast does not promise that every organizational access rule will be correct.</p>
+<p>Saxe's fourth objection is that attacks need not exploit a software vulnerability. His hypothetical rogue AI worm persuades people to surrender credentials and card details, buys compute, copies itself and repeats. METR's 2024 <a href="https://metr.org/blog/2024-11-12-rogue-replication-threat-model/">“The Rogue Replication Threat Model”</a> similarly examines agents financing replication through activities including business email compromise. These are threat scenarios, not demonstrations that such a worm can sustain itself today.</p>
+<p>Saxe's chart averages seven incident-response reports from 2024 and 2025: 25 percent of intrusions involved a bug or possibly did, 54 percent involved none, and 21 percent were unclear, mixed or other. The reports define entry routes differently. He also classifies 76 percent of the $20.9 billion in losses in the <a href="https://www.ic3.gov/AnnualReport/Reports/2025_IC3Report.pdf">FBI's 2025 Internet Crime Report</a> as belonging to categories not involving a bug. That classification is Saxe's, rather than an FBI finding about exploit use.</p>
+<p>He recommends a portfolio of defenses, “prioritizing expected harm reduced per dollar.” Binary rewriting can add checks on allowed control-flow transfers, constraining ways an attacker redirects execution. Rewriting C and C++ in Rust can remove classes of memory errors while preserving mistakes in application policy. Individual bug hunting remains useful where rewriting costs too much. Assuming application across all relevant code, his model estimates these approaches would stop 6, 21 and, for formal verification against realistic specifications, 48 of every 100 exploited vulnerabilities. Its binary-rewriting scenario assumes fine-grained control-flow integrity plus hardware shadow stacks, which protect return addresses, across native code. Those modeled gains overlap and cannot be added together. The <a href="https://ifp.org/the-great-refactor/">Great Refactor</a>, Herbie Bradley and Girish Sastry's 2025 proposal for AI-assisted translation of 100 million lines into Rust, likewise anticipates attackers shifting to other vulnerabilities.</p>
+<p>Saxe closes with layered defenses, using the Swiss cheese image associated with James Reason's <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC1117770/">2000 account of accidents</a>: imperfect protections can prevent failure together. His <a href="https://joshuasaxe181906.substack.com/p/against-solving-alignment-and-solving">September 30 essay on alignment and interpretability</a> applies the same view to AI safety. Software security remains a necessary layer.</p>
+<p>Resilient Cyber writer Chris Hughes <a href="https://joshuasaxe181906.substack.com/p/even-superintelligent-ai-cant-just/comment/354696440">responded</a> by stressing vulnerable AI-generated code and the slow path from discovery to upstream fixes; Saxe endorsed his comment. A September 8 <a href="https://www.vulncheck.com/blog/anthropic-glasswing-receipts">analysis by VulnCheck's Patrick Garrity</a> illustrates the reporting problem: among 26,153 findings claimed for Anthropic's Glasswing, he counted 202 fixed findings in its ledger, while its dashboard reported 421 patched upstream. The conflicting counts do not establish one definitive remediation rate. Institute for Progress senior technology fellow Arthur Tellis <a href="https://x.com/arthurctellis/status/2107833289209790507">welcomed Saxe's essay</a> and asked for a broader critique of formal verification's limits.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://joshuasaxe181906.substack.com/p/even-superintelligent-ai-cant-just">Even superintelligent AI can’t just fix all the security bugs (Joshua Saxe, Substack, October 6, 2026)</a> <span class="how">— Read through the public Substack API; all four chart images viewed. Supports the two root obstacles, four disputed expectations, examples, model assumptions, modeled chart values and portfolio argument.</span></li>
+<li><a href="https://joshuasaxe181906.substack.com/p/even-superintelligent-ai-cant-just/comment/354696440">Comment by Chris Hughes on the essay (Substack)</a> <span class="how">— Supports the linked passage in the reviewed report. Original reporting and verification details are preserved with raw_articles.</span></li>
+<li><a href="https://abundantsecurity.co/team">Team, Abundant Security</a> <span class="how">— Current team page confirms Saxe's CTO/co-founder position and former Meta role.</span></li>
+<li><a href="http://homepages.cs.ncl.ac.uk/brian.randell/NATO/nato1969.PDF">Software Engineering Techniques: NATO Science Committee conference report, Rome, October 1969</a> <span class="how">— Supports the linked passage in the reviewed report. Original reporting and verification details are preserved with raw_articles.</span></li>
+<li><a href="https://www.student.cs.uwaterloo.ca/~cs492/11public_html/p18-smith.pdf">The Limits of Correctness (Brian Cantwell Smith, 1985)</a> <span class="how">— Supports the linked passage in the reviewed report. Original reporting and verification details are preserved with raw_articles.</span></li>
+<li><a href="https://www.cs.purdue.edu/homes/pfonseca/papers/eurosys2017-dsbugs.pdf">An Empirical Study on the Correctness of Formally Verified Distributed Systems (Fonseca, Zhang, Wang, Krishnamurthy, EuroSys 2017)</a> <span class="how">— Primary paper confirms 16 bugs from mismatched assumptions in three verified distributed systems and no protocol bugs found over more than eight months.</span></li>
+<li><a href="https://x.com/a16z/status/2099533700375662905">a16z on X: Greg Brockman on pointing Astra at OpenAI's systems (September 14, 2026)</a> <span class="how">— Supports the linked passage in the reviewed report. Original reporting and verification details are preserved with raw_articles.</span></li>
+<li><a href="https://theorem.dev/blog/verified-software-stack/">Bootstrapping the Verified Software Stack (Theorem, September 29, 2026)</a> <span class="how">— Primary forecast confirms the conditional 95 percent / end-2027 / $134 million scenario and the fourfold capability-growth multiplier.</span></li>
+<li><a href="https://metr.org/blog/2024-11-12-rogue-replication-threat-model/">The Rogue Replication Threat Model (METR; Clymer, Wijk, Barnes, November 2024)</a> <span class="how">— Supports the linked passage in the reviewed report. Original reporting and verification details are preserved with raw_articles.</span></li>
+<li><a href="https://www.ic3.gov/AnnualReport/Reports/2025_IC3Report.pdf">FBI Internet Crime Complaint Center, 2025 Internet Crime Report</a> <span class="how">— Supports the linked passage in the reviewed report. Original reporting and verification details are preserved with raw_articles.</span></li>
+<li><a href="https://ifp.org/the-great-refactor/">The Great Refactor (Herbie Bradley and Girish Sastry, Institute for Progress, 2025)</a> <span class="how">— Supports the linked passage in the reviewed report. Original reporting and verification details are preserved with raw_articles.</span></li>
+<li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC1117770/">Human error: models and management (James Reason, BMJ, 2000)</a> <span class="how">— Supports the linked passage in the reviewed report. Original reporting and verification details are preserved with raw_articles.</span></li>
+<li><a href="https://joshuasaxe181906.substack.com/p/against-solving-alignment-and-solving">Against “solving alignment” and “solving interpretability” as the major frame for AI safety and security (Joshua Saxe, September 30, 2026)</a> <span class="how">— Supports the linked passage in the reviewed report. Original reporting and verification details are preserved with raw_articles.</span></li>
+<li><a href="https://www.vulncheck.com/blog/anthropic-glasswing-receipts">The Anthropic Glasswing Receipts Are Starting to Trickle In (Patrick Garrity, VulnCheck, September 8, 2026)</a> <span class="how">— Read directly. September 8 snapshot identifies 202 fixed ledger entries versus 421 dashboard claims, among 26,153 claimed findings; conflicting counts are made explicit.</span></li>
+<li><a href="https://x.com/arthurctellis/status/2107833289209790507">Arthur Tellis on X, reply to Saxe (October 7, 2026)</a> <span class="how">— Supports the linked passage in the reviewed report. Original reporting and verification details are preserved with raw_articles.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-joshua-saxe-superintelligent-ai-security-limits">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-06/joshua-saxe-superintelligent-ai-security-limits</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
