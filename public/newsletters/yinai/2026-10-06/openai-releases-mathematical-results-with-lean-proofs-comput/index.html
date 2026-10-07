@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>OpenAI posts 722 model-written manuscripts, including a 9/4 matrix-multiplication bound — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-06">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-06">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 6 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">OpenAI posts 722 model-written manuscripts, including a 9/4 matrix-multiplication bound</h1>
+<p class="dek">An unnamed OpenAI model, answering a single prompt for almost every result, produced claimed advances on matrix multiplication, integer multiplication and Kakeya sets. Of the three, only the matrix bound is formalized in Lean, and the release omits the model name and prompts that the mathematicians’ advisory group asked for.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 6 October 2026</span> <span class="chip">1477 words · ~7 min</span></div>
+<div class="article-body">
+<p>OpenAI’s <a href="https://openai.com/index/sharing-ai-progress-in-mathematics/">October 6 announcement</a> credits the results to an unnamed “internal frontier model” and links that phrase to the company’s September 8 post claiming <a href="https://mintresearch.org/newsletters/yinai/2026-09-08/#story-openai-reports-forced-navier-stokes-blowup-proof-using-10-00">a forced Navier-Stokes blowup proof</a>. The manuscripts in the <a href="https://github.com/openai/math">openai/math</a> repository on GitHub all list “OpenAI” as author and, with one exception, are dated from September 10 to October 6. According to the <a href="https://github.com/openai/math">README</a>, OpenAI posed the model about 4,000 problems and kept the output that met “an appropriate level of significance”; <a href="https://www.quantamagazine.org/updates/transformation/#167703">Quanta reports</a> that the model failed on the vast majority. An OpenAI spokesperson told <a href="https://www.scientificamerican.com/article/openai-unleashes-hundreds-more-math-results-upon-a-field-already-in-shock/">Scientific American</a> that almost every result came from a single prompt to a single agent, though some may have taken several attempts; the Navier-Stokes work had used on the order of 10,000 agents at once. The README names two results produced outside the standard procedure, work on a zero-free region for the Riemann zeta function and a special case of the Hodge conjecture, and says a person edited one zeta writeup for readability.</p>
+<h3>A 9/4 bound for matrix multiplication</h3>
+<p>Multiplying two n-by-n matrices the schoolbook way takes about n³ multiplications. Volker Strassen lowered the exponent to about 2.807 in 1969, and Don Coppersmith and Shmuel Winograd reached 2.375477 in 1990. Every later record refined their method, lowering the bound by about 0.004 in 36 years; the latest, 2.371177, came on August 17 from <a href="https://arxiv.org/abs/2608.16884">Google DeepMind researchers working with Josh Alman and Virginia Vassilevska Williams</a>, who used optimizers refined by DeepMind’s AlphaEvolve. OpenAI’s 13-page paper <a href="https://github.com/openai/math/blob/main/preprints/Matrix-Multiplication-Nine-Fourths-October-2-2026/paper.pdf">“An Upper Bound of 9/4 for the Matrix Multiplication Exponent”</a>, dated October 2, puts the exponent at no more than 2.25 over the complex numbers, a further drop of about 0.12, which Steven Strogatz of Cornell <a href="https://x.com/stevenstrogatz/status/2107606017706266686">compared</a> to Bob Beamon’s long jump.</p>
+<p>The proof uses <a href="https://doi.org/10.1515/crll.1988.384.102">Strassen’s 1986 and 1988 theory of the asymptotic spectrum</a>, which studies numbers attached to tensors, the arrays of coefficients that encode a multiplication problem. These numbers add when two problems sit side by side, multiply when one is nested inside another, and never increase when one problem is derived from another. The paper bounds them on the arrays for multiplying polynomials through two growth inequalities, which limit the matrix exponent to 9/4. <a href="https://github.com/openai/math/blob/main/preprints/Complex-Matrix-Multiplication-Below-2.258-and-Rectangular-Bounds-September-24-2026/Complex-Matrix-Multiplication-Below-2.258-and-Rectangular-Bounds-September-24-2026.pdf">An 83-page manuscript</a> in the same family, dated eight days earlier, had reached 2.258 by a different method, starting from the Coppersmith-Winograd array.</p>
+<p>The bound counts arithmetic operations, and the paper says its proof <a href="https://github.com/openai/math/blob/main/preprints/Matrix-Multiplication-Nine-Fourths-October-2-2026/paper.pdf">“does not specify a competitive finite matrix size”</a>. In 2015 <a href="https://arxiv.org/abs/1411.5414">Andris Ambainis, Yuval Filmus and François Le Gall proved</a> that a wide class of variants of the Coppersmith-Winograd method cannot go below 2.3078. Both OpenAI bounds lie below 2.3078, so if they hold, their methods fall outside that class; neither paper discusses the limit. Of the three headline claims, only the 9/4 bound has a Lean formalization packaged as a <a href="https://github.com/openai/math/blob/main/lean/ComparatorChallenges/MatrixMultiplication.lean">Comparator challenge</a>, a file that defines the arithmetic model and the exponent from scratch and admits only Lean’s three standard axioms.</p>
+<h3>Integer multiplication below n log n</h3>
+<p>In 1971 Arnold Schönhage and Strassen showed how to multiply n-bit numbers on a multitape Turing machine in about n log n log log n steps, and proposed n log n as the best possible order. David Harvey and Joris van der Hoeven reached that order in <a href="https://doi.org/10.4007/annals.2021.193.2.4">a 2021 Annals of Mathematics paper</a>. OpenAI’s 73-page manuscript <a href="https://github.com/openai/math/blob/main/preprints/Integer-multiplication-below-n-log-n-September-23-2026/paper.pdf">“Integer multiplication below n log n”</a>, dated September 23, describes one fixed Turing machine that beats n log n by a factor of log n raised to the power 1/2¹⁸², a number with 54 zeros after the decimal point. <a href="https://github.com/openai/math/blob/main/preprints/Integer-multiplication-below-n-log-n-September-23-2026/paper.pdf">The paper</a> claims to refute Schönhage and Strassen’s proposed lower bound in this model, and calls its constants “extremely large”. The algorithm builds on Harvey and van der Hoeven’s method but has to save on moving data as well as on arithmetic, because on tapes merely reading n bits at each of the log n levels of a fast transform costs n log n steps. Its two new tape procedures, one rearranging data through XOR combinations and one applying several stages of the transform at once, each make fewer smaller recursive calls than the data volume would normally require, and <a href="https://github.com/openai/math/blob/main/preprints/Integer-multiplication-below-n-log-n-September-23-2026/paper.pdf">the paper</a> attributes its speed-up to that inequality. Faster multiplication was already known on other abstract machines, though not on fixed tapes. The manuscript has no Lean formalization.</p>
+<h3>Kakeya in three and four dimensions</h3>
+<p>A Kakeya set contains a unit line segment pointing in every direction. In February 2025 <a href="https://arxiv.org/abs/2502.17655">Hong Wang and Joshua Zahl proved</a> that every such set in three-dimensional space has full dimension three, work <a href="https://www.scientificamerican.com/article/2026-fields-medals-go-to-four-young-mathematicians/">Scientific American cited</a> when Wang won a Fields Medal in July. The maximal conjecture, a stronger statement bounding the averages of a function along thin tubes in every direction, stayed open. <a href="https://arxiv.org/abs/2512.09397">Zahl’s survey</a> for this year’s International Congress of Mathematicians identified the chief obstacle to adapting their argument: repeated rescaling shrinks the share of each tube where the function is large. OpenAI’s 97-page manuscript <a href="https://github.com/openai/math/blob/main/preprints/The-Kakeya-maximal-conjecture-in-three-dimensions-September-23-2026/paper.pdf">“The Kakeya maximal conjecture in three dimensions”</a>, dated September 23, claims a proof that holds uniformly however small that share is. Arguing by contradiction, it shows that the extreme configurations of tubes would have to be locally flat and rigidly organized, then rules them out with an entropy argument; it draws on a <a href="https://arxiv.org/abs/2601.14411">streamlined proof of the set conjecture</a> that Larry Guth, Wang and Zahl posted in January. A 175-page <a href="https://github.com/openai/math/blob/main/preprints/Every-four-dimensional-Kakeya-set-has-full-Hausdorff-dimension-September-24-2026/paper.pdf">companion</a> claims full dimension for every Kakeya set in four dimensions, where Nets Katz and Zahl had proved a dimension of at least 3.059 in 2021. Neither Kakeya claim has a completed Lean proof in the release.</p>
+<h3>Verification and disclosure</h3>
+<p>The <a href="https://github.com/openai/math">README</a> describes mixed verification stages and acknowledges possible errors in unformalized results. OpenAI told Quanta that about half the results are verified in Lean and that no errors by the model had turned up in the formal proofs obtained so far; in a handful of cases, formalizing exposed mistakes in the existing literature. The <a href="https://github.com/openai/math/blob/main/lean/formalization.yaml">formalization catalogue</a>, which records that agents produced the formalizations, gives their review status as “unchecked”.</p>
+<p>OpenAI began consulting the Advisory Group on Mathematics and Artificial Intelligence at the Institute for Advanced Study in September, <a href="https://mintresearch.org/newsletters/yinai/2026-09-21/#sec-ai-for-science">when it said an internal model had resolved more than 100 long-standing open problems</a>. The group’s <a href="https://agmai.org/general-sep29/">September 29 guidelines</a> asked labs to stop testing advanced problems on proprietary models and, for each result, to publish the model’s name, the prompts, a summarized chain of thought, the time taken and the estimated compute cost. <a href="https://agmai.org/general-sep29/">The guidelines</a> also asked for deposit in repositories that “should not be controlled by any AI lab”, for formalization where possible and, with bulk releases, for an account of how problems were chosen and how many comparable ones failed. OpenAI’s release names no model, gives no prompts, reports average compute equivalent to three hours of ChatGPT Pro thinking and summarizes the reasoning for 10 of the 372 families, and the company says it is working to release the model responsibly. Its formalizations come with the Comparator files and formalization.yaml catalogue the guidelines recommend. The repository sits on GitHub under OpenAI’s control, with issues and discussions switched off, while <a href="https://openai.com/index/sharing-ai-progress-in-mathematics/">OpenAI says</a> it is “continuing to explore other community-hosted alternatives”. A spokesperson told Scientific American the company takes the guidelines seriously but is not bound by them.</p>
+<p>The group’s <a href="https://agmai.org/statement-oct6/">October 6 statement</a> says its advisory role “should not be interpreted as a judgment of the impact of these results” or as an endorsement of OpenAI’s process, and leaves it to mathematicians to judge how far its advice was followed. OpenAI says it will fund workshops and conferences; the guidelines say such funding decisions belong with existing nonprofit institutions. The same day, on Terence Tao’s blog, Ben Antieau announced <a href="https://terrytao.wordpress.com/2026/10/06/hexagon/">Hexagon</a>, a nonprofit repository for AI-assisted mathematics that “welcomes submissions by large labs”.</p>
+<h3>Reactions from mathematicians</h3>
+<p>Alex Kontorovich, who chairs the mathematics department at Rutgers, wrote of a claimed proof that the Riemann zeta function has no zeros with real part above 7/8: <a href="https://x.com/AlexKontorovich/status/2107609087902941646">“If a human did this, it would be an instant Fields Medal”</a>. Daniel Litt of the University of Toronto <a href="https://x.com/littmath/status/2107613805970649306">praised</a> a claimed proof that no algorithm can decide which polynomial equations have rational solutions, a negative answer to Hilbert’s tenth problem over the rationals, and <a href="https://x.com/littmath/status/2107616410897678765">noted</a> that another paper appears to cite wrong earlier work without saying so, though it does not seem to rely on it.</p>
+<p>Andrew Sutherland of MIT told <a href="https://www.scientificamerican.com/article/openai-unleashes-hundreds-more-math-results-upon-a-field-already-in-shock/">Scientific American</a> that single-agent claims should count as unverified until the model is released and others replicate the results: “We should ask for receipts.” Hours before the release, Terence Tao of UCLA had written on <a href="https://mathstodon.xyz/@tao/117395267721642920">Mathstodon</a>, without naming OpenAI, that solutions to open problems are <a href="https://mathstodon.xyz/@tao/117395268889583356">“being harvested at large scale in an unsustainable fashion”</a>. Jordan Ellenberg of Wisconsin <a href="https://www.quantamagazine.org/updates/transformation/#167703">told Quanta</a>: “There’s no hurry and it will all get done.”</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://openai.com/index/sharing-ai-progress-in-mathematics/">Sharing AI progress in mathematics (OpenAI, October 6, 2026)</a></li>
+<li><a href="https://github.com/openai/math">openai/math repository README (OpenAI, GitHub)</a></li>
+<li><a href="https://github.com/openai/math/blob/main/CONTENTS.md">OpenAI Research Catalog manuscript map (CONTENTS.md)</a></li>
+<li><a href="https://github.com/openai/math/blob/main/preprints/Matrix-Multiplication-Nine-Fourths-October-2-2026/paper.pdf">An Upper Bound of 9/4 for the Matrix Multiplication Exponent (OpenAI, October 2, 2026)</a></li>
+<li><a href="https://github.com/openai/math/blob/main/preprints/Complex-Matrix-Multiplication-Below-2.258-and-Rectangular-Bounds-September-24-2026/Complex-Matrix-Multiplication-Below-2.258-and-Rectangular-Bounds-September-24-2026.pdf">Complex Matrix Multiplication Below 2.258 and Rectangular Bounds (OpenAI, September 24, 2026)</a></li>
+<li><a href="https://github.com/openai/math/blob/main/lean/ComparatorChallenges/MatrixMultiplication.lean">Matrix-multiplication Comparator challenge (openai/math Lean library)</a></li>
+<li><a href="https://github.com/openai/math/blob/main/lean/formalization.yaml">formalization.yaml (openai/math Lean formalization catalogue)</a></li>
+<li><a href="https://github.com/openai/math/blob/main/preprints/Integer-multiplication-below-n-log-n-September-23-2026/paper.pdf">Integer multiplication below n log n (OpenAI, September 23, 2026)</a></li>
+<li><a href="https://github.com/openai/math/blob/main/preprints/The-Kakeya-maximal-conjecture-in-three-dimensions-September-23-2026/paper.pdf">The Kakeya maximal conjecture in three dimensions (OpenAI, September 23, 2026)</a></li>
+<li><a href="https://github.com/openai/math/blob/main/preprints/Every-four-dimensional-Kakeya-set-has-full-Hausdorff-dimension-September-24-2026/paper.pdf">Every Four-Dimensional Kakeya Set Has Full Hausdorff Dimension (OpenAI, September 24, 2026)</a></li>
+<li><a href="https://agmai.org/general-sep29/">Responsible Release of AI-Generated Mathematics (Advisory Group on Mathematics and Artificial Intelligence, September 29, 2026)</a></li>
+<li><a href="https://agmai.org/statement-oct6/">On OpenAI's Release of Mathematical Results (Advisory Group on Mathematics and Artificial Intelligence, October 6, 2026)</a></li>
+<li><a href="https://openai.com/index/advisory-group-on-mathematics-and-ai/">Advisory Group on Mathematics and Artificial Intelligence (OpenAI, September 21, 2026)</a></li>
+<li><a href="https://openai.com/index/navier-stokes-solution/">On the Navier-Stokes Millennium Prize Problem (OpenAI, September 8, 2026)</a></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-08/#story-openai-reports-forced-navier-stokes-blowup-proof-using-10-00">Yesterday in AI, September 8, 2026: OpenAI reports Navier-Stokes blowup as mathematicians dispute credit</a></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-21/#sec-ai-for-science">Yesterday in AI, September 21, 2026: AI for Science item on OpenAI's advisory group</a></li>
+<li><a href="https://www.scientificamerican.com/article/openai-unleashes-hundreds-more-math-results-upon-a-field-already-in-shock/">OpenAI unleashes hundreds more math results upon a field already in shock (Joseph Howlett, Scientific American)</a></li>
+<li><a href="https://www.quantamagazine.org/updates/transformation/#167703">Deluge of 377 OpenAI proofs bewilders the math world (Quanta Magazine, Transformation update)</a></li>
+<li><a href="https://x.com/stevenstrogatz/status/2107606017706266686">Steven Strogatz on X</a></li>
+<li><a href="https://x.com/AlexKontorovich/status/2107609087902941646">Alex Kontorovich on X</a></li>
+<li><a href="https://x.com/littmath/status/2107613805970649306">Daniel Litt on X (Hilbert's tenth problem over the rationals)</a></li>
+<li><a href="https://x.com/littmath/status/2107616410897678765">Daniel Litt on X (citation of wrong prior work)</a></li>
+<li><a href="https://mathstodon.xyz/@tao/117395267721642920">Terence Tao on Mathstodon (pre-release thread)</a></li>
+<li><a href="https://terrytao.wordpress.com/2026/10/06/hexagon/">Hexagon (Ben Antieau, guest post on Terence Tao's blog)</a></li>
+<li><a href="https://arxiv.org/abs/2608.16884">Improving the matrix multiplication exponent with modern optimization and AlphaEvolve (Dupont et al., arXiv)</a></li>
+<li><a href="https://arxiv.org/abs/1411.5414">Fast Matrix Multiplication: Limitations of the Laser Method (Ambainis, Filmus, Le Gall, STOC 2015)</a></li>
+<li><a href="https://doi.org/10.1007/BF02165411">Gaussian elimination is not optimal (Strassen, 1969)</a></li>
+<li><a href="https://doi.org/10.1016/S0747-7171(08)80013-2">Matrix multiplication via arithmetic progressions (Coppersmith and Winograd, 1990)</a></li>
+<li><a href="https://doi.org/10.1515/crll.1988.384.102">The asymptotic spectrum of tensors (Strassen, 1986 and 1988)</a></li>
+<li><a href="https://doi.org/10.1007/BF02242355">Schnelle Multiplikation grosser Zahlen (Schönhage and Strassen, 1971)</a></li>
+<li><a href="https://doi.org/10.4007/annals.2021.193.2.4">Integer multiplication in time O(n log n) (Harvey and van der Hoeven, Annals of Mathematics, 2021)</a></li>
+<li><a href="https://arxiv.org/abs/2502.17655">Volume estimates for unions of convex sets, and the Kakeya set conjecture in three dimensions (Wang and Zahl, arXiv)</a></li>
+<li><a href="https://arxiv.org/abs/2601.14411">A streamlined proof of the Kakeya set conjecture in R3 (Guth, Wang, Zahl, arXiv)</a></li>
+<li><a href="https://arxiv.org/abs/2512.09397">A Survey of the Kakeya conjecture, 2000-2025 (Zahl, ICM 2026 proceedings, arXiv)</a></li>
+<li><a href="https://doi.org/10.4171/RMI/1219">A Kakeya maximal function estimate in four dimensions using planebrushes (Katz and Zahl, 2021)</a></li>
+<li><a href="https://www.scientificamerican.com/article/2026-fields-medals-go-to-four-young-mathematicians/">2026 Fields Medals go to four young mathematicians (Joseph Howlett, Scientific American)</a></li>
+<li><a href="https://x.com/AndrewCurran_/status/2107596925512065087">Andrew Curran X thread: 'OpenAI's Math post is up!'</a></li>
+<li><a href="https://x.com/thsottiaux/status/2107597780352950624">Tibo (@thsottiaux) X post linking the OpenAI announcement</a></li>
+<li><a href="https://mathstodon.xyz/@tao/117395268889583356">Terence Tao, exact quoted Mathstodon post (October 6, 2026)</a></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-openai-releases-mathematical-results-with-lean-proofs-comput">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-06/openai-releases-mathematical-results-with-lean-proofs-comput</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

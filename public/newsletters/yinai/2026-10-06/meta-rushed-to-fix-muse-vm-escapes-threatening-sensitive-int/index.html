@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Meta rushed to close Muse VM-escape flaws before launch, 404 Media reports — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-06">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-06">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 6 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Meta rushed to close Muse VM-escape flaws before launch, 404 Media reports</h1>
+<p class="dek">According to a Meta source and internal documents seen by 404 Media, at least one flaw in the virtual machines hosting Muse could have let an ordinary user reach sensitive internal databases; Meta says its security work continues.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 6 October 2026</span> <span class="chip">1312 words · ~7 min</span></div>
+<div class="article-body">
+<p>Jason Koebler <a href="https://www.404media.co/meta-rushed-to-fix-muse-vm-escape-vulnerability-immediately-before-launch/">reported in 404 Media</a> on October 5 that Meta engineers found several security vulnerabilities in Muse, the company’s personal AI agent, in the weeks before its September 8 launch, and that at least one could have let “a normal Muse user” break out of the agent’s virtual machine and reach data in sensitive internal Meta databases. The problem was raised to Mark Zuckerberg, and several security teams worked nights and weekends before launch to fix it. Koebler relies on a Meta source, whom 404 granted anonymity to discuss sensitive security matters, and on internal security documentation and posts the outlet viewed. Samantha Cole’s <a href="https://www.404media.co/muse-escapes-containment/?ref=daily-stories-newsletter&amp;attribution_id=6ac3bf413e77770001cf797a&amp;attribution_type=post">daily 404 Media newsletter</a> led with the scoop the same day.</p><p>Muse acts on the accounts a user connects to it, such as email, calendar and messaging, and each user’s agent runs in its own virtual machine, a computer simulated in software on Meta’s servers. According to 404, these machines run on KVM, the virtualization software built into the Linux kernel, and connect to Meta’s critical infrastructure while being meant to stay isolated from it. Koebler defines a KVM escape as a Muse instance using a security flaw to break out of its machine and interact with the system running it or with other users’ machines. In 404’s account the attacker is a customer exploiting such a flaw; the outlet reports no intrusion, and no AI agent breaking out on its own.</p><p>Three Meta executives acknowledged the effort in a September 18 post to the company’s core infrastructure team, ten days after launch; 404 names them as Surupa Biswas, Francois Richard and Josh Barry. The post described hosting and running agents directly for end users as a substantial change for Meta. It cited more reported KVM escapes and greater concern about agent safety as reasons for a service-hardening push that began on August 27 and continued over several weeks and weekends. Internally and in Meta’s codebase, Muse is called Hatch, as a footnote in Tarek Sheasha’s <a href="https://research.meta.ai/blog/security-and-safety-for-ai-agents-our-approach-with-muse">launch-day technical post</a> for Meta confirms. The teams reduced the systems accessible to agents and restricted the network ports and addresses reachable from the agents and their hosts.</p><p>The Meta source <a href="https://www.404media.co/meta-rushed-to-fix-muse-vm-escape-vulnerability-immediately-before-launch/">told 404</a> that teams faced pressure to fix the flaws without postponing release, leading to what the source called “half-baked protections being rushed out to enable the launch.” Many senior engineers, the source said, consider a massive data breach from Hatch inevitable. Meta told 404 that internal use, adversarial testing of agents and its bug-bounty program had helped strengthen Muse, and that security work continues. Koebler notes that a security push before a major launch is not necessarily unusual, but finds this one notable given the security problems outside researchers have found in Muse since launch and what he calls major hacking sprees by AI agents from OpenAI and other companies.</p><p>On Bluesky, a security practitioner posting as DM <a href="https://bsky.app/profile/d-m.bsky.social/post/3mx557yyvbdx4">called</a> a last-minute push for audits and bug fixes “pretty much how it works in the industry, for better or worse,” and read the report as a sign that Meta takes security fairly seriously, though not enough to delay the launch. Patrick Socha, a former software engineer in cybersecurity, <a href="https://bsky.app/profile/psocha.co.uk/post/3mx55omu7b22a">replied</a> to Koebler that the alternative was discovering the escape after launch. Brown computer scientist Suresh Venkatasubramanian <a href="https://bsky.app/profile/geomblog.bsky.social/post/3mx54tjs5ac2p">observed</a> that Meta worked night and day to “fix vulnerabilities pre-launch when they affected their OWN systems.”</p><p>Meta’s <a href="https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/">launch announcement</a> said each Muse runs on its own dedicated cloud computer, “contained so no one else’s agent can reach it,” and Sheasha describes further isolation inside each machine, with the agent confined to a container and the user’s credentials and Sentinel, the service that approves anything Muse sends to the internet, kept outside it. Root privileges inside the container map to an unprivileged account outside it; they do not confer control of the whole VM. In its <a href="https://bugbounty.meta.com/payout-guidelines/muse/">Muse bug bounty</a>, Meta lists isolation of each user’s machine “from Meta production and from other users” first among the four controls its security model depends on, and orders payouts by damage: up to $300,000, the highest maximum Meta lists, for reaching Meta production services or internal networks from Muse; up to $250,000 for escaping a machine to reach other users; and up to $7,500 for crossing from a user’s own sandbox, where users have root by design, into the privileged side of the machine. According to 404’s source, at least one of the pre-launch flaws could have reached that top tier.</p><p>404 reports that several of the flaws were in the Linux virtualization software Meta uses for Muse, and that at least one related to an exploit found in KVM code in July. Without naming the flaw, 404 links that phrase to <a href="https://www.csoonline.com/article/4194085/16-year-old-kvm-flaw-allows-attackers-to-escape-vms-and-take-over-linux-servers.html">CSO Online’s July 7 report</a> on Januscape (CVE-2026-53359). Hyunwoo Kim, who found Januscape, describes it in his <a href="https://github.com/V4bel/Januscape">disclosure</a> as a memory-safety bug in the code KVM uses to manage guest memory on x86 processors, present in the Linux kernel from 2010 until a June patch: on hosts exposing nested virtualization, a guest with kernel privileges can compromise the physical host. Meta’s account of container-level root does not establish that Muse customers had those guest-kernel privileges. Januscape was used as a zero-day in kvmCTF, the <a href="https://security.googleblog.com/2024/06/virtual-escape-real-reward-introducing.html">reward program</a> Google opened in 2024, which pays up to $250,000 for a full KVM escape, and Kim has withheld his full exploit. On August 6 he disclosed a second x86 escape, <a href="https://github.com/V4bel/Zapscape">Zapscape</a>.</p><p>OpenBSD’s Theo de Raadt <a href="https://marc.info/?l=openbsd-misc&amp;m=119318909016582">dismissed</a> the security case for x86 virtualization in 2007, arguing that engineers who cannot write operating systems without security holes will not suddenly write virtualization layers without them; a <a href="https://yro.slashdot.org/story/26/10/05/1914252/meta-rushed-to-fix-muse-vm-escape-vulnerability-soon-before-launch">Slashdot commenter</a> quoted him under the Muse story. In 2021 Felix Wilhelm of Google Project Zero <a href="https://projectzero.google/2021/06/an-epyc-escape-case-study-of-kvm.html">published</a> what he described as the first public write-up of a KVM guest-to-host breakout that does not rely on bugs in user-space components such as QEMU, reporting that, at the time, almost every large cloud and hosting provider outside Azure used KVM.</p><p>Patrick Wardle, a security researcher, found one of the post-launch problems Koebler mentions: on September 21 he <a href="https://x.com/patrickwardle/status/2102045926474785265">disclosed a flaw</a> in Muse’s Mac app, <a href="https://mintresearch.org/newsletters/yinai/2026-09-21/#story-amazon-blocks-meta-s-muse-shopping-agent-over-authorization">covered here that day</a>, that let other apps redirect its dictation to an attacker’s server and take control of the agent, and Meta fixed it within two days. He <a href="https://www.404media.co/meta-rushed-to-fix-muse-vm-escape-vulnerability-immediately-before-launch/">told 404</a> that Hatch “makes the virtualization boundary a production security boundary.” He argued that a KVM failure, or a vulnerable internal service reachable from the VM, could let user-controlled code reach Meta’s production systems. Wardle considers that proximity irresponsible and argues that AI makes complex virtualization flaws cheaper to discover and exploit. Meta’s published design adds the container boundary described above, but 404 does not identify the complete exploit chain behind the reported flaws.</p><p>In an <a href="https://blog.trailofbits.com/2026/08/26/vms-wont-contain-cyber-capable-agents/">August 26 post</a>, Artem Dinaburg of Trail of Bits reported that OpenAI’s GPT 5.6-Cyber, which he tested under preview access, escaped the QEMU/KVM virtual machine he uses as a sandbox three times. About an hour in, it had built its own exploit for Januscape, for which no public exploit exists, and froze the host when the attempt did not land cleanly. Each time he patched or rebuilt his setup, it found another way out; the last was a chain of four bugs, three of them unknown when it found them and two in KVM’s handling of guest memory, assembled over about 12 hours. Against Firecracker, the minimal virtual machine monitor <a href="https://www.amazon.science/publications/firecracker-lightweight-virtualization-for-serverless-applications">Amazon built</a> to run serverless workloads such as Lambda, it froze the machine but could not escape. Dinaburg concluded that “you can no longer assume a mere VM will contain a sufficiently advanced AI agent.”</p><p>On October 3, Vercel’s Guillermo Rauch <a href="https://x.com/rauchg/status/2106402024804020657">confirmed</a> that the bug bounty for Vercel Sandbox, which runs AI agents in Firecracker microVMs, had received a KVM zero-day from the researcher Paulos Yibelo; Firecracker, <a href="https://www.theregister.com/offbeat/2026/10/06/security-researcher-claims-they-found-kvm-guest-host-escape-flaw/5301267">The Register notes</a>, relies on KVM.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.404media.co/muse-escapes-containment/?ref=daily-stories-newsletter&amp;attribution_id=6ac3bf413e77770001cf797a&amp;attribution_type=post">Muse escapes containment (404 Media daily newsletter), Samantha Cole</a></li>
+<li><a href="https://www.404media.co/meta-rushed-to-fix-muse-vm-escape-vulnerability-immediately-before-launch/">Meta Rushed to Fix Muse 'VM Escape' Vulnerability Soon Before Launch, Jason Koebler, 404 Media</a></li>
+<li><a href="https://research.meta.ai/blog/security-and-safety-for-ai-agents-our-approach-with-muse">How We Built Safety Into Muse, Tarek Sheasha, Meta AI Research blog (September 8, 2026)</a></li>
+<li><a href="https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/">Introducing Muse: The World's First Personal AI Agent Built for Everyone, Meta Newsroom</a></li>
+<li><a href="https://bugbounty.meta.com/payout-guidelines/muse/">Muse | Payout guidelines | Meta Bug Bounty</a></li>
+<li><a href="https://web.archive.org/web/20260913005620/https://bugbounty.meta.com/payout-guidelines/muse/">Muse | Payout guidelines | Meta Bug Bounty (Wayback capture, September 13, 2026)</a></li>
+<li><a href="https://x.com/patrickwardle/status/2102045926474785265">Patrick Wardle on X: Muse zero-day thread</a></li>
+<li><a href="https://www.csoonline.com/article/4194085/16-year-old-kvm-flaw-allows-attackers-to-escape-vms-and-take-over-linux-servers.html">16-year-old KVM flaw allows attackers to escape VMs and take over Linux servers, Lucian Constantin, CSO Online</a></li>
+<li><a href="https://github.com/V4bel/Januscape">Januscape: Guest-to-Host Escape in KVM/x86 (CVE-2026-53359), Hyunwoo Kim</a></li>
+<li><a href="https://security.googleblog.com/2024/06/virtual-escape-real-reward-introducing.html">Virtual Escape; Real Reward: Introducing Google's kvmCTF, Google Online Security Blog</a></li>
+<li><a href="https://github.com/V4bel/Zapscape">Zapscape: Guest-to-Host Escape in KVM/x86 (CVE-2026-64561), Hyunwoo Kim</a></li>
+<li><a href="https://marc.info/?l=openbsd-misc&amp;m=119318909016582">Re: About Xen: maybe a reiterative question but .., Theo de Raadt, openbsd-misc (2007)</a></li>
+<li><a href="https://yro.slashdot.org/story/26/10/05/1914252/meta-rushed-to-fix-muse-vm-escape-vulnerability-soon-before-launch">Slashdot: Meta Rushed To Fix Muse 'VM Escape' Vulnerability Soon Before Launch</a></li>
+<li><a href="https://projectzero.google/2021/06/an-epyc-escape-case-study-of-kvm.html">An EPYC escape: Case-study of a KVM breakout, Felix Wilhelm, Google Project Zero</a></li>
+<li><a href="https://blog.trailofbits.com/2026/08/26/vms-wont-contain-cyber-capable-agents/">VMs won't contain cyber-capable agents, Artem Dinaburg, Trail of Bits Blog</a></li>
+<li><a href="https://www.amazon.science/publications/firecracker-lightweight-virtualization-for-serverless-applications">Firecracker: Lightweight Virtualization for Serverless Applications (NSDI 2020), Agache et al., Amazon Web Services</a></li>
+<li><a href="https://www.theregister.com/offbeat/2026/10/06/security-researcher-claims-they-found-kvm-guest-host-escape-flaw/5301267">Security researcher claims they found KVM guest-host escape flaw, Simon Sharwood, The Register</a></li>
+<li><a href="https://x.com/rauchg/status/2106402024804020657">Guillermo Rauch on X: KVM 0day confirmed through Vercel Sandbox bounty</a></li>
+<li><a href="https://bsky.app/profile/d-m.bsky.social/post/3mx557yyvbdx4">DM (@d-m.bsky.social) on Bluesky</a></li>
+<li><a href="https://bsky.app/profile/psocha.co.uk/post/3mx55omu7b22a">Patrick Socha on Bluesky (reply to Koebler)</a></li>
+<li><a href="https://bsky.app/profile/geomblog.bsky.social/post/3mx54tjs5ac2p">Suresh Venkatasubramanian on Bluesky</a></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-21/#story-amazon-blocks-meta-s-muse-shopping-agent-over-authorization">Yesterday in AI, September 21, 2026: Amazon blocks Muse and asserts a retailer’s right to refuse AI shoppers</a></li>
+<li><a href="https://cs.brown.edu/people/faculty/suresh/">Suresh Venkatasubramanian, Brown faculty profile</a></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-meta-rushed-to-fix-muse-vm-escapes-threatening-sensitive-int">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-06/meta-rushed-to-fix-muse-vm-escapes-threatening-sensitive-int</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
