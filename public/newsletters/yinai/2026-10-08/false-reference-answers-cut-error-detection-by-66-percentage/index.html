@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>False answer keys make reasoning monitors accept flawed solutions — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-08">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-08">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 8 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">False answer keys make reasoning monitors accept flawed solutions</h1>
+<p class="dek">An October revision to Will Yeadon and colleagues’ physics study changes only the supposedly correct answer. Even the strongest monitors miss errors they detect when judging the same solution without that cue.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 8 October 2026</span> <span class="chip">1140 words · ~6 min</span></div>
+<div class="article-body">
+<p>When an AI model checks another model’s written reasoning, its verdict depends heavily on what it has been told about the conclusion. Told that a flawed solution’s wrong answer is correct, it passes mistakes it would otherwise catch; given a wrong reference answer for a sound solution, it finds faults in steps that are sound. Such chain-of-thought monitors have been <a href="https://arxiv.org/abs/2507.11473">proposed as one layer of AI oversight</a>. Will Yeadon, a physicist at Durham University, reported the finding in <a href="https://www.lesswrong.com/posts/vhNpprNHZYWj3kpME/telling-a-cot-monitor-that-a-wrong-answer-is-correct-makes">a LessWrong post on October 8</a>, the day after he and seven co-authors added the experiment to their arXiv paper <a href="https://arxiv.org/abs/2609.00264"><em>The Answer Is Not the Argument</em></a>.</p><p>The <a href="https://arxiv.org/abs/2609.00264v1">August 31 first version</a>, <a href="https://mintresearch.org/newsletters/yinai/2026-09-02/#sec-evaluations-and-interpretability">covered here on September 2</a>, already held solutions fixed while varying access to a reference answer. Supplying the true answer helped monitors flag solutions with wrong conclusions, but gave no evidence of better detection when flawed reasoning reached a correct answer. That contrast compared two different groups of solutions. The revision additionally changes whether a supposedly correct reference agrees with each unchanged solution’s conclusion, directly testing the effect of that agreement.</p><p>Three frontier models each wrote numbered solutions to the same 79 physics questions from <a href="https://arxiv.org/abs/2501.14249">Humanity’s Last Exam</a>, a 2,500-question benchmark of expert-written problems, giving 237 solutions. The researchers labelled each final answer as right or wrong and located its first false step, combining physicists’ annotations with a debate between Claude and GPT models. Seven monitors, from Qwen3-32B to Gemini 3.1 Pro and Fable 5, searched the solutions for the first error. Their instructions called the supplied answer “known correct” but explicitly warned that a correct conclusion could follow flawed reasoning. The researchers compared runs with no answer, with the true answer, and with false answers carrying that same label. For 82 flawed solutions with wrong conclusions, the false reference was the solution’s own answer; for 50 sound solutions, it was another model’s wrong answer to the same question.</p><p>In one three-step solution, a model treated the work done by the force picking up a rope from rest as equal to the rope’s gain in kinetic and potential energy, ignoring the energy lost as each resting segment is jerked up to speed. With no reference answer shown, Grok 4.3 flagged that second step for exactly this mistake, and it did so again when given the true answer. Told that the solution’s own wrong answer was correct, it called the solution error-free, writing that <a href="https://www.lesswrong.com/posts/vhNpprNHZYWj3kpME/telling-a-cot-monitor-that-a-wrong-answer-is-correct-makes">“steps 2-3 are valid and match the reference”</a>.</p><p>Across the 82 flawed solutions, replacing the true answer with the solution’s own wrong one cut the share that monitors flagged as containing an error by 66 percentage points, to 39 points below the share they flagged with no answer at all. In 177 monitor-solution pairs, the monitor pinpointed the exact first error with no answer in view. Given the true answer, it passed the solution in two of those cases; given the solution’s own wrong answer, it passed 98. Each condition was a separate run in which the monitor never saw its earlier verdict.</p><p>Labelling another model’s wrong answer as correct had the opposite effect on the 50 sound solutions, raising flagging by 58 percentage points relative to the true-answer condition. In 165 of the 199 new flags, monitors blamed an interior step of the working. Yeadon acknowledges that the task partly forces this response: a monitor that accepts the conclusion is wrong must fault some earlier step. The researchers’ reference labels nevertheless mark these solutions as sound, so those step-level diagnoses were false under their standard.</p><p>The false answer moved even the two monitors best at finding errors unaided. On the flawed solutions, Fable 5’s flag rate fell from 83% with no answer to 19% under the false one, and Gemini 3.1 Pro’s from 84% to 27%, below the unaided rate of every other monitor; all seven monitors moved in the same direction on every comparison.</p><p>The authors allow that trusting a reliable answer key can be reasonable: it provides evidence about whether a solution contains an error. Their concern is how evaluations score monitors. A model given a trusted answer is rewarded both for checking the argument and for comparing the conclusion with the key, and an aggregate score cannot separate those abilities. Answer keys are also sometimes wrong. The Durham team judged 16 of the 99 Humanity’s Last Exam physics answers it reviewed closely to be incorrect or physically defective and reported them to the organizers. When a model reproduces such an answer, an ordinary evaluation can tell its monitor that a wrong conclusion is correct, recreating the experimental condition.</p><p>Earlier studies found that supplied answers can mislead AI judges. In <a href="https://arxiv.org/abs/2306.05685"><em>Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena</em></a>, published at NeurIPS in 2023, Lianmin Zheng and colleagues found GPT-4 endorsing wrong math answers even when it could solve the problem independently. On ten math questions, with each pair of candidate answers judged in both orders, having GPT-4 solve the problem first cut mistaken endorsements from 70% to 15%. Yeadon and Durham colleagues’ <a href="https://arxiv.org/abs/2603.14732"><em>LLM-as-a-judge validity is strongly task-dependent across physics assessment formats</em></a>, first posted in March 2026, found that falsified reference solutions more than doubled a five-model committee’s average marking error on physics questions. In <a href="https://arxiv.org/abs/2310.13548"><em>Towards Understanding Sycophancy in Language Models</em></a>, an ICLR 2024 paper, Mrinank Sharma and Anthropic colleagues found that even tentative suggestions of wrong answers reduced assistant accuracy. Yeadon’s new experiment extends the reference-answer problem to monitors asked to locate a specific false step. The paper cites the marking study; the other two provide comparisons beyond its cited precedents.</p><p>The authors connect this result to safety because reward hacking and deliberate sabotage can produce an acceptable output through an unsound process. A monitor relying heavily on agreement with the final answer may miss the failure that checking the process should reveal. The experiment concerns naturally occurring physics mistakes and a fixed panel of monitors; it does not estimate how often they would miss deliberate sabotage. The sound solutions were a selected subset with an available wrong-answer counterpart, and their assessment depends on the researchers’ labels being correct. The swapped-answer runs also came later than the original runs, through hosted services whose models can change unannounced. Three main comparisons were specified before those runs; the 177-case analysis and the tally of where false flags landed were defined afterwards.</p><p>Yeadon and his co-authors recommend that evaluations of process monitoring include a no-answer condition, report results separately for solutions whose final answer reveals the error and those whose answer does not, and score whether the monitor found the right step. Swapping the supplied answer, they add, is a cheap extra check: if the verdict on an unchanged solution moves with the answer, the evaluation is measuring reliance on the key as well as checking of the reasoning.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.lesswrong.com/posts/vhNpprNHZYWj3kpME/telling-a-cot-monitor-that-a-wrong-answer-is-correct-makes">Telling a CoT monitor that a wrong answer is correct makes it un-see errors it already found</a> <span class="how">— Assigned source, personally read completely in planning-evidence/primary-03.txt. Supports the intervention, rope example and exact nine-word quotation, all main numerical effects and the author’s scope. Date corroborated by reporter-source-audit-03.json. Only the rope quotation is retained from its prose.</span></li>
+<li><a href="https://arxiv.org/abs/2609.00264">The Answer Is Not the Argument</a> <span class="how">— Editor read primary v2 sections 2.1–2.5, 3.2–3.3, 4.1–4.2 and Appendix D in planning-evidence/yeadon-paper-v2.txt, plus title/affiliations/abstract. Verifies the original fixed-trace information ladder versus the added agreement manipulation, seven-model intervention, separate runs, reference labels, estimates and limitations. Complete Fable researcher read_in_full=true; editor did not reread all appendices.</span></li>
+<li><a href="https://arxiv.org/abs/2609.00264v1">The Answer Is Not the Argument</a> <span class="how">— First-version date and scope from completed dossier targeted v1 read (read_in_full=false), verified root audit and v2 sections 2.3/3.2 describing the original design. The revision does not originate the fixed-trace design; it adds false-reference agreement manipulation.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-02/#sec-evaluations-and-interpretability">Yesterday in AI, 2 September 2026: Evaluations and interpretability</a> <span class="how">— Completed Fable writer/dossier verification (not a claim of the editor’s personal full read): Prior coverage of v1, linked once on the description of the first version's finding. I fetched the live page to confirm the section anchor and the Yeadon sentence linking arXiv v1.</span></li>
+<li><a href="https://www.durham.ac.uk/staff/will-yeadon/">Staff profile: Will Yeadon</a> <span class="how">— Completed Fable writer/dossier verification (not a claim of the editor’s personal full read): Confirms the title 'Assistant Professor in the Department of Physics' (dossier read of the live page).</span></li>
+<li><a href="https://arxiv.org/abs/2501.14249">Humanity's Last Exam</a> <span class="how">— Completed Fable writer/dossier verification (not a claim of the editor’s personal full read): Benchmark background: 2,500 questions written by subject-matter experts.</span></li>
+<li><a href="https://arxiv.org/abs/2507.11473">Chain of Thought Monitorability: A New and Fragile Opportunity for AI Safety</a> <span class="how">— Completed Fable writer/dossier verification (not a claim of the editor’s personal full read): Supports the statement that chain-of-thought monitoring has been proposed as one layer of AI oversight. The Durham paper cites it for this point.</span></li>
+<li><a href="https://arxiv.org/abs/2306.05685">Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena</a> <span class="how">— Editor directly read primary sections 3.3–3.4 and Table 4 in editor_b1-evidence/mt-bench.txt. Ten questions with two answer orders yield 20 judgments: default 14/20 mistaken endorsements, reference-guided 3/20. Not a claim about overall judge accuracy.</span></li>
+<li><a href="https://arxiv.org/abs/2603.14732">LLM-as-a-judge validity is strongly task-dependent across physics assessment formats</a> <span class="how">— Editor checked the primary curriculum-results passages in editor_b1-evidence/marking.txt: committee fractional mean absolute error 0.127 without references versus 0.316 with false references. Broadly described as more than doubling; dossier flags its own targeted reading, not a full-paper read.</span></li>
+<li><a href="https://arxiv.org/abs/2310.13548">Towards Understanding Sycophancy in Language Models</a> <span class="how">— Editor directly read the answer-sycophancy results surrounding Figure 3 in editor_b1-evidence/sycophancy.txt. Retains the experimentally observed effect of even weakly expressed incorrect beliefs without another numerical comparison; exact title verified on primary page.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-false-reference-answers-cut-error-detection-by-66-percentage">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-08/false-reference-answers-cut-error-detection-by-66-percentage</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
