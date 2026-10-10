@@ -103,6 +103,9 @@ class FakeClassList {
     names.forEach((name) => classes.add(name));
     this.element.className = [...classes].join(' ');
   }
+  remove(...names) {
+    this.element.className = this.element.className.split(/\s+/).filter((name) => name && !names.includes(name)).join(' ');
+  }
 }
 
 class FakeNode {
@@ -159,7 +162,9 @@ class FakeElement extends FakeNode {
     this.listeners.set(name, handlers);
   }
   click() {
-    (this.listeners.get('click') || []).forEach((handler) => handler({ target: this }));
+    const event = { target: this, button: 0, defaultPrevented: false, preventDefault() { this.defaultPrevented = true; } };
+    (this.listeners.get('click') || []).forEach((handler) => handler(event));
+    return event;
   }
 }
 
@@ -290,6 +295,27 @@ for (const groupId of ['talks', 'papers', 'resources']) {
   assert.equal(groupButton.getAttribute('aria-expanded'), 'true', `${groupId} control must expand on click`);
   assert.equal(groupPanel.hidden, false, `${groupId} children must be visible after expansion`);
 }
+
+const groupState = (mount, id) => byAttribute(mount, 'data-nav-id', id)[0].getAttribute('aria-expanded');
+assert.equal(groupState(regularMount, 'resources'), 'true', 'the last opened group must stay open');
+assert.equal(groupState(regularMount, 'talks'), 'false', 'opening a group must close the other open groups');
+assert.equal(groupState(regularMount, 'papers'), 'false', 'opening a group must close the other open groups');
+byAttribute(regularMount, 'data-nav-id', 'resources')[0].click();
+assert.equal(groupState(regularMount, 'resources'), 'false', 'clicking an open group must close it');
+
+const guideMount = new FakeElement('div');
+api.render({ target: guideMount, currentUrl: 'https://mintresearch.org/guide/' });
+const guideLink = byAttribute(guideMount, 'data-nav-id', 'guide')[0];
+const guidePanel = walk(guideMount).find((node) => node.id === guideLink.getAttribute('aria-controls'));
+assert.equal(guideLink.getAttribute('aria-expanded'), 'true', 'the current page starts expanded');
+assert.equal(guideLink.click().defaultPrevented, true, 'clicking the current page link must toggle rather than reload');
+assert.equal(guideLink.getAttribute('aria-expanded'), 'false', 'clicking the current page link must collapse it');
+assert.equal(guidePanel.hidden, true, 'collapsed current-page sections must be hidden');
+guideLink.click();
+assert.equal(guideLink.getAttribute('aria-expanded'), 'true', 'clicking the current page link again must reopen it');
+byAttribute(guideMount, 'data-nav-id', 'resources')[0].click();
+assert.equal(guideLink.getAttribute('aria-expanded'), 'false', 'opening a group must close the current page sections');
+assert.equal(byAttribute(guideMount, 'data-nav-id', 'cv')[0].click().defaultPrevented, false, 'links to other pages must navigate');
 
 for (const activeCase of [
   { groupId: 'talks', itemId: 'normative-competence', currentUrl: 'https://mintresearch.org/nc/' },

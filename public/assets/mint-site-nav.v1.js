@@ -1,7 +1,7 @@
 (function (root, document) {
   'use strict';
 
-  var VERSION = '1.3.6';
+  var VERSION = '1.4.0';
   var scriptUrl = document.currentScript && document.currentScript.src
     ? document.currentScript.src
     : 'https://mintresearch.org/assets/mint-site-nav.v1.js';
@@ -309,6 +309,39 @@
     return container;
   }
 
+  /* One top-level entry is open at a time. Opening an entry closes the others in
+     the same nav; clicking an open entry closes it. */
+  function disclosure(trigger, containers, markElement, marks, expanded, context, topLevel) {
+    var entry = {
+      expanded: expanded,
+      set: function (value) {
+        entry.expanded = value;
+        trigger.setAttribute('aria-expanded', value ? 'true' : 'false');
+        if (marks) markElement.textContent = value ? marks[0] : marks[1];
+        containers.forEach(function (container) {
+          container.hidden = !value;
+          if (value) container.classList.add('expanded');
+          else container.classList.remove('expanded');
+        });
+      },
+      toggle: function () {
+        var next = !entry.expanded;
+        if (next && topLevel) {
+          context.disclosures.forEach(function (other) {
+            if (other !== entry && other.expanded) other.set(false);
+          });
+        }
+        entry.set(next);
+      }
+    };
+    if (topLevel) context.disclosures.push(entry);
+    return entry;
+  }
+
+  function plainClick(event) {
+    return event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
+  }
+
   function pageLink(page, context, options) {
     var active = context.currentId
       ? context.currentId === page.id
@@ -323,9 +356,10 @@
       link.setAttribute('aria-current', 'page');
       if (options.child) link.setAttribute('data-microsite-current', '');
     }
-    link.appendChild(mark(options.child ? (options.last ? '└──' : '├──') : (active ? '❯' : '▸')));
+    var linkMark = mark(options.child ? (options.last ? '└──' : '├──') : (active ? '❯' : '▸'));
+    link.appendChild(linkMark);
     appendLabel(link, page.label);
-    return { element: link, active: active };
+    return { element: link, active: active, mark: linkMark };
   }
 
   function renderPage(page, context, options) {
@@ -341,8 +375,10 @@
     }
     fragment.appendChild(result.element);
 
+    var canonicalContainer = null;
+    var localContainer = null;
     if (hasCanonicalSections) {
-      var canonicalContainer = sectionsContainer(page, allSections, context, {
+      canonicalContainer = sectionsContainer(page, allSections, context, {
         expanded: expanded,
         local: false,
         subLink: false,
@@ -352,7 +388,7 @@
       fragment.appendChild(canonicalContainer);
     }
     if (hasLocalSections) {
-      var localContainer = sectionsContainer(page, page.localSections, context, {
+      localContainer = sectionsContainer(page, page.localSections, context, {
         expanded: expanded,
         local: true,
         subLink: true,
@@ -360,6 +396,20 @@
       });
       addControlledId(result.element, localContainer.id);
       fragment.appendChild(localContainer);
+    }
+
+    var containers = [canonicalContainer, localContainer].filter(Boolean);
+    if (containers.length) {
+      var entry = disclosure(result.element, containers, result.mark, null, expanded, context, !options.child);
+      /* The current page's link toggles its sections instead of reloading;
+         links to other pages navigate as normal. */
+      if (result.active) {
+        result.element.addEventListener('click', function (event) {
+          if (!plainClick(event)) return;
+          event.preventDefault();
+          entry.toggle();
+        });
+      }
     }
     return fragment;
   }
@@ -394,14 +444,8 @@
         last: index === group.children.length - 1
       }));
     });
-    heading.addEventListener('click', function () {
-      expanded = !expanded;
-      heading.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-      groupMark.textContent = expanded ? '▾' : '▸';
-      children.hidden = !expanded;
-      if (expanded) children.classList.add('expanded');
-      else children.classList.remove('expanded');
-    });
+    var entry = disclosure(heading, [children], groupMark, ['▾', '▸'], expanded, context, true);
+    heading.addEventListener('click', entry.toggle);
     fragment.appendChild(children);
     return fragment;
   }
@@ -418,7 +462,8 @@
     var context = {
       currentId: config.currentId || (config.local && config.local.currentId) || localCurrentId || '',
       currentUrl: currentUrl,
-      siteOrigin: siteOrigin
+      siteOrigin: siteOrigin,
+      disclosures: []
     };
     var fragment = document.createDocumentFragment();
     items.forEach(function (item) {
