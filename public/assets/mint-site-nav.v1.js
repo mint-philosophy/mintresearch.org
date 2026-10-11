@@ -1,7 +1,7 @@
 (function (root, document) {
   'use strict';
 
-  var VERSION = '1.4.0';
+  var VERSION = '1.5.0';
   var scriptUrl = document.currentScript && document.currentScript.src
     ? document.currentScript.src
     : 'https://mintresearch.org/assets/mint-site-nav.v1.js';
@@ -309,6 +309,49 @@
     return container;
   }
 
+  function reducedMotion() {
+    return Boolean(root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+
+  function showContainer(container, value) {
+    container.hidden = !value;
+    if (value) container.classList.add('expanded');
+    else container.classList.remove('expanded');
+  }
+
+  /* Slides a section list open or closed. Inline styles override any
+     consumer max-height transition while the animation runs. */
+  function slideContainer(container, value) {
+    if (typeof container.animate !== 'function' || reducedMotion()) {
+      showContainer(container, value);
+      return;
+    }
+    var from = container.hidden ? 0 : container.getBoundingClientRect().height;
+    if (container.navAnimation) container.navAnimation.cancel();
+    showContainer(container, true);
+    container.style.overflow = 'hidden';
+    container.style.maxHeight = 'none';
+    container.style.transition = 'none';
+    var to = value ? container.scrollHeight : 0;
+    var animation = container.animate([
+      { height: from + 'px', opacity: from ? 1 : 0 },
+      { height: to + 'px', opacity: value ? 1 : 0 }
+    ], { duration: 220, easing: 'cubic-bezier(0.2, 0, 0, 1)' });
+    container.navAnimation = animation;
+    animation.onfinish = function () {
+      container.navAnimation = null;
+      container.style.overflow = '';
+      container.style.maxHeight = '';
+      container.style.transition = '';
+      if (!value) showContainer(container, false);
+    };
+    animation.oncancel = function () {
+      container.style.overflow = '';
+      container.style.maxHeight = '';
+      container.style.transition = '';
+    };
+  }
+
   /* One top-level entry is open at a time. Opening an entry closes the others in
      the same nav; clicking an open entry closes it. */
   function disclosure(trigger, containers, markElement, marks, expanded, context, topLevel) {
@@ -319,9 +362,7 @@
         trigger.setAttribute('aria-expanded', value ? 'true' : 'false');
         if (marks) markElement.textContent = value ? marks[0] : marks[1];
         containers.forEach(function (container) {
-          container.hidden = !value;
-          if (value) container.classList.add('expanded');
-          else container.classList.remove('expanded');
+          slideContainer(container, value);
         });
       },
       toggle: function () {
