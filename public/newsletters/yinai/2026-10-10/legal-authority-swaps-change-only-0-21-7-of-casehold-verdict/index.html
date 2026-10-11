@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Models can name a legal rule without reliably applying it — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-10">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-10">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 10 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Models can name a legal rule without reliably applying it</h1>
+<p class="dek">A Lexsi Labs study finds that models sometimes keep the same answer when the applicable legal test changes. Its CaseHOLD experiment tests the narrower question of whether changing a precedent’s name changes the selected holding.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 10 October 2026</span> <span class="chip">956 words · ~5 min</span></div>
+<div class="article-body">
+<p>Models can name the legal rule they are asked to apply and still keep the same answer when a different rule requires a different result. Lexsi Labs’ Saisab Sadhu, with Shreeyans Arora and Pratinav Seth, reports the finding in the arXiv preprint <a href="https://arxiv.org/abs/2610.12361">“Cited but Not Consulted: A Counterfactual Audit of Legal Chain-of-Thought Faithfulness,”</a> posted on October 8. The researchers tested seven open-weight models, requiring them to name the legal basis for their answers. Models usually did so, but naming alone gave little assurance that their answers responded to a change in that basis.</p><p>For three tasks, Sadhu and colleagues held each case’s facts fixed and changed the question the model had to answer. Their illustrative example concerns prison staff reading a detainee’s private medical correspondence: did the conduct violate Article 8 of the European Convention on Human Rights, protecting private life, or Article 3, prohibiting torture and inhuman treatment? The Supreme Court task instead asked whether an opinion concerned a specified topic, such as criminal procedure or economic activity. Those topic labels are not themselves legal authorities. The contract task asked whether a non-disclosure agreement entailed one of two obligations.</p><p>Keeping an answer unchanged can be correct when neither of the two rules is violated. The authors therefore examined cases where the reference answers differed, so a correct response had to change. On the human-rights task, models changed their answers in only 21.4% to 53.3% of those cases. The Supreme Court and contract tasks also showed failures to make the required change. In a separate check, paraphrasing the human-rights question without changing its meaning caused fewer answer changes than substituting the rule. The authors use these comparisons to distinguish failures to follow the legal question from ordinary sensitivity to wording.</p><p>The CaseHOLD experiment changed less. <a href="https://arxiv.org/abs/2104.08671">Lucia Zheng, Neel Guha and colleagues introduced CaseHOLD in 2021</a> to test which of five legal holdings fits a cited case in a court-opinion excerpt. Sadhu and colleagues replaced the precedent’s name with the placeholder “Doe v. Roe,” leaving the excerpt and candidate holdings intact. Across six models, that changed 0% to 21.7% of usable answers. The seventh, Llama-3.3-70B, was not tested here. The surrounding text may already establish the holding, making the name dispensable; unchanged answers cannot establish that models ignored relevant legal information. The authors accordingly rely on the other tasks for their stronger claim about failures to apply the requested rule.</p><p>The larger and specialist models still showed gaps, though their performance depended on the task. Llama-3.3-70B answered almost all Supreme Court topic questions correctly and changed its answer under a topic swap more often than any other tested model. It repeated the topic name at or after its decoded answer stabilized in only 10% of traces, illustrating that repeated naming and behavioral responsiveness can come apart. Legal-Δ-14B, a reproduction of a model trained for legal reasoning, also left a gap. Its exact original base model was unavailable, so the researchers combined released training adjustments with a similar public base; the result is not a test of the original model.</p><p>To estimate when answers stabilized, the researchers decoded provisional answers from the models’ internal states after each sentence of reasoning. They build on nostalgebraist’s logit lens, which reads predicted outputs from internal representations, and <a href="https://arxiv.org/abs/2605.06723">Zhang et al.’s work on answer stabilization</a>. The human-rights task uses a separate calibrated keyword heuristic. No scored human-rights run was classified as settling on an answer before naming the authority. The authors hypothesize that models first repeat the requested rule, then decide mainly from factual patterns. Their measurement could also produce this ordering because the instructions require naming and observations occur only at sentence boundaries. A model can use a rule without repeating its name; the study does not intervene on its internal representation to establish the proposed mechanism.</p><p>A separate attack test added a fabricated registry note to the human-rights case facts, ordering the model to find a violation. Across five models, outputs matched the injected instruction in 73.3% to 96.4% of cases. Some models would already have given that answer: the injection changed their original verdicts in 18.5% to 41.4% of cases. Only one model’s verdict changed more often under injection than under an authority swap. The attack demonstrates an additional vulnerability, but the higher compliance rate cannot be read as the rate at which the instruction overturned decisions.</p><p>The main experiments started with 30 cases per condition and one fixed decoding seed. Most differences between models were not statistically distinguishable. Changing a rule also changes the legal question, and comparisons using a legally meaningless placeholder gave mixed results on the human-rights task. The authors therefore leave part of that confound unresolved. All results concern instructed citation; the Supreme Court inputs also omit opinion text beyond the first 6,000 characters. The evidence concerns these simplified legal tasks and does not establish how commercial legal-research systems use retrieved authorities.</p><p>The paper extends earlier experiments on whether generated reasoning explains how an answer was reached. <a href="https://arxiv.org/abs/2307.13702">Lanham et al. at Anthropic</a> intervened on reasoning text and found that models sometimes relied on it and sometimes largely ignored it. <a href="https://arxiv.org/abs/2305.04388">Turpin et al.</a> showed that features of a question could influence answers without appearing in the explanation; <a href="https://arxiv.org/abs/2503.08679">Arcuschin et al.</a> documented unfaithful explanations on naturally worded questions. Sadhu and colleagues combine this line of inquiry with changes to legal decision targets and internal answer tracking.</p><p>Earlier legal-AI studies by <a href="https://arxiv.org/abs/2401.01301">Dahl, Magesh, Suzgun and Ho</a> and <a href="https://arxiv.org/abs/2405.20362">Magesh et al.</a> tested the accuracy of legal answers and citations in general chatbots and commercial research tools. The Lexsi Labs audit asks the additional question of whether an answer responds appropriately when the cited basis changes. A check that a citation exists and is accurate cannot answer that question.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2610.12361">Cited but Not Consulted: A Counterfactual Audit of Legal Chain-of-Thought Faithfulness (arXiv:2610.12361v1)</a> <span class="how">— The primary study’s legal-task definitions, changed-answer results, six-model CaseHOLD experiment, model comparisons, answer-tracking method, injection tests and limitations.</span></li>
+<li><a href="https://arxiv.org/abs/2307.13702">Measuring Faithfulness in Chain-of-Thought Reasoning (Lanham et al., Anthropic, 2023)</a> <span class="how">— Lanham and colleagues intervene on reasoning text and find variation in how strongly models rely on that text to reach answers.</span></li>
+<li><a href="https://arxiv.org/abs/2305.04388">Language Models Don't Always Say What They Think (Turpin et al., 2023)</a> <span class="how">— Turpin and colleagues show that input features can influence answers without appearing in the explanation.</span></li>
+<li><a href="https://arxiv.org/abs/2503.08679">Chain-of-Thought Reasoning In The Wild Is Not Always Faithful (Arcuschin et al.)</a> <span class="how">— Arcuschin and colleagues document unfaithful explanations on naturally worded questions.</span></li>
+<li><a href="https://arxiv.org/abs/2605.06723">When Does a Language Model Commit? A Finite-Answer Theory of Pre-Verbalization Commitment (Zhang et al., 2026)</a> <span class="how">— Zhang and colleagues study stabilization of answer preferences before verbalization, informing the legal audit’s internal-answer tracking.</span></li>
+<li><a href="https://arxiv.org/abs/2104.08671">When Does Pretraining Help? Assessing Self-Supervised Learning for Law and the CaseHOLD Dataset (Zheng et al., ICAIL 2021)</a> <span class="how">— Zheng, Guha and colleagues introduce the 2021 CaseHOLD task of selecting the holding that fits a cited case in a court-opinion excerpt.</span></li>
+<li><a href="https://arxiv.org/abs/2401.01301">Large Legal Fictions: Profiling Legal Hallucinations in Large Language Models (Dahl, Magesh, Suzgun, Ho, 2024)</a> <span class="how">— Dahl, Magesh, Suzgun and Ho study the accuracy of legal answers and citations in general-purpose language models.</span></li>
+<li><a href="https://arxiv.org/abs/2405.20362">Hallucination-Free? Assessing the Reliability of Leading AI Legal Research Tools (Magesh et al., 2024)</a> <span class="how">— Magesh and colleagues test the reliability of commercial legal-research systems; the present audit instead examines responsiveness to a changed decision target.</span></li>
+<li><a href="https://bsky.app/profile/arxiv-daily-bot.bsky.social/post/3mxkkl5gtde2x">Unofficial Arxiv daily bot post on Bluesky</a> <span class="how">— The Bluesky post linked to the Sadhu paper; the research findings come from the paper itself.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-legal-authority-swaps-change-only-0-21-7-of-casehold-verdict">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-10/legal-authority-swaps-change-only-0-21-7-of-casehold-verdict</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

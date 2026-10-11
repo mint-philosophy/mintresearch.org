@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Lambert flags a decline in downloads of tracked open models — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-10">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-10">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 10 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Lambert flags a decline in downloads of tracked open models</h1>
+<p class="dek">Interconnects’ completed monthly totals fell 23% from July to September. Lambert suspects a counting change, while Hugging Face points to growing Hub usage; neither measure establishes how much people use the tracked models.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 10 October 2026</span> <span class="chip">891 words · ~4 min</span></div>
+<div class="article-body">
+<p>Nathan Lambert <a href="https://x.com/natolambert/status/2108954173316178231">reported on 10 October</a> that Interconnects was seeing falling Hugging Face download rates across many of the leading open language models it tracks. He suspected a slight counting change behind a roughly 30% drop for many models, but said the decline was continuing and asked what else might explain it. His <a href="https://x.com/natolambert/status/2108970295805563377">follow-up chart for models above 100 billion parameters</a> showed a similar pattern. Hugging Face’s response questioned the usefulness of download counts without confirming a counting change.</p>
+
+<p>The <a href="https://dashboard.interconnects.ai/">Open Models Dashboard</a>, whose adoption data informed Lambert’s <a href="https://mintresearch.org/newsletters/yinai/2026-09-21/#story-congressional-briefing-compares-chinese-open-model-adoption">September congressional briefing</a>, provides a separate aggregate comparison. Its 10 October snapshot covered 1,836 tracked models. Completed monthly totals fell from 567.4 million downloads in July to 483.6 million in August and 435.2 million in September, a 23.3% decline from July. Qwen fell about 20%, Google 33%, DeepSeek 32% and Meta’s Llama models 37% over those two months. These totals support a broad decline in recorded downloads; they do not reconstruct Lambert’s roughly 30% observation about rates across individual models.</p>
+
+<p>The snapshot generated at 11:19 UTC on 10 October recorded 127.1 million downloads for October so far. The dashboard projected a month-end total of 377.8 million by adding the trailing seven-day average rate for the remaining days. That would be about a third below July, but October is unfinished. The complete-month decline is already visible without treating that projection as an observed result. The dashboard continues Lambert and Florian Brand’s <a href="https://arxiv.org/abs/2604.07190">ATOM Report</a> series through February 2026, then extends it using changes between daily snapshots of Hugging Face’s cumulative counters.</p>
+
+<p>The large-model chart narrows one possible explanation, that the aggregate mainly reflects small models, but its coverage is incomplete. It contains 162 checkpoints above 100 billion <em>total</em> parameters with download history, including all experts in mixture-of-experts models. Its separate metadata list contains 1,840 tracked checkpoints, only 379 with curated sizes; unknown sizes and four qualifying checkpoints without history are excluded. This cohort’s monthly downloads fell from 56.5 million in May to 33.5 million in September. Lambert’s accompanying <a href="https://github.com/Interconnects-AI/tracked-models/pull/45">parameter audit</a> explicitly describes the filter as exploratory, rather than a complete size audit.</p>
+
+<p>An earlier episode gives the counting hypothesis a concrete precedent. On <a href="https://x.com/natolambert/status/2087547543869862326">12 August</a>, Lambert reported a similar roughly 30% reduction across models and asked whether Hugging Face had changed its filtering. Julien Chaumond said he did not know of a change and would check; Merve Noyan reported an apparent lag. Lambert <a href="https://x.com/natolambert/status/2088655453077254234">declared it fixed on 15 August</a>. The August projection recovered from roughly 350 million to 490 million, close to the eventual 483.6 million total. A separate <a href="https://github.com/huggingface/huggingface_hub/issues/4365">June bug report</a> prompted Hugging Face’s Lucain Pouget to acknowledge an analytics regression affecting some repositories from 1–7 June. These incidents establish that the underlying counters can be wrong. Neither establishes the cause of the current decline, and the corrected monthly series still falls from July through September.</p>
+
+<p>Hugging Face’s <a href="https://huggingface.co/docs/hub/models-download-stats">counting documentation</a> explains why the metric needs care. The Hub counts GET and HEAD requests to designated query files, commonly <code>config.json</code>, with different rules for some libraries. A HEAD request can check file metadata without transferring the model weights. Selecting query files avoids counting every weight shard as a separate model download. GGUF, a format commonly used for local inference, is handled differently: each GGUF file counts, so cloning a whole repository can count several downloads. The public total is consequently a request count, not a count of distinct people or completed model installations. The documentation directs publishers seeking unique downloaders or exclusions for automated software pipelines to granular request logs in Publisher Analytics.</p>
+
+<p>Coverage matters as well. In its <a href="https://huggingface.co/blog/state-of-open-models-summer-2026">summer report</a>, Hugging Face found that models below one billion parameters accounted for 83% of all-time downloads among repositories declaring a size, while those above 100 billion accounted for 1%. It also reported 39.6 million monthly downloads of Qwen’s GGUF conversions, overwhelmingly published by the community. Those figures describe a broader collection than Lambert’s main list of original releases. A shift toward conversions can therefore change the relationship between downloads of the tracked originals and use of the models derived from them.</p>
+
+<p>Hugging Face’s <a href="https://x.com/ClementDelangue/status/2109041354432983111">Clem Delangue replied</a> with a different measure: a chart saying average daily unique Hub users had more than doubled since the start of 2026. That covers the Hub as a whole, rather than Lambert’s selected models. Lambert <a href="https://x.com/natolambert/status/2109091763906343086">agreed that daily users were more informative</a> and explained that his growing public list targets the text-model frontier, excluding image and video generation models and their finetunes. He also pointed to rapidly growing downloads in a separate list of local variants. His <a href="https://github.com/Interconnects-AI/tracked-models/pull/46">10 October proposal</a> adds 1,566 conversion repositories linked to tracked parents, plus a secondary catalog. It remained unmerged when checked and explicitly leaves the main dashboard totals unchanged.</p>
+
+<p>The replies suggest changes in distribution worth investigating. <a href="https://x.com/iamtrask/status/2108955442810417620">Andrew Trask</a> proposed less self-hosting; <a href="https://x.com/Dorialexander/status/2108979864057377274">Alexander Doria</a> pointed to large models served through inference providers; <a href="https://x.com/labenz/status/2108991891375313102">Nathan Labenz</a> suggested that notebook demonstrations previously inflated downloads by repeatedly fetching weights. These remain explanations to test. Better caching or a shift toward provider-hosted inference could reduce requests without reducing model use. The counts establish a change in recorded downloads for the selected repositories; distinguishing a measurement change from a change in distribution requires checking the counters, repository coverage and hosting behavior. They do not establish a decline in users, inference volume or open-model adoption.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://x.com/natolambert/status/2108954173316178231">Nathan Lambert on X: decline in Hugging Face downloads across tracked open LLMs (thread)</a> <span class="how">— Lambert’s October 10 observation of a roughly 30% download-rate drop across many tracked models. He proposes a counting change as one possible explanation.</span></li>
+<li><a href="https://x.com/natolambert/status/2108970295805563377">Nathan Lambert on X: 'Data for only 100B+ models looks similar' (chart)</a> <span class="how">— Lambert’s large-model chart covers 162 checkpoints with history. Its metadata includes curated sizes for 379 of 1,840 tracked checkpoints and excludes unknown sizes and four qualifying checkpoints without history.</span></li>
+<li><a href="https://dashboard.interconnects.ai/">Interconnects Open Models Dashboard</a> <span class="how">— The October 10 snapshot covers 1,836 models: September totals 435.2 million downloads; October records 127.1 million so far and projects 377.8 million. The dashboard uses daily changes in cumulative counts and a trailing seven-day projection.</span></li>
+<li><a href="https://arxiv.org/abs/2604.07190">The ATOM Report: Measuring the Open Language Model Ecosystem (Lambert and Brand, arXiv)</a> <span class="how">— Lambert and Brand’s report provides the data-series precursor and distinguishes download counts from active usage.</span></li>
+<li><a href="https://x.com/natolambert/status/2087547543869862326">Nathan Lambert on X: PSA on ~30% sustained reduction in daily downloads (August 12)</a> <span class="how">— Lambert’s August 12 report of a similar drop and replies from Chaumond and Noyan, who described an apparent lag.</span></li>
+<li><a href="https://x.com/natolambert/status/2088655453077254234">Nathan Lambert on X: 'Fixed. Thanks @huggingface team!' (August 15)</a> <span class="how">— Lambert’s August 15 announcement that the earlier problem was fixed, with a recovered monthly projection.</span></li>
+<li><a href="https://github.com/huggingface/huggingface_hub/issues/4365">downloadsAllTime decreasing day-over-day, huggingface_hub issue #4365</a> <span class="how">— A June 16 Hugging Face response acknowledges an analytics regression affecting some repositories from June 1–7. This earlier incident does not establish the cause of the October pattern.</span></li>
+<li><a href="https://huggingface.co/docs/hub/models-download-stats">Models Download Stats, Hugging Face Hub documentation</a> <span class="how">— Hugging Face explains GET and HEAD counting for designated query files, library-specific rules, GGUF handling, and granular logs for deduplication or excluding automated pipelines.</span></li>
+<li><a href="https://huggingface.co/blog/state-of-open-models-summer-2026">State of Open Models: Summer 2026 Observations (Yakefu, Passos, Solaiman, Hugging Face blog)</a> <span class="how">— The summer report gives size-based download shares for models with declared parameter counts and describes the importance of community GGUF conversions, a broader population than the original-release list.</span></li>
+<li><a href="https://x.com/ClementDelangue/status/2109041354432983111">Clem Delangue on X: Hub usage growing, downloads an unreliable metric</a> <span class="how">— Delangue’s reply and chart report that average daily unique Hub users more than doubled during 2026. Whole-Hub users and selected-model downloads cover different populations.</span></li>
+<li><a href="https://x.com/natolambert/status/2109091763906343086">Nathan Lambert on X: reply to Delangue on DAUs, the tracked list, and local models</a> <span class="how">— Lambert explains the curated list’s text-model focus, image and video exclusions, and a separate effort to track growing downloads of local variants.</span></li>
+<li><a href="https://github.com/Interconnects-AI/tracked-models/pull/46">Interconnects tracked-models PR #46: local conversions with original-parent attribution</a> <span class="how">— The October 10 proposal adds 1,566 conversion repositories tied to tracked parents and 73 in a secondary catalog. It remained unmerged when checked and explicitly leaves the main dashboard totals unchanged.</span></li>
+<li><a href="https://x.com/iamtrask/status/2108955442810417620">Andrew Trask on X: less self-hosting</a> <span class="how">— Trask suggests less self-hosting as a possible explanation.</span></li>
+<li><a href="https://x.com/Dorialexander/status/2108979864057377274">Alexander Doria on X: larger open models used through providers</a> <span class="how">— Doria suggests that large open models increasingly run through inference providers.</span></li>
+<li><a href="https://x.com/labenz/status/2108991891375313102">Nathan Labenz on X: numbers inflated by Colab notebook demos</a> <span class="how">— Labenz suggests that repeated notebook downloads inflated earlier counts.</span></li>
+<li><a href="https://github.com/Interconnects-AI/tracked-models/pull/45">Interconnects tracked-models PR #45: large-model parameters and primary tracking</a> <span class="how">— The exploratory size audit distinguishes total from active parameters, adds four primary releases and explicitly warns that the parameter coverage is incomplete.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-21/#story-congressional-briefing-compares-chinese-open-model-adoption">YiNAI, 21 September 2026: Lambert’s congressional briefing on open models</a> <span class="how">— Earlier coverage of Lambert’s congressional briefing and adoption-measurement limits, published September 21.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-tracked-open-llm-downloads-show-roughly-30-drop-with-hugging">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-10/tracked-open-llm-downloads-show-roughly-30-drop-with-hugging</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
