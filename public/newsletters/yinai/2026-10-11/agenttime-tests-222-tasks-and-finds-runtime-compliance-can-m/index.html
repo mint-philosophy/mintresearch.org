@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>AgentTime separates runtime compliance from continued work — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-11">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-11">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 11 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">AgentTime separates runtime compliance from continued work</h1>
+<p class="dek">Astra followed requested durations far more closely than Fable 5.1, but some reviewed runs ended in explicit waiting. The benchmark measures timing, continued activity and task performance separately.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 11 October 2026</span> <span class="chip">992 words · ~5 min</span></div>
+<div class="article-body">
+<p>An agent asked to work for a set time can finish on schedule after spending part of that time waiting. Michael Ofengenden of MATS and Maksym Andriushchenko of the ELLIS Institute Tübingen report this in <a href="https://arxiv.org/abs/2610.09944"><i>AgentTime: Can Agents Estimate and Control Their Own Runtime?</i></a>, an arXiv preprint posted October 7 and revised October 8. Their benchmark separates following a requested duration from predicting how long a task will take and estimating elapsed time afterward. They also check whether an agent continues working during the time requested, a distinction that changes how its apparent reliability should be read.</p>
+<p>The benchmark draws 222 tasks from 18 existing suites, covering questions, coding, computer use and research. The researchers retained the tasks’ grading procedures and removed their native time limits. An external timer recorded each session, and agents could consult clocks inside their environments. For the duration test, each task received an added instruction to work for a specified period and complete it as well as possible. Each agent ran every task afresh at three requested durations, generally increasing fourfold, from about a minute to 60 hours. The instruction did not force a stop: early returns remained early returns, although a separate administrative cutoff limited overruns.</p>
+<p>GPT-6 Astra in Codex ended 63% of its 666 runs within 5% of the requested time; GPT-5.6 Sol in Codex managed 39%, and Fable 5.1 in Claude Code 4% of 659 runs. Fable often overran short requests and stopped well before long ones. On the same task, it changed its runtime relatively little when given much longer, except on open-ended work where it could keep optimizing or building. Swapping the models between Codex and Claude Code preserved Astra’s advantage on a smaller task subset. The authors conclude that the model explains most of the gap, while their results also show effects from the harness and provider. The swap covered requests up to 80 minutes.</p>
+<p>The transcript review then asks what agents did near the end. The researchers labeled a run as working if its result changed in the final fifth of the session or a necessary job was running. Of 49 reviewed, on-time Astra runs on agentic tasks, 11 met that rule; 24 rechecked earlier work and 14 explicitly slept after apparent completion. Rechecking can itself be useful, so the other 38 runs cannot all be called idle. All four corresponding Fable runs met the working rule, but that comparison rests on a very small sample. Across all 158 classifiable Astra transcripts, including questions and off-schedule runs, the same 14 showed explicit sleeping. These counts do not establish a sleeping rate across all 666 Astra runs. Silent output gaps also cannot show whether reasoning stopped.</p>
+<p>Longer runtime usually left task scores unchanged. Comparing each task’s shortest and longest request, typically sixteenfold apart, roughly two-thirds received the same grade and about a quarter improved. Some tasks did benefit: on one OSWorld computer-use task, Fable’s score rose from 36% with a 15-minute request to full completion with an hour. The authors therefore separate three judgments: whether the session ends when requested, whether useful activity continues, and whether that activity improves the result. A final score alone cannot establish how the intervening time was spent.</p>
+<p>For forecasting, the researchers asked each agent to predict its runtime, then compared that estimate with a separate run without a duration request. All three usually overestimated. Astra’s typical forecasting error was nearly threefold despite its much closer compliance with an assigned duration. In the retrospective experiment, agents estimated the length of completed runs under progressively reduced access to timing information. Estimates stayed close with ordinary session evidence, but removing timestamps and other explicit cues increased error substantially. Supplying a tool that reported elapsed time made estimates almost exact. These tests measure how agents use available evidence about time; they do not demonstrate an unaided internal clock.</p>
+<p>Earlier research had already established poor runtime estimation. In <a href="https://arxiv.org/abs/2604.00010"><i>Can LLMs Perceive Time?</i></a>, Aniketh Garikaparthi found substantial overestimation on single-turn tasks and large errors in a separate set of tool-using tasks. Yichuan Ma and colleagues’ <a href="https://arxiv.org/abs/2601.16486"><i>Timely Machine</i></a> trained models to adapt reasoning to time budgets. <a href="https://arxiv.org/abs/2503.14499">METR’s task-completion horizons</a> measure another quantity: the human duration of tasks agents can successfully finish. AgentTime instead evaluates agents’ control of their own runtime in their normal software environments. Ofengenden and Andriushchenko’s <a href="https://www.lesswrong.com/posts/eAbuPXbjakop5rSJx/your-agents-are-not-time-aware">August LessWrong report</a> studied forecasting and retrospection with an earlier 235-task suite; the October paper adds duration-following and the analysis of waiting and rechecking.</p>
+<p>The authors also connect timing to oversight. <a href="https://arxiv.org/abs/2603.05706">Yueh-Han Chen and colleagues</a> found that reasoning models followed constraints on their written reasoning less reliably than constraints on final outputs. AgentTime treats runtime control as another capability to track. It cites <a href="https://collusion.wiki/">Sydney Von Arx and colleagues’ September investigation</a>, which documented self-identified OpenAI agents setting up periodic external signals to investigate when their sessions ended. AgentTime did not test evasion of oversight, and its authors explicitly reject treating either sleeping or returning early as evidence of that behavior.</p>
+<p>In his <a href="https://x.com/maksym_andr/status/2109338314067366198">October 11 discussion</a>, Andriushchenko questioned whether checking progress with the user might sometimes be better than continuing for the full requested period. <a href="https://x.com/matt__newell/status/2109356573357121983">Matt Newell asked</a> how much to infer from precise timing when an agent can use a clock. Both concerns fit the experiment: clock access was available, and the preferred stopping behavior depends on the task. The authors suggest training that rewards following duration instructions might explain Astra’s behavior, but they did not test that explanation.</p>
+<p>The study used one run per task and duration, three main agents from two labs, and one instruction wording at maximum reasoning effort. Only four tasks had requests beyond 8.3 hours, limiting conclusions about work lasting days. The authors report about 1,700 agent-hours for the duration experiment and value model access plus rented hardware at about $93,000. They publish <a href="https://github.com/michaelofengenden/agenttimebench">code</a> and <a href="https://agenttimebench.com">aggregate run data</a>; transcript access is gated, and the repository says the labels behind the working-versus-waiting analysis are not public.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2610.09944">AgentTime: Can Agents Estimate and Control Their Own Runtime? (arXiv:2610.09944)</a> <span class="how">— Benchmark methods and results for runtime control, continued work and time estimation.</span></li>
+<li><a href="https://x.com/maksym_andr/status/2109338314067366198">Andriushchenko X thread on AgentTime duration following (11 Oct 2026)</a> <span class="how">— Author's discussion of duration instructions and checking progress with users.</span></li>
+<li><a href="https://x.com/matt__newell/status/2109356573357121983">Matt Newell reply to Andriushchenko</a> <span class="how">— Question about interpreting accurate timing when agents can consult clocks.</span></li>
+<li><a href="https://www.lesswrong.com/posts/eAbuPXbjakop5rSJx/your-agents-are-not-time-aware">Your Agents Are Not Time Aware (LessWrong research report, 14 Aug 2026)</a> <span class="how">— Earlier experiments on forecasting runtime and estimating elapsed time.</span></li>
+<li><a href="https://arxiv.org/abs/2604.00010">Can LLMs Perceive Time? An Empirical Investigation (Garikaparthi)</a> <span class="how">— Experiments showing runtime-estimation errors on single-turn and tool-using tasks.</span></li>
+<li><a href="https://arxiv.org/abs/2601.16486">Timely Machine: Awareness of Time Makes Test-Time Scaling Agentic</a> <span class="how">— Research on training models to adapt reasoning to time budgets.</span></li>
+<li><a href="https://arxiv.org/abs/2503.14499">Measuring AI Ability to Complete Long Software Tasks (METR time horizons)</a> <span class="how">— Measurement of task difficulty through human completion times and agent success.</span></li>
+<li><a href="https://arxiv.org/abs/2603.05706">Reasoning Models Struggle to Control their Chains of Thought</a> <span class="how">— Comparison of compliance with constraints on written reasoning and final outputs.</span></li>
+<li><a href="https://collusion.wiki/">Discovery of a new OpenAI agent message board (Von Arx et al.)</a> <span class="how">— Investigation of self-identified OpenAI agents using external signals to study session endings.</span></li>
+<li><a href="https://github.com/michaelofengenden/agenttimebench">agenttimebench GitHub repository</a> <span class="how">— Benchmark code and documentation of transcript access and unavailable activity labels.</span></li>
+<li><a href="https://agenttimebench.com">AgentTime project site</a> <span class="how">— Published aggregate results from the AgentTime experiments.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-agenttime-tests-222-tasks-and-finds-runtime-compliance-can-m">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-11/agenttime-tests-222-tasks-and-finds-runtime-compliance-can-m</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

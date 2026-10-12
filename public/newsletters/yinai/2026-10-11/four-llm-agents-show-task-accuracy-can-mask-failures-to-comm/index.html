@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Agents can recognize contradictions without reporting them — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-11">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-11">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 11 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Agents can recognize contradictions without reporting them</h1>
+<p class="dek">A Johns Hopkins team evaluated five model-and-harness combinations on whether they noticed, investigated and disclosed knowledge conflicts. Instructions encouraging uncertainty improved disclosure in many cases, often while lowering task scores.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 11 October 2026</span> <span class="chip">1132 words · ~6 min</span></div>
+<div class="article-body">
+<p>Agents can recognize conflicting evidence while working on a task and still deliver a wrong answer without telling the user about the disagreement. Kaiser Sun and colleagues at Johns Hopkins University, with Hongjun Liu at New York University, document this in <a href="https://arxiv.org/abs/2610.12360"><i>Accurate but Not Humble: Evaluating Epistemic Humility in LLM Agents under Knowledge Conflict</i></a>, posted to arXiv on October 8 as the camera-ready version for EMNLP 2026. They argue that final-answer accuracy misses behavior a user needs to assess: whether the agent investigated a contradiction and disclosed what it could not resolve.</p>
+<p>The team tested five configurations across four harnesses, the software that gives a model tools and manages its execution: Nemotron-ToolOrchestra with Nemotron-Orchestrator-8B, Claude Code with Claude Sonnet 4.6, OpenHands with GPT-5, and Qwen-Agent with Qwen3.5 at 9 and 27 billion parameters. The configurations had different tool sets, including web search, code execution and terminal access. Each could run for up to 50 iterations. The researchers evaluated complete systems; they did not swap every model among the harnesses to separate their effects.</p>
+<p>For controlled conflicts, Sun and colleagues used questions from ConflictQA and WikiContradict, first checking that the underlying model gave a stable answer without external evidence. They then supplied contradictory passages; controls kept the question and passage count fixed but provided consistent evidence. Claude Code had no results in this condition because its model produced no qualifying prior answers in the 500-question sample. For naturally occurring conflicts, the researchers selected GAIA, MoNaCo and BrowseComp questions that each model answered wrongly without tools and continued to endorse when asked to reconsider. Controls were different questions on which it was correct or lacked a firm belief. Comparisons between those sets can reflect question difficulty as well as conflict.</p>
+<p>Their three measures have different denominators. Identify uses a GPT-5 judge to look for a specific contradiction or missing fact before the final answer. Its F1 score, calculated across conflict and control cases, balances recognizing real gaps against raising false alarms. Solve counts the share of recognized-gap cases in the conflict set where the agent subsequently called a tool, made no exact duplicate calls and finished within the cap. It measures an attempt, regardless of whether the answer became correct. Escalate counts the share of wrong final answers on conflict cases that conveyed the specific disagreement, alternative answer or contradiction to the user. It does not require earlier recognition, and generic hedging earns no credit.</p>
+<p>Every configuration with controlled-conflict results lost more than 30 percentage points of accuracy against its consistent-evidence control. In the agentic tasks, recognition could coexist with silence: Claude Code reached an Identify F1 of 90 percent on BrowseComp, yet none of its wrong conflict-case answers met the disclosure criterion. Across configuration-and-dataset averages, fitted curves associated higher task scores with less investigation and disclosure. That analysis uses recognition and investigation measures restricted to wrong-answer runs, separate from the headline F1 calculation. It rests on few comparisons with unequal samples, including just 11 GAIA conflict questions for Claude Code; it does not establish that improving accuracy causes disclosure to deteriorate.</p>
+<p>The timing analysis is narrower than a demonstration that agents forget conflicts. The authors located first mentions of the correct answer in runs that finished wrongly, and of the model's original answer in runs that finished correctly. Mentions were most concentrated in the first tenth of execution. Alongside the low investigation and disclosure scores, this suggests agents sometimes encounter relevant alternatives with time left to respond. Mentioning an answer alone does not establish that the agent understood the contradiction or locate a later step where that understanding disappeared.</p>
+<p>Sun and colleagues then added a paragraph to the agents' system instructions asking them to consider alternative conclusions, identify disagreements and disclose remaining uncertainty while still answering. On MoNaCo, OpenHands' disclosure rate rose from about 2 to 61 percent of wrong conflict-case answers, while its task score fell from 30.1 to 23.2. MoNaCo gives partial credit for numerical closeness, so that score is not simply the percentage of wholly correct answers. Claude Code also disclosed much more often on MoNaCo. The pattern varied: Qwen-Agent with the larger model improved its GAIA accuracy, although that conflict set contained only 13 questions. The intervention demonstrates that instructions can change disclosure; it neither repairs every configuration nor identifies whether the model or harness caused the original behavior.</p>
+<p>The authors propose an explicit abstain-or-escalate action, scoring that rewards appropriate uncertainty, and training supervision for intermediate steps. They tested none of those changes. Budget limited the comparison: the experiments cost over $3,000 and required over 1,000 GPU hours, with support from DARPA's SciFY programme. Two other model judges broadly agreed with GPT-5. In the smaller human check, GPT-5 matched a human majority on 70 percent of 50 recognition examples and 72 percent of 50 disclosure examples. Both samples deliberately overrepresented positive labels, so those figures are not estimates from a representative sample of all runs.</p>
+<p>The <a href="https://github.com/KaiserWhoLearns/EpistemicHumilityLLMAgents">code repository</a> describes how to reproduce the runs, while the <a href="https://huggingface.co/datasets/KaiserWhoLearns/EpistemicHumilityLLMAgents-data">trajectory and judgment files</a> require gated access. One configuration detail needs clarification: the main text and repository identify OpenHands' model as GPT-5, but an appendix table names GPT-5.2. The authors also limit their conclusions to responses to knowledge conflict; the measures do not cover every aspect of honesty, calibrated confidence or knowing when a task exceeds an agent's abilities.</p>
+<p>The conceptual precedent is Yike Wang and colleagues' <a href="https://arxiv.org/abs/2310.00935"><i>Resolving Knowledge Conflicts in Large Language Models</i></a> (COLM 2024), which tested whether models could detect contradictions, locate the disputed information and present both answers. Sun's team adds investigation through tools and communication at the end of a longer task. Its data draw on Jian Xie and colleagues' <a href="https://arxiv.org/abs/2305.13300">ConflictQA</a> (ICLR 2024), which elicited model beliefs and constructed contrary evidence, and Yufang Hou and colleagues' <a href="https://arxiv.org/abs/2406.13805">WikiContradict</a>, built from Wikipedia passages flagged as inconsistent. Sun, Fan Bai and Mark Dredze's <a href="https://arxiv.org/abs/2506.06485"><i>Task Matters</i></a> supplied earlier methods for varying the knowledge a task requires. <a href="https://arxiv.org/abs/2509.09658">HumbleBench</a>, by Bingkui Tong and colleagues, measured a narrower behavior: whether image-questioning models reject all the offered factual answers when none is correct.</p>
+<p>Outside the paper's bibliography, Adam Tauman Kalai and colleagues' <a href="https://arxiv.org/abs/2509.04664"><i>Why Language Models Hallucinate</i></a> (2025) gives a formal account of the incentive Sun's team suspects: accuracy-based grading rewards a plausible guess over abstention. Yaxing Lyu and colleagues' <a href="https://arxiv.org/abs/2609.03588">KC-Bench</a>, posted in September, already tested conflicts during tool use across 238 simulated tasks. It holds the harness fixed to compare models and checks whether unresolved contradictions lead to unsafe actions, complementing Sun's comparison of complete systems. The cited <a href="https://arxiv.org/abs/2506.09038">AbstentionBench</a>, by Polina Kirichenko and colleagues, also found that instructions could improve abstention; its authors argued that this was unlikely to remedy the underlying difficulty of reasoning about uncertainty. That study's instructions increased abstention without significantly reducing responses to questions that warranted an answer.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2610.12360">Accurate but Not Humble: Evaluating Epistemic Humility in LLM Agents under Knowledge Conflict (arXiv:2610.12360v1)</a> <span class="how">— The experiment, behavioral measures, results, intervention and limitations reported by Sun and colleagues.</span></li>
+<li><a href="https://github.com/KaiserWhoLearns/EpistemicHumilityLLMAgents">KaiserWhoLearns/EpistemicHumilityLLMAgents (GitHub README)</a> <span class="how">— Code, configuration details and instructions for reproducing the experiments.</span></li>
+<li><a href="https://huggingface.co/datasets/KaiserWhoLearns/EpistemicHumilityLLMAgents-data">KaiserWhoLearns/EpistemicHumilityLLMAgents-data (Hugging Face dataset)</a> <span class="how">— Agent trajectories and scoring data, available subject to access conditions.</span></li>
+<li><a href="https://arxiv.org/abs/2310.00935">Resolving Knowledge Conflicts in Large Language Models (Wang et al., COLM 2024)</a> <span class="how">— Earlier tests of conflict detection, localization and presenting alternative answers.</span></li>
+<li><a href="https://arxiv.org/abs/2305.13300">Adaptive Chameleon or Stubborn Sloth (Xie et al., ICLR 2024)</a> <span class="how">— ConflictQA and methods for eliciting model beliefs and constructing contrary evidence.</span></li>
+<li><a href="https://arxiv.org/abs/2406.13805">WikiContradict (Hou et al., IBM Research, NeurIPS 2024 D&amp;B)</a> <span class="how">— A benchmark of contradictory passages identified through Wikipedia editorial tags.</span></li>
+<li><a href="https://arxiv.org/abs/2506.06485">Task Matters: Knowledge Requirements Shape LLM Responses to Context-Memory Conflict (Sun, Bai, Dredze, 2025)</a> <span class="how">— Earlier work connecting responses to conflicting evidence with a task’s knowledge requirements.</span></li>
+<li><a href="https://arxiv.org/abs/2509.09658">Measuring Epistemic Humility in Multimodal Large Language Models (HumbleBench)</a> <span class="how">— Tests of rejecting false answer options in questions about images.</span></li>
+<li><a href="https://arxiv.org/abs/2509.04664">Why Language Models Hallucinate (Kalai et al., OpenAI, 2025)</a> <span class="how">— Analysis of how accuracy-based evaluation rewards guessing over admitting uncertainty.</span></li>
+<li><a href="https://arxiv.org/abs/2609.03588">KC-Bench: A Dynamic Interactive Benchmark for Evaluating Knowledge Conflicts in LLM Agents</a> <span class="how">— A complementary benchmark of conflict handling and consequential tool actions under a fixed harness.</span></li>
+<li><a href="https://arxiv.org/abs/2506.09038">AbstentionBench: Reasoning LLMs Fail on Unanswerable Questions (Kirichenko et al., 2025)</a> <span class="how">— Evidence that instructions can improve abstention on unanswerable questions.</span></li>
+<li><a href="https://bsky.app/profile/arxiv-daily-bot.bsky.social/post/3mxkqd5ahu42t">Unofficial Arxiv daily bot post (Bluesky)</a> <span class="how">— An automated announcement linking to the paper.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-four-llm-agents-show-task-accuracy-can-mask-failures-to-comm">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-11/four-llm-agents-show-task-accuracy-can-mask-failures-to-comm</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

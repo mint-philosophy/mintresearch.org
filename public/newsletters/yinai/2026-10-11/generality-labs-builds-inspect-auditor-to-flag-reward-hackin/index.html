@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Generality Labs sets out to audit the benchmarks frontier labs rely on — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-11">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-11">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 11 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Generality Labs sets out to audit the benchmarks frontier labs rely on</h1>
+<p class="dek">The London nonprofit plans a partner beta for Inspect Auditor this quarter. Its published audits show how faulty questions, unreliable judges and restrictive agent setups can distort benchmark scores.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 11 October 2026</span> <span class="chip">1169 words · ~6 min</span></div>
+<div class="article-body">
+<p>Generality Labs plans to put Inspect Auditor, a tool for testing AI evaluations, into a beta with partner organisations this quarter. In an <a href="https://www.lesswrong.com/posts/mnWj4hSJxhSJY4N7N/an-update-on-generality-labs">October 11 update</a>, co-founder and CEO Justin Olive describes software that runs experiments to find weaknesses in an evaluation and assembles an audit report, including checks for reward hacking and incorrect reference answers. He also sets a fourth-quarter target of publishing at least four independent audits and applying the tool across <a href="https://ukgovernmentbeis.github.io/inspect_evals/">Inspect Evals</a>, the evaluation library Generality maintains. His concern is that the field will be unable to measure the safety of dangerously capable systems when those measurements are needed.</p>
+<p>The London nonprofit began in July as a spin-off from Arcadia Impact, with $4.4 million in seed funding from Coefficient Giving, according to Olive. He says the team previously delivered more than $1 million in contracts for the UK AI Security Institute, Epoch AI and METR. Its 2027 goals include independent audits of more than half the evaluations used in frontier-model risk assessments, Inspect Auditor adoption by all major evaluators and an evaluation standard. Its published audits examine both how evaluations are scored and how they are run.</p>
+<p>In September, Laurence Wroe reported an <a href="https://generality.org/blog/posts/bixbench-broken-ceiling/">audit of BixBench</a>, FutureHouse's bioinformatics benchmark, covering 205 tasks across six models and two additional agent configurations. The lab attributed roughly 70 percent of failed submissions to flawed tasks or grading errors. Auditors classified 42 reference answers as unreproducible and another 35 tasks as underspecified. Regrading with stronger models and additional context reclassified 89 of 969 rejected answers as correct, about 9 percent. One problem was that the default judge was not told to accept values within a numerical reference range. The <a href="https://doi.org/10.5281/zenodo.22248586">full report</a> and accompanying results show GPT-5.6-Sol rising from 42.9 to 84.4 percent, the basis for the reported maximum gain of about 42 percentage points. That comparison combines corrected grades with removing 77 tasks, leaving 128. It measures how scoring and question selection alter the result; the model's answers stayed the same.</p>
+<p>Wroe's <a href="https://generality.org/blog/posts/fortress-fragile-judges/">FORTRESS audit</a> examined an independent Inspect implementation of Scale AI's safeguard-robustness benchmark. Across nearly 21,000 rubric-item decisions, all three model judges supplied usable grades only 60 percent of the time. About one decision in ten depended on a tie-break favouring a harmful verdict or one remaining judge. Some empty responses were scored as harmful because judges evaluated the prompt itself. Treating empty responses as harmless and regrading fragile decisions with a different panel lowered Claude Opus 4.5's measured risk score from 15.1 to 9.8 percent, a 35 percent relative reduction. Regrading benign responses lowered DeepSeek-R1's over-refusal score from 3.4 to 0.4 percent, an 88 percent relative reduction. These were revised scores for unchanged outputs in Generality's replication. Scale's original implementation is not public, and the authors acknowledge that their replacement judges' remaining errors are unquantified. Generality graded both BixBench and FORTRESS C under its own audit rubric.</p>
+<p>Jeff Mohl's October <a href="https://generality.org/blog/posts/labbench2-full-audit/">LABBench2 audit</a> reported five of seven literature task sets saturated or nearly so, several already at release, with little room left to distinguish stronger systems. His <a href="https://generality.org/blog/posts/labbench2-seqqa2-saturated/">companion study of SeqQA2</a>, the sequence-analysis component of Edison Scientific's biology benchmark, investigated token limits, unclear instructions and faulty tasks. Its reported 86–90 percent pass rates apply to a retained subset: 100 of 400 tasks requiring very large inputs were analysed separately, and 50 tasks with clear defects were excluded from the remaining 300. The large-input tasks also became substantially easier with larger token budgets. The wider audit used automated failure classifications that were not validated against human labels.</p>
+<p>In Generality's cyber work, James Mann <a href="https://generality.org/blog/posts/glm-flash-exploitbench/">gave GLM-5.3-Flash a budget of a billion tokens per vulnerability</a> on ExploitBench, which tests exploitation of Chrome V8 vulnerabilities. It achieved arbitrary code execution on 13 of 41 samples; the comparison results for Claude Mythos Preview averaged ten successes over three runs covering 40 vulnerabilities. Mann estimated comparable performance at about 6 percent of the cost, using discounted Flash prices and historical Mythos prices. Possible training contamination and the single Flash run also limit the inference.</p>
+<p>Pablo Romero's <a href="https://generality.org/blog/posts/exploitbench-harnesses/">follow-up experiment</a> tested two models on ten ExploitBench tasks using seven configurations of the software that manages an agent's tools and interaction loop. Six had a 250-million-token budget; the original ReAct setup instead stopped at 300 turns. Claude Code performed worst for GLM-5.3-Flash and best for DeepSeek V4.1 Flash; Codex performed well for both. A February <a href="https://metr.org/notes/2026-02-13-measuring-time-horizon-using-claude-code-and-codex/">METR study</a> found no significant time-horizon difference when it compared Claude Code with ReAct for Opus 4.5 and Codex with Triframe for GPT-5. Those were different models, tasks and measurements.</p>
+<p>Romero suggests instructions for summarising context may help explain the variation. ReAct told agents to summarise for themselves or another instance of themselves, after which some repeatedly submitted completion reports; Codex framed the summary as a handoff to another model. The experiment does not isolate that cause, and a configuration error also made ReAct summarise unusually often. Romero says the best setup will require experimentation for each model and task.</p>
+<p>Earlier research involving Mohl, Mann, Olive and colleagues at Arcadia Impact and the UK AISI offers a test of automated auditing itself. Their July arXiv paper, <a href="https://arxiv.org/abs/2607.27518"><em>Automated Transcript Analysis for Detecting Flaws in Agentic Benchmarks</em></a>, developed Inspect Scout scanners for answer access, broken tools, guessing and ambiguous answer formats. Using human labels on held-out transcripts and weights to account for sampling, the authors estimated that GPT-5.4 scanners detected 93 percent of guessing flaws and 70 percent of answer-access flaws. A Sonnet 4.6 tool-failure scanner discriminated poorly. One concrete flaw involved an agent finding an answer directly in benchmark code. The authors recommend supplementing human review, and test-set reviewers could see scanner outputs, limiting the independence of those labels.</p>
+<p>The paper draws on the Agentic Benchmark Checklist in Yuxuan Zhu and colleagues' 2025 arXiv paper <a href="https://arxiv.org/abs/2507.02825"><em>Establishing Best Practices for Building Rigorous Agentic Benchmarks</em></a>, which found inadequate tests in SWE-bench Verified and empty responses counted as successes in TAU-bench. A related approach, Xinming Tu and colleagues' arXiv paper <a href="https://arxiv.org/abs/2604.24955"><em>Who Guards the Benchmarks? Automated Auditing of LLM Agent Benchmarks</em></a>, uses BenchGuard to inspect benchmark materials. Combining findings from five models recovered 20 of 24 expert-identified issues, 83.3 percent, on 17 expert-revised tasks from BixBench Verified-50.</p>
+<p>Olive places the programme in the tradition of Apollo Research's 2024 <a href="https://www.apolloresearch.ai/science/the-evals-gap"><em>The Evals Gap</em></a>, which argued that available evaluations lacked the quality and coverage needed for consequential decisions. He thinks the situation has worsened: cyber and biology tests often leave little headroom or miss important risks, while alignment evaluations can be confounded by models recognising the test. In the LessWrong discussion, J Bostock questions whether incremental improvements to individual evaluations address a field whose useful results may come from a few exceptional projects. A Generality contractor posting as MattFisher describes the audits as testing what an evaluation measures, whether grading errors invalidate results and whether a perfect score is even possible. Olive expects better tools and their adoption to produce more accurate risk assessments, informing decisions about deployment pacing and alignment training.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.lesswrong.com/posts/mnWj4hSJxhSJY4N7N/an-update-on-generality-labs">An update on Generality Labs — Justin Olive, LessWrong</a> <span class="how">— Olive describes the lab, its audit programme and planned evaluation tools.</span></li>
+<li><a href="https://ukgovernmentbeis.github.io/inspect_evals/">Inspect Evals project site</a> <span class="how">— Describes the shared evaluation library and its maintenance by Generality Labs.</span></li>
+<li><a href="https://generality.org/blog/posts/bixbench-broken-ceiling/">Auditing BixBench: Broken Tasks and Faulty Judging Hide Saturation — Laurence Wroe, Generality Labs</a> <span class="how">— Finds flawed bioinformatics tasks and grading errors that depress measured performance.</span></li>
+<li><a href="https://generality.org/blog/posts/fortress-fragile-judges/">Auditing FORTRESS: A Multi-Judge Panel Doesn't Guarantee Robustness — Laurence Wroe, Generality Labs</a> <span class="how">— Examines judge failures and score changes in an Inspect implementation of FORTRESS.</span></li>
+<li><a href="https://generality.org/blog/posts/labbench2-full-audit/">LABBench2 Audit — Jeff Mohl, Generality Labs</a> <span class="how">— Examines task quality and performance across the LABBench2 biology benchmark.</span></li>
+<li><a href="https://generality.org/blog/posts/labbench2-seqqa2-saturated/">Auditing LABBench2: SeqQA2 is Functionally Saturated — Jeff Mohl, Generality Labs</a> <span class="how">— Analyses task defects, token budgets and performance on retained sequence tasks.</span></li>
+<li><a href="https://generality.org/blog/posts/glm-flash-exploitbench/">Is GLM-5.3-Flash Mythos-level at Cyber? — James Mann, Generality Labs</a> <span class="how">— Reports an ExploitBench run with expanded token budgets and a cost comparison.</span></li>
+<li><a href="https://generality.org/blog/posts/exploitbench-harnesses/">Does the harness matter when running Cyber Benchmarks? — Pablo Romero, Generality Labs</a> <span class="how">— Compares agent software configurations and discusses possible causes of performance differences.</span></li>
+<li><a href="https://metr.org/notes/2026-02-13-measuring-time-horizon-using-claude-code-and-codex/">Measuring time horizon using Claude Code and Codex — Nikola Jurkovic, METR</a> <span class="how">— Compares time-horizon estimates using different agent software for two frontier models.</span></li>
+<li><a href="https://arxiv.org/abs/2607.27518">Automated Transcript Analysis for Detecting Flaws in Agentic Benchmarks — Mohl et al., arXiv:2607.27518</a> <span class="how">— Tests automated transcript scanners against human labels for four benchmark flaws.</span></li>
+<li><a href="https://arxiv.org/abs/2507.02825">Establishing Best Practices for Building Rigorous Agentic Benchmarks (Agentic Benchmark Checklist) — Zhu et al., arXiv:2507.02825</a> <span class="how">— Introduces a checklist and documents flaws in prominent agentic benchmarks.</span></li>
+<li><a href="https://arxiv.org/abs/2604.24955">Who Guards the Benchmarks? Automated Auditing of LLM Agent Benchmarks (BenchGuard) — Tu et al., arXiv:2604.24955</a> <span class="how">— Evaluates automated inspection of benchmark materials against expert-identified issues.</span></li>
+<li><a href="https://www.apolloresearch.ai/science/the-evals-gap">The Evals Gap — Apollo Research</a> <span class="how">— Argues that evaluation quality and coverage fall short of decision-making needs.</span></li>
+<li><a href="https://doi.org/10.5281/zenodo.22248586">Evaluation audit of BixBench (Bioinformatics Benchmark) — Wroe, Mann and Olive, Generality Labs</a> <span class="how">— Documents audit methods, task exclusions, grading findings and revised BixBench scores.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-generality-labs-builds-inspect-auditor-to-flag-reward-hackin">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-11/generality-labs-builds-inspect-auditor-to-flag-reward-hackin</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
