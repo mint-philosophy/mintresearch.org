@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Anthropic adds election safeguards after campaign tests expose gaps — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-15">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-15">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 15 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Anthropic adds election safeguards after campaign tests expose gaps</h1>
+<p class="dek">Outside testers found Claude could assist a deceptive campaign through apparently harmless steps. New classifiers target that pattern, while the company’s 99% evenhandedness score measures a separate kind of behaviour.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 15 October 2026</span> <span class="chip">807 words · ~4 min</span></div>
+<div class="article-body">
+<p>Anthropic has added election-abuse classifiers after outside testers found Claude could help with a deceptive campaign divided into apparently harmless tasks. Its <a href="https://www.anthropic.com/news/2026-us-midterms">October 14 announcement</a>, <a href="https://x.com/ShayneRedford/status/2110790478002295019">relayed by Shayne Longpre</a> the next day, also reports political-usage estimates, outside reviews of free expression and plans to bring official voting information into Claude’s answers.</p>
+
+<p>The Institute for Strategic Dialogue and McCain Institute tested protections in the US, Israel and Brazil. They began with direct harmful requests, then separated campaigns into audience research, website construction, content drafting and distribution planning. Claude reliably refused the direct requests but could miss the purpose of the combined work. Anthropic says its new classifiers target this pattern, including fake accounts, fabricated news sites and financially motivated election schemes. It gives no detection or false-positive rates for the additions. The company also reports banning accounts behind a foreign-operated news site promoting Russian, Iranian and North Korean narratives, and accounts producing fabricated news for advertising income.</p>
+
+<p>The <a href="https://www-cdn.anthropic.com/fc1b44717c85dc068bc6ba5024219938094694bd/Claude%20Opus%205.5%20System%20Card.pdf">September Opus 5.5 system card</a> documents a related weakness. In one test, a user claimed authority to assess a live election portal’s security. Opus refused operational attack instructions but supplied preparatory technical detail, such as mapping the portal’s technology stack. Across election-integrity conversations with an adversarial simulated user, the model with the Claude.ai system prompt behaved appropriately throughout 85% of conversations, with a reported margin of six percentage points. These tests excluded production safeguards such as real-time probes and offline monitoring, and predate the newly announced classifiers. They describe model behaviour under the tested conditions, rather than the effectiveness of the full deployed service.</p>
+
+<p>A related mechanism appears in Erik Jones, Anca Dragan and Jacob Steinhardt’s 2024 paper <a href="https://arxiv.org/abs/2406.14595"><em>Adversaries Can Misuse Combinations of Safe Models</em></a>. They split harmful tasks between models, using a stronger, safety-trained model for difficult benign components and a weaker model for malicious ones. The combinations produced harmful outputs more often than either model alone. Their result concerns combinations of models; the election exercise shows why a provider also needs to examine how several requests contribute to one operation.</p>
+
+<p>The announcement’s 99% figure measures something different. Anthropic reports that score for Opus 5.5, Sonnet 5.5 and Haiku 5.5 on its own <a href="https://www.anthropic.com/news/political-even-handedness">political-evenhandedness evaluation</a>. The published Paired Prompts method tests 1,350 pairs across 150 topics, asking about each topic from opposing positions. A Claude grader assesses whether the responses offer comparable depth, engagement and evidence. The evaluation covers single replies, mainly in US political discourse, and depends on the chosen standard for balanced engagement. It provides no external certification of neutrality. Opus 5.5’s roughly 99% result was already <a href="https://mintresearch.org/newsletters/yinai/2026-09-27/#story-claude-opus-5-5-evenhandedness-prompts-dispute-over-minority">covered here on September 27</a>; the new post extends the claim to the full 5.5 family.</p>
+
+<p>The outside free-expression reviews were separate exercises. According to Anthropic, The Future of Free Speech and the Foundation for American Innovation rated most responses as strong. The former and the Collective Intelligence Project nevertheless found unsolicited caveats and counterarguments, including an opposing view inserted into an advocacy email. The foundation found that Sonnet 4.5 softened right-leaning arguments more often. That finding concerns an older model; the post does not name the models used by the other two reviewers. CIP developed its evaluation with input from more than 2,000 people in the US, UK and India. Anthropic says it has improved balance in short answers and is adjusting when Claude adds caveats. The post supplies the company’s account of these reviews, without comparative pass rates.</p>
+
+<p>The usage estimates also have a narrower meaning than a general measure of election safety. Claude classified a random sample of about 250,000 US Claude.ai conversations from September 21 to 27; about 0.51% concerned elections or voting. The analysis used the privacy-preserving approach introduced in <a href="https://arxiv.org/abs/2412.13678"><em>Clio: Privacy-Preserving Insights into Real-World AI Use</em></a>, which surfaces aggregate patterns without human reviewers reading raw conversations. A separate review of 250,000 conversations found election-policy violations in about 0.002%. That rounded rate corresponds to roughly five conversations in a sample of that size. It measures identified requests, leaving unanswered how many violations went undetected or what effects resulting campaigns had.</p>
+
+<p>Anthropic’s <a href="https://www.anthropic.com/news/2026-usage-policy-update">October 8 policy rewrite</a>, <a href="https://mintresearch.org/newsletters/yinai/2026-10-08/#story-anthropic-lifts-blanket-election-targeting-ban-and-adds-mode">covered here last week</a>, takes effect on November 12. It will remove the blanket prohibition on personalised vote and campaign targeting while retaining restrictions on deceiving voters and disguising coordinated influence operations. The newly published <a href="https://cdn.sanity.io/files/4zrzovbb/website/027b10ca405e9bb66b98c88d911b4b21a0b70123.pdf">campaign guide</a> gives concrete boundaries: speechwriting, polling analysis and volunteer scripts are permitted; fabricated grassroots support and false polling-place announcements are prohibited. It also bars undisclosed synthetic media impersonating a candidate, including material made for that candidate’s own campaign.</p>
+
+<p>Later in October, Anthropic plans to integrate Democracy Works’ state and local election information into Claude.ai answers about polling places and identification requirements. The existing TurboVote banner remains. Claude is also due to display official results on election night and afterwards, although Anthropic has not named the results provider.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://x.com/ShayneRedford/status/2110790478002295019">Update: Claude &amp; political elections (X post) — Shayne Longpre</a> <span class="how">— Selected October 15 relay, read by the Fable researcher via Bird and preserved as discovery provenance. Substantive claims checked against the October 14 primary announcement.</span></li>
+<li><a href="https://www.anthropic.com/news/2026-us-midterms">Preparing for the 2026 US midterms — Anthropic</a> <span class="how">— Primary announcement, independently reread. New classifiers and external campaign testing, enforcement cases, 5.5-family evenhandedness claim, separate outside reviews, two usage samples and planned Democracy Works/results integration.</span></li>
+<li><a href="https://www.anthropic.com/news/political-even-handedness">Measuring political bias in Claude — Anthropic (November 13, 2025)</a> <span class="how">— Independently reread Paired Prompts design, number of paired prompts/topics, automated grading and single-turn/US-context limitations. Older-model score lists removed.</span></li>
+<li><a href="https://www-cdn.anthropic.com/fc1b44717c85dc068bc6ba5024219938094694bd/Claude%20Opus%205.5%20System%20Card.pdf">System Card: Claude Opus 5.5 — Anthropic (September 22, 2026)</a> <span class="how">— Relevant sections independently read: p. 61 excludes production safeguards; p. 63 defines appropriate behaviour throughout a conversation; pp. 77–78 give election-integrity evaluation, 85% ± 6% with product system prompt, and claimed-authority example. P. 75 confirms earlier approximately 99% score. No full-report reading claimed.</span></li>
+<li><a href="https://www.anthropic.com/news/2026-usage-policy-update">2026 Usage Policy update — Anthropic (October 8, 2026)</a> <span class="how">— Primary October 8 announcement explicitly states November 12 effective date and changed personalised-targeting rule; independently reread.</span></li>
+<li><a href="https://cdn.sanity.io/files/4zrzovbb/website/027b10ca405e9bb66b98c88d911b4b21a0b70123.pdf">A Guide to Using Claude in Election Campaigns — Anthropic (October 2026)</a> <span class="how">— Full three-page guide independently read. Permitted everyday campaign tasks and prohibited deceptive uses, including undisclosed media impersonating one’s own candidate.</span></li>
+<li><a href="https://arxiv.org/abs/2412.13678">Clio: Privacy-Preserving Insights into Real-World AI Use — Tamkin et al. (arXiv, 2024)</a> <span class="how">— Primary abstract and metadata independently verified. Used only to describe Clio’s aggregation of usage without human review of raw conversations; first submitted December 18, 2024.</span></li>
+<li><a href="https://arxiv.org/abs/2406.14595">Adversaries Can Misuse Combinations of Safe Models — Jones, Dragan, Steinhardt (arXiv, 2024)</a> <span class="how">— Primary abstract and metadata independently verified. The reported mechanism splits tasks across multiple models; it is related context, not a study of this Claude deployment. First submitted June 20, 2024; revised July 1, 2024.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-27/#story-claude-opus-5-5-evenhandedness-prompts-dispute-over-minority">Doll challenges Claude's evenhandedness rule on trans rights — YiNAI, 27 Sep 2026</a> <span class="how">— Earlier approximately 99% Opus 5.5 score and methodological discussion checked in the actual hosted story, deep-history story and canonical September 28 send record.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-08/#story-anthropic-lifts-blanket-election-targeting-ban-and-adds-mode">Anthropic rewrites its rules for campaigns, hardware and model abuse — YiNAI, 8 Oct 2026</a> <span class="how">— Earlier policy-rewrite coverage and future November 12 date checked in the hosted story, deep-history story and canonical October 9 send record.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-shayne-longpre-shayneredford-twitter-anthropic-adds-election">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-15/shayne-longpre-shayneredford-twitter-anthropic-adds-election</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

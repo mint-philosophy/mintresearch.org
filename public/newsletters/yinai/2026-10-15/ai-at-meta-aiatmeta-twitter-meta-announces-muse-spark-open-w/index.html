@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Meta releases Muse Spark Open under a new commercial licence — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-15">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-15">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 15 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Meta releases Muse Spark Open under a new commercial licence</h1>
+<p class="dek">Developers can run and modify the model locally. Larger model-service businesses need a separate agreement, and stronger reported safeguards come with more refusals of harmless requests.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 15 October 2026</span> <span class="chip">775 words · ~4 min</span></div>
+<div class="article-body">
+<p>Meta <a href="https://research.meta.ai/blog/muse-spark-open">released Muse Spark Open</a> on October 15, making the weights of an 816-billion-parameter model available for developers to run and modify. Built for coding and agents that work through multiple steps, it accepts text, images, video and audio, produces text, and has a million-token context window. Meta calls it “the most capable US open-weight model to date”. The release combines local deployment options with a new licence and additional safety training for a model whose users can change its weights.</p>
+
+<p>The announcement follows Mark Zuckerberg’s August commitment to release Spark weights, <a href="https://www.cnbc.com/2026/08/10/meta-muse-glimmer-open-weight-ai.html">reported by CNBC</a>. Meta continues to reserve its strongest models for proprietary services: Alexandr Wang <a href="https://www.cnbc.com/2026/10/15/apple-meta-partner-ai.html">told CNBC at launch</a> that the open model trails <a href="https://mintresearch.org/newsletters/yinai/2026-10-12/#story-meta-releases-muse-wonder-agents-with-persistent-memory-sust">Muse Wonder</a>, and described it as a way for developers to experiment before expanding their usage. The October release documents identify Muse Spark Open as an open version of Spark without specifying an earlier numbered checkpoint.</p>
+
+<p>Only 42 billion parameters participate in generating each token, but the model’s full set of weights still needs memory. <a href="https://dev.meta.ai/resources/blog/build-with-muse-spark-open">Meta’s deployment guide</a> describes running a compressed version on two M5 Ultra Mac Studios with 512 GB each, or four machines with 256 GB each. Thunderbolt 5 connects them, and Apple’s MLX software divides the model and computation across machines. Meta demonstrated entirely local agent workflows, including changes to the Ice Cubes iOS app and video editing in DaVinci Resolve. <a href="https://huggingface.co/blog/meta-muse-spark-open">Hugging Face also reports</a> running a more heavily compressed version on a single 512 GB M3 Ultra, illustrating how storing weights at lower precision can reduce memory requirements.</p>
+
+<p>Developers can also use hosted services, including OpenRouter and Together AI, or obtain weights through the major cloud model catalogues. Download access on <a href="https://huggingface.co/meta-models/Muse-Spark-Open-816B-A42B">Hugging Face</a> requires approval and a form requesting a full legal name, date of birth and organisation. The Muse Model License permits fine-tuning, distillation and redistribution, requires the notice “Built with Muse Spark Open”, and incorporates a usage policy with restrictions including military, nuclear and espionage uses.</p>
+
+<p>A separate commercial condition applies to model services that give third parties model outputs through an API or similar interface. If the licensee or its affiliates provide such services and their aggregate gross revenue exceeds $20 million during any consecutive 12 months, the licensee must notify Meta and obtain a separate written agreement before offering Spark or its derivatives through that business. The calculation uses the group’s overall revenue. Internal use, research and other commercial activities that are not model services are exempt from this additional requirement, including products that use Spark to power features without themselves offering model services. Meta’s earlier <a href="https://raw.githubusercontent.com/meta-llama/llama-models/main/models/llama3_1/LICENSE">Llama 3.1 licence</a> required separate permission above 700 million monthly active users in the month before its release.</p>
+
+<p>Meta’s published comparisons show strengths in professional tasks and tool use, alongside weaker results than GLM 5.3 and Kimi K3 on several coding tests. On Terminal-Bench 2.1, which evaluates tasks completed through a computer terminal, its table gives Spark Open 76.4, compared with 83.9 for GLM and 85.0 for Kimi. The <a href="https://research.meta.ai/static/muse-spark-open-evaluation-methodology">evaluation methodology</a> identifies Artificial Analysis as the source for these three results, using the same Terminus 2 agent setup. Other rows combine official leaderboards, Meta’s own tests and providers’ self-reports. Meta also says its tools and prompts were not specifically tuned for competing models. The table therefore needs to be read benchmark by benchmark; it does not establish a single overall ranking.</p>
+
+<p>Meta says Spark Open met the release thresholds in its Superintelligence Scaling Framework after additional safety training, with a fuller evaluation report forthcoming. Its tests include StrongREJECT v2, an internal adaptation of a public benchmark that probes 202 prohibited behaviours with several kinds of attack, including an adaptive attacker that can continue the conversation. In the reported FORTRESS comparison, Spark Open gave the least harmful responses among the models listed but also refused the most harmless requests: 17.4% of benign prompts, against 2.7% for Kimi K3. Meta’s methodology defines that over-refusal measure explicitly; the result describes a cost to usefulness alongside the stronger safeguards.</p>
+
+<p>People holding weights can retrain refusal behaviour away, as Meta acknowledges in its <a href="https://research.meta.ai/blog/developing-capable-models-responsibly">October 2 framework update</a>. Xiangyu Qi and colleagues demonstrated the vulnerability in the 2023 arXiv paper <a href="https://arxiv.org/abs/2310.03693"><em>Fine-tuning Aligned Language Models Compromises Safety, Even When Users Do Not Intend To!</em></a>: ten adversarial training examples were enough to compromise GPT-3.5 Turbo’s safeguards. Rishub Tamirisa and colleagues’ arXiv paper <a href="https://arxiv.org/abs/2408.00761"><em>Tamper-Resistant Safeguards for Open-Weight LLMs</em></a>, first posted in 2024, developed protections that survived hundreds of fine-tuning steps in their tests. Meta’s release materials evaluate the released checkpoint and warn that modifications can degrade safety; they do not report whether Spark Open’s safeguards survived adversarial fine-tuning.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://x.com/AIatMeta/status/2110779754274292212">AI at Meta on X: Muse Spark Open release thread</a> <span class="how">— Selected announcement thread, resolved by the Fable researcher to Meta’s primary release materials; retained as discovery provenance.</span></li>
+<li><a href="https://research.meta.ai/blog/muse-spark-open">Introducing Muse Spark Open, The Most Capable US Open-Weight Model to Date (Meta AI Research)</a> <span class="how">— Primary release date, model size and modalities, attributed US capability claim, local agent demonstrations, hosted availability and statement that the Scaling Framework release thresholds were met; independently reread in the editorial pass.</span></li>
+<li><a href="https://huggingface.co/meta-models/Muse-Spark-Open-816B-A42B">Muse Spark Open model card and Muse Model License (Hugging Face)</a> <span class="how">— Primary licence, manual gating and form fields, model-card benchmark values and safety qualification. Section 3 measures aggregate gross revenue across licensee and affiliates, with a non-MaaS component-use exception; independently reread.</span></li>
+<li><a href="https://research.meta.ai/static/muse-spark-open-evaluation-methodology">Muse Spark Open Evaluation Methodology (PDF)</a> <span class="how">— Primary eight-page methodology: common Terminus 2 setup and Artificial Analysis source for the three reported coding scores; mixed evidence elsewhere; third-party prompt/harness limitation; StrongREJECT v2 attack design; FORTRESS benign-refusal metric definition. Independently reread.</span></li>
+<li><a href="https://dev.meta.ai/resources/blog/build-with-muse-spark-open">Build with Muse Spark Open (Meta developer blog)</a> <span class="how">— Primary Mac configurations, NVFP4 compression, Thunderbolt 5 and distributed MLX computation; independently reread.</span></li>
+<li><a href="https://huggingface.co/blog/meta-muse-spark-open">Welcome Muse Spark Open (Hugging Face blog)</a> <span class="how">— Primary technical explanation of active versus resident weights and hands-on compressed-model run on a single 512 GB M3 Ultra; independently reread.</span></li>
+<li><a href="https://www.cnbc.com/2026/10/15/apple-meta-partner-ai.html">Apple and Meta team up to make Muse AI model run on Mac computers (CNBC, Oct 15)</a> <span class="how">— Wang’s interview describing Muse Wonder as more capable and the open model as a starting point for developers. Retained from the researcher’s full reading and exact extract; editorial refetch was blocked. Hardware prices and promotional quotations were removed.</span></li>
+<li><a href="https://www.cnbc.com/2026/08/10/meta-muse-glimmer-open-weight-ai.html">Meta to open source its most powerful AI model as it takes swipe at OpenAI, Anthropic (CNBC, Aug 10)</a> <span class="how">— Zuckerberg’s August promise to release Spark weights, retained from the researcher’s full reading and extract. The article does not identify this new checkpoint as Spark 1.2; editorial refetch was blocked.</span></li>
+<li><a href="https://research.meta.ai/blog/developing-capable-models-responsibly">Developing Capable Models Responsibly (Meta Superintelligence Scaling Framework update, Oct 2)</a> <span class="how">— Primary October 2 acknowledgement that holders can modify weights and remove refusals; independently reread.</span></li>
+<li><a href="https://raw.githubusercontent.com/meta-llama/llama-models/main/models/llama3_1/LICENSE">Llama 3.1 Community License Agreement</a> <span class="how">— Prior licence’s 700 million monthly-user threshold, tied to the release date; independently reread.</span></li>
+<li><a href="https://arxiv.org/abs/2310.03693">Fine-tuning Aligned Language Models Compromises Safety, Even When Users Do Not Intend To! (Qi et al.)</a> <span class="how">— Verified primary abstract, authorship, title and October 5, 2023 submission date. Used only for the ten-example fine-tuning result; no claim to have read the full paper.</span></li>
+<li><a href="https://arxiv.org/abs/2408.00761">Tamper-Resistant Safeguards for Open-Weight LLMs (Tamirisa et al.)</a> <span class="how">— Verified primary abstract, authorship, title and August 1, 2024 first submission date (latest revision February 10, 2025). Used for the reported tamper-resistance research precedent; no claim to have read the full paper.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-12/#story-meta-releases-muse-wonder-agents-with-persistent-memory-sust">YiNAI 12 October 2026: Meta releases Muse Wonder</a> <span class="how">— Verified published context for the distinct proprietary Muse Wonder model. Canonical send record confirms the October 12 issue was sent October 13; exact hosted anchor checked.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-ai-at-meta-aiatmeta-twitter-meta-announces-muse-spark-open-w">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-15/ai-at-meta-aiatmeta-twitter-meta-announces-muse-spark-open-w</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
