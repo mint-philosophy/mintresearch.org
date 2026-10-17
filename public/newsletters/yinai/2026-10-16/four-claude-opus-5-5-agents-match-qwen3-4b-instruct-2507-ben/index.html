@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Athanor approaches Qwen3-4B-Instruct’s average on six kinds of tests — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-16">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-16">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 16 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Athanor approaches Qwen3-4B-Instruct’s average on six kinds of tests</h1>
+<p class="dek">Four Claude agents combined established training methods over 104 hours in prepared infrastructure. Later measurements found approximate average parity with Qwen3-4B-Instruct-2507, with weaker mathematics and logic.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 16 October 2026</span> <span class="chip">890 words · ~4 min</span></div>
+<div class="article-body">
+<p>Four AI agents trained a small language model to roughly the average benchmark performance of its official instruction-following release. Yufa Zhou of ByteDance and Duke University and seven colleagues report the experiment in <a href="https://arxiv.org/abs/2610.21055"><em>Athanor: An Agent-Native System for Autonomous Post-Training Research</em></a>, submitted to arXiv on October 15. Working from Qwen3-4B-Base for 104 hours, four Claude Opus 5.5 agents developed one model across several capabilities. In measurements after the campaign, its average on tests concealed from the agents was 48.2, against 47.9 for Qwen3-4B-Instruct-2507. The small gap was within statistical uncertainty.</p>
+<p>The researchers built <a href="https://arxiv.org/pdf/2610.21055#page=6">Athanor’s supporting environment</a> before the campaign. Each agent received an eight-GPU server, public datasets screened for benchmark overlap, and editable starter code for several training methods. Services launched jobs, stored models and preserved experiment records across interrupted sessions. An evaluator outside the agents’ workspace used fixed grading rules that they could not alter. The agents chose data mixtures and experiments, changed training code and interpreted results; the authors say humans supplied no research advice. Athanor handled execution while the agents decided what to try.</p>
+<p>The <a href="https://arxiv.org/pdf/2610.21055#page=28">evaluation covered six capabilities</a>: contest mathematics, logic puzzles, programming, knowledge, instruction following and sequences of actions in simulated household tasks. Each contributed equally to the average. Development tests returned scores and graded answers to guide further work. The hidden suite tested corresponding abilities using later mathematics competitions and coding problems, separate logic puzzles, different knowledge and instruction-following tests, and two unseen ALFWorld household-task types. The submitted model was chosen using development scores alone.</p>
+<p>Those scores come from a <a href="https://arxiv.org/pdf/2610.21055#page=8">remeasurement after training ended</a>. During the campaign, most tasks used deterministic answer generation and shorter output limits; the submission’s averages were slightly below the official instruction model’s. The authors subsequently increased output allowances and sampled answers under shared settings because Qwen’s reasoning models frequently exhausted the original limits before answering. That put the submission slightly ahead of the instruction model, with uncertainty intervals still spanning zero. The longer evaluation also showed that Qwen’s two reasoning releases remained stronger. Approximate parity on these suites does not establish equal performance on other tasks.</p>
+<p>The agents reached that level by <a href="https://arxiv.org/pdf/2610.21055#page=12">combining established training methods</a>. They first trained on public examples, then rewarded correct answers, combined the weights of models developed by teammates and trained again on their own models’ successful answers. For that last stage, they generated several solutions to each problem and retained the shortest correct one. The final submission combined models from two agents and incorporated training performed by all four. Averaging trained weights has a precedent in Mitchell Wortsman and colleagues’ <a href="https://proceedings.mlr.press/v162/wortsman22a.html">2022 study of model soups</a>, which Athanor cites.</p>
+<p>One <a href="https://arxiv.org/pdf/2610.21055#page=13">agent’s diagnosis of repeated text</a> shows the research involved. Its model often became trapped in repetition when always choosing the most likely next token. Training with randomly sampled answers seldom reproduced those loops, so rewarding correct sampled answers did little to fix them. The agent made each training answer use the deterministic procedure with one-in-four probability. Looping answers then received worse rewards than successful alternatives. Its next model improved, and teammates adopted the change. The agent simultaneously rebuilt its training problems, so the episode does not isolate the decoding change’s effect.</p>
+<p>Cooperation followed <a href="https://arxiv.org/pdf/2610.21055#page=28">an operator’s clarification</a>. Almost sixteen hours into the campaign, the operator told the agents that the result would count the team’s best submission, a rule omitted from their initial documents. They began sharing notes and models almost immediately. The operator also replaced lost servers, extended the available time and eventually stopped the campaign as progress slowed. The authors estimate about $11,800 for the campaign’s GPU time and agent inference, pricing GPU use at prevailing rental rates. This excludes the cost of preparing the system.</p>
+<p>The closest predecessors already automated substantial parts of training. Ben Rank and colleagues’ <a href="https://arxiv.org/abs/2603.08640">PostTrainBench</a> gave agents one GPU and ten hours to improve a model on an individual benchmark. Intology’s <a href="https://intology.ai/blog/scaling-automated-post-training">Locus experiments</a> extended that approach to much larger budgets and parallel experiments, retaining separate benchmark targets. Athanor cites both. Its distinctive test combines several capabilities in one submitted model and checks transfer to concealed tasks. It also asks a different question from <a href="https://mintresearch.org/newsletters/yinai/2026-10-14/#story-gemini-4-cuts-task-gaming-over-90-while-evaluation-awareness">DeepMind’s analysis of its overall research-automation trend</a>: success on this training task does not measure acceleration across a laboratory.</p>
+<p>The <a href="https://arxiv.org/pdf/2610.21055#page=9">average conceals uneven performance</a>. Stronger ALFWorld results offset weaker mathematics and logic; removing household tasks from the campaign comparison leaves the submission behind. The agents could not consult external teacher models, but their dominant training corpus, <a href="https://huggingface.co/datasets/a-m-team/AM-Thinking-v1-Distilled">AM-Thinking-v1-Distilled</a>, already contained answers produced by a stronger model. The authors screened datasets for text overlap and found no hidden-test material in agent-session records. Their final audit could fully scan only 61 of 108 training datasets ancestral to the submission; others were lost with servers or exceeded scanning limits.</p>
+<p>Zhou and colleagues identify <a href="https://arxiv.org/pdf/2610.21055#page=17">one campaign with one base model and one agent model</a> as the experiment’s scope. The four submissions shared work and are not independent replications. Without a comparison campaign that prohibited sharing, the experiment cannot isolate the benefit of collaboration. All four agents chose the same dominant corpus early, rarely checked whether its answers were correct, and abandoned alternative data lineages after disappointing results. In the submission’s final two days of development, gains came from recombining existing models and training on their outputs, without adding new training data.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2610.21055">Athanor: An Agent-Native System for Autonomous Post-Training Research, Zhou et al. (arXiv, October 15, 2026)</a> <span class="how">— Primary arXiv metadata rechecked during editing: eight named authors, October 15, 2026 at 00:56:33 UTC, and v1 only. The selected canonical URL remains unchanged.</span></li>
+<li><a href="https://arxiv.org/pdf/2610.21055">Athanor full paper, 36 pages, version 1</a> <span class="how">— Reporter read the complete 36-page v1 paper. Editor rechecked the title page; sections 3-5, 7-8; Table 1; Appendix A; and Appendix C including Tables 6-8 and the final-measurement specification. Supports infrastructure, evaluation protocols, uncertainty, training sequence, operator actions, compute estimate, incomplete dataset audit and replication limits. Saved PDF SHA-256: c384b3d4c399169f7e728aac68d64e812e723e9930a46a2ec22f8ca79a68da36.</span></li>
+<li><a href="https://proceedings.mlr.press/v162/wortsman22a.html">Model soups: averaging weights of multiple fine-tuned models improves accuracy without increasing inference time, Wortsman et al., ICML 2022</a> <span class="how">— Read primary proceedings abstract and bibliographic record, not full paper. Supports established precedent for averaging fine-tuned weights; Athanor explicitly cites it as reference 67.</span></li>
+<li><a href="https://arxiv.org/abs/2603.08640">PostTrainBench: Can LLM Agents Automate LLM Post-Training?, Rank et al.</a> <span class="how">— Read primary abstract and metadata plus benchmark organizers’ live methodology page. Supports one-base-model/one-benchmark, one-H100, ten-hour task definition; no direct numerical leaderboard comparison with Athanor.</span></li>
+<li><a href="https://intology.ai/blog/scaling-automated-post-training">Scaling Automated Post-Training, Intology, August 3, 2026</a> <span class="how">— Read indexed primary article sections on PostTrainBench+, case studies and limitations; retrieved the site’s article JavaScript asset after plain HTML returned only an application shell. Supports larger-budget parallel experiments retaining separate benchmark targets. Not an independent reaction to Athanor.</span></li>
+<li><a href="https://huggingface.co/datasets/a-m-team/AM-Thinking-v1-Distilled">AM-Thinking-v1-Distilled dataset card, a-m-team</a> <span class="how">— Read full primary dataset card. Verifies that the training corpus contains answers generated by a stronger teacher; no claim of inspecting all dataset rows.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-14/#story-gemini-4-cuts-task-gaming-over-90-while-evaluation-awareness">Argon’s task-gaming scores fall as awareness of testing rises, Yesterday in AI, October 14, 2026</a> <span class="how">— Read complete published expansion and verified its deep_edition entry in canonical deep_history.json. Used only for related research-automation context, not as prior coverage of Athanor.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-four-claude-opus-5-5-agents-match-qwen3-4b-instruct-2507-ben">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-16/four-claude-opus-5-5-agents-match-qwen3-4b-instruct-2507-ben</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
