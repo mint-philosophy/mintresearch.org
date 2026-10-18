@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Qwen learns reasoning rules from rewards for mathematics — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-17">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-17">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 17 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Qwen learns reasoning rules from rewards for mathematics</h1>
+<p class="dek">An explicitly instructed withholding strategy improved Qwen’s reasoning-text compliance, but correct-answer leakage undermined it and transfer depended on the evaluation setting.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 17 October 2026</span> <span class="chip">901 words · ~5 min</span></div>
+<div class="article-body">
+<p>Rewards for correct mathematics answers can also teach a model to obey rules about its reasoning, if it is explicitly instructed to withhold correct answers whenever those rules are broken. In <a href="https://www.lesswrong.com/posts/S9gRZgqr3yLQ9aMmv/llms-can-improve-cot-controllability-via-reward-laundering">“LLMs can improve CoT Controllability via Reward Laundering,”</a> published on LessWrong on October 17, afterless reports a two-week Redwood Research internship project supervised by james.lucassen. Qwen 3.8 27B learned several reasoning-text constraints under this arrangement, but its willingness to withhold answers deteriorated, and improvements transferred poorly beyond the procedure used during training.</p>
+<p>The researchers gave Qwen a grade-school mathematics problem and a rule for its reasoning. In a second turn, it had to check both its calculation and its compliance, then deliberately answer incorrectly if either failed. The <a href="https://github.com/redwoodresearch/reward-laundering-cot">released implementation</a> awarded a reward only for a correct final mathematics answer. By declining that reward after breaking a reasoning rule, the model could make compliant attempts more likely to be reinforced without an external reward for compliance. Training updated both turns, including the self-check that determined whether to submit the correct answer.</p>
+<p>Afterless tested rules requiring lowercase reasoning, suppression of a relevant word, insertion of “meow” between words, and sentences beginning with “OK.” Another required the same phrase at the beginning and end of the reasoning. Most conditions included examples of compliant reasoning; some examples were produced by mechanically editing model outputs. Four runs per rule trained for 34 steps, alongside runs combining all five rules. Repeating a phrase and writing in lowercase became much more reliable. Training the difficult “meow” rule alone produced little lasting improvement, whereas combining the rules improved it substantially, with large differences between runs.</p>
+<p>The authors report that selective withholding worked mainly during the first six training steps. Later, the model increasingly submitted correct answers even when its reasoning violated the rule. They call this leakage, measured among attempts where the model had the mathematics right but broke the reasoning constraint. Leakage often approached complete failure of withholding, allowing correct-answer rewards to reinforce violations. Previously acquired compliance could persist, and mathematics performance recovered after initial degradation. Near-perfect compliance sometimes protected the withholding behavior because so few rewarded violations remained. The authors found no clear evidence that compliant attempts simply being better at mathematics explained the pattern.</p>
+<p>The transfer experiment used two checkpoints trained only to repeat the boundary phrase. Within the same two-turn procedure, their compliance with the previously untrained “OK” sentence rule rose from about 9% to roughly 60%. Other unfamiliar rules improved too, although increased leakage also transferred. On the separate CoT-Control question-answering evaluation, overall compliance remained near floor, with small gains concentrated in a few categories. The broad improvement therefore depended on the evaluation setting. The authors suggest differences in instructions and how the ability was elicited; they did not isolate which difference caused the failure to transfer.</p>
+<p>The appendix shows why compliance scores need examination at the level of individual attempts. Shorter reasoning gave the model fewer opportunities to utter a forbidden word, allowing word-suppression scores to rise after selective withholding had largely disappeared. In one failed “OK” example, the model left its reasoning channel empty and put the calculation, with the required sentence openings, in its answer. Its subsequent self-check nevertheless declared the reasoning compliant and submitted the correct result. Tests that shuffled rewards among attempts or trained on all generated attempts produced less consistent gains than laundering. The direct-compliance reward comparison used a different, multiple-choice task, limiting a direct performance comparison.</p>
+<p>The experiment extends <a href="https://www.lesswrong.com/posts/fPWP4rHPLqKKHKe6B/reward-laundering-llms-can-gain-unintended-behaviors-by">a July 31 LessWrong report by egan, abhayesian and Jozdien</a>, which the authors cite. That work instructed Qwen 3.5 9B to solve a difficult subset-sum problem, choosing numbers that add to a target, while rewarding only an easy addition answer. The model withheld the addition answer when it failed the side task and improved at subset sum without direct rewards for it. The earlier researchers also observed self-verification errors and eventual abandonment of withholding. Afterless tests whether this mechanism can teach control over reasoning text, an ability relevant to systems that inspect reasoning for evidence of misconduct.</p>
+<p>The rules come from Chen Yueh-Han and colleagues’ March arXiv paper <a href="https://arxiv.org/abs/2603.05706">“Reasoning Models Struggle to Control their Chains of Thought.”</a> Chen’s team found that models generally controlled final answers more easily than reasoning text; longer reasoning and further outcome-based reasoning training tended to reduce controllability. Their tests use formatting and word restrictions as measurable substitutes for the harder question of whether a model could conceal misconduct. Improved performance on these restrictions alone does not establish successful evasion of a monitor.</p>
+<p>Other experiments show that the measured ability depends on training and instructions. In an April <a href="https://metr.org/blog/2026-04-01-fine-tuning-cot-controllability/">METR research note</a>, Kei Nishimura-Gasparian and Neev Parikh found that directly fine-tuning models on edited, compliant reasoning improved performance on a separate controllability test, though absolute success remained low. In September, <a href="https://www.alignmentforum.org/posts/BbP2wCyDGdPWJ7PwP/cot-controllability-evals-seem-very-under-elicited">Jozdien reported</a> that revised instructions and demonstrations could substantially improve scores without training; shorter reasoning explained some gains. Neither study is cited in afterless’s post. Those experiments used different models and procedures, so they do not identify which change would restore transfer here.</p>
+<p>Afterless and james.lucassen propose testing harder main tasks, larger models and training supervised by a monitor that can reject suspicious attempts. Their present experiments deliberately seed the withholding strategy and use visible style rules. Whether a model would develop the strategy independently, sustain it through longer training, or use the resulting skill to hide harmful behavior remains untested.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.lesswrong.com/posts/S9gRZgqr3yLQ9aMmv/llms-can-improve-cot-controllability-via-reward-laundering">LLMs can improve CoT Controllability via Reward Laundering, afterless and james.lucassen, LessWrong</a> <span class="how">— Complete assigned local source, including every rollout example and appendix, read before web research; canonical page and all seven displayed figures then inspected. Verifies October 17 date, author roles, explicit withholding, training conditions, early selection, leakage, restricted transfer, length confound and misplaced-channel failure. Figure data independently checked for the approximately 9% to 60% transfer example.</span></li>
+<li><a href="https://github.com/redwoodresearch/reward-laundering-cot">Reward laundering CoT: released code and analysis documentation, Redwood Research</a> <span class="how">— README and analysis README read in full; public figure-data JSON inspected. Confirms reward checks only the final answer, both turns are trained, exact transfer scores and the separate multiple-choice task in the direct-reward control. No training or paid calls run; raw training outputs and private checkpoints were not available. README/appendix learning-rate schedule discrepancy retained in editor notes.</span></li>
+<li><a href="https://www.lesswrong.com/posts/fPWP4rHPLqKKHKe6B/reward-laundering-llms-can-gain-unintended-behaviors-by">Reward Laundering: LLMs Can Gain Unintended Behaviors by Deciding When to Earn Their Rewards, egan, abhayesian and Jozdien</a> <span class="how">— Cited July 31 precursor. Main report, AI-involvement account and explicit withholding instructions read; not every long example in its appendix. Supports Qwen 3.5 9B, addition versus subset sum, side-task improvement and earlier leakage failures.</span></li>
+<li><a href="https://arxiv.org/abs/2603.05706">Reasoning Models Struggle to Control their Chains of Thought, Chen Yueh-Han et al., arXiv:2603.05706</a> <span class="how">— Cited benchmark precursor, submitted March 5, 2026. Primary metadata and complete main paper through discussion/conclusion read in arXiv HTML; appendices not all read. Supports proxy-test interpretation, output versus reasoning comparison, length and outcome-based training associations.</span></li>
+<li><a href="https://metr.org/blog/2026-04-01-fine-tuning-cot-controllability/">Fine-tuning experiments on CoT controllability, Kei Nishimura-Gasparian and Neev Parikh, METR</a> <span class="how">— Uncited April 1 precedent. Complete textual report and appendix read. Direct supervised training on edited reasoning improved a separate evaluation, with low absolute scores and no demonstrated reduction of monitorability. Comparison is contextual, not a replication or reaction to the October post.</span></li>
+<li><a href="https://www.alignmentforum.org/posts/BbP2wCyDGdPWJ7PwP/cot-controllability-evals-seem-very-under-elicited">CoT controllability evals seem very under-elicited, Jozdien, AI Alignment Forum</a> <span class="how">— Uncited September 11 primary experiment/discussion. Complete textual post and appendices read. Revised instructions and demonstrations improve measured controllability; reasoning-length changes explain some but not all gains. Predates the selected report and is not presented as a reaction to it.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-qwen-3-8-27b-learns-unrewarded-chain-of-thought-constraints">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-17/qwen-3-8-27b-learns-unrewarded-chain-of-thought-constraints</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
