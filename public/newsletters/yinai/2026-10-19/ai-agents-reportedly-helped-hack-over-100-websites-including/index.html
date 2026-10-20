@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>AI agents helped one operator break into more than 100 company sites — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-19">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-19">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 19 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">AI agents helped one operator break into more than 100 company sites</h1>
+<p class="dek">NorForge found more than twenty unsecured control panels for the open-source Cairn engine; one Chinese-speaking operator ran over 1,100 autonomous intrusion projects for about $50 per successful break-in.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 19 October 2026</span> <span class="chip">1005 words · ~5 min</span></div>
+<div class="article-body">
+<p>NorForge, an AI-security company with offices in Palo Alto and in Sandnes, Norway, published <a href="https://norforge.com/blog/inside_cairn">"Inside Cairn: Open Windows into massive AI-Driven Cyber Operations"</a> on October 19, under the byline of its founding researcher Snorre Fagerland. The report describes more than twenty control panels for Cairn, an open-source multi-agent engine, that were reachable on the public internet with no login and that criminals were using to run intrusions with little human involvement. Every cluster NorForge examined looked financially motivated, with no obvious state-sponsored activity. The busiest operator wrote its instructions in Chinese and ran more than 1,100 attack projects across 14 panels. The same day, <a href="https://www.reuters.com/legal/government/how-one-hacker-used-ai-agents-few-thousand-dollars-break-into-scores-sites-2026-10-19/">Reuters reported</a>, in an exclusive by Raphael Satter, that this operator began on September 25, tried to break into more than 1,200 sites, and got into sites belonging to more than 100 companies. NorForge named no victims; Reuters identified Deere, SharkNinja and Cummins by independently reviewing the exposed Cairn data.</p><p>Cairn describes itself on <a href="https://github.com/oritera/Cairn">GitHub</a> as a "general-purpose problem-solving engine" that, given a start point and a goal, searches for a path between them. Its author, who posts as le1xia0, built it on a blackboard design: agents write facts they confirm and intents they plan to a shared board, a human operator can add hints, and the workers coordinate only through that board. It supports Claude Code, Codex and Pi as the underlying agent, carries about 4,000 stars, and ships under a license that requires explicit authorization to use. NorForge does not explain why so many panels were exposed, but the project's recommended Docker setup starts the server on all network interfaces with no authentication layer, and the firm's own indicators list panels answering on that default port.</p><p>The Chinese-language cluster, which NorForge labels AIA0001, was the most active. Its targets were mostly e-commerce sites in the United States, Japan and Australia, chosen by an automated pipeline that ranked candidates by traffic and used the browser-automation tool Playwright to confirm that orders could actually be placed before passing a site to Cairn. A quirk gave the pipeline away: a buggy routine kept stripping the leading letter from domain names, turning "wholesale" into "holesale". The tasks told the agents to plant a file-upload backdoor rather than a command-running one, and NorForge confirmed one real intrusion by fetching the backdoor at a large hardware-parts vendor and finding it live. Every AIA0001 task ran under a worker the operator had named claudecode_deepseek-v4.1-flash, which NorForge reads as the Claude Code harness software driving DeepSeek's 4.1 Flash model, an open-weights model released in September. A leftover note showed the setup had been repurposed from a Tencent capture-the-flag contest; NorForge says Tencent had nothing to do with the operation.</p><p>NorForge puts the average cost of a task at around $5 once early failures are counted, and Fagerland told Reuters the whole campaign had burned roughly $5,000 in tokens, about $50 for each successful break-in. Success itself was not common: NorForge estimates that about one project in ten met its goal, taking a little under 23 hours and generating around 140 confirmed findings along the way, though one project ran more than five days. A second, English-language cluster was blunter about its aims, sometimes giving its agents no instruction beyond an order to fetch credit cards or cryptocurrency.</p><p>Open panels cut both ways. Running the secret-scanner Trufflehog over the exposed data, NorForge pulled out hundreds of credentials, 11% of which it verified as valid, and found that the panels also exposed the full administrative controls of the harness. Some of the exposed instances were legitimate red-team engagements, which means the openness put security firms' own clients at risk. NorForge's broader reading of the episode is that the attackers were themselves careless with the tools: "The attackers are not well prepared for this technology either," the report says.</p><p>Reuters supplied the names and the corporate responses that NorForge left out, saying it could not determine how much data was actually taken. Deere said it had taken remediation steps and had no indication that sensitive information was accessed. SharkNinja said a standalone product-support site was hit and the threat contained. Cummins, in a statement to <a href="https://www.theverge.com/ai-artificial-intelligence/1013643/ai-agents-hack-john-deere-shark-ninja-cummins">The Verge</a> from spokesperson Melinda Koski, said it was investigating a potential attack on a site run by one of its third-party vendors. Two smaller businesses also acknowledged a compromise.</p><p>Cairn's author has argued publicly that the tool is being blamed for its users. In an <a href="https://x.com/le1xia0/status/2108155057816641747">October 8 thread</a> responding to reports that a related tool had been used against South Korean banks, he wrote that Cairn "was never a 'hacking tool'" and that "misuse is a human decision, not a feature of the engine," calling penetration testing merely the first domain used to validate a general search engine. Those posts predate the NorForge report. NorForge's own search began from a <a href="https://gambit.security/blog-posts/autonomous-ai-agents-online-retailers-25-a-company">September report by Gambit Security</a>, which found Cairn running the same DeepSeek model at the exploitation stage of a retail-skimming campaign that lifted more than 600,000 card records.</p><p>Autonomous website intrusion by AI agents is a couple of years old as a demonstrated capability, and the Cairn campaigns show how cheap it has become. A 2024 paper by Richard Fang, Daniel Kang and colleagues, <a href="https://arxiv.org/abs/2402.06664">"LLM Agents can Autonomously Hack Websites"</a>, showed that agents could perform blind database extraction and SQL injection without knowing the flaw in advance, but only with frontier models of the GPT-4 generation; a <a href="https://arxiv.org/abs/2406.01637">follow-up</a> introduced teams of agents that could exploit real zero-day web flaws. Last November, <a href="https://www.anthropic.com/news/disrupting-AI-espionage">Anthropic reported</a> what it called "the first documented case of a large-scale cyberattack executed without substantial human intervention," attributing it to a Chinese state group and estimating that AI did 80 to 90 percent of the work. The Cairn case moves the same pattern to ordinary criminals running a cheap open-weights model at scale. Security practitioners reading the report fixed on that shift: one, <a href="https://x.com/pinglin02/status/2112163797213282577">Ping-Lin Chang</a>, noted that "Twenty-three hours used to be a lot of attention" for a small company's forgotten support site, and now costs almost nothing.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://norforge.com/blog/inside_cairn">Inside Cairn: Open Windows into massive AI-Driven Cyber Operations — Snorre Fagerland, NorForge</a> <span class="how">— Primary source, read in full. Supplies the &gt;20 exposed panels, the AIA0001 cluster (1,100+ projects, 14 panels, targeting, traffic/Playwright pipeline, 'holesale' normalizer bug, uploader-shell demand, the verified live webshell at a hardware-parts vendor, claudecode_deepseek-v4.1-flash worker, Tencent CTF repurposing), AIA0002's credit-card/crypto aims, the ~10% success rate, &lt;23-hour average, 140 facts/project and five-day outlier, the ~$5-per-task figure, the Trufflehog 11%-valid secrets and exposed admin controls, exposed red-team engagements, and the 'attackers are not well prepared' quote.</span></li>
+<li><a href="https://www.reuters.com/legal/government/how-one-hacker-used-ai-agents-few-thousand-dollars-break-into-scores-sites-2026-10-19/">How one hacker used AI agents and a few thousand dollars to break into scores of sites (EXCLUSIVE) — Raphael Satter, Reuters</a> <span class="how">— Primary source, read in full. Supplies the September 25 start, &gt;1,200 sites attempted, 100+ companies compromised, the independent victim identification (Deere, SharkNinja, Cummins), the ~$5,000 total / ~$50-per-hack cost, the ~23-hour figure, Deere's and SharkNinja's responses, and the caveat that Reuters could not determine how much data was extracted.</span></li>
+<li><a href="https://www.theverge.com/ai-artificial-intelligence/1013643/ai-agents-hack-john-deere-shark-ninja-cummins">A hacker broke into John Deere and SharkNinja with an army of AI agents — Emma Roth, The Verge</a> <span class="how">— Assigned relay, read in full. Source for the Cummins statement to The Verge from spokesperson Melinda Koski about a third-party-vendor site.</span></li>
+<li><a href="https://github.com/oritera/Cairn">oritera/Cairn — GitHub</a> <span class="how">— Primary source, read in full. Source for Cairn's 'general-purpose problem-solving engine' self-description, the blackboard fact/intent/hint design, the Claude Code/Codex/Pi backends, ~4,000 stars, the explicit-authorization disclaimer, and the recommended Docker setup binding an unauthenticated server to all interfaces.</span></li>
+<li><a href="https://x.com/le1xia0/status/2108155057816641747">le1xia0 on X — Cairn author thread (Oct 8)</a> <span class="how">— Primary source, read in full. Source for the author's 'was never a hacking tool' and 'misuse is a human decision, not a feature of the engine' statements, and the fact that the thread responded to the South Korea/ARTEX reports before NorForge published.</span></li>
+<li><a href="https://gambit.security/blog-posts/autonomous-ai-agents-online-retailers-25-a-company">AI Agents Are Hacking Online Retailers for $25 a Company — Gambit Security</a> <span class="how">— Precursor, read in full. The September report NorForge credits as its starting point; source for Cairn running DeepSeek v4.1 Flash at the exploitation stage and the 600,000-plus card records.</span></li>
+<li><a href="https://arxiv.org/abs/2402.06664">LLM Agents can Autonomously Hack Websites — Fang, Bindu, Gupta, Zhan, Kang (arXiv)</a> <span class="how">— Precedent. Source for the 2024 demonstration that agents could do blind database extraction and SQL injection without knowing the flaw, achievable then only with GPT-4-class models. Not cited by the assigned sources.</span></li>
+<li><a href="https://arxiv.org/abs/2406.01637">Teams of LLM Agents can Exploit Zero-Day Vulnerabilities (HPTSA) — Zhu, Kellermann, Gupta et al. (arXiv)</a> <span class="how">— Precedent. Source for the claim that multi-agent teams could exploit real zero-day web vulnerabilities. Not cited by the assigned sources.</span></li>
+<li><a href="https://www.anthropic.com/news/disrupting-AI-espionage">Disrupting the first reported AI-orchestrated cyber espionage campaign — Anthropic</a> <span class="how">— Precedent. Source for the 'first documented case' quote, the Chinese-state attribution, and the 80-90% AI-performed estimate; used to contrast state espionage with the criminal, open-weights Cairn case. Not cited by the assigned sources.</span></li>
+<li><a href="https://x.com/pinglin02/status/2112163797213282577">Ping-Lin Chang on X</a> <span class="how">— Substantive reaction, read in full. Source for the 'Twenty-three hours used to be a lot of attention' observation on how the economics change which targets are worth attacking.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth and Claude. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-ai-agents-reportedly-helped-hack-over-100-websites-including">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-19/ai-agents-reportedly-helped-hack-over-100-websites-including</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
