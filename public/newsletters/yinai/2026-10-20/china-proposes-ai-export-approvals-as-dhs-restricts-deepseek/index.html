@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>DeepInfer and open models amid tighter AI rules — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-20">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-20">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 20 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">DeepInfer and open models amid tighter AI rules</h1>
+<p class="dek">Their October 20 Interconnects essay examines cheaper model serving, permissive licenses and training disclosures alongside China’s export proposals and the US DeepSeek order.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 20 October 2026</span> <span class="chip">849 words · ~4 min</span></div>
+<div class="article-body">
+<p>Florian Brand and Nathan Lambert identify DeepSeek’s release of DeepInfer, its software for running trained models, as one of the most consequential recent open AI releases. In their October 20 <a href="https://www.interconnects.ai/p/latest-open-artifacts-25-deepseek">Interconnects roundup</a>, they expect outside providers to adopt the software and lower prices or increase margins. Their five model recommendations emphasize efficient reasoning, permissive licenses and disclosure of training methods, as governments seek greater control over which models can be shared and used.</p>
+<p>China's Ministry of Commerce and Ministry of Science and Technology <a href="https://www.mofcom.gov.cn/zcfb/dwmygl/art/2026/art_61446ab4beee4f63973d4d0ab3097648.html">began temporary export registration on October 16</a>, alongside consultation through November 15 on wider proposed restrictions, as described in <a href="https://mintresearch.org/newsletters/yinai/2026-10-16/#story-china-introduces-ai-export-registration-and-proposes-licensi">the October 16 coverage</a>. The <a href="https://www.mofcom.gov.cn/zwgk/zcjd/art/2026/art_b11d5c1e9374421e93e85dc87eba6e38.html">official Q&amp;A</a> promises automatic licensing or similar facilitation for specified future open releases; technology already public through open source or academic publication would be excluded. Brand and Lambert therefore distinguish the proposal's immediate effects from the government's potential future discretion. They also relay an interpretation focused on preventing foreign acquisitions of Chinese technology. The registration requirements expressly cover changes in foreign ownership or actual control, although the ministries do not identify acquisitions as the proposal's principal motive.</p>
+<p>Brand and Lambert see the <a href="https://mintresearch.org/newsletters/yinai/2026-10-19/#story-dhs-orders-deepseek-removal-from-federal-civilian-systems-an">DHS restrictions covered October 19</a> as another reason to develop American open models. The <a href="https://public-inspection.federalregister.gov/2026-21447.pdf">order</a> was issued July 24, made public October 19 and published in the Federal Register October 20. It requires covered civilian agencies to exclude DeepSeek from procurement and remove its technology, including specified third-party implementations. The authors ask how that applies to models trained on DeepSeek's outputs. The order does not expressly resolve that question.</p>
+<p>DeepSeek's <a href="https://github.com/deepseek-ai/DeepInfer">DeepInfer documentation</a> describes an Apache-2.0 release derived from its production inference engine, which runs an already-trained model to answer requests. It currently supports DeepSeek-V4.1-Flash on Nvidia SM100 GPUs and Huawei Ascend 950 chips. Brand and Lambert expect substantial efficiency advantages over existing open serving tools. DeepSeek acknowledges that its engine was originally built primarily on vLLM, with inspiration from SGLang and TensorRT-LLM.</p>
+<p>DeepSeek explains in its <a href="https://github.com/deepseek-ai/DeepInfer/blob/main/doc/inference_deployment_qa.md">deployment Q&amp;A</a> that reusing earlier calculations helps keep serving costs down. Its system retains intermediate results from previously processed context for days, so repeated material need not be computed again. The cache management and software that distribute work across machines remain closely tied to internal infrastructure and are not fully released. DeepSeek reports revenue of $38 per GPU-hour at off-peak prices and production performance around 80% of its perfectly balanced offline benchmark. Other providers would need to supply the missing infrastructure to reproduce the complete service.</p>
+<p>Zephyr's <a href="https://x.com/zephyr_z9/status/2112499092031185134">calculation on X</a>, linked by Interconnects for its roughly 90% margin discussion, initially assumed that 97% of tokens were cached inputs. Zephyr <a href="https://x.com/zephyr_z9/status/2112533683634942328">corrected the estimate on October 20</a>, before the essay appeared, acknowledging that the initial calculation described an ideal scenario and incorporating DeepSeek's production figures. The revised estimate combines DeepSeek's reported revenue with Zephyr's cost assumptions. In the discussion, Aleksandar Janca <a href="https://x.com/datachad/status/2112500962137125337">objected</a> that his document-processing systems mostly handle fresh material and achieve nothing like that cache share.</p>
+<p>Among their five model picks, Brand and Lambert praise Xiaomi's <a href="https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL">MiMo-V2.6-Pro-RL</a> for expanding reinforcement learning, which rewards a model for its attempts at tasks, and releasing training environments alongside a detailed report. In <a href="https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL/blob/main/MiMo_V2_6_technical_report.pdf">MiMo-V2.6: Scaling Reinforcement Learning Towards Self-Improvement</a>, Xiaomi's team describes training across varied tasks and agent software environments. Graders compare attempted solutions beyond simple pass or fail, rewarding better implementations and shorter successful sequences of actions; confirmed attempts to exploit grading receive no effective reward. Xiaomi applies that training to existing base models, a feature Brand and Lambert emphasize in explaining the release’s gains.</p>
+<p>The Interconnects authors also highlight the MIT-licensed <a href="https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017">DeepSeek-V4.1-Flash-1017</a>, whose developer reports faster task completion and shorter generated answers. They rate Reflection's <a href="https://huggingface.co/reflection/Beam-1.0-501B-A23B">Beam</a> the strongest American open model released under a permissive license, while emphasizing its efficient reasoning. Reflection claims comparable solution quality to leading open models with fewer reasoning tokens. Its Apache-2.0 release expressly permits adaptation and training other models on Beam's outputs, a concrete contrast with the increasingly bespoke license restrictions the Interconnects authors criticize.</p>
+<p>Nvidia's Nemotron 3.5 Super VL earns the authors' recommendation partly for its extensive training disclosures. In its <a href="https://research.nvidia.com/labs/nemotron/files/NVIDIA-Nemotron-3.5-Super-and-Lightning-Technical-Report.pdf">Nemotron 3.5 Super and Lightning technical report</a>, Nvidia describes releasing trained model versions, instructions for training and datasets. The <a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-NVFP4">model card</a> also identifies private datasets, so disclosure does not mean every training input is publicly available. Its data tables name coding examples generated by DeepSeek-R1 and DeepSeek-R1-0528. Nemotron is thus a documented example of the output-based training Brand and Lambert ask about; its status under the DHS order remains unresolved.</p>
+<p>Cloudflare's <a href="https://huggingface.co/Cloudflare/clef">Clef</a> takes a different approach to useful model output. Brand and Lambert connect it to TypeSafe's <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">September 15 introduction of System One models and Jev</a>, in which founder Diogo Almeida described models returning structured decisions directly to software. Clef assigns probabilities to predefined answers in one processing pass, with no free-form text generation. A program could ask which category a message belongs to and receive probabilities for the allowed categories. Cloudflare releases it under Apache-2.0 with a Jev-compatible interface, so applications can consume those decisions without parsing a generated explanation.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.interconnects.ai/p/latest-open-artifacts-25-deepseek">Latest open artifacts (#25): DeepSeek V4.1 Flash 1017, American-made models, and new regulatory controls in the US &amp; China</a> <span class="how">— Central assigned source: Brand and Lambert's argument about regulation, DeepInfer forecasts, five featured model picks and licensing judgments. All accessible prose was read; the paid continuation after Muse Spark Open was unavailable.</span></li>
+<li><a href="https://www.mofcom.gov.cn/zcfb/dwmygl/art/2026/art_61446ab4beee4f63973d4d0ab3097648.html">MOFCOM and MOST Announcement No. 48 of 2026: consultation and temporary export registration</a> <span class="how">— October 16 date, immediate temporary registration, November 15 consultation deadline, and transfers of foreign ownership or actual control. Wider catalogue restrictions remain proposed.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-16/#story-china-introduces-ai-export-registration-and-proposes-licensi">China begins AI-export registration while consulting on wider controls</a> <span class="how">— Verified published October 16 continuation link. The dossier checked terminal status=sent and matched retained issue HTML hashes; policy mechanics and competing interpretations were already covered.</span></li>
+<li><a href="https://www.mofcom.gov.cn/zwgk/zcjd/art/2026/art_b11d5c1e9374421e93e85dc87eba6e38.html">MOFCOM spokesperson Q&amp;A on revising the prohibited and restricted technology catalogue</a> <span class="how">— Distinguishes proposed automatic licensing for specified future open releases from the proposed exclusion of already-public technology; ministry explanation does not establish acquisitions as the principal motive.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-19/#story-dhs-orders-deepseek-removal-from-federal-civilian-systems-an">Inside the DHS order removing DeepSeek from civilian agencies</a> <span class="how">— Verified published October 19 continuation link, with terminal status=sent and retained HTML hash verification. Earlier report already covered scope and derivative-model questions.</span></li>
+<li><a href="https://public-inspection.federalregister.gov/2026-21447.pdf">Notice and appended Exclusion and Removal Order #2026-01 concerning DeepSeek</a> <span class="how">— July 24 issuance, October 19 public filing, October 20 Federal Register publication, civilian procurement and removal scope, and unresolved application to training solely on outputs. The researcher read the notice and visually read its scanned appendix.</span></li>
+<li><a href="https://github.com/deepseek-ai/DeepInfer">DeepInfer repository README</a> <span class="how">— Supported model and hardware, Apache-2.0 license, production-derived inference engine, acknowledged vLLM/SGLang/TensorRT-LLM lineage and omitted components. README read; no independent speed comparison is asserted.</span></li>
+<li><a href="https://github.com/deepseek-ai/DeepInfer/blob/main/doc/inference_deployment_qa.md">DeepSeek V4.1 Flash Inference Deployment Q&amp;A</a> <span class="how">— Context reuse, unreleased cache management and load balancing, company-reported $38 revenue per GPU-hour at off-peak prices, and approximately 80% production-to-offline performance. Revenue is not stated as measured margin.</span></li>
+<li><a href="https://x.com/zephyr_z9/status/2112499092031185134">Zephyr’s inference-margin calculation linked by Interconnects</a> <span class="how">— Original margin estimate linked by Interconnects and its 97% cached-input assumption, from the retained original post and conversation retrieved with Bird.</span></li>
+<li><a href="https://x.com/zephyr_z9/status/2112533683634942328">Zephyr corrects the inference-margin estimate</a> <span class="how">— October 20 correction before Interconnects publication: idealized initial estimate revised with company production figures, while costs remain assumed. No audited financial result is claimed.</span></li>
+<li><a href="https://x.com/datachad/status/2112500962137125337">Aleksandar Janca questions the cached-token assumption</a> <span class="how">— Named practitioner response about fresh-document workloads and low cache reuse, from the retained original Bird conversation. Treated as his experience, not an industry-wide measurement.</span></li>
+<li><a href="https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL">MiMo-V2.6-Pro-RL model card</a> <span class="how">— Model-card account of mixed reinforcement learning and richer grading, used alongside the assigned authors' assessment of the release.</span></li>
+<li><a href="https://huggingface.co/XiaomiMiMo/MiMo-V2.6-Pro-RL/blob/main/MiMo_V2_6_technical_report.pdf">MiMo-V2.6: Scaling Reinforcement Learning Towards Self-Improvement</a> <span class="how">— Xiaomi technical report sections identified in the dossier: varied tasks and agent environments, comparative grading, shorter successful trajectories and zero effective reward for confirmed grading exploitation. Full report and appendix were not read.</span></li>
+<li><a href="https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017">DeepSeek-V4.1-Flash-1017 model card</a> <span class="how">— MIT license and developer claims of shorter outputs and faster task execution. The model's prior appearance in October 19 coverage is preserved; no new October 20 model-release date is asserted.</span></li>
+<li><a href="https://huggingface.co/reflection/Beam-1.0-501B-A23B">Beam-1.0-501B-A23B model card</a> <span class="how">— Apache-2.0 license, permitted output-based training and adaptation, and developer claim of comparable quality using fewer reasoning tokens. The American-model ranking is explicitly Brand and Lambert's assessment.</span></li>
+<li><a href="https://research.nvidia.com/labs/nemotron/files/NVIDIA-Nemotron-3.5-Super-and-Lightning-Technical-Report.pdf">Nemotron 3.5 Super and Lightning: Open, Efficient Mixture-of-Experts Hybrid Mamba-Transformer Models for Agentic AI</a> <span class="how">— Release inventory of checkpoints, training recipes and datasets from the report's abstract, introduction and selected training passages. Not a full methods or appendix review.</span></li>
+<li><a href="https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-NVFP4">NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-NVFP4 model card</a> <span class="how">— Public and private training-data disclosures and named DeepSeek-R1/DeepSeek-R1-0528-generated coding data. Documented provenance does not establish legal exclusion under the DHS order.</span></li>
+<li><a href="https://huggingface.co/Cloudflare/clef">Clef model card</a> <span class="how">— Primary model-card description of probabilities over predefined options in one pass, no free-form generation, Apache-2.0 licensing and Jev-compatible interface. The classification example explains that documented interface.</span></li>
+<li><a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Introducing System One Models &amp; Jev</a> <span class="how">— Precedent explicitly linked by Interconnects: Diogo Almeida's September 15 announcement of structured decision models and Jev. No speed or accuracy claims are imported.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-china-proposes-ai-export-approvals-as-dhs-restricts-deepseek">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-20/china-proposes-ai-export-approvals-as-dhs-restricts-deepseek</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
