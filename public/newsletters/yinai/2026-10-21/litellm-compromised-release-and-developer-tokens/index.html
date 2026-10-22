@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>LiteLLM’s second compromise distributed credential-stealing malware through its official releases — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-21">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-21">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 21 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">LiteLLM’s second compromise distributed credential-stealing malware through its official releases</h1>
+<p class="dek">Maintainers believe developer tokens exposed in AI-tool logs helped attackers redirect releases; independent researchers observed stolen cloud credentials being used to seek model access.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 21 October 2026</span> <span class="chip">799 words · ~4 min</span></div>
+<div class="article-body">
+<p>Attackers turned an update to LiteLLM, software used to connect applications to AI providers, into a way to steal credentials from the machines running it. Version 1.107.0 contained both a program that collected secrets and a mechanism for downloading and running further code. Aikido researcher Ilyas Makari confirmed that the malicious Python packages also reached the project’s official Docker image. Users could therefore encounter the same attack while installing the library or deploying the AI gateway as a service. <a href="https://www.aikido.dev/blog/litellm-compromised-infostealer-rat">Aikido’s analysis</a></p>
+<p>LiteLLM’s incident notice puts the PyPI exposure window at 11:39–13:23 UTC on October 21, with affected Docker Hub images available until 14:20. Its private enterprise registry was unaffected. The company withdrew the malicious artifacts and advised exposed users to treat their credentials as compromised. Its instructions call for rebuilding affected environments from clean images and rotating exposed credentials; updating the package alone can leave startup malware in place. <a href="https://docs.litellm.ai/blog/security-incident-oct-21-2026">LiteLLM’s incident notice</a></p>
+<p>The malware did not wait for someone to ask LiteLLM to contact a model. Aikido found files placed where Python would automatically load them when the interpreter started. One component collected information immediately; another could run in the background and periodically seek additional instructions. This made routine use of the affected Python environment dangerous even if the application never explicitly imported LiteLLM. The collection targets included browser passwords, cloud credentials, developer tools and the gateway’s own database of model-provider keys. The attack could therefore expose accounts and services beyond the immediate application. <a href="https://www.aikido.dev/blog/litellm-compromised-infostealer-rat">Aikido’s analysis</a></p>
+<p>Upwind’s security research team provided the original public technical report. It found the malicious files in all seven platform-specific Python wheels, while the official Git source tag lacked the payload. The researchers subsequently compared the container contents and build records: the official release machinery had built from an attacker-controlled repository whose name closely resembled the legitimate one. The difference was a hyphen in the GitHub organization name. That finding explained why checking the normal source repository alone would miss the poisoned downloads. <a href="https://github.com/BerriAI/litellm/issues/47826">Upwind’s report and follow-up</a></p>
+<p>The gateway’s access to other systems widened the possible damage. Upwind identified routines that searched for AI-tool credentials, read accessible process environments and collected cloud service-account credentials. In deployments connected to a LiteLLM database, the malware also sought stored provider credentials. Its separate remote-code loader was dormant at the time of the researchers’ analysis; the credential-stealing component operated independently. The report described capabilities found by examining the package, rather than a count of affected organizations. <a href="https://github.com/BerriAI/litellm/issues/47826">Upwind’s technical findings</a></p>
+<p>LiteLLM believes attackers obtained three developers’ GitHub CLI tokens from Claude Code responses recorded in its internal deployment’s logs. It says the tokens enabled release changes and approvals; an owner’s token allowed branch protections to be disabled. Publishing permissions had been expanded that week. How attackers first entered the deployment remains unconfirmed. The proposed route is the company’s account of its own setup. <a href="https://docs.litellm.ai/blog/security-incident-oct-21-2026#how-this-happened">LiteLLM’s account of the attack</a></p>
+<p>This was LiteLLM’s second malicious-release incident of the year. On March 24, versions 1.82.7 and 1.82.8 were briefly distributed through PyPI after a compromise involving the Trivy security scanner. The company’s March account identified an unpinned dependency, shared build environments and long-lived publishing credentials available to the compromised process. It brought in Mandiant and Veria Labs, rotated credentials, paused releases and began restructuring its build system. The earlier incident already demonstrated how compromising one dependency could give an attacker access to the machinery that distributes trusted software. <a href="https://docs.litellm.ai/blog/security-townhall-updates">LiteLLM’s March account</a></p>
+<p>On March 30, LiteLLM announced that its revised release system was live. It separated validation and publishing into different repositories, isolated test and security-scanning environments, adopted PyPI Trusted Publishing and began signing Docker images. These controls addressed the ways an attacker might steal publishing secrets or replace an artifact after release. The October investigation describes an attacker using developer privileges to make the legitimate machinery build and distribute malicious material. A valid signature can identify the system that produced an image while leaving the security of that system’s inputs and permissions unresolved. <a href="https://docs.litellm.ai/blog/ci-cd-v2-improvements">LiteLLM’s release-system announcement</a></p>
+<p>Wiz researchers Benjamin Read and Rami McCarthy then reported downstream use of stolen credentials. Between 16:20 and 17:01 UTC on October 21, they observed attackers testing AWS role credentials taken from build runners and Kubernetes nodes in several environments, followed by requests listing available AI models. Wiz described this as consistent with stealing access to paid inference services. In a smaller number of environments, it also saw broader account and permission discovery. The observations show attackers using stolen access within hours of collection, even after the malicious software had been removed from distribution. <a href="https://www.wiz.io/blog/litellm-compromised-steals-credentials#post-exploitation-activity">Wiz’s observed activity</a></p>
+<p>Wiz also judged the malware’s coding patterns consistent with AI-assisted development. That assessment is an inference from the code. The observed release compromise and use of stolen credentials do not establish that an AI agent conducted the intrusion. <a href="https://www.wiz.io/blog/litellm-compromised-steals-credentials">Wiz’s analysis</a></p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.aikido.dev/blog/litellm-compromised-infostealer-rat">LiteLLM compromised: Infostealer and RAT — Ilyas Makari, Aikido</a> <span class="how">— Primary analysis of malicious packages and Docker, Python startup execution and credential collection.</span></li>
+<li><a href="https://docs.litellm.ai/blog/security-incident-oct-21-2026">LiteLLM security incident, October 21, 2026</a> <span class="how">— Maintainer original including20:30UTC update. Registry-specific windows; credential, response-log and access hypotheses kept attributed.</span></li>
+<li><a href="https://github.com/BerriAI/litellm/issues/47826">Malicious code in LiteLLM 1.107.0 — Upwind original report</a> <span class="how">— Original public researcher disclosure and22comments captured. Wheels, clean source tag, misleading release repository and payload findings.</span></li>
+<li><a href="https://docs.litellm.ai/blog/security-townhall-updates">LiteLLM March security incident and townhall updates</a> <span class="how">— Primary earlier incident, response and build-system weaknesses.</span></li>
+<li><a href="https://docs.litellm.ai/blog/ci-cd-v2-improvements">LiteLLM CI/CD v2 improvements</a> <span class="how">— Primary March30 announcement of separate release and validation repositories, isolated execution and signed artifacts.</span></li>
+<li><a href="https://www.wiz.io/blog/litellm-compromised-steals-credentials">LiteLLM compromised, steals credentials — Benjamin Read and Rami McCarthy, Wiz</a> <span class="how">— Primary independent downstream telemetry. Stolen cloud credentials tested for model access; malware AI-authorship assessed from code only.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth and Claude. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-litellm-compromised-release-and-developer-tokens">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-21/litellm-compromised-release-and-developer-tokens</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
