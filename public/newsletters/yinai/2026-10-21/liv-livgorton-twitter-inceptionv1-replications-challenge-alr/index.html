@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Gorton’s replication tests challenge two neuron explanations — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-21">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-21">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 21 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Gorton’s replication tests challenge two neuron explanations</h1>
+<p class="dek">Her InceptionV1 experiments challenge the proposed V-shape and shared-pose explanations. She also interprets the compressed network as evidence for superposition and disputes the essay’s treatment of earlier research.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 21 October 2026</span> <span class="chip">1109 words · ~6 min</span></div>
+<div class="article-body">
+<p>Liv Gorton reports that experiments on the image-classification network InceptionV1 fail to support two prominent neuron explanations in Nick Cammarata's <a href="https://already-clean.goodfire.com/essay.md"><em>Neural Networks Are Already Clean</em></a>. Her <a href="https://livgorton.com/already-clean-thoughts/">October 20 response</a> also reproduces his experiment compressing a network layer and interprets the result as evidence for superposition, in which overlapping combinations of neurons represent different features. We <a href="https://mintresearch.org/newsletters/yinai/2026-10-15/#story-nick-cammarata-goodfire-article-neuron-audits-challenge-supe">covered Cammarata's essay and her initial definitional objection on October 15</a>. The response adds experimental tests, criticism of his account of earlier research, and clarifications from Cammarata, who read a draft.</p>
+<p>Gorton <a href="https://livgorton.com/about/">works on safety at Anthropic</a> and was previously a founding research scientist at Goodfire; Goodfire published Cammarata's essay. She agrees that researchers sometimes abandon efforts to understand neurons too quickly. Her objection concerns whether the explanations survive tests beyond inspecting a few activating images. In an appendix, she shows how random combinations of neurons can produce image collections that invite plausible descriptions. She therefore examines responses across a wider range, uses deliberately constructed stimuli, and checks connections to other neurons.</p>
+<p>Her first example is the well-known neuron 4e:55, which responds to cat faces and car fronts. Cammarata proposes that it detects a common V shape, with pointed objects activating it and rounded objects suppressing it. Gorton finds that many of its strongest responses are to snub-nosed animal faces, while some pointed images suppress it. Drawn V shapes produce only about a quarter of its maximum response, and rounding them does not reduce that response. Disabling earlier V detectors also leaves this neuron's responses no more diminished than disabling randomly chosen neurons, although a comparison neuron that strongly responds to V shapes does lose activity. Later neurons responding to drawn V shapes barely use 4e:55. Gorton concludes that the proposed explanation fails these tests. Cammarata's inline clarification says the V description was simplified and that he plans further studies.</p>
+<p>She next examines the claim that a car-detecting neuron connects to dog-related neurons because they recognize an orientation shared by cars and dogs. Cammarata does not identify the two proposed pose neurons, so Gorton infers which he means from the strongest connections and their image responses. That identification remains a qualification on the result. A detector of a left-facing or right-facing pose should react differently when an image is mirrored. Her candidate neurons largely preserve their responses, while a comparison neuron sensitive to right-facing profiles loses most of its response. She also renders dogs and vehicles from changing viewpoints, holding their size in the image constant. The candidates do not prefer matching viewpoints across the two categories.</p>
+<p>Cammarata's compression experiment reduced a layer from 480 channels to ten and retrained the network. He expected superposition to produce overlapping detectors for unrelated things, but described the resulting units as broader, intelligible categories, including curves and loops. Gorton repeats the retraining and tests the compressed units with curves at different orientations. Neighbouring curve orientations tend to occur together at a given image position; distant orientations rarely do. She finds units responding to broad ranges of nearby orientations and to the corresponding opposites.</p>
+<p>Gorton describes these responses as Fourier modes, periodic response patterns across curve orientations. A compressed neuron can respond alike to curves with different orientations, with other neurons needed to distinguish them. In her concrete example, one unit cannot distinguish curves a quarter-turn apart on its own, but can do so together with either of two others. She interprets this shared representation as superposition. The same neurons may also respond to the broader categories Cammarata describes. Her appendix further explains that compressing into just ten dimensions imposes much greater interference than applying the same compression ratio to a much wider layer.</p>
+<p>The disagreement depends partly on what superposition means. Cammarata focuses on unrelated things sharing neurons because they rarely interfere, and says he largely sets aside the definition based on having more features than dimensions. Gorton traces that definition to <a href="https://distill.pub/2020/circuits/zoom-in/"><em>Zoom In</em></a>, the 2020 <em>Distill</em> article by Chris Olah, Cammarata and colleagues, and to Nelson Elhage and colleagues' 2022 <a href="https://transformer-circuits.pub/2022/toy_model/index.html"><em>Toy Models of Superposition</em></a>. She argues that related features sharing components can be compatible with superposition, depending on their co-occurrence and the available space. Finding a connection between concepts therefore does not, on her account, rule it out. Cammarata's clarification acknowledges confusion about the terminology and says he now thinks he should have introduced new terms.</p>
+<p>Gorton also defends her 2024 arXiv paper <a href="https://arxiv.org/abs/2406.03662"><em>The Missing Curve Detectors of InceptionV1</em></a>. It used a sparse autoencoder, a tool that separates a layer's activity into candidate features, and found curve information beyond the ten previously identified curve neurons. Cammarata trained an autoencoder on those ten neurons alone and took its many learned components as evidence that the tool can create a misleading impression of additional building blocks. Gorton replies that this experiment cannot test for information outside its own inputs. She also argues that a continuous range of curve orientations can be subdivided into many components by an autoencoder; their number need not count distinct underlying building blocks.</p>
+<p>Her other objection about prior work concerns Chris Olah's 2023 note <a href="https://transformer-circuits.pub/2023/superposition-composition/index.html"><em>Distributed Representations: Composition &amp; Superposition</em></a>. Cammarata treats it as close to his position. The note distinguishes combining independent features, such as shape and colour, from storing more features than there are neurons. Gorton argues that it preserves the feature-based definition he disputes. She then questions whether his proposed recursive generalization explains a model's computation. Describing how a neuron's responses extend through successive associations may explain learning. If the network subsequently uses those concepts separately, researchers still need to show how it distinguishes them and produces an output.</p>
+<p>Ulisse Mini's <a href="https://ulissemini.github.io/4e55-game/appendix/">separate prediction experiment</a> tests whether written explanations help Claude Opus 5.5 predict the cat-and-car neuron's activity. Simple pointed-versus-round descriptions perform near chance, while a description naming kinds of faces and vehicles does much better. Adding Cammarata's explanation to a prompt identifying the neuron reduces prediction accuracy on a separate set of photos. The test concerns one neuron, one judge model and strongly activating or nearly silent images; it does not measure understanding across the network. Curt Tigges, who worked on the essay's language-model section, <a href="https://x.com/CurtTigges/status/2112802959021187533">defends the V interpretation</a>, disputing Gorton's reading of one bird image and pointing to the essay's visualizations.</p>
+<p>Leo Gao's <a href="https://www.lesswrong.com/posts/Dkh7pXKjoNWkkxQDz/neural-networks-are-not-already-clean">earlier critique</a>, linked in our <a href="https://mintresearch.org/newsletters/yinai/2026-10-17/#sec-evaluations">October 17 issue</a>, also argued that patterns among activating examples are insufficient to establish a neuron's function. Gorton's contribution is to test specific explanations and repeat the compression experiment. She does not claim to settle every argument in Cammarata's essay, including its language-model results. She argues that the failures she identifies warrant withholding confidence in those broader claims until comparable checks can be made.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://livgorton.com/already-clean-thoughts/">Some initial thoughts on Nick Cammarata's "Neural Networks Are Already Clean" — Liv Gorton</a> <span class="how">— Full original critique and appendices, read directly from the parent-preserved text; all five objections, empirical findings, inference qualifications, Cammarata inline clarifications and limits of the critique. Findings are attributed to Gorton; no direct passages quoted.</span></li>
+<li><a href="https://x.com/livgorton/status/2112756891122360498">Liv (@livgorton) X thread announcing the critique</a> <span class="how">— Selected source retained: complete eight-post announcement thread and attached conversation read. Resolves to Gorton’s original essay; announcement is October 21 00:04 New York, while essay date is October 20.</span></li>
+<li><a href="https://already-clean.goodfire.com/essay.md">Neural Networks Are Already Clean (plain-text version) — Nick Cammarata, Goodfire</a> <span class="how">— Original precursor: disputed V/pose, compression, superposition-definition, Missing Curves and recursive-generalization passages read in preserved October 15 text. Cammarata’s position is distinguished from Gorton’s criticism; no direct passage quoted.</span></li>
+<li><a href="https://livgorton.com/about/">About — Liv Gorton</a> <span class="how">— Primary personal site directly rechecked: safety work at Anthropic and earlier founding research scientist at Goodfire. No unverified current title used.</span></li>
+<li><a href="https://distill.pub/2020/circuits/zoom-in/">Zoom In: An Introduction to Circuits — Olah, Cammarata, Schubert, Goh, Petrov, Carter (Distill, 2020)</a> <span class="how">— Original definition and car/dog circuit passages directly checked; author attribution and more-features-than-neurons precedent, in paraphrase.</span></li>
+<li><a href="https://transformer-circuits.pub/2022/toy_model/index.html">Toy Models of Superposition — Elhage et al. (Transformer Circuits, 2022)</a> <span class="how">— Original introduction and correlated/anti-correlated feature passages checked. The more-features-than-dimensions definition is verified; Gorton’s broader regime interpretation remains attributed to her.</span></li>
+<li><a href="https://transformer-circuits.pub/2023/superposition-composition/index.html">Distributed Representations: Composition &amp; Superposition — Chris Olah (2023)</a> <span class="how">— Complete original informal note read directly. Confirms composition/superposition distinction, shape-colour example and feature-based framing; Gorton’s criticism is attributed.</span></li>
+<li><a href="https://arxiv.org/abs/2406.03662">The Missing Curve Detectors of InceptionV1 — Liv Gorton (arXiv 2406.03662)</a> <span class="how">— Gorton’s 2024 arXiv work, as described and defended in her full October 20 original and its abstract retained in the research dossier; additional curve information beyond the ten identified neurons.</span></li>
+<li><a href="https://ulissemini.github.io/4e55-game/appendix/">Ulisse Mini 4e:55 game appendix</a> <span class="how">— Primary methods and results directly checked: one-neuron, one-judge prediction task on strong/silent extremes; pointedness descriptions versus noun descriptions; effect of adding essay context. The appendix discloses AI-written prose with little human review. No numeric score catalogue or direct passage retained.</span></li>
+<li><a href="https://x.com/CurtTigges/status/2112802959021187533">Curt Tigges reply (X)</a> <span class="how">— Substantive reply defending the V interpretation, read in the dossier and independently rechecked through Bird. His role in the essay’s language-model section is documented in the precursor; no claim that this is a complete answer to Gorton.</span></li>
+<li><a href="https://www.lesswrong.com/posts/Dkh7pXKjoNWkkxQDz/neural-networks-are-not-already-clean">Neural networks are not already clean — Leo Gao (LessWrong, October 17)</a> <span class="how">— Earlier Gao critique documented in the research dossier and October 17 published coverage; only its criticism of explanations based on activating examples is retained.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-15/#story-nick-cammarata-goodfire-article-neuron-audits-challenge-supe">Yesterday in AI, 15 October 2026: Cammarata makes the case for interpreting neurons directly</a> <span class="how">— Verified prior coverage (deep_history.json entry and send_history 'Yesterday in AI -- 15 Oct 2026'); linked as the back-reference for the essay and Gorton's first objection.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-17/#sec-evaluations">Yesterday in AI, 17 October 2026, evaluations section</a> <span class="how">— Verified prior coverage (send_history 'Yesterday in AI -- 17 Oct 2026'); linked for the Gao critique.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-liv-livgorton-twitter-inceptionv1-replications-challenge-alr">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-21/liv-livgorton-twitter-inceptionv1-replications-challenge-alr</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

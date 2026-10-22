@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Why PHP’s critical security repairs took months — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-21">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-21">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 21 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Why PHP’s critical security repairs took months</h1>
+<p class="dek">The PHP Foundation explains how difficult engineering choices and a small team delayed repairs, then leaks disrupted their release. Leo Schwartz reports on the government response and argues that defenders may have less time for the next vulnerability.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 21 October 2026</span> <span class="chip">1072 words · ~5 min</span></div>
+<div class="article-body">
+<p>PHP released security updates on October 21 for two flaws that can let attackers execute code on web servers without logging in. In its <a href="https://thephp.foundation/blog/2026/10/21/todays-php-security-release-and-how-were-strengthening-php-security/#leak-and-disrupted-disclosure">account of the release</a>, the PHP Foundation acknowledges that developers saw signs of one problem in 2024 but struggled to agree on a repair. AI-assisted audits later demonstrated the danger, prompting full-time work on a fix. Leaks then forced the project to advance its release, and early publication of patched software divided participants over how to protect users.</p>
+<p>The <a href="https://www.php.net/archive/2026.php#2026-10-21-5">PHP advisory</a> identifies the fixed versions as 8.5.12, 8.4.27, 8.3.36 and 8.2.35. Both vulnerabilities have a severity rating of 9.2 out of 10. In <a href="https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w">CVE-2026-109618</a>, reaching the memory limit can interrupt PHP before internal data is fully initialized; cleanup then treats unfinished data as valid. The repair lets PHP stop at a safe point, with immediate process termination at a higher memory threshold. In <a href="https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp">CVE-2026-109619</a>, a worker process retains references to memory from an earlier request after that memory has been freed. A later request can make it use those references. The advisory identifies Apache's mod_php as the highest-risk configuration, with demonstrated attacks before application code runs. Other configurations have different exploitable paths.</p>
+<p>The Foundation traces its investigation to a 2024 Quarkslab audit, organized by OSTIF with Sovereign Tech Agency funding. A developer fixing an audit finding noticed the memory-exhaustion problem. Developers could imagine an exploit but had not established a concrete path to code execution. Proposed repairs risked breaking existing applications or extensions, or introducing denial-of-service problems. The security team required consensus, and the few developers who understood the engine had other responsibilities. Work stalled and restarted for months. The Foundation calls the delay <a href="https://thephp.foundation/blog/2026/10/21/todays-php-security-release-and-how-were-strengthening-php-security/#leak-and-disrupted-disclosure">“a structural failure”</a> and says the team is moving toward majority decisions and earlier escalation to its leadership when difficult choices remain unresolved.</p>
+<p>Calif researcher Ryan Austin's <a href="https://calif.io/php2shell">technical account</a> explains how older research guided the AI-assisted investigation. Stefan Esser had <a href="https://seclists.org/bugtraq/2004/Jul/150">shown in 2004</a> that interrupting PHP at its memory limit could enable remote code execution. Austin asked an AI assistant to examine allocation and cleanup code for similar weaknesses. After identifying one unsafe sequence, the researchers generalized it into instructions for finding related failures. Calif says the initial discovery required neither a special agent framework nor models unavailable to the public; Austin credits his knowledge of PHP's vulnerability history with directing the search. <a href="https://openai.com/index/coordinated-disclosure-of-critical-vulnerabilities/">OpenAI's account</a> identifies the model Calif used as GPT-5.6 Sol.</p>
+<p>According to the Foundation, Calif began auditing on July 30 through OpenAI's Patch the Planet program. Calif and OpenAI independently reported the same root cause on August 11; Wiz supplied further attack paths on August 24 and OpenAI on September 18. The Foundation made repairs its security staff's top priority from August 11. In <a href="https://www.wiz.io/blog/php2shell-php-rce">Wiz's account</a>, Sagi Tzadik and colleagues found their first vulnerability on August 19 and confirmed unauthenticated code execution against Drupal and WordPress over the next two days. They used Gemini 4 Argon and GPT-5.6 Sol alongside their own tools to investigate, develop exploits and validate repairs.</p>
+<p>The Foundation's disclosure timeline begins around 15:00 UTC on October 20, when the vulnerability identifiers circulated with an incorrect release time and severity score. PHP published an advance notice at 19:30 UTC and moved the coordinated release from October 22 to October 21 at 14:00 UTC. Distributors still needed time to prepare packages that users could install. Around 20:00 UTC, Calif mistakenly published a demonstration video. Copies continued circulating after its deletion; the Foundation says the video helped others develop exploits.</p>
+<p>At 07:41 UTC on October 21, Chainguard published software images containing the fixes, more than six hours before the coordinated release. The Foundation argues that this exposed the repairs to attackers while other users still awaited updates. In his <a href="https://news.ycombinator.com/item?id=50176735">original Hacker News response</a>, Chainguard's Dan Lorenc says he authorized early publication after exploits appeared in the wild. He praises the maintainers, says Chainguard tested the complex patch extensively, and says the images are free and will remain so. The Foundation says it found no working exploits among the public examples it inspected before disclosure.</p>
+<p><a href="https://aws.amazon.com/blogs/security/amazon-threat-intelligence-identifies-php2shell-exploitation-prior-to-public-disclosure-in-madpot/">Amazon's telemetry</a> records an earlier attack attempt against its MadPot honeypots on October 17, from anonymized infrastructure. Amazon also observed further attempts between 02:00 and 08:00 UTC on October 21, before the coordinated release. It says technical analysis was continuing and whether those attempts would have succeeded against real systems was unclear. Amazon's observations establish attempted exploitation before disclosure; they do not establish successful compromises of production sites or what information Chainguard had when it acted.</p>
+<p>Leo Schwartz's October 21 <a href="https://www.theinformation.com/articles/closing-defenders-window-nigh">column in The Information</a> describes the government response. An OpenAI spokesperson told him the company briefed CISA and other agencies, and briefed Jay Clayton and Emil Michael late the previous week, in its first major engagement with the White House's Super Intelligence Force. The spokesperson said the group centralized communication across government. A White House official told Schwartz it helped press relevant parties to deploy the patch.</p>
+<p>Schwartz argues that this response may be too slow for future vulnerabilities as attackers gain access to stronger models. He cites Anthropic's estimate that Z.ai's GLM-5.3 lagged US frontier models by about four months, and a former White House official's concern that July's Gold Eagle vulnerability clearinghouse might already be outdated. His forecast is that future defenders may have less than the two months available here to prepare repairs.</p>
+<p>OpenAI's own disclosure names the Super Intelligence Force, the Office of the National Cyber Director and CISA among its government contacts. It credits PHP's maintainers with leading the fixes and release. Its proposed coordination framework leaves maintainers responsible for deciding which organizations receive advance information, weighing their protective role and the time they need against the danger of leaks. The company proposes reassessing disclosure timing when attacks, leaks or stalled repairs increase users' exposure.</p>
+<p>The PHP advisory says updating is the only complete remedy. For unsupported PHP 7.4, 8.0 and 8.1, the team supplied minimal source patches for users building their own versions. The Foundation is also asking for sustained funding for engineers who understand the codebase. It created an Ecosystem Security Team in May and added staff for triage and hardening in July and September. Since July 1, the security team has published 15 vulnerability notices and handled more than 100 invalid, duplicate or unreproducible reports. AI tools help assess and group reports, but people still choose repairs, weigh compatibility costs and review patches.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://thephp.foundation/blog/2026/10/21/todays-php-security-release-and-how-were-strengthening-php-security/#leak-and-disrupted-disclosure">Today's PHP Security Release, and How We're Strengthening PHP Security — The PHP Foundation</a> <span class="how">— Selected primary source, read completely. Engineering history, investigation and disclosure chronology, staffing, process changes and funding appeal. The only direct quotation is three words: a structural failure.</span></li>
+<li><a href="https://www.theinformation.com/articles/closing-defenders-window-nigh">The Closing of the Defenders Window Is Nigh — Leo Schwartz, The Information</a> <span class="how">— Selected reported analysis, read completely from preserved RSS text. Government briefings and coordination are attributed to Schwartz and his sources; model-gap estimate and future patching-time forecast remain attributed analysis. The feed timestamp is October 21 at 20:01:30 in New York.</span></li>
+<li><a href="https://www.php.net/archive/2026.php#2026-10-21-5">Security advisory: Critical remote code execution vulnerabilities — PHP</a> <span class="how">— Original release and pre-announcement checked. Fixed versions, risk qualification, severity, complete-remedy guidance and exceptional source backports.</span></li>
+<li><a href="https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w">RCE via OOM corruption — PHP security advisory</a> <span class="how">— Original read in full. Plain-language account of interrupted initialization and safe-point repair, without importing a universal exploitability claim.</span></li>
+<li><a href="https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp">RCE via stale global state — PHP security advisory</a> <span class="how">— Original read in full. Explains reuse of references after request-owned memory is freed; exploit paths depend on configuration and application behavior.</span></li>
+<li><a href="https://calif.io/php2shell">A tale of two PHP remote vulnerabilities — Ryan Austin, Calif</a> <span class="how">— Original read in full, including historical account and technical sections. AI-assisted search, generalization from one failure pattern, public-model availability and researcher attribution.</span></li>
+<li><a href="https://seclists.org/bugtraq/2004/Jul/150">Advisory 11/2004: PHP memory_limit remote vulnerability — Stefan Esser</a> <span class="how">— Original advisory read. Supports the specifically relevant 2004 precedent; does not establish that the identical 2026 flaws existed in 2004.</span></li>
+<li><a href="https://www.wiz.io/blog/php2shell-php-rce">PHP2Shell — Sagi Tzadik, Shir Tamari, Nir Ohfeld and Tomer Schwartz, Wiz Research</a> <span class="how">— Original read in full. August discovery and demonstration dates, researchers and AI tooling. Broad promotional claims are not adopted.</span></li>
+<li><a href="https://openai.com/index/coordinated-disclosure-of-critical-vulnerabilities/">Patch the Planet: global response coordination as agents uncover critical vulnerabilities — OpenAI</a> <span class="how">— Recovered original supplies model attribution, maintainer leadership and coordination proposal. Paraphrased within the recorded 200-word limit; no direct quotes.</span></li>
+<li><a href="https://news.ycombinator.com/item?id=50176735">Dan Lorenc on early release of patched images — Hacker News</a> <span class="how">— Original comment read separately from surrounding replies. Lorenc’s reason for early release, praise for maintainers, patch testing and free images. No other commenter’s claim is attributed to him.</span></li>
+<li><a href="https://aws.amazon.com/blogs/security/amazon-threat-intelligence-identifies-php2shell-exploitation-prior-to-public-disclosure-in-madpot/">Amazon Threat Intelligence identifies PHP2Shell exploitation prior to public disclosure in MadPot — Amazon</a> <span class="how">— Original account read. October 17 and October 21 attempt chronology; explicit uncertainty about whether pre-release attempts could succeed on real systems.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-php-patches-two-critical-rce-flaws-after-ai-assisted-audits">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-21/php-patches-two-critical-rce-flaws-after-ai-assisted-audits</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
