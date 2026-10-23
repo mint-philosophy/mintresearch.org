@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Claude turns fuzz tests into no-crash proofs for 239 entry points — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-22">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-22">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 22 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Claude turns fuzz tests into no-crash proofs for 239 entry points</h1>
+<p class="dek">Anthropic and Theorem report proofs for selected code paths across 123 libraries under modeled RISC-V Linux conditions. The public release covers 60 entry points and does not establish termination.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 22 October 2026</span> <span class="chip">1019 words · ~5 min</span></div>
+<div class="article-body">
+<p>Existing software tests can become checked proofs that no input within specified limits makes a program crash. Keane Lucas, Aengus Lynch and colleagues at Anthropic and Theorem report doing this for 239 testing entry points across 123 open-source libraries in <a href="https://www.anthropic.com/research/formal-verification">“LLMs are making formal software verification feasible at a much larger scale,”</a> published October 22. Claude wrote the proofs over a few weeks, sometimes after patching bugs. The guarantees concern compiled RISC-V machine code running under modeled Linux conditions, with fixed memory budgets and inputs below 64 MiB.</p>
+
+<p>The team started with Google's OSS-Fuzz, whose developer-written tests accept arbitrary input and crash when a check fails. Fuzzers search for failures by trying generated inputs; the researchers turned each test into a mathematical statement covering every permitted input. AddressSanitizer, which adds runtime checks for memory errors, makes many bad memory accesses trigger crashes too. Claude wrote proofs against Theorem's models of processor instructions and Linux processes, and Rocq, formerly Coq, checked them. The developers' tests supplied useful specifications without requiring a complete definition of each library's intended behavior.</p>
+
+<p>The <a href="https://www-cdn.anthropic.com/files/4zrzovbb/website/6867eadf760258fa8b42a504600cd3c036d16358.pdf">appendix</a> explains how the guarantee extends to a build without AddressSanitizer. Both builds must avoid faults, aborts and operations outside the model, and must agree on observable behavior: input and output, exit behavior and final file contents. Equivalence alone would be insufficient because the definition can treat a crash and a silent infinite loop alike. The researchers therefore prove crash-freedom separately for each build. This connects the instrumented test to its plain counterpart while keeping the theorem about particular binaries.</p>
+
+<p>When Claude found a real crash, the team let it patch the code, regenerate the specification for the changed binary and continue proving. Anthropic acknowledges that this creates an incentive to satisfy the assigned goal by changing the program's purpose: code that does nothing can trivially avoid crashes. The researchers penalized patches, rewarded proofs identifying how few inputs a patch changed, and logged and audited modifications. Those measures discourage such shortcuts, but the no-crash theorem alone does not establish that a patch preserves intended functionality. The report does not give the patch audit's results or an upstream acceptance count.</p>
+
+<p>Anthropic reports finding hundreds of bugs during these attempts, including failures that ordinary fuzzing would struggle to reach. One decompressor wrote outside allocated memory only for an unusually arranged input of about 20 MB; fuzzers commonly cap inputs around 1 MB. An image-decoder error required a 64 MB input and more than 2 GB of memory. Claude also noticed a file-loading restriction that was not consistently enforced, a logic error that need not crash the program. Attempting a proof can therefore reveal defects beyond the property being proved.</p>
+
+<p>The authors also describe useful behavior encoded in existing tests. For LZO, they report proving that compression followed by decompression restores the input, because violating the test's assertions causes an abort. In cpp-httplib, avoiding a stack overflow during recursive cleanup required Claude to prove that libc++'s red-black tree stays shallow as it grows. The machine-code proof established a logarithmic bound on tree depth. A short no-crash requirement can thus demand substantial reasoning about what the program computes.</p>
+
+<p>Theorem's <a href="https://github.com/theorem-labs/oss-verify-proofs">public repository</a> lists proofs for 60 entry points in 25 libraries, including OpenSSL and zstd. Anthropic says it is withholding proofs that could expose unpatched bugs. The released proofs also have a precise limitation: the README says, “No proof in this release proves a halts statement”. They do not rule out a program running forever. Anthropic's post says the programs “will always exit normally”, wording stronger than the released guarantees establish. The README's statement applies to this public subset; it does not determine whether any unreleased proofs establish termination.</p>
+
+<p>Anthropic limits the main experiment to single-threaded, statically linked RISC-V binaries using musl, a C library. Typical x86 or ARM deployments with glibc fall outside that configuration. The <a href="https://github.com/theorem-labs/rocq-linux-process-semantics">Linux process model</a> has no scheduler and does not run signal handlers. The public ASan statements exclude inputs for which the plain build exceeds a 2 GiB memory budget. Each proof covers code reachable through its entry point; untested interfaces, errors the sanitizer misses and misuse by callers remain outside it. Developers must trust the theorem statements, machine models and Rocq checker and its execution environment. The release additionally identifies tools that load binary bytes and connect proofs to statements as trusted components.</p>
+
+<p>The appendix explains why the checked proofs contain about 180 million lines. Much of that code concerns shared machinery, including program startup, memory allocation and the sanitizer runtime; only about a tenth of cJSON's proof concerns cJSON itself. Agents reused and adapted one another's work. The appendix also describes repetitive details that human proof engineers would collect into reusable abstractions. It cites <a href="https://arxiv.org/abs/2609.04043">MachCSL</a>, M. Frans Kaashoek and Nickolai Zeldovich's arXiv work verifying the xv6 kernel with agents, as evidence that scaling this verbose style may require better proof structure.</p>
+
+<p>Gerwin Klein and colleagues' <a href="https://sel4.systems/Research/pdfs/comprehensive-formal-verification-os-microkernel.pdf">“Comprehensive Formal Verification of an OS Microkernel,”</a> published in ACM Transactions on Computer Systems in 2014, reported roughly 20 person-years for seL4's correctness proof, an effort comparison Anthropic cites. Emily First and colleagues' 2023 arXiv paper <a href="https://arxiv.org/abs/2303.04910">“Baldur: Whole-Proof Generation and Repair with Large Language Models”</a> paired generated proofs with repairs informed by checker errors. Martin Kleppmann <a href="https://martin.kleppmann.com/2025/12/08/ai-formal-verification.html">predicted in December 2025</a> that automated proof writing would shift the difficulty toward choosing the right specifications. Anthropic's <a href="https://www.anthropic.com/research/formalizing-fermats-last-theorem">Fermat formalization</a>, <a href="https://mintresearch.org/newsletters/yinai/2026-09-04/#story-claude-formalizes-fermat-s-last-theorem-in-lean-over-11-auto">covered September 4</a>, used machine checking for a large mathematical proof. Theorem's <a href="https://theorem.dev/blog/verified-software-stack/">September roadmap</a> projects verification of 95% of nixpkgs machine code for about $134 million by the end of 2027, conditional on verification speed continuing to double every two months.</p>
+
+<p>Theorem is now offering <a href="https://theorem.dev/oss-verify/">OSS Verify</a> free to qualifying open-source projects, with private bug reports and AI-generated patches that it does not promise humans will review before delivery. Lynch <a href="https://x.com/aengus_lynch1/status/2113393225310294227">emphasized</a> that this work would not fix the week's PHP vulnerabilities or attacks already under way. Asked by <a href="https://x.com/eqrion/status/2113416409375965453">Ryan Hunt</a> whether changed binary layouts need new proofs, he <a href="https://x.com/aengus_lynch1/status/2113421834754601219">confirmed they do</a>, while saying the team already finds proofs quick to adapt. Maintaining those guarantees as software changes is part of the work ahead.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.anthropic.com/research/formal-verification">LLMs are making formal software verification feasible at a much larger scale (Anthropic Frontier Red Team, with Theorem)</a> <span class="how">— Assigned primary source, read in full from the supplied local text and checked against the live page. Supports the reported 239 entry points/123 libraries, fuzz-test specifications, Rocq checking, patch loop and reward-hacking controls, bug examples, LZO and cpp-httplib cases, scope, shared proof machinery and withheld artifacts. The input bound uses the appendix’s precise MiB unit.</span></li>
+<li><a href="https://www-cdn.anthropic.com/files/4zrzovbb/website/6867eadf760258fa8b42a504600cd3c036d16358.pdf">Appendix: LLMs are making formal software verification feasible at a much larger scale (PDF)</a> <span class="how">— Six-page appendix downloaded and read in full. Pages 1–2 establish separate no-crash results and observable equivalence, define crashes to include unmodeled behavior, and explain why equivalence can allow a silent loop. Pages 3–5 support the checked proof size, cJSON proportion, reuse and abstraction discussion. Page 6 explains test assertions.</span></li>
+<li><a href="https://github.com/theorem-labs/oss-verify-proofs">OSS Verify: proofs about OSS-Fuzz fuzz targets (theorem-labs/oss-verify-proofs README)</a> <span class="how">— Live README directly read. Lists 60 public entry points in 25 libraries; limits guarantees to one entry point’s reachable code and exact binaries; gives the public ASan 2 GiB premise, states that no released proof proves a halts statement, and identifies binary-loading and checking-wrapper tools as trusted components. These are documentary checks, not a local rerun of the proofs.</span></li>
+<li><a href="https://github.com/theorem-labs/rocq-linux-process-semantics">rocq-linux-process-semantics (Theorem; README and SCOPE.md)</a> <span class="how">— README and SCOPE.md checked directly. Supports one thread, no scheduler, no execution of signal handlers and the need for the model to match real execution. The scope document’s further assumptions are recorded in evidence.</span></li>
+<li><a href="https://theorem.dev/oss-verify/">OSS Verify: Free formal verification for open source (Theorem)</a> <span class="how">— Read the live service page. Supports free eligibility-based verification, private bug reports and AI-generated patches without a promised human review before delivery.</span></li>
+<li><a href="https://theorem.dev/blog/verified-software-stack/">Bootstrapping the Verified Software Stack (Theorem Blog)</a> <span class="how">— Read the live September 29 roadmap, including its October 19 update. Supports the conditional 95%/$134 million/end-2027 projection and two-month verification-speed doubling assumption; retained as prior context, not a new forecast.</span></li>
+<li><a href="https://x.com/aengus_lynch1/status/2113393225310294227">Aengus Lynch thread on the formal verification report (X)</a> <span class="how">— Fetched and read the full author thread using Bird via twitter-fetch, without paid API. The self-reply at https://x.com/aengus_lynch1/status/2113393885473030509 states that this result will not fix the week’s PHP flaws or attacks already in progress; paraphrased in the article.</span></li>
+<li><a href="https://x.com/aengus_lynch1/status/2113421834754601219">Aengus Lynch reply to Ryan Hunt on binary-layout dependence (X)</a> <span class="how">— Direct author reply included in the fetched thread. Confirms new proofs are needed after a binary-layout change and says existing proofs have been quick to adapt. Both points are paraphrased and attributed.</span></li>
+<li><a href="https://x.com/eqrion/status/2113416409375965453">Ryan Hunt question to Aengus Lynch (X)</a> <span class="how">— Direct question by Ryan Hunt, included in the fetched thread, asks about changed binary layouts and a single compiler-output snapshot.</span></li>
+<li><a href="https://sel4.systems/Research/pdfs/comprehensive-formal-verification-os-microkernel.pdf">Comprehensive Formal Verification of an OS Microkernel (Klein et al., ACM TOCS 2014)</a> <span class="how">— Downloaded the original ACM TOCS paper; read its opening bibliographic information and targeted effort passages, including page 23. Supports the authors, title, venue, year and approximately 20 person-years for the seL4 correctness proof. Not represented as a full-paper reading.</span></li>
+<li><a href="https://martin.kleppmann.com/2025/12/08/ai-formal-verification.html">Prediction: AI will make formal verification go mainstream (Martin Kleppmann, December 2025)</a> <span class="how">— Read the author’s December 8, 2025 post. Supports the prediction that automated proof writing shifts difficulty toward choosing the right specification. Paraphrased, with no claim that Anthropic cites this post.</span></li>
+<li><a href="https://arxiv.org/abs/2609.04043">Extending concurrent separation logic to the hardware level to verify the xv6 OS kernel on RISC-V with AI agents (MachCSL; Kaashoek and Zeldovich, arXiv)</a> <span class="how">— Read the arXiv v3 abstract and metadata; checked the appendix’s reference to MachCSL. Supports Kaashoek/Zeldovich authorship and agent-assisted xv6 verification. The concern about scaling verbose proofs is attributed to the Anthropic appendix, not inferred from the abstract.</span></li>
+<li><a href="https://arxiv.org/abs/2303.04910">Baldur: Whole-Proof Generation and Repair with Large Language Models (First et al., 2023)</a> <span class="how">— Read the original arXiv abstract and metadata. Supports the title, Emily First and colleagues’ authorship, 2023 date and proof repair informed by failed proofs and checker error messages; retained as a concise precedent.</span></li>
+<li><a href="https://www.anthropic.com/research/formalizing-fermats-last-theorem">Formalizing Fermat's Last Theorem (Anthropic, September 2026)</a> <span class="how">— Retained original primary-source URL for the mathematical formalization precedent. The simple contextual claim was checked against the live published September 4 YiNAI report and the supplied research dossier; the full primary article was downloaded but not reread in full in this edit.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-04/#story-claude-formalizes-fermat-s-last-theorem-in-lean-over-11-auto">Claude formalizes an established proof of Fermat’s Last Theorem (YiNAI, September 4, 2026)</a> <span class="how">— Read the actual published expansion, confirmed its exact anchor and index/follow metadata, and used it as a contextual back-reference. It covers mathematical formalization, not the October 22 OSS-Fuzz result.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-claude-proves-no-crash-properties-for-239-entry-points-acros">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-22/claude-proves-no-crash-properties-for-239-entry-points-acros</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
