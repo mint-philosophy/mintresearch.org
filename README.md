@@ -310,6 +310,23 @@ The website includes rows where `Site: Public?` is `Yes` and `Site: Section` is
 `Team`, `Affiliate`, or `Alumni`. Each section is sorted numerically by
 `Site: Sort Order`.
 
+Membership and role rules (Seth, 23 October 2026):
+
+- Team members are actively collaborating with Seth; otherwise, use Affiliate,
+  unless Seth explicitly assigns Alumni.
+- Keep the Principal Investigator first, then order Team roles as Lab Manager,
+  Postdoctoral Research Fellow, Research Engineer, PhD Student, Research Assistant,
+  Visiting Fellow, Visiting Student (including Visiting Student (DC)), and
+  Visiting Researcher. Set numeric sort orders in Notion to preserve this order.
+- A Visiting Fellow actively collaborates with the lab, has a PhD, and holds a
+  job elsewhere.
+- A collaborating PhD student enrolled in another programme is a Visiting Student;
+  use Visiting Student (DC) when they are also visiting Seth in DC.
+- A Visiting Researcher collaborates with the lab but is neither a Visiting
+  Student nor a Visiting Fellow.
+- Record parental leave in the person's bio without changing their membership.
+- Do not infer active collaboration or a DC visit from Slack membership alone.
+
 The visible cards and Team detail panel use the `Site:` columns for role,
 discipline, affiliation, bio, and up to three labelled links. A value of `??`
 is treated as missing rather than shown publicly.
