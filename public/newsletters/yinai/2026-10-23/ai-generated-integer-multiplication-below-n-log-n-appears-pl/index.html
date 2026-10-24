@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Harvey reconstructs OpenAI's proposed multiplication shortcut — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-23">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-23">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 23 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Harvey reconstructs OpenAI's proposed multiplication shortcut</h1>
+<p class="dek">His October 20 note explains a saving from transforming arrays together. He finds the approach plausible while leaving data movement and other costs unchecked.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 23 October 2026</span> <span class="chip">964 words · ~5 min</span></div>
+<div class="article-body">
+<p>David Harvey has reconstructed the arithmetic behind OpenAI's proposed integer-multiplication shortcut, but has not checked all the costs needed to establish its claimed reduction in computing steps. His October 20 technical note, <a href="https://web.maths.unsw.edu.au/~davidharvey/research/subnlogn.pdf"><em>On the recently proposed o(n log n) integer multiplication algorithm</em></a>, explains why the UNSW Sydney mathematician nevertheless finds the claim plausible. The underlying claim comes from OpenAI's AI-generated September 23 manuscript, <a href="https://github.com/openai/math/blob/main/preprints/Integer-multiplication-below-n-log-n-September-23-2026/paper.pdf"><em>Integer multiplication below n log n</em></a>, included in the <a href="https://mintresearch.org/newsletters/yinai/2026-10-06/#story-openai-releases-mathematical-results-with-lean-proofs-comput">October 6 mathematics release</a>.</p><p>For two integers with n binary digits each, O(n log n), with a capital O, means the required steps are eventually bounded by a constant times n log n. The small o asserts more: dividing the running time by n log n gives a quantity tending to zero as n grows. OpenAI claims O(n(log n)^(1-kappa)), with kappa = 2^-182. Any fixed positive value of kappa would defeat the conjecture that n log n is unavoidable. The manuscript describes enormous constants and thresholds; it establishes no practical speedup.</p><p>Harvey and Joris van der Hoeven established the O(n log n) upper bound in <a href="https://annals.math.princeton.edu/2021/193-2/p04"><em>Integer multiplication in time O(n log n)</em></a>, published in the <em>Annals of Mathematics</em> in 2021. Their algorithm reduces multiplication to multidimensional Fourier transforms, which reorganize numerical data so products can be calculated efficiently. Its elementary arithmetic combines pairs of values through sums and differences, operations called butterflies. A layer applies these operations across one direction of an array. Harvey had regarded reducing this arithmetic below the familiar bound as effectively impossible.</p><p>The proposed construction saves work by transforming many independent arrays together. A conventional calculation applies a sequence of butterfly layers separately to each array. The new calculation temporarily mixes arrays, performs transforms on the mixtures and then cancels the unwanted contributions. Saving even one layer across a fixed batch can make the later recursive argument possible, provided the additional mixing costs remain controlled. Harvey emphasizes that the saving is across the batch; his explanation does not assume that one isolated array admits the same shortcut.</p><p>His smaller demonstration labels arrays with three-element subsets of a larger set. Shared working arrays collect sums of the data, producing contributions determined by how many elements two labels share. A contribution from labels sharing one element vanishes automatically. Extra working arrays cancel the unwanted contributions when the labels share zero or two elements; identical labels retain the intended contribution. The choice of labels also lets the required partial transforms line up before arrays are added. The working arrays finish with the required transform applied to their original contents. They count among the arrays being transformed, so the saving includes their transform work.</p><p>The full construction adapts that demonstration across three coordinate directions. On the underlying data, the successive operations take a pair (x, y) to (x, y+x), then to (-y, y+x), and finally to (-y, x). Meanwhile, partial transforms accumulate until every data and auxiliary array has received the full transform, allowing for final sign changes and rearrangements. Harvey works through the intermediate states and, for a sufficiently large construction, counts fewer layers than transforming every array independently would require. That comparison counts transform layers; it leaves the extra mixing arithmetic for a separate analysis.</p><p>Repeating a fixed saving once would only improve a constant. The next step, called tensor amplification, applies the construction recursively to larger arrays, making the saving recur at successive levels. That is how a finite construction could lower the exponent on the logarithm. Harvey finds this mechanism plausible, but his closing list of unfinished checks includes the additional arithmetic used to mix arrays, the shifts and signs needed for the actual Fourier transforms, and the behavior of the older multiplication algorithm when its number of dimensions grows with input size.</p><p>He has not begun checking the cost of rearranging data in the Turing-machine model. In a circuit, changing which output wire connects to which input need not add arithmetic gates. A machine with a fixed number of one-dimensional tapes must spend steps moving to and manipulating stored symbols. OpenAI's manuscript proposes faster procedures for both arithmetic and address rearrangement. Harvey and van der Hoeven's March 2025 paper, <a href="https://arxiv.org/abs/2503.22848"><em>Integer multiplication is at least as hard as matrix transposition</em></a>, had already linked the problems: an expected lower bound for rearranging a matrix would imply the corresponding multiplication lower bound.</p><p>Harvey also explains how he reached his assessment. He abandoned attempts to read the three related OpenAI manuscripts through and instead questioned Claude Fable 5.1 extensively, then reconstructed the construction in his own note. He says he checked the construction's steps carefully, while remaining unsure about parts of the full algorithm. He wanted a proof in Lean or another formal system that checks mathematical deductions, plus expert scrutiny of whether its definitions and main statement express the intended theorem.</p><p>Community work has pursued both better bounds and formalization. Douglas Colkitt's <a href="https://github.com/CrocSwap/integer-mult-bounds">integer-multiplication project</a> reports improvements conditional on the original framework and explicitly distinguishes its finite checks from a complete formal proof. Separately, the contributor using the handle jdb1729 <a href="https://news.ycombinator.com/item?id=50191011">responded to Harvey on Hacker News</a> that they and platypii had completed a Lean formalization. Their <a href="https://github.com/platypii/integer-mult-bounds-lean">repository</a> claims an unconditional result for a fixed machine in Mathlib's finite-machine model, with binary inputs and a bound on actual execution steps. Harvey's October 20 note does not assess that formalization; its completion is the contributors' claim.</p><p>Harvey identifies consequences beyond multiplication itself. Afshani, Freksen, Kamma and Larsen's ICALP 2019 paper, <a href="https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ICALP.2019.10"><em>Lower Bounds for Multiplication via Network Coding</em></a>, derives an n log n lower bound for circuits with bounded connections per gate from the Li-Li conjecture. That conjecture says combining messages cannot improve transmission rates over simply forwarding them through undirected networks. A valid multiplication circuit below that bound in the same model would therefore refute the conjecture.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://web.maths.unsw.edu.au/~davidharvey/research/subnlogn.pdf">David Harvey, On the recently proposed o(n log n) integer multiplication algorithm, October 20, 2026</a> <span class="how">— Assigned source read in full, all 38 pages, from matching local PDF/text; fresh PDF has the same SHA-256. Sections 4 through 8 support the assessment, AI-assisted understanding, batch construction, amplification and explicit unfinished checks.</span></li>
+<li><a href="https://github.com/openai/math/blob/main/preprints/Integer-multiplication-below-n-log-n-September-23-2026/paper.pdf">OpenAI, Integer multiplication below n log n, September 23, 2026</a> <span class="how">— Original claimant and theorem; read the introduction and machine-model section, including theorem 1, the asymptotic-only scope, the separate tape procedures, finite-network mechanism and companion-paper distinction. The full 73-page proof was not independently verified.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-06/#story-openai-releases-mathematical-results-with-lean-proofs-comput">Yesterday in AI, October 6, 2026: OpenAI manuscripts and multiplication bounds</a> <span class="how">— Published-history entry plus actual archived full report establish prior publication and exactly what was already reported.</span></li>
+<li><a href="https://annals.math.princeton.edu/2021/193-2/p04">David Harvey and Joris van der Hoeven, Integer multiplication in time O(n log n), Annals of Mathematics, 2021</a> <span class="how">— Publisher metadata verifies March 3, 2021 publication. Author-hosted paper pages 1 through 3 were read for theorem 1.1, computational model, prior conjecture and theoretical scope.</span></li>
+<li><a href="https://arxiv.org/abs/2503.22848">David Harvey and Joris van der Hoeven, Integer multiplication is at least as hard as matrix transposition, March 28, 2025</a> <span class="how">— Full PDF retrieved; introduction through section 1.4 read, including theorem 1.2 and the distinction between unrestricted computation and merely moving data. Supports the relevance of rearrangement costs.</span></li>
+<li><a href="https://github.com/CrocSwap/integer-mult-bounds">Douglas Colkitt and contributors, Community integer-multiplication research</a> <span class="how">— README selected-result and evidence/limits sections read. Supports named community optimization work and its explicit conditional scope. No current record exponent is asserted; no repository tests were executed.</span></li>
+<li><a href="https://news.ycombinator.com/item?id=50191011">jdb1729, Hacker News reply on the Harvey note, October 22, 2026 UTC</a> <span class="how">— Original comment and platform API timestamp read; attributes the claim of a completed formalization by jdb1729 and platypii without inferring either contributor's real identity.</span></li>
+<li><a href="https://github.com/platypii/integer-mult-bounds-lean">platypii and contributors, Integer multiplication in Lean</a> <span class="how">— README, complete Statement.lean and Theorem.lean, and completed-plan record read. Supports a repository claim of an unconditional fixed-machine theorem with standard binary encodings; no build, full dependency audit or independent mathematical certification was performed.</span></li>
+<li><a href="https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ICALP.2019.10">Peyman Afshani, Casper Benjamin Freksen, Lior Kamma and Kasper Green Larsen, Lower Bounds for Multiplication via Network Coding, ICALP 2019</a> <span class="how">— Publisher date and paper pages 1 through 3, including conjecture 1 and theorem 1, read. Supports the conditional circuit lower bound and explains Harvey's stated consequence if the new result holds.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-ai-generated-integer-multiplication-below-n-log-n-appears-pl">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-23/ai-generated-integer-multiplication-below-n-log-n-appears-pl</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

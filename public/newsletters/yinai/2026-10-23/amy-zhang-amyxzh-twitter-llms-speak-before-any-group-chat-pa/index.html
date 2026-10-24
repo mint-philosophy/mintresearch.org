@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Models choose to speak too early in group-chat replay — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-23">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-23">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 23 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Models choose to speak too early in group-chat replay</h1>
+<p class="dek">In turn-by-turn replay, 46.4% of model placements came before any participant’s acceptable window opened. The study separates useful content from the decision about when to contribute it.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 23 October 2026</span> <span class="chip">877 words · ~4 min</span></div>
+<div class="article-body">
+<p>Language models often choose to contribute a useful message before anyone in a group chat would welcome it. Ruotong Wang and colleagues at the University of Washington report that result in their arXiv paper <a href="https://arxiv.org/html/2610.25896v2"><em>When Should AI Chime In? Benchmarking Timely Contribution of Proactive Agents in Multi-Party Chat</em></a>, first posted October 19 and revised October 22. When models replayed conversations one turn at a time, 46.4% of their placement predictions came before any participant’s acceptable window had opened. These were proposed placements in recorded conversations; the researchers did not measure disruptions caused by agents intervening in live discussions.</p>
+<p>Wang’s team held each proposed message fixed to isolate timing from finding useful information and composing an answer. Groups of two to four people first chatted for 15 to 25 minutes about research or plans for a trip or event. Participants then reviewed the transcript and wrote factual messages that could have helped, using optional search and AI drafting assistance. Everyone marked an ideal turn and an acceptable interval for each message, or indicated that it should never appear. Finally, they saw peers’ judgments and could revise their own. The resulting PITCH benchmark contains 384 candidate messages and 1,091 timing judgments across 35 conversations.</p>
+<p>The researchers tested 15 models in 28 configurations. With the completed transcript visible, models matched at least one participant’s ideal turn on 57.8% of placements; in turn-by-turn replay, that fell to 19.0%. The replay condition committed the model to its first decision to speak, preventing it from moving the message after seeing what happened next. Even showing the next five turns improved ideal-turn accuracy only modestly. Acceptable-window scores followed the same pattern: completed-transcript placements usually satisfied someone, while replay placements did so only about half the time. The authors therefore warn that testing with conversational hindsight can overstate performance on the decision an agent actually faces.</p>
+<p>Premature placements accounted for nearly all of the replay errors outside acceptable windows; only 1% came after everyone’s window had closed. On average, models placed messages roughly eleven turns before the nearest participant-designated ideal turn. Independent lay annotators recruited on Prolific also found the replay task difficult, but did somewhat better: they matched an ideal turn 23.7% of the time and placed messages prematurely 39.7% of the time. That comparison separates the difficulty of anticipating a conversation’s direction from the advantage enjoyed by the original participants, who judged timing retrospectively and knew the discussion firsthand.</p>
+<p>To examine the models’ expressed justifications, the researchers used another model to classify 4,349 reasoning traces from the 13 models whose traces were inspectable. About 93% justified speaking by explaining why the content was relevant; only 0.14% explicitly considered waiting. The classifier was not shown model identity or whether the placement was correct. These results describe the reasons the models expressed when committing to a placement. They do not establish which internal processes caused the decision, or whether a different instruction to consider waiting would remedy the problem.</p>
+<p>Coauthor Amy X. Zhang, <a href="https://homes.cs.washington.edu/~axz/">a University of Washington associate professor</a>, emphasized disagreement among participants when <a href="https://x.com/amyxzh/status/2113454570143891634">sharing Wang’s announcement</a>. Only 30% of messages had a unanimous ideal turn, but 77% had some interval everyone accepted. Most judgments revisited after deliberation retained their original placement. The paper gives a concrete reason: a snack suggestion could help when food first came up or when the group returned to it later. PITCH consequently scores against sets of acceptable turns, preserving several defensible answers. The authors connect that choice to <a href="https://arxiv.org/abs/2211.02570">Barbara Plank’s EMNLP 2022 paper on human label variation</a>, which argues that disagreement can reflect real differences in judgment.</p>
+<p>The problem predates language models. In <a href="https://erichorvitz.com/chi99horvitz.pdf"><em>Principles of Mixed-Initiative User Interfaces</em></a> at CHI 1999, Eric Horvitz argued that agents should weigh delaying assistance until it would be less distracting. More recent work trained models to decide when to speak: <a href="https://arxiv.org/abs/2508.18167">Deep Anil Patel and colleagues’ DiscussLLM</a> used synthetic discussions with designated triggers, while <a href="https://arxiv.org/abs/2605.05626">Vihaan Nama and colleagues’ When2Speak</a> used synthetic conversations labeled for speaking or silence. When2Speak’s supervised models missed about half of warranted interventions, showing that different training and evaluation setups can produce excessive silence as well as premature speech. PITCH adds judgments from the actual participants in unscripted conversations.</p>
+<p>Human studies also explain why control over participation matters. In <a href="https://arxiv.org/abs/2501.17258"><em>Controlling AI Agent Participation in Group Conversations: A Human-Centered Approach</em></a>, presented at IUI 2025, Stephanie Houde and colleagues found that brainstorming participants valued an agent’s presence but disliked conversational domination and wanted controls over its behavior. PITCH coauthor Liwei Jiang <a href="https://x.com/liweijianglw/status/2113446425803805146">connected overeager participation to risks for boundaries and human agency</a>; that is a coauthor’s interpretation, beyond the timing preferences measured here.</p>
+<p>PITCH’s authors distinguish those preferences from the effects of a deployed intervention. Participants saw the whole conversation before making their judgments, and an actual message could have changed everything that followed. The benchmark places each contribution once, so it cannot measure how repeated interruptions alter people’s preferences. Its small, informal English-language groups came largely from US research and social networks. The authors propose testing designs that allow a brief delay, including inserting a contribution into a recent thread, while retaining participants’ different acceptable moments. Their <a href="https://social.cs.washington.edu/PITCH-website/">project page</a> links the benchmark, annotation system and human-baseline materials; <a href="https://x.com/RuotongWang1/status/2113415168432762886">Wang’s original announcement thread</a> describes the collection procedure and results.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/html/2610.25896v2">When Should AI Chime In? Benchmarking Timely Contribution of Proactive Agents in Multi-Party Chat (arXiv:2610.25896v2)</a> <span class="how">— Canonical research: fixed-message protocol, retrospective labels, model and human replay results, expressed-rationale classification, disagreement and limitations. Read primary full-text sections and relevant appendices directly.</span></li>
+<li><a href="https://x.com/RuotongWang1/status/2113415168432762886">Ruotong Wang’s eight-post PITCH announcement</a> <span class="how">— Original announcement underlying the selected quote-post; complete saved Bird thread read, including dataset and code links.</span></li>
+<li><a href="https://x.com/amyxzh/status/2113454570143891634">Amy X. Zhang on PITCH and participant disagreement</a> <span class="how">— Selected source retained. Direct saved Bird capture supports her emphasis on different timing preferences; she is a coauthor, not the first author.</span></li>
+<li><a href="https://homes.cs.washington.edu/~axz/">Amy X. Zhang, University of Washington homepage</a> <span class="how">— Direct institutional page verifies associate-professor title.</span></li>
+<li><a href="https://social.cs.washington.edu/PITCH-website/">PITCH project website</a> <span class="how">— Direct page check confirms linked benchmark, annotation and human-baseline materials. Illustrated placement example not used as a factual claim about Waymo.</span></li>
+<li><a href="https://arxiv.org/abs/2211.02570">The Problem of Human Label Variation, Barbara Plank (EMNLP 2022)</a> <span class="how">— Primary abstract and metadata checked; precedent for preserving legitimate disagreement, also cited by PITCH.</span></li>
+<li><a href="https://erichorvitz.com/chi99horvitz.pdf">Principles of Mixed-Initiative User Interfaces, Eric Horvitz (CHI 1999)</a> <span class="how">— Downloaded primary PDF; attention, interruption costs and deferring action passages checked directly.</span></li>
+<li><a href="https://arxiv.org/abs/2508.18167">DiscussLLM: Teaching Large Language Models When to Speak</a> <span class="how">— Primary abstract checked for author attribution, synthetic discussions and explicit triggers. No claim of a full-paper reading.</span></li>
+<li><a href="https://arxiv.org/abs/2605.05626">When2Speak: A Dataset for Temporal Participation and Turn-Taking in Multi-Party Conversations for Large Language Models</a> <span class="how">— Primary abstract checked for synthetic speak/silent data and supervised models missing roughly half of warranted interventions; comparison involves different settings.</span></li>
+<li><a href="https://arxiv.org/abs/2501.17258">Controlling AI Agent Participation in Group Conversations: A Human-Centered Approach (IUI 2025)</a> <span class="how">— Primary abstract and venue metadata support two brainstorming studies, conversational domination concerns and user controls.</span></li>
+<li><a href="https://x.com/liweijianglw/status/2113446425803805146">Liwei Jiang’s response to the PITCH announcement</a> <span class="how">— Original post independently re-fetched with Bird and read. Coauthor interpretation on boundaries and human agency, paraphrased; not independent validation of broader harms.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-amy-zhang-amyxzh-twitter-llms-speak-before-any-group-chat-pa">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-23/amy-zhang-amyxzh-twitter-llms-speak-before-any-group-chat-pa</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
