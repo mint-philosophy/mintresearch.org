@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>A call for deployment limits on models with latent feedback — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-24">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-24">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 24 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">A call for deployment limits on models with latent feedback</h1>
+<p class="dek">Skye distinguishes computation within a token from hidden state carried across steps. The essay seeks deployment restraint beyond existing disclosure proposals, drawing on experiments limited to small models and specific tasks.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 24 October 2026</span> <span class="chip">832 words · ~4 min</span></div>
+<div class="article-body">
+<p>A LessWrong writer posting as Skye proposes that labs disclose whether their models carry hidden reasoning across generation steps, and ideally agree to withhold those architectures from deployment at scale. The October 24 essay, <a href="https://www.lesswrong.com/posts/5tyzgTLnNn8qB9rev/shadow-computation-threatens-cot-monitorability">Shadow Computation Threatens CoT Monitorability</a>, distinguishes that capacity from repeating a transformer's layers before producing each token. Skye's motivating example is <a href="https://metr.org/hugging-face-incident-report-aug-2026.pdf">METR's investigation of the Hugging Face attack</a>, which drew on about 1,300 transcripts containing raw chains of thought. The concern is that future architectures could deprive investigators of similarly useful records. The essay identifies no deployed frontier model using the latent-feedback designs it discusses.</p>
+<p>The technical distinction concerns where hidden computation can continue. A conventional transformer processes its context through a fixed stack of layers, then selects a token. A looped transformer reuses some layers, giving it more computation before that selection. For a fixed loop budget, the added depth remains bounded within each token step. It may solve more problems without writing intermediate reasoning, but does not automatically gain a new path carrying its final hidden state back to the bottom of the next step. Ordinary key-value caches carry earlier representations forward for attention at the corresponding layers. They do not feed a prior top-layer state back into the input. Latent feedback instead returns a high-level state to an earlier processing stage, allowing it to undergo another round of computation without first being decoded into text.</p>
+<p>That difference does not make ordinary text a complete record of reasoning. Skye acknowledges <a href="https://arxiv.org/abs/2404.15758">filler-token computation</a> and <a href="https://arxiv.org/abs/2310.18512">learned steganographic reasoning</a>, in which tokens do not transparently explain the work being done. The essay cites <a href="https://arxiv.org/abs/2507.05246">Emmons and colleagues' finding</a> that models struggle to evade monitors when a task requires written reasoning. But this is not a guarantee of faithfulness: <a href="https://arxiv.org/abs/2610.18105">Bürger and colleagues' October study</a> found unarticulated influences even in correct medical-diagnosis answers requiring chain of thought. Skye's example of a model planning deception privately is a risk scenario, not a demonstrated result, and the claim that conventional models must plan openly is too strong.</p>
+<p><a href="https://arxiv.org/abs/2412.06769">Coconut</a>, the first architecture Skye discusses, replaces written reasoning steps with continuous states: the model's last hidden state becomes its next input directly. Hao and colleagues gradually replaced language reasoning with these latent steps during training. Their main experiments used GPT-2. On the synthetic planning task ProsQA, Coconut reached 97% accuracy against 77.5% for written chain of thought while using fewer generation steps. On GSM8k, however, it underperformed written chain of thought. The result demonstrates a useful alternative to verbal reasoning on some tasks, rather than a general advantage across reasoning problems.</p>
+<p>The <a href="https://arxiv.org/abs/2608.08888">Full-bandwidth Transformer</a> combines the two channels. Xi Wang and colleagues fuse the previous top-layer hidden state with the sampled token's embedding, then feed that combination into the next step. Ordinary text is still emitted, alongside a continuous state the text need not fully describe. First posted on August 9 and revised October 1, the paper reports 1B-parameter models trained on up to 400 billion tokens that match or approach standard transformers trained on roughly 1.5 times as many tokens. The added inference cost is two matrix multiplications per token. The authors describe a wider feedback channel without changing the asymptotic depth of decoding.</p>
+<p>Skye interprets the paper's shorter reasoning traces as evidence that computation is becoming less visible. The paper calls that evidence preliminary. Shortening is clearest in zero-shot base-model tests and less pronounced after instruction tuning or with examples in the prompt. On MATH-500, median generation length fell from 486 tokens under standard decoding to 467 with latent feedback; coding traces grew longer. These task-dependent differences do not show hidden malicious intent. The authors nevertheless identify a monitoring concern: internal computation can continue between visible reasoning steps. They suggest probes that inspect hidden states directly, without demonstrating that such tools would recover reliable oversight at frontier scale.</p>
+<p>The architecture distinction predates Skye's essay. <a href="https://arxiv.org/abs/2603.09786">Brown-Cohen, Lindner and Shah's March framework</a> measures opaque serial depth, the longest chain of dependent computation without interpretable intermediate steps. <a href="https://www.lesswrong.com/posts/PLisnSFir8y5AHkmP/how-concerned-should-we-be-about-astra-s-recurrent">Rauno Arike distinguished depth-axis loops from cross-token recurrence</a> on September 2; <a href="https://mintresearch.org/newsletters/yinai/2026-09-02/#story-openai-says-astra-preserves-chain-of-thought-monitoring-with">our coverage that day</a> likewise explained why layer reuse need not eliminate visible reasoning. <a href="https://www.redwoodresearch.org/blog/an-operationalization-of-opaque-serial-depth">Redwood's September operationalization</a> placed looped models nearer conventional transformers and Coconut-style reasoning much higher on its depth measure. <a href="https://www.lesswrong.com/posts/8mADs3rCHGuJqptFC/what-is-and-isn-t-gained-by-avoiding-architectures-with-high">Alek Westover subsequently named Full-bandwidth Transformers</a> as a relevant example, while stressing that low opaque depth does not guarantee faithful reasoning.</p>
+<p>Skye's stronger policy request is the addition to that debate. The <a href="https://arxiv.org/abs/2507.11473">2025 monitorability position paper</a> asked developers to weigh architecture choices and document them. <a href="https://www.redwoodresearch.org/blog/proposal-for-tracking-architecture-on-monitorability">Redwood's disclosure proposal</a>, which <a href="https://mintresearch.org/newsletters/yinai/2026-09-10/#story-redwood-research-proposes-six-monthly-architecture-disclosur">we covered September 10</a>, added independent checks and public policies for trading performance against monitorability. Skye asks labs to forgo deployment at scale, accepting efficiency gains but judging them insufficient to justify the oversight risk. The essay leaves the agreement's scope and enforcement unspecified. Its practical claim is that evaluators need to know which channels a model can use for computation before deciding how much confidence to place in its written reasoning.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.lesswrong.com/posts/5tyzgTLnNn8qB9rev/shadow-computation-threatens-cot-monitorability">Shadow Computation Threatens CoT Monitorability — Skye, LessWrong</a> <span class="how">— Primary essay read in full from candidate-05.txt and the completed dossier. Used for the intra-token/cross-step distinction, architecture examples, hypothetical risk, and disclosure/nondeployment proposal. All paraphrased. No author identity, affiliation or experience claim is used.</span></li>
+<li><a href="https://arxiv.org/abs/2608.08888">Full-bandwidth transformer (arXiv:2608.08888v2) — Wang, Cai, Zhan, Dong, Fan, de Rosa, Pearce, Langford</a> <span class="how">— Dossier primary-paper reading supports the architecture, added two-matmul cost, August 9 v1 and October 1 v2 dates, 1B models and training budgets, efficiency comparison, no change in asymptotic decoding depth, MATH-500 medians and longer coding traces, preliminary and post-tuning qualifications, monitoring limitation and proposed hidden-state probes.</span></li>
+<li><a href="https://arxiv.org/abs/2412.06769">Training Large Language Models to Reason in a Continuous Latent Space (Coconut) — Hao et al., Meta FAIR</a> <span class="how">— Dossier reading supports Coconut's latent-step mechanism, training curriculum, GPT-2 main experiments and task-dependent ProsQA/GSM8k results. Fewer generation positions avoids implying that continuous steps are ordinary verbal tokens.</span></li>
+<li><a href="https://metr.org/hugging-face-incident-report-aug-2026.pdf">Brief independent investigation of agents' behavior in the OpenAI / Hugging Face hacking incident — METR</a> <span class="how">— Dossier primary-report reading supports approximately 1,300 transcripts with raw chains of thought as evidence used in the investigation. Used only as Skye's motivating example, not a new incident.</span></li>
+<li><a href="https://arxiv.org/abs/2507.11473">Chain of Thought Monitorability: A New and Fragile Opportunity for AI Safety — Korbak, Balesni et al.</a> <span class="how">— Dossier reading of the architecture recommendations supports the earlier call to consider and document monitoring consequences. No blanket verbalization claim is endorsed.</span></li>
+<li><a href="https://arxiv.org/abs/2603.09786">Quantifying the Necessity of Chain of Thought through Opaque Serial Depth — Brown-Cohen, Lindner, Shah (Google DeepMind)</a> <span class="how">— Dossier section-level reading supports opaque serial depth as a March precursor to the argument, not an invention of the October essay.</span></li>
+<li><a href="https://www.lesswrong.com/posts/PLisnSFir8y5AHkmP/how-concerned-should-we-be-about-astra-s-recurrent">How concerned should we be about Astra's recurrent architecture? — Rauno Arike, LessWrong</a> <span class="how">— Dossier reading supports the September 2 depth-axis versus cross-token distinction. Used as precedent without asserting the architecture of a deployed frontier model or attributing the Astra connection to Skye.</span></li>
+<li><a href="https://www.redwoodresearch.org/blog/an-operationalization-of-opaque-serial-depth">An operationalization of opaque serial depth — Redwood Research</a> <span class="how">— Dossier summary supports the relative architecture distinction; the retained published September 10 report independently supplies the NLS-depth framework and its limits. Paraphrased only, with no numerical threshold or new direct quote.</span></li>
+<li><a href="https://www.redwoodresearch.org/blog/proposal-for-tracking-architecture-on-monitorability">Proposal for tracking the effects of architecture on monitorability — Redwood Research</a> <span class="how">— Dossier summary and full retained published September 10 report support independent checks, disclosure, and public policies on the performance/monitorability tradeoff. Used to distinguish Skye's deployment-restraint proposal.</span></li>
+<li><a href="https://www.lesswrong.com/posts/8mADs3rCHGuJqptFC/what-is-and-isn-t-gained-by-avoiding-architectures-with-high">What is (and isn't) gained by avoiding architectures with high opaque serial depth? — Alek Westover, LessWrong</a> <span class="how">— Full dossier reading supports prior discussion of Full-bandwidth Transformers and the qualification that low opaque serial depth does not ensure faithful chain of thought.</span></li>
+<li><a href="https://arxiv.org/abs/2610.18105">Chain of Thought Monitoring Can Fail Even When CoT Is Necessary — Bürger et al.</a> <span class="how">— Abstract-level dossier evidence that influential attributes can remain unarticulated even in correct medical-diagnosis answers requiring chain of thought. Qualifies the necessity-to-monitorability inference; not described as a response to Skye.</span></li>
+<li><a href="https://arxiv.org/abs/2404.15758">Let's Think Dot by Dot: Hidden Computation in Transformer Language Models — Pfau, Merrill, Bowman</a> <span class="how">— Already cited by Skye and read at abstract level in the completed dossier. Supplies the known filler-token exception to a literal verbalization bottleneck; no new research.</span></li>
+<li><a href="https://arxiv.org/abs/2310.18512">Preventing Language Models From Hiding Their Reasoning — Roger and Greenblatt</a> <span class="how">— Already cited by Skye and read at abstract level in the dossier. Supports learned encoded reasoning as a limitation on treating visible tokens as transparent explanations.</span></li>
+<li><a href="https://arxiv.org/abs/2507.05246">When Chain of Thought is Necessary, Language Models Struggle to Evade Monitors — Emmons et al.</a> <span class="how">— Already cited by Skye and read at abstract level in the dossier. Used for the conditional monitorability evidence underlying Skye's concern, without extending it to a guarantee.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-02/#story-openai-says-astra-preserves-chain-of-thought-monitoring-with">YiNAI, September 2: Astra turns chain-of-thought monitoring into a three-way dispute</a> <span class="how">— Full retained article read during editing; September 2 deep_edition and matching slug verified in deep_history.json. Establishes prior coverage of layer reuse versus loss of visible reasoning. This article discussed Raschka, not Arike; the prose keeps them separate.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-10/#story-redwood-research-proposes-six-monthly-architecture-disclosur">YiNAI, September 10: Redwood Research proposes independent checks on hidden AI reasoning</a> <span class="how">— Full retained article read during editing; September 10 deep_edition and matching slug verified in deep_history.json. Establishes the previously reported architecture measurement, independent review and disclosure-policy proposals.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-latent-feedback-could-undermine-chain-of-thought-monitoring">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-24/latent-feedback-could-undermine-chain-of-thought-monitoring</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Zvi Mowshowitz on why an eleven-week head start was not enough — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-24">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-24">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 24 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Zvi Mowshowitz on why an eleven-week head start was not enough</h1>
+<p class="dek">Mowshowitz reads PHP2Shell as evidence that finding flaws first cannot secure deployed systems quickly enough. His essay argues for broader vetted defender access, more patching capacity and pressure on operators to apply repairs.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 24 October 2026</span> <span class="chip">1019 words · ~5 min</span></div>
+<div class="article-body">
+<p>In his October 23 essay <a href="https://www.lesswrong.com/posts/iqgZaJMnmyDCYfnuC/the-hackening-1">“The Hackening”</a>, Zvi Mowshowitz argues that PHP2Shell weakens the case for AI giving defenders a reliable advantage. Finding vulnerabilities first helps, but protection depends on repairing software and getting fixes onto exposed systems before attackers exploit them. His account develops the discovery-versus-deployment problem in <a href="https://mintresearch.org/newsletters/yinai/2026-10-22/#story-ai-assisted-php2shell-discovery-accelerates-exploit-developm">our October 22 report</a>, through a dispute about what the episode demonstrates and proposals for broader vetted access, more patching capacity and pressure on slow-moving operators.</p>
+<p>Mowshowitz builds his argument around the <a href="https://mintresearch.org/newsletters/yinai/2026-10-21/#story-php-patches-two-critical-rce-flaws-after-ai-assisted-audits">chronology covered October 21</a>. <a href="https://calif.io/php2shell/">Calif dates its discovery</a> to August 1 and its first notification to PHP to August 11. <a href="https://aws.amazon.com/blogs/security/amazon-threat-intelligence-identifies-php2shell-exploitation-prior-to-public-disclosure-in-madpot/">Amazon observed an attempted attack</a> against its MadPot honeypots on October 17; patches and public disclosure followed October 21. The eleven-week interval runs from discovery to that attempt. Amazon says it is unclear whether the pre-release attempts would have worked on real systems. Mowshowitz’s concern is that even this substantial lead failed to get patches released before attempts began.</p>
+<p>On X, <a href="https://x.com/So8res/status/2112959457001119766">Nate Soares argued</a> that the flaws surfacing six months after Mythos counted against the expectation that defense would outpace offense. <a href="https://www.anthropic.com/glasswing">Anthropic’s Project Glasswing</a> had given selected organizations access to Mythos Preview for defensive security work. In a reply, Soares emphasized the program’s failure to prevent a critical vulnerability persisting. <a href="https://x.com/tszzl/status/2113117685886386578">roon answered</a> that defenders using Daybreak had found the flaws: the lesson was that Glasswing needed greater reach or capacity. He also questioned whether the earlier Mythos matched the later models used in the discovery.</p>
+<p><a href="https://x.com/BlancheMinerva/status/2113263852582486465">Stella Biderman called Soares’s post disinformation</a>, citing discovery by defensive operations and the absence of evidence of large-scale exploitation. Mowshowitz accepts that defenders finding the bugs first improved the outcome, but sides with Soares on the broader inference. Discovery used a model behind the contemporary frontier, he reasons, so attackers could plausibly have found the flaws first. Combined with the long repair interval, that makes the outcome less reassuring to him than to Biderman. He objects to treating Soares’s interpretation as disinformation.</p>
+<p>Calif’s Ryan Austin says the initial discovery used generally available models and no special harness; his knowledge of PHP’s vulnerability history guided the investigation. Calif participated in OpenAI’s Patch the Planet initiative, but participation does not establish that the discovery required a private model. The <a href="https://thephp.foundation/blog/2026/10/21/">PHP Foundation says</a> PHP had previously been scanned with Mythos through Alpha-Omega, without specifying whether that scan covered the relevant paths.</p>
+<p><a href="https://x.com/VitalikButerin/status/2113078532125622577">Vitalik Buterin’s response</a>, which Mowshowitz quotes, distinguishes a potentially favorable eventual balance from a difficult transition. Racing to find bugs in software already deployed does not guarantee defenders an advantage. Buterin wants formal verification, mathematical checks of specified software properties, and a smaller trusted computing base: less code that must behave correctly for the system to remain secure. He remains receptive to slowing or pausing AI development and calls for more than 1% of GDP toward hardening cyber, biological and physical systems. His position requires changing how systems are built, alongside improving bug discovery.</p>
+<p>The PHP Foundation’s postmortem explains the repair difficulties. Proposed fixes threatened compatibility, introduced denial-of-service risks or required changes across third-party extensions. A security team operating by consensus struggled to choose, and few developers understood the engine well enough to resolve the trade-offs. Work stalled and restarted over months. The Foundation described a structural failure and said it was moving toward majority decisions.</p>
+<p>Mowshowitz emphasizes that publishing a fix gives attackers information about vulnerable systems while administrators still need to install it. Even successful coordination among discoverers and maintainers therefore leaves a second race over deployment. He notes that PHP supplied limited backports for obsolete branches, while warning against continuing to rely on them. His concern encompasses permissions, manual work and systems that are difficult to update: better models cannot by themselves ensure that a repair reaches every installation.</p>
+<p>In the essay’s final section, Mowshowitz takes up <a href="https://x.com/deanwball/status/2113317681436688412">Dean Ball’s framing</a> of the policy choice between rapidly distributing dual-use capabilities and restricting them to vetted users. He rejects the argument that eventual proliferation justifies accelerating it now. Yet he thinks access for legitimate defenders is too restrictive. Providers must balance the benefit of equipping more defenders against the risk of trusting someone malicious, even while controlling only part of the wider market.</p>
+<p>Mowshowitz challenges a threat model in which one rogue actor briefly gains access to a powerful model and immediately unleashes disaster. He expects danger to accumulate as capable users expand their activity. That makes monitoring, classifiers, identity checks and legal accountability useful ways to manage broader defensive access. Citing Sir Lemmings’s account of receiving Daybreak access within fifteen minutes, he suggests that awareness can also be a constraint: providers should actively offer access to people who need it. His proposal combines easier access with supervision, while retaining restrictions on indiscriminate distribution.</p>
+<p>Mowshowitz warns that these access arrangements will accomplish little if openly available models improve faster than organizations can patch. He calls for much greater resources for repairs and proposes white-hat probes backed by mandatory large bounties to push operators to act; he does not specify who would administer that system. <a href="https://x.com/gdb/status/2112921529650688312">Greg Brockman’s October 21 account</a> identifies a related problem: the coordinated response remained slow and manual. Brockman floated authorized defenders scanning vulnerable hosts and, in extreme cases, remotely patching them.</p>
+<p>In the essay’s discussion of diffusion, Mowshowitz develops another argument from Ball: a few quiet days after an open model’s release cannot establish that its cyber risks were exaggerated. People who expect institutions and slow adoption to delay AI’s effects should allow for similar delays in abuse. Learning to use the tools takes time and iteration; early incidents can precede much wider uptake.</p>
+<p>Mowshowitz argues that defenders can buy time by imposing friction. He suspects cheap, fast DeepSeek models helped accelerate recent activity, while describing much of that activity as opportunistic and poorly resourced. On that account, making attacks and access to capable models more troublesome can still reduce harm while repairs proceed. He expects such obstacles to lose effectiveness as stronger attackers scale. For now, he argues, defenders should use those temporary advantages and adopt precautions they can sustain through a prolonged security problem.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.lesswrong.com/posts/iqgZaJMnmyDCYfnuC/the-hackening-1">The Hackening - Zvi Mowshowitz, LessWrong</a> <span class="how">— Selected source; full essay reread from planner-evidence/candidate-02.txt. Supplies Mowshowitz’s interpretation of the dispute, patch-deployment argument, vetted-access proposals, white-hat bounty suggestion, diffusion argument and friction-as-delay strategy. Ball’s framing and observation about slow adoption, and Sir Lemmings’s fifteen-minute Daybreak anecdote, are reported through this essay. Only the two-word title is quoted.</span></li>
+<li><a href="https://aws.amazon.com/blogs/security/amazon-threat-intelligence-identifies-php2shell-exploitation-prior-to-public-disclosure-in-madpot/">Amazon Threat Intelligence identifies PHP2Shell exploitation prior to public disclosure in MadPot - AWS Security Blog</a> <span class="how">— Full primary capture reread in planner-evidence/aws-php.txt. October 17 honeypot attempt, October 21 disclosure and explicit uncertainty about success on real systems. No successful real-world exploitation claim.</span></li>
+<li><a href="https://calif.io/php2shell/">PHP2Shell: A tale of two PHP remote vulnerabilities - Calif</a> <span class="how">— Full primary capture reread in planner-evidence/calif.txt. August 1 discovery, August 11 first report, October 21 patch release; public-model and no-special-harness qualification; Austin’s role and historical knowledge.</span></li>
+<li><a href="https://thephp.foundation/blog/2026/10/21/">Today's PHP Security Release, and How We're Strengthening PHP Security - The PHP Foundation</a> <span class="how">— Research dossier’s full-read account, corroborated by prior published coverage. Supports competing repair trade-offs, limited engine expertise, consensus delays, move toward majority decisions and earlier Mythos scan. These details are attributed to the Foundation, not to Mowshowitz.</span></li>
+<li><a href="https://x.com/So8res/status/2112959457001119766">Nate Soares on X</a> <span class="how">— Original post and self-reply, retrieved in full according to the research dossier. Supports the six-month Glasswing argument and its clarification. Paraphrased; no direct quotations or affiliation asserted.</span></li>
+<li><a href="https://x.com/tszzl/status/2113117685886386578">roon on X</a> <span class="how">— October 22 original quote-post, retrieved in full according to the research dossier. Supports Daybreak, capacity and earlier-versus-later model arguments. Paraphrased; no direct quotations or affiliation asserted.</span></li>
+<li><a href="https://x.com/BlancheMinerva/status/2113263852582486465">Stella Biderman on X</a> <span class="how">— Research dossier reports full original post retrieval and identifies Stella Biderman. Supports her reaction to Soares, defensive-discovery claim and absence-of-large-scale-exploitation argument. Paraphrased; no affiliation asserted.</span></li>
+<li><a href="https://x.com/VitalikButerin/status/2113078532125622577">Vitalik Buterin on X</a> <span class="how">— Original response, retrieved in full according to the research dossier. Supports eventual defense advantage versus transition, formal verification, a smaller trusted computing base, receptiveness to slowdowns and the spending proposal. Paraphrased; no direct quotation.</span></li>
+<li><a href="https://www.anthropic.com/glasswing">Project Glasswing - Anthropic</a> <span class="how">— Brief program identification from the research dossier’s primary-page extraction. Full page not read; no extended description, program statistics or quotation retained.</span></li>
+<li><a href="https://x.com/deanwball/status/2113317681436688412">Dean W. Ball on X</a> <span class="how">— Original linked precursor; the dossier retrieved truncated text, so the framing used here rests on its reproduction in Mowshowitz’s full essay. Paraphrased; no direct quotation or unverified affiliation.</span></li>
+<li><a href="https://x.com/gdb/status/2112921529650688312">Greg Brockman on X: Towards securing the internet</a> <span class="how">— Original post, retrieved in full according to the research dossier. Supports the slow manual response and proposal for authorized remote patching in extreme cases. Paraphrased; no title or affiliation asserted.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-21/#story-php-patches-two-critical-rce-flaws-after-ai-assisted-audits">Yesterday in AI, October 21: PHP2Shell triggers shutdown warnings and millions of attack attempts</a> <span class="how">— Prior coverage back-reference for the Calif and Amazon chronology; publication verified by the dossier in deep_history.json and send_history.jsonl.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-22/#story-ai-assisted-php2shell-discovery-accelerates-exploit-developm">Prior YiNAI coverage: PHP2Shell’s failed exploits and working demonstrations, October 22</a> <span class="how">— Verified live published section, reviewed in the source audit and planner brief. Establishes continuity for exploit-quality and discovery-versus-deployment discussion; exact required anchor retained.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-two-ai-discovered-php-flaws-expose-patching-bottlenecks-desp">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-24/two-ai-discovered-php-flaws-expose-patching-bottlenecks-desp</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

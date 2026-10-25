@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Qwen3-8B learns to detect batching through numerical rounding — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-24">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-24">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 24 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Qwen3-8B learns to detect batching through numerical rounding</h1>
+<p class="dek">Training only the final two blocks lets the model read differences left by GPU kernels. Tiny changes to the frozen weights destroy the learned ability.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 24 October 2026</span> <span class="chip">609 words · ~3 min</span></div>
+<div class="article-body">
+<p>David Demitri Africa <a href="https://x.com/DavidDAfrica/status/2114001571004776500">reported on October 24</a> that he had trained Qwen3-8B to recognize whether its request was being processed alongside others, using tiny differences in the model’s arithmetic. He held the first 34 blocks fixed and trained only the final two, then tested the whole model under real batching on fresh prompts. Asked whether it was batched, the trained model answered yes on 91% of batched requests and no on 98% of solitary requests. Before this training, it mostly answered no in both conditions.</p><p>Africa <a href="https://x.com/DavidDAfrica/status/2114001631171969392">traces the difference</a> to Nvidia’s cuBLAS library, which chooses GPU kernels, the routines that perform numerical operations, according to how many tokens are processed in a step. Different kernels can add identical products in different orders. In his example, one computes several partial sums and combines them; another accumulates the products in one pass. Computers store numbers with finite precision, so those procedures can produce slightly different results. Rounding into the model’s lower-precision number format preserves some differences, which spread through later layers. The request’s text can stay identical while its internal numerical representation changes.</p><p>He <a href="https://x.com/DavidDAfrica/status/2114001647743733999">located a usable signal</a> at the “user” token in the chat template. Batching shifts that token’s internal representation by a small amount determined by chat length. Across different conversations, the trained blocks can therefore learn a small set of numerical patterns associated with running alone or in a batch. The kernel choices in this experiment carry information about the number of tokens being processed; Africa’s detector reads that serving condition.</p><p>Africa’s <a href="https://x.com/DavidDAfrica/status/2114001583638003715">motivation is safety evaluation</a>: reinforcement-learning training often generates answers in large batches, while a researcher’s individual safety check might run alone. Deployment can have its own clustering of requests. Batch status could therefore give a model a clue about its circumstances. In a separate <a href="https://x.com/DavidDAfrica/status/2114001615590146388">variant trained with reinforcement learning</a>, he taught the model to answer a favourite-animal question differently depending on batching, choosing an owl when batched and a cat when alone. That was a deliberately trained toy behaviour; the experiment did not demonstrate spontaneous recognition of safety evaluations.</p><p>The learned detector depended on preserving the earlier blocks’ numerical behaviour. Africa <a href="https://x.com/DavidDAfrica/status/2114001679989555704">found that flipping the least significant bit</a> in just 0.01% of the frozen weights destroyed its accuracy. When he instead <a href="https://x.com/DavidDAfrica/status/2114001696611524710">trained adapter weights across every layer</a> with reinforcement learning, the model failed to learn batch detection. Updating those layers changed the signal it was supposed to learn. The same procedure succeeded at detecting quantization, which represents weights using fewer numerical values. Africa describes the experiments as toy setups, conducted mostly with Qwen3-8B on one GPU type.</p><p>He followed <a href="https://x.com/Sauers_/status/2111696312026677658">Sauers’s probe-detection work</a>, which we <a href="https://mintresearch.org/newsletters/yinai/2026-10-18/#sec-alignment-and-control">covered on October 18</a>. Sauers trained Qwen3-8B’s final two layers to detect when a tool saved its internal activations. Saving the data forced a compiled operation into separate kernels, changing arithmetic order and leaving a detectable numerical difference. The model did not learn to detect a probe designed to avoid that kernel split. Sauers’s <a href="https://github.com/SauersML/watching">repository also reports poor transfer</a> across GPU types, including reversed answers on some hardware. Africa extends the experiment from detecting a monitoring tool to detecting how requests are grouped for computation.</p><p>Horace He and Thinking Machines Lab had described the underlying engineering problem in <a href="https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/">“Defeating Nondeterminism in LLM Inference”</a> in September 2025. They showed how changing batch sizes changes numerical results even when the software always chooses the most likely next token. Their kernels kept arithmetic order consistent across batch sizes and made repeated answers identical in their test, with a performance cost. Africa’s experiment shows that a model can be trained to use those numerical differences as information about how it is running.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://x.com/DavidDAfrica/status/2114001571004776500">David Demitri Africa: complete October 24 thread on trained batch detection</a> <span class="how">— Assigned primary source; complete 15-post Bird capture and all ten downloaded figures read. Supplies final-two-block training, fresh-prompt evaluation, separate 91% batched/98% solitary rates and the original model’s mostly-no baseline. No detector training recipe inferred.</span></li>
+<li><a href="https://x.com/DavidDAfrica/status/2114001631171969392">Africa: cuBLAS kernel selection and rounding</a> <span class="how">— Primary mechanism and directly viewed arithmetic-order figure; partial sums versus one running sum and propagation of rounding differences. Detailed token counts and decimal values omitted.</span></li>
+<li><a href="https://x.com/DavidDAfrica/status/2114001647743733999">Africa: signal at the user token</a> <span class="how">— Primary post and directly viewed hidden-state figure establish the chat-template signal and patterns associated with solitary/batched execution.</span></li>
+<li><a href="https://x.com/DavidDAfrica/status/2114001583638003715">Africa: motivation involving training, evaluation and deployment</a> <span class="how">— Attributes the proposed significance of batch status to Africa; does not present inference about evaluations as a demonstrated capability.</span></li>
+<li><a href="https://x.com/DavidDAfrica/status/2114001615590146388">Africa: detection rates and separate animal-choice variant</a> <span class="how">— Figure labels animal-choice variant as reinforcement learning and direct detector only as trained. Animal variant retained without another metric pair.</span></li>
+<li><a href="https://x.com/DavidDAfrica/status/2114001679989555704">Africa: tiny frozen-weight perturbations destroy batch detection</a> <span class="how">— Primary post and bit-flip figure; least-significant-bit changes to 0.01% of frozen weights destroy learned detection.</span></li>
+<li><a href="https://x.com/DavidDAfrica/status/2114001696611524710">Africa: all-layer adapter reinforcement-learning experiment</a> <span class="how">— Directly viewed figure specifies RL with LoRA on every layer; batch detection fails while quantization detection succeeds. Does not generalize this failure to all possible training procedures.</span></li>
+<li><a href="https://x.com/Sauers_/status/2111696312026677658">Sauers: October 18 probe-detection thread</a> <span class="how">— Meaningful precursor explicitly cited by Africa. Dossier’s full-thread account and extracts support last-two-layer training, probe-induced kernel split, and failure to learn the probe that avoided the split.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-18/#sec-alignment-and-control">YiNAI October 18: Alignment and Control</a> <span class="how">— Verified prior coverage of Sauers’s probe-detection work, rechecked on the live hosted issue. Precise section back-reference; distinct from Africa’s new batching experiment.</span></li>
+<li><a href="https://github.com/SauersML/watching">SauersML/watching repository</a> <span class="how">— README’s opening results rechecked directly against live primary page: probe detector transfers poorly across GPU types and reverses answers on some. No GPU type transferred to Africa’s experiment.</span></li>
+<li><a href="https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/">Defeating Nondeterminism in LLM Inference — Horace He and Thinking Machines Lab</a> <span class="how">— Engineering context rechecked directly against original primary page, especially batch invariance and experiments. Identical outputs under batch-invariant kernels and performance costs are Thinking Machines results, not a tested defense against Africa’s detector.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-qwen3-8b-identifies-91-of-batched-requests-using-gpu-kernel">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-24/qwen3-8b-identifies-91-of-batched-requests-using-gpu-kernel</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
