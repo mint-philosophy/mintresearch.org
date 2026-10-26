@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>A specialist image model beats frontier LLMs on selected skin lesions — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-25">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-25">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 25 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">A specialist image model beats frontier LLMs on selected skin lesions</h1>
+<p class="dek">Magnus Lynch’s 200-case comparison finds better diagnosis accuracy from fine-tuned Inception v3. Discharge results depend on the threshold, and the test does not establish clinical safety.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 25 October 2026</span> <span class="chip">768 words · ~4 min</span></div>
+<div class="article-body">
+<p>A small image classifier trained on dermatology photographs identified skin lesions more accurately than two frontier LLMs in a selected 200-case test, Magnus Lynch reports in <a href="https://lynchlab.net/llm-skin-cancer">“A 10-year-old CNN outperforms frontier LLMs for skin cancer diagnosis”</a>, published on Lynch Lab on October 25. Lynch, a <a href="https://www.guysandstthomas.nhs.uk/our-consultants/magnus-lynch">consultant dermatologist at Guy’s and St Thomas’ NHS Foundation Trust</a>, compared a fine-tuned Inception v3 with GPT-6 Astra and Claude Fable 5.1. The classifier gave the correct first-choice diagnosis for 125 of 200 lesions, about 62%, against 84 and 85 for the LLMs, about 42%. Its decisions about discharging lesions depended strongly on the threshold used.</p>
+
+<p>Lynch selected the cases from <a href="https://api.isic-archive.com/doi/milk10k/">MILK10k</a>, a public collection pairing ordinary close-up photographs with dermoscopic images taken through a skin-imaging instrument. His test deliberately contained 100 lesions he classified as needing further care and 100 classified as safe to discharge. The former included 30 melanomas, other skin cancers and actinic keratoses; the latter were moles and seborrhoeic keratoses, benign skin growths. Every selected lesion had a biopsy-confirmed diagnosis, including the benign cases. Lynch notes that these benign lesions had worried clinicians enough to warrant biopsy, making the selection harder than an ordinary mix of skin concerns.</p>
+
+<p>The <a href="https://lynchlab.net/skin-ai-inception">model card</a> describes Inception v3, a convolutional neural network (CNN) published in 2015, as a research baseline, pretrained on general photographs and then fine-tuned on 68,011 clinical and dermoscopic images from the ISIC Archive. Lynch says all images of the test lesions and patients were excluded from training and validation. For this comparison, the CNN combined scores from both views, weighting the dermoscopic view more heavily, and chose among six diagnoses. The LLMs saw the same image pairs without patient history, age or body site. Each received the same prompt once at default settings, requesting a diagnosis, second choice, confidence and discharge decision. Discharge meant no treatment, biopsy or follow-up.</p>
+
+<p>Lynch illustrates the difference between diagnosis and discharge with the models’ errors. GPT-6 Astra often labelled melanomas as basal cell carcinoma, another cancer, while many of the CNN’s melanoma errors assigned benign diagnoses. A wrong cancer label can still lead a model to recommend further care. At the CNN’s preset research threshold, it recommended discharge for 76 of the 100 benign lesions but also 18 of the 30 melanomas. GPT-6 Astra and Claude Fable 5.1 recommended discharge for only 32 and 22 benign lesions, alongside three and four melanomas. They would therefore send many benign cases for further assessment.</p>
+
+<p>Lynch’s table also reports CNN results at thresholds labelled “matched”: 98 or 99 of the 100 lesions needing care were retained, and only one or two melanomas were discharged. The post does not define the matching criterion or report how many benign lesions were discharged at those settings. Those omissions prevent a comparison at an established equal rate of benign discharge. The model card’s preset thresholds were chosen on validation images to catch 90% of cancers, or cancers plus actinic keratoses, with separate cutoffs for each image type. It explicitly describes them as research settings. Its separate figures for dermoscopy-only and clinical-only inputs are different evaluations from the paired-image comparison.</p>
+
+<p>Lynch’s <a href="https://www.drmagnuslynch.com/can-llms-diagnose-skin-cancer">October 11 article</a> had already reported the LLM-only test on these cases; the October 25 post adds the specialist classifier. The earlier article also describes three additional runs on its opening melanoma example. Both LLMs repeatedly gave the same wrong benign diagnosis, but their discharge decisions changed across runs. That small check illustrates why the main comparison’s single response per case cannot establish how reliably a model would repeat its decision. The one-case difference between the LLMs’ diagnosis totals offers little basis for ranking them.</p>
+
+<p>The <a href="https://d2gaqzonlm544h.cloudfront.net/skin-ai/data/llm-skin-cancer-test.zip">released cases, prompts and replies</a> reproduce the LLM totals when scored against the supplied biopsy labels. They contain no CNN predictions, so the classifier’s results and threshold comparison remain figures reported in the article. Lynch says he designed the test and made the clinical rulings; Claude Code assisted with analysis and drafting, and scripts scored answers against the diagnoses.</p>
+
+<p>Lynch’s exclusions protect against reusing the same patients and lesions in CNN training, but this remains an evaluation of selected research images. The model card lists MILK study contributors among its training sources and reports few images of darker skin. Holding out individual patients and lesions does not establish performance in a new clinical population. The deliberately balanced case mix, biopsy selection and limited number of melanomas also constrain interpretation. This comparison shows how the tested models classified these images and how their discharge choices differed; it does not establish that any of them can safely discharge patients in prospective clinical use.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://lynchlab.net/llm-skin-cancer">A 10-year-old CNN outperforms frontier LLMs for skin cancer diagnosis — Magnus Lynch, Lynch Lab, October 25, 2026</a> <span class="how">— Selected primary post read in full from the assignment and refreshed by HTTP200. Supplies paired-image comparison, 125/200 versus 84/85 diagnosis counts, six-choice setup, test-patient/lesion exclusion claim, preset and matched threshold table, and author disclosure. CNN figures remain attributed to this report.</span></li>
+<li><a href="https://www.guysandstthomas.nhs.uk/our-consultants/magnus-lynch">Magnus Lynch — Guy’s and St Thomas’ NHS Foundation Trust</a> <span class="how">— Official NHS profile checked directly by web and HTTP200; verifies consultant dermatologist and dermatological surgeon at St John’s Institute of Dermatology, Guy’s and St Thomas’ NHS Foundation Trust. Only the concise verified clinical affiliation is retained in the expansion.</span></li>
+<li><a href="https://api.isic-archive.com/doi/milk10k/">MILK10k — ISIC Archive, DOI 10.34970/648456</a> <span class="how">— Primary dataset page checked directly by HTTP200. Confirms paired close-up/dermoscopic image collection and research provenance. The 200 selected cases’ diagnoses and 100/100 discharge grouping were separately checked against Lynch’s released cases.csv; the complete dataset’s histology proportion is not substituted for that selected set.</span></li>
+<li><a href="https://lynchlab.net/skin-ai-inception">Inception v3 skin lesion classifier — Lynch Lab model card</a> <span class="how">— Primary model card read in full by HTTP200. Supports architecture, ImageNet pretraining, 68,011-image fine-tuning, validation-set threshold setting, patient/lesion grouping, MILK study team among training contributors, and darker-skin limitation. Its dermoscopy-only 6/30 and clinical-only 14/30 melanoma figures are not imported into the paired-image comparison. Separate external-clinic evaluation is not presented as external validation of the 200-case LLM comparison.</span></li>
+<li><a href="https://www.drmagnuslynch.com/can-llms-diagnose-skin-cancer">Can frontier LLMs diagnose skin cancer? — Magnus Lynch, October 11, 2026</a> <span class="how">— Primary earlier article read directly; confirms the earlier LLM-only experiment on the same 200 cases, no patient age/body-site/history in inputs, one response per case, and three additional runs on the opening melanoma. Treated as Lynch’s precursor, not previous YiNAI coverage.</span></li>
+<li><a href="https://d2gaqzonlm544h.cloudfront.net/skin-ai/data/llm-skin-cancer-test.zip">LLM skin cancer test — released cases, prompts, replies and scripts</a> <span class="how">— Downloaded original 562,309-byte archive, inspected manifest, README, exact prompts and clinician scoring script, and independently recomputed both 200-case clinician result files. Confirms first-choice counts 84/85, top-two 134/138, unsafe retained 97/96, benign discharged 32/22 and melanomas discharged 3/4. No CNN predictions or matching rule are included. No API calls or author collection scripts were run.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-fine-tuned-inception-v3-diagnoses-62-of-200-skin-lesions-ver">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-25/fine-tuned-inception-v3-diagnoses-62-of-200-skin-lesions-ver</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

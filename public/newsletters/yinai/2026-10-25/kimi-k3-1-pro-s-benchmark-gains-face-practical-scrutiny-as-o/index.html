@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Lambert and Brand examine Kimi's uneven reception and the evidence of cyber harm — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-25">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-25">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 25 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Lambert and Brand examine Kimi's uneven reception and the evidence of cyber harm</h1>
+<p class="dek">Brand offers a hypothesis about exploration and training; Lambert asks how vulnerability discoveries translate into damaging attacks. Their Interconnects conversation also examines who gets access to defensive tools.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 25 October 2026</span> <span class="chip">978 words · ~5 min</span></div>
+<div class="article-body">
+<p>Nathan Lambert and Florian Brand use the October 25 <a href="https://www.interconnects.ai/p/podcast-kimi-k31-pro-the-new-cyber">Interconnects podcast</a> to ask what Kimi K3.1 Pro's strong benchmark results predict about everyday work, and what recent cyber incidents reveal about open models. Our <a href="https://mintresearch.org/newsletters/yinai/2026-10-23/#story-kimi-mimo-open-model-releases">October 23 report</a> covered the launch, with hosted access available and weights promised by November 4. This conversation follows the mixed reception: Lambert reports users responding with disappointment or qualified approval, despite Kimi's fourth-place Artificial Analysis ranking.</p>
+<p>Brand's hypothesis concerns the kind of work being rewarded. He describes the Artificial Analysis tasks as relatively short, while <a href="https://programbench.com/">ProgramBench</a> requires sustained exploration: an agent receives a compiled program and documentation, then must build code reproducing its behavior. The goal is specified, but discovering how to achieve it requires investigation. Brand suspects Kimi's reinforcement learning favors exploiting familiar approaches over exploring unfamiliar problems. Neither speaker presents evidence from Moonshot's training runs. The unevenness is visible in <a href="https://www.kimi.ai/blog/kimi-k3-1-pro">Moonshot's results</a>: Kimi scores 38.1 on Terminal-Bench-Science against GPT-6 Astra's 68.1.</p>
+<p>Lambert's objection is practical. A very large, slower model needs to justify the wait by handling vaguely specified work well. For familiar coding tasks, he would consider a smaller, faster DeepSeek model. He contrasts grinding through a task with understanding what a user wants when checking presentation slides. Brand adds a serving constraint: he estimates one B300 node per Kimi replica, while smaller models can fit on more widely available H200 hardware. These are their explanations for why an impressive aggregate score might not settle which model people use.</p>
+<p>Lambert then asks whether Moonshot's deliberate reduction of offensive cyber training could also explain weaker performance on extended tasks. Brand thinks those capabilities can be separated. Drawing on conversations with security professionals, he distinguishes finding and fixing individual bugs from sustaining an intrusion through several stages of an organization's systems. He favors broad access to the former while limiting the latter, and regards Moonshot's release policy as a sensible expression of that distinction. This is his argument for the policy, rather than a demonstrated account of what removing cyber training does to Kimi's general abilities.</p>
+<p>For Lambert, the cyber question turns on the passage from vulnerability discovery to exploitation and attributable damage. He says security practitioners he follows consider vulnerability discovery and exploitation trends that predate ChatGPT, while AI discussions repeatedly return to whether weights are open. He proposes tracking reported financial harm, including ransomware losses attributed to AI. More flaws found do not establish how many attacks succeed or how much harm follows. He invokes <a href="https://joshuasaxe181906.substack.com/p/if-the-vulnpocalypse-is-the-apocalypse">Joshua Saxe's argument</a> about constraints on the criminal workforce and remains concerned about nation-state espionage, while questioning how readily greater model capability translates into more destructive attacks.</p>
+<p>One example needs correction. Brand describes LiteLLM's compromise as following five months in which an API key was publicly readable. <a href="https://docs.litellm.ai/blog/security-incident-oct-21-2026-attack-chain">LiteLLM's investigation</a> says a configuration containing an Agent Platform master key was committed publicly on May 27. The mistake was quickly identified and the commit replaced, but the key was never revoked. An attacker used it on October 10 to obtain an organization owner's GitHub token, then published a malicious release on October 21. The interval demonstrates a prolonged failure to revoke an exposed secret; it does not establish five months of continuous public visibility.</p>
+<p>Lambert also revisits his earlier claim that an open-weight Mythos release in April would have been manageable. He concedes that he failed to explain adequately how existing trends already implied accelerating vulnerability discovery. He continues to doubt that recent incidents can be attributed straightforwardly to open models. That position leaves substantial defensive problems: organizations must patch an existing backlog while agents produce more code, whose interactions can introduce vulnerabilities beyond what the model writing it can see. Lambert explicitly rejects the idea that defenders already have the upper hand.</p>
+<p>The access discussion makes their priorities concrete. Lambert criticizes services offering models with refusals weakened through public APIs. Keeping sensitive code on one's own infrastructure gives open models a clear defensive use, he argues; sending that code to a remote provider loses that advantage. Brand questions how much removing refusals improves capability and emphasizes why defenders seek alternatives: access to the strongest laboratory models has been difficult, and legitimate requests get blocked. Both welcome wider defensive access. <a href="https://www.anthropic.com/news/cyber-verification-program">Anthropic's October 6 expansion</a> includes open-source maintainers and individual researchers with a record of reported vulnerabilities, with an aim of answering Defense Access applications within days.</p>
+<p>They also weigh what hosted safeguards accomplish. Brand welcomes providers' ability to update them quickly, reporting that OpenAI and Anthropic had begun blocking requests for the PHP2Shell exploit. Lambert points to reports of attacks aided by closed models and questions how much protection these restrictions provide. He nevertheless credits trusted-access programs for helping researchers disclose vulnerabilities. The discussion separates three decisions often bundled together: who can run a model, which legitimate researchers can obtain capable tools, and which requests a provider blocks.</p>
+<p>The closing employment discussion applies a broader view of safety. Lambert argues that preparing society for AI should include training junior colleagues. <a href="https://www.anthropic.com/research/employment-at-anthropic">Anthropic's employment report</a> shows their share of technical hires falling from 27 percent to 9 percent since early 2025, while technical hiring grew overall. It does not report a blanket end to junior hiring, as the conversation sometimes suggests. Brand sees an opportunity for other employers to recruit that talent.</p>
+<p>Brand ends with a specific account of useful AI: after moving to the United States, he has used Meta's Muse to prepare forms for appointments and assemble shopping carts, checking out through one-time payment cards. He says browser crashes can waste 20 minutes, making it better suited to errands that can run in the background than urgent tasks. Its growing knowledge of his appointments and purchases makes it more helpful. He still takes over when dealing with another person. Here, the value he describes comes from useful context, tolerable delays and a task he wants delegated.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.interconnects.ai/p/podcast-kimi-k31-pro-the-new-cyber">Podcast: Kimi K3.1 Pro, the new cyber reality, and Muse musings (Interconnects podcast #20)</a> <span class="how">— Selected source, full transcript read; all speaker assessments, examples and argument structure. No direct quotation or independently verified training-causation claim.</span></li>
+<li><a href="https://www.kimi.ai/blog/kimi-k3-1-pro">Kimi K3.1 Pro Tech Blog: Advancing Open Intelligence - Moonshot AI</a> <span class="how">— Primary release promise and benchmark graphic inspected directly: hosted availability and November 4 weights promise; Terminal-Bench-Science 38.1 for Kimi and 68.1 for GPT-6 Astra. Vendor-reported result, not a general ranking of model usefulness.</span></li>
+<li><a href="https://programbench.com/">ProgramBench: Can Language Models Rebuild Programs From Scratch?</a> <span class="how">— Primary task description checked: compiled binary and documentation supplied; implement code reproducing original behavior. Corrects the draft's suggestion that the goal itself is unspecified.</span></li>
+<li><a href="https://joshuasaxe181906.substack.com/p/if-the-vulnpocalypse-is-the-apocalypse">If the vulnpocalypse is the apocalypse, where are the agentic attacker hordes? - Joshua Saxe</a> <span class="how">— Primary essay read in full; criminal workforce, law-enforcement and workflow constraints. Used only for the workforce argument Lambert invokes, without importing Saxe's quantitative estimates or expanding the already-covered essay.</span></li>
+<li><a href="https://docs.litellm.ai/blog/security-incident-oct-21-2026-attack-chain">The attack chain behind the v1.107.0 LiteLLM release - LiteLLM</a> <span class="how">— Canonical investigation checked directly: May 27 public commit quickly replaced, master key never revoked, October 10 GitHub token extraction, October 21 malicious release. Corrects five-month continuous public-exposure claim.</span></li>
+<li><a href="https://www.anthropic.com/news/cyber-verification-program">Expanding the Cyber Verification Program - Anthropic</a> <span class="how">— Primary eligibility and turnaround passages checked: Defense Access for open-source maintainers and individual researchers with a disclosure record; target response within days.</span></li>
+<li><a href="https://www.anthropic.com/research/employment-at-anthropic">How employment is changing at Anthropic - Anthropic</a> <span class="how">— Primary hiring results checked: junior share of technical hires 27 to 9 percent since early 2025, with overall technical hiring increasing. Does not support a blanket no-junior-hiring claim.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-23/#story-kimi-mimo-open-model-releases">YiNAI October 23: Kimi K3.1 Pro approaches the leading proprietary models; MiMo remains downloadable</a> <span class="how">— Prior published launch coverage verified during assignment planning against the live issue; used for continuity rather than repeating the launch report.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-kimi-k3-1-pro-s-benchmark-gains-face-practical-scrutiny-as-o">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-25/kimi-k3-1-pro-s-benchmark-gains-face-practical-scrutiny-as-o</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
