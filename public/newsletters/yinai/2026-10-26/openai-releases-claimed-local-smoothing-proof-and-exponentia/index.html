@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>OpenAI releases claimed proofs on computation and waves — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-26">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-26">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 26 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">OpenAI releases claimed proofs on computation and waves</h1>
+<p class="dek">Public manuscripts claim a subexponential counting algorithm and local smoothing in every dimension. Outside researchers will examine the results; the physics work remains unpublished.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 26 October 2026</span> <span class="chip">1100 words · ~6 min</span></div>
+<div class="article-body">
+<p>OpenAI says an internal model has found a faster way to solve a central problem in computer science and proved that intensely focused waves cannot stay concentrated for long. On October 26 it <a href="https://github.com/openai/math/blob/main/history.md">released two manuscripts with Lean formalizations</a>: the wave paper dated October 25 and the ETH paper revised that day. They add claims about computational limits and waves in every dimension to its <a href="https://mintresearch.org/newsletters/yinai/2026-10-06/#story-openai-releases-mathematical-results-with-lean-proofs-comput">October 6 mathematics catalogue</a>. The <a href="https://mintresearch.org/newsletters/yinai/2026-10-08/#story-openai-withdraws-three-mathematics-manuscripts-repairs-14-an">withdrawal of three earlier papers over a sign error</a> happened on October 7; these are new results submitted for examination.</p>
+<h3>A proposed algorithm challenges ETH</h3>
+<p>In <a href="https://github.com/openai/math/blob/main/preprints/The-Exponential-Time-Hypothesis-is-False-October-25-2026/paper.pdf">"The Exponential Time Hypothesis is False,"</a> OpenAI claims an algorithm that counts exactly how many assignments satisfy a logical formula. For 3-SAT, each condition involves three true-or-false variables, and the question is whether all conditions can hold together. ETH says that, in the worst case, solving this problem requires time growing exponentially with the number of variables. OpenAI's proposed running time grows more slowly than any fixed exponential, while using polynomial space. A correct count would also decide whether any solution exists, refuting ETH.</p>
+<p>The proposed algorithm expresses the answer as a sum of products of polynomials, one for each condition. Shared variables normally prevent separate parts from being counted independently. OpenAI's method changes the polynomial inputs so that, after fixing a small collection of shared numerical quantities, the variables divide into smaller groups. It counts within those groups and reconstructs the full answer through interpolation, which recovers a polynomial from information about its values and derivatives. OpenAI's overview credits Ryan Williams's method of splitting a search into parts and earlier polynomial-interpolation work by Andreas Björklund, alongside techniques for reducing formulas to sparse cases. The claimed advance combines those ingredients to count solutions in subexponential time.</p>
+<p>A refutation would remove the premise behind many conditional claims that other computational problems cannot be solved faster. It would not establish P=NP, a practical SAT solver or broken encryption: a subexponential algorithm can still require infeasible computing time. OpenAI also says its bound does not automatically transfer to every problem in NP, because ordinary polynomial-time conversions between problems can enlarge the inputs too much. In a <a href="https://x.com/rrwilliams/status/2114860103207911484">reply about consequences for developers</a>, Ryan Williams said practical effects were unknown. OpenAI's manuscript derives further theoretical counting algorithms, including for graph colorings and perfect matchings.</p>
+<p>The accompanying <a href="https://github.com/openai/math/blob/main/lean/docs/378.md">Lean scope note</a> specifies a slightly weaker running-time bound than the manuscript's, still subexponential, for formulas represented in a prescribed encoding. That is the result the formalization covers. Lean checks that a formal conclusion follows from its stated assumptions; readers must also establish that the encoded statement represents the intended mathematical claim. OpenAI dates the model's initial ETH argument to October 16 and its Lean formalization to October 17. Publication followed on October 26.</p>
+<h3>Waves, geometry and different review arrangements</h3>
+<p>OpenAI's other manuscript, <a href="https://github.com/openai/math/blob/main/preprints/Local-smoothing-for-the-Euclidean-wave-equation-October-25-2026/paper.pdf">"Local smoothing for the Euclidean wave equation,"</a> addresses how waves concentrate. Rays arriving from a thin spherical shell can meet in an intense focus. Christopher Sogge's 1991 conjecture concerns a bound on the wave's size averaged over time, allowing those brief peaks. OpenAI claims the predicted bound in every spatial dimension of at least two. It also derives the Kakeya conjecture: a set containing a unit line segment in every direction must have the full dimension of its surrounding space. The paper claims further consequences for Fourier analysis, with restriction estimates throughout the interior of the conjectured range.</p>
+<p>Larry Guth, Hong Wang and Ruixiang Zhang <a href="https://arxiv.org/abs/1909.10693">proved the two-dimensional local-smoothing case</a> in work posted in 2019; Wang and Joshua Zahl <a href="https://arxiv.org/abs/2502.17655">proved the three-dimensional Kakeya set conjecture</a> in 2025. OpenAI's October 6 catalogue already claimed local smoothing in three dimensions and Kakeya results in three and four. The new manuscript seeks to cover every dimension using an auxiliary partial differential equation to control how waves moving in different directions combine. Its <a href="https://github.com/openai/math/blob/main/lean/docs/079.md">formalization covers</a> the main wave estimate and several consequences, including the full-dimensional Kakeya result.</p>
+<p>OpenAI's <a href="https://openai.com/index/building-scientific-understanding-with-academic-communities/">announcement</a> describes different release arrangements for mathematics, computer science and physics, also <a href="https://www.theverge.com/ai-artificial-intelligence/1019143/openai-eth-kaseya-science-math-physics">reported by Richard Lawler at The Verge</a>. The wave manuscript is available for researchers to organize their own examination. For ETH, Russell Impagliazzo and Ramamohan Paturi of UC San Diego and Williams of MIT will help coordinate scrutiny. Impagliazzo and Paturi helped formulate the hypothesis. The group requested immediate publication of the raw materials and funding for a conference; OpenAI agreed. Williams <a href="https://x.com/rrwilliams/status/2114833319431209352">confirmed</a> that they signed no nondisclosure agreements and would receive no compensation.</p>
+<p>In their <a href="https://docs.google.com/document/d/1adB0IhJgLzsmbfCgoLrtoJTjnlPf74UnyjMo35P5JHo/edit">open letter to the theory community</a>, the three state that their involvement does not certify the claim. They want researchers to share verified steps, gaps and corrections while preserving independent approaches. Their <a href="https://drive.google.com/drive/folders/1SAqEO1kt6wnA0NXuZecyPhdBgzW3Z0y1">public repository</a> and proposed meeting before year's end will support that work. They also ask how early access should be governed and how to credit checking and explanation, which can receive less recognition than announcing a discovery. Their stated aim is an argument others can reconstruct and question.</p>
+<p>The physics materials remain unpublished. OpenAI says its models produced existence proofs for pure Yang-Mills theory on September 9 and quantum chromodynamics, the theory of the strong nuclear force, on September 18. It reports completing the Yang-Mills Lean formalization on October 16. A group led by David Gross will prepare its own account before releasing the artifacts. The announced Yang-Mills claim covers existence; it does not establish the separate mass-gap requirement of the Clay Millennium problem. Unlike the two public manuscripts, the physics argument can presently be described only through OpenAI's announcement.</p>
+<p>The <a href="https://terrytao.wordpress.com/2026/10/25/disadvantages-of-designating-mathematicians-for-ai-output-releases/">Advisory Group on Mathematics and Artificial Intelligence recommended against lab-appointed recipients</a> on October 25. It argues that early access privileges selected researchers, lab choices can discourage others from participating, and attaching mathematicians' names can imply endorsement. Its alternative includes publication in repositories outside the lab's control, disclosure of how outputs were produced, and independent allocation of funding for understanding them. The group expressly limits its advice to mathematics, where OpenAI chose direct release of the wave manuscript.</p>
+<p>Anthropic added a separate <a href="https://github.com/anthropics/formal-math/tree/main/eth">claimed ETH refutation</a> late on October 26 Eastern time, with a paper titled "A 2^{o(n)} Time Algorithm for 3-SAT," credited to Claude. Its provenance statement dates the core algorithm to October 16, also OpenAI's reported discovery date, and describes a different method using tensor networks and rank arguments. The paper emphasizes how far its bound lies from practical use: for formulas with five conditions per variable, it improves on exhaustive search only beyond 10^10000 variables. Anthropic's README says checking the Lean proofs cannot establish that the formal statement captures the paper's intended theorem. That interpretation still requires human reading.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://github.com/openai/math/blob/main/history.md">History (openai/math repository), October 26, 2026 section</a> <span class="how">— Selected canonical source. Freshly read October 26 entry verifies the two added manuscripts and release arrangements, distinguished from October 7 withdrawals.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-06/#story-openai-releases-mathematical-results-with-lean-proofs-comput">YiNAI October 6: OpenAI releases mathematical results with Lean proofs</a> <span class="how">— Published continuity established by the researcher’s deep_history check; fresh HTTP 200/anchor check recorded in editor-science-verification.json. Used for the earlier catalogue and narrower dimensional claims.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-08/#story-openai-withdraws-three-mathematics-manuscripts-repairs-14-an">YiNAI October 8: One sign error invalidates three OpenAI mathematics proofs</a> <span class="how">— Published continuity and live HTTP 200/anchor check supplied by continuity-audit.json. October 7 withdrawals remain explicitly old history.</span></li>
+<li><a href="https://github.com/openai/math/blob/main/preprints/The-Exponential-Time-Hypothesis-is-False-October-25-2026/paper.pdf">The Exponential Time Hypothesis is False (OpenAI manuscript)</a> <span class="how">— Primary manuscript, as read and excerpted in the completed research dossier: exact-counting claim, subexponential runtime, polynomial space, algebraic grouping/interpolation mechanism, credited ingredients, nontransfer to general NP problems and counting corollaries. P=NP/practical-cryptanalysis limitations are bounded implications of the stated result, not claims of independent proof verification.</span></li>
+<li><a href="https://x.com/rrwilliams/status/2114860103207911484">Ryan Williams reply on practical impact (X)</a> <span class="how">— Research dossier’s original reply read: practical consequences for developers are unknown; paraphrased without extending the claim.</span></li>
+<li><a href="https://github.com/openai/math/blob/main/lean/docs/378.md">Lean scope note 378 (openai/math lean/docs)</a> <span class="how">— Freshly read scope note specifies a weaker but still subexponential bound for canonically encoded inputs, distinct from the manuscript bound.</span></li>
+<li><a href="https://github.com/openai/math/blob/main/preprints/Local-smoothing-for-the-Euclidean-wave-equation-October-25-2026/paper.pdf">Local smoothing for the Euclidean wave equation (OpenAI manuscript)</a> <span class="how">— Primary manuscript as read/excerpted in the research dossier: focusing-wave question, all-dimensions local-smoothing claim, Kakeya implication, interior-only restriction estimates, and auxiliary PDE method. No claim of independent verification of the technical proof.</span></li>
+<li><a href="https://arxiv.org/abs/1909.10693">A sharp square function estimate for the cone in R^3 (Guth, Wang, Zhang)</a> <span class="how">— Precedent: the 2019 planar local smoothing proof, Annals 2020.</span></li>
+<li><a href="https://arxiv.org/abs/2502.17655">Volume estimates for unions of convex sets, and the Kakeya set conjecture in three dimensions (Wang, Zahl)</a> <span class="how">— Precedent: the 2025 three-dimensional Kakeya set theorem.</span></li>
+<li><a href="https://github.com/openai/math/blob/main/lean/docs/079.md">Local smoothing Lean formalization scope (OpenAI)</a> <span class="how">— Fresh primary check of the formalization’s main wave estimate and Kakeya consequences; scope distinguished from independent proof review.</span></li>
+<li><a href="https://openai.com/index/building-scientific-understanding-with-academic-communities/">Working with academic communities to build scientific understanding (OpenAI)</a> <span class="how">— Primary announcement supplies generation/formalization dates, release arrangements, named review groups and the unreleased physics claim. Physics remains attributed solely to OpenAI; existence is distinguished from the mass-gap requirement.</span></li>
+<li><a href="https://www.theverge.com/ai-artificial-intelligence/1019143/openai-eth-kaseya-science-math-physics">OpenAI announces three big science discoveries and a new way to work with academics (The Verge)</a> <span class="how">— Selected merged source, preserved for Richard Lawler’s accessible reporting on three release arrangements. No claims from the paywalled remainder are used.</span></li>
+<li><a href="https://x.com/rrwilliams/status/2114833319431209352">Ryan Williams thread announcing the ETH examination (X)</a> <span class="how">— Research dossier’s full-thread read verifies Williams’s no-NDA/no-compensation statement and requests for public raw data and conference support; paraphrased, not newly fetched by this editor.</span></li>
+<li><a href="https://docs.google.com/document/d/1adB0IhJgLzsmbfCgoLrtoJTjnlPf74UnyjMo35P5JHo/edit">Message to the TCS Community on ETH (Impagliazzo, Paturi, Williams)</a> <span class="how">— Original signed letter freshly retrieved through its public text export: explicit non-certification, open examination, public resources, proposed meeting, unequal early access and credit for checking/explanation.</span></li>
+<li><a href="https://drive.google.com/drive/folders/1SAqEO1kt6wnA0NXuZecyPhdBgzW3Z0y1">ETH_Repository (public Google Drive folder of the working group)</a> <span class="how">— Public working-group repository for shared notes, explanations and corrections, corroborated by the freshly read original letter. Unsigned synthesis is not attributed or summarized.</span></li>
+<li><a href="https://terrytao.wordpress.com/2026/10/25/disadvantages-of-designating-mathematicians-for-ai-output-releases/">Disadvantages of Designating Mathematicians for AI Output Releases (AGMAI, crossposted by Terence Tao)</a> <span class="how">— Original AGMAI guest post freshly read: objections to designated recipients, independent repositories, process disclosure and independent funding. Explicit mathematics-only scope preserved; no asserted violation by other fields.</span></li>
+<li><a href="https://github.com/anthropics/formal-math/tree/main/eth">A 2^{o(n)} Time Algorithm for 3-SAT (Anthropic, anthropics/formal-math eth)</a> <span class="how">— Official README freshly read; GitHub API commit verifies addition at 2026-10-27T03:07:21Z, late October 26 Eastern. Paper’s title, Claude credit, October 16 provenance, tensor/rank method and impractical 10^10000-variable bound come from the researcher’s primary-paper reading. README directly supports the formal-statement interpretation limitation.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-openai-releases-claimed-local-smoothing-proof-and-exponentia">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-26/openai-releases-claimed-local-smoothing-proof-and-exponentia</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
