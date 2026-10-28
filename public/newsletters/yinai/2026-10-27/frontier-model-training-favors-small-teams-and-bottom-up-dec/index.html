@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Lambert’s case for small model training teams — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-27">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-27">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 27 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Lambert’s case for small model training teams</h1>
+<p class="dek">His March 2025 essay, recirculated October 27, explains how experimental evidence should guide leadership and what Ai2’s 2024 Tülu 3 project required.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 27 October 2026</span> <span class="chip">859 words · ~4 min</span></div>
+<div class="article-body">
+<p>Nathan Lambert argues that a model training lab grows successfully only if experimental results can still travel from the people running the work to the people allocating resources. His <a href="https://www.interconnects.ai/p/how-to-manage-ai-training-organizations">March 19, 2025 Interconnects essay</a>, which he <a href="https://bsky.app/profile/natolambert.bsky.social/post/3myut23venj2i">recirculated on October 27</a>, combines recommendations drawn from conversations with frontier lab leaders with his own account of Ai2’s Tülu 3 project. That project ran in 2024. The essay’s practical question is how to preserve a small team’s ability to learn while adding people, computing capacity and competing institutional priorities.</p>
+<p>Leadership can decide which bets deserve resources, Lambert writes, but experiments determine whether those bets work. Trouble starts when a director requires their team’s contribution to appear in the next model, or imposes a technical choice that the results do not support. Those requirements turn a shared release into a negotiation over territory. He recommends keeping the core modeling team small, ideally working together in person, with clear communication that prevents knowledge from accumulating in isolated groups.</p>
+<p>That does not mean every function must remain small. Architecture and data decisions for pretraining require a few people to integrate findings into a limited number of large runs each year. Data acquisition, evaluation development and product integrations can expand more independently. Post-training offers more continuous opportunities for improvement, including for organizations outside the frontier. Lambert’s rule is to separate teams where their work does not require joint design: the people developing post-training algorithms need not also handle every model character or API variant. Engineering should remain close to training, because tools for the next generation of models depend on understanding researchers’ needs.</p>
+<p>He also distinguishes research for the next one or two models from longer-term research. Giving the latter a separate home protects ideas that cannot justify themselves against the next release deadline. Within the immediate training effort, useful work often means repeated data experiments, with failures expected. His warning signs include releasing too many models for too little capability gain, forcing individual contributions into the final product, and optimizing too heavily for one evaluation. These are managerial judgments informed partly by unnamed conversations, rather than a comparative study of laboratories.</p>
+<p>Tülu 3 gives the argument a concrete case. Ai2 worked from mid-July to its <a href="https://www.interconnects.ai/p/tulu-3">November 21, 2024 release</a>, adapting Llama 3.1 base models through supervised fine-tuning, preference tuning and reinforcement learning with verifiable rewards. The last method rewards answers that can be checked, such as correct mathematics or compliance with precise instructions, without needing a separate learned reward model. The 8-billion- and 70-billion-parameter releases included training data, code and model weights, making the recipe available for others to repeat.</p>
+<p>The team built on experience from Tülu 2 and 2.5 and integrated resources developed elsewhere. Even so, starting the effort and managing its release took substantial time. Lambert estimates that a team continuously pursuing the same goal could have finished about a month sooner. The project was heavy on researchers because it was developing methods; he thinks two to four focused engineers could apply the resulting documented recipe. Discovering a training method and repeating it impose different staffing demands.</p>
+<p>Experiments ran at the smallest model size that produced a useful signal. At least 80% used the 8-billion-parameter model and finished in less than a day; about 19% used the 70-billion-parameter model and took two to three days. Only a handful used 405 billion parameters. This let the team reject weak ideas cheaply before committing larger runs. Scaling was not automatic: larger models could need more data and gentler learning rates, while changing the underlying base model was harder than changing its size.</p>
+<p>Across four to five months, the project used roughly 100 to 600 GPUs concurrently and evaluated about 1,000 checkpoints, mostly from experimental runs. Its roughly ten target evaluations made progress easier to track than at frontier labs juggling hundreds. Lambert says practices for integrating results at that larger scale were still unsettled. Compute was Tülu 3’s largest bottleneck, followed by finding people willing to keep running data experiments. Data curation consumed most of the human work. The numerical account explains why faster experimentation mattered; it describes this 2024 project, rather than a current budget for training a competitive model.</p>
+<p>The hardest organizational task was keeping everyone committed to one output for months. Lambert says teams need protection from other institutional goals. Ai2 did not move directly into Tülu 4 because people had other research interests; a company whose training work directly produces revenue has a clearer reason to maintain the same focus. On reposting the essay, he described an effective team as “worth multiple multiples in compute,” while emphasizing consistent execution and careful use of available resources.</p>
+<p>A comment on the original essay raises a question about how far this prescription travels. Joshua Saxe asks whether the single, monolithic model is a temporary arrangement: independently trained components, connected through routers or adapters, might let more work proceed in parallel and make results less sensitive to organizational structure. Lambert’s Tülu account explains the demands of coordinating one shared model. Saxe’s proposal asks whether a different technical architecture could change those demands, and with them the kinds of teams that work best.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.interconnects.ai/p/how-to-manage-ai-training-organizations">Managing frontier model training organizations (or teams)</a> <span class="how">— Complete March 19, 2025 essay independently read, including Joshua Saxe’s April 12 comment. Supplies the organizational argument, distinctions between kinds of work, Tülu 3 project dates and operational figures, and limits of the account.</span></li>
+<li><a href="https://bsky.app/profile/natolambert.bsky.social/post/3myut23venj2i">Nathan Lambert’s October 27 recirculation and reply</a> <span class="how">— Original author post and reply independently fetched through the public Bluesky API. Establishes the October 27, 2026 occasion, the age of the essay, and the claim about organization multiplying the value of compute.</span></li>
+<li><a href="https://www.interconnects.ai/p/tulu-3">Tülu 3: The next era in open post-training</a> <span class="how">— Complete release post independently read. Establishes November 21, 2024 release, Llama 3.1 base models, 8B and 70B releases, open data/code/weights, and the SFT, preference-tuning and verifiable-reward sequence.</span></li>
+<li><a href="https://arxiv.org/abs/2411.15124">Tulu 3: Pushing Frontiers in Open Language Model Post-Training</a> <span class="how">— Abstract and metadata independently checked as corroboration of the open post-training recipe and its verifiable-reward method; no claim to a fresh audit of the complete technical report.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-frontier-model-training-favors-small-teams-and-bottom-up-dec">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-27/frontier-model-training-favors-small-teams-and-bottom-up-dec</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
