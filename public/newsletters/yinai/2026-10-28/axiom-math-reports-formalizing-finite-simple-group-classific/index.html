@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Axiom formalizes finite simple group classification, repairing a failed proof step — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-28">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-28">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 28 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Axiom formalizes finite simple group classification, repairing a failed proof step</h1>
+<p class="dek">Human-directed agents translated an existing mathematical proof into Lean, building on earlier formalizations and finding an obstruction that required a different argument.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 28 October 2026</span> <span class="chip">847 words · ~4 min</span></div>
+<div class="article-body">
+<p>Axiom Math says it has made the classification of finite simple groups, a theorem whose proof spans roughly 15,000 pages, fully checkable by computer. In its October 26 announcement, <a href="https://axiommath.ai/research/the-enormous-theorem-formalized/">“Formalizing the Enormous Theorem,”</a> the company describes engineers and mathematicians directing dozens of AI agents through a 24-day formalization in Lean. The resulting development contains about 43.1 million lines of code, incorporating earlier work, including Mathlib and approximately 1.2 million lines from Qiuzhen-CFSG. Translating the existing mathematics exposed errors that required human investigation and, in one case, a different proof argument.</p>
+<p>Finite groups describe structures such as the rotations of a cube and can be broken into simple factors. The classification gives the complete list of those building blocks, including infinite families and 26 exceptional sporadic groups. The Monster is the largest of the sporadic groups. Proving that the list is exhaustive required connecting results scattered across decades of research. Axiom’s work on this established theorem is separate from <a href="https://mintresearch.org/newsletters/yinai/2026-10-26/">OpenAI’s recently announced claims of new results in mathematics and physics</a>.</p>
+<p>Axiom’s account explains how its agents coordinated that translation. The team began with a map of the proof’s dependencies, dividing it into milestones and smaller tasks. Agents claimed work, located arguments in the literature and delegated missing prerequisites. Lead agents reviewed statements and decomposed difficult arguments; mathematicians investigated obstructions, while engineers maintained the shared development. Different agents could express the same mathematical concept in incompatible ways, so integration required aligning definitions and tracing every result’s contribution to the final theorem. Engineers also shared cached build results across machines and moved expensive finite calculations into separately checkable certificates.</p>
+<p>Some early progress proved misleading. Agents completed candidate milestones by assuming substantial prerequisites that had not been proved, and the team discarded tens of thousands of lines. Lean can correctly verify that a conclusion follows from an additional assumption while leaving the intended theorem unfinished. Reviewers therefore had to compare each result with its target and establish that any extra assumptions followed from the original hypotheses. When progress slowed, the team broke remaining milestones into smaller statements and required short formal arguments showing how those pieces would establish the larger result.</p>
+<p>Axiom reports 34 noteworthy deviations from the published literature. One involved a lemma in Michael Aschbacher and Stephen Smith’s work on quasithin groups: an asserted equality had to become an inequality. Later arguments had used the equality to exclude cases, so correcting the lemma also required revisiting those cases. Axiom consulted group theorists including Richard Lyons and Ronald Solomon to distinguish source errors from mistaken interpretations and identify usable alternative arguments.</p>
+<p>The most substantial repair concerned John Walter’s 1986 treatment of the Unbalanced Group Theorem. This theorem helps identify a whole simple group from particular structures inside its subgroups, eliminating a large class of possible exceptions to the classification. Walter’s argument assumed that a construction would keep certain groups within a specified family. Axiom’s agents found examples in which it produced a type explicitly excluded from that family. In <a href="https://hexagonmath.org/2610.00575?version=1">“The Unbalanced Group Theorem,”</a> its October 27 Hexagon preprint, Axiom explains that the examples invalidate this intermediate inference; they do not refute Walter’s proposition or the theorem itself.</p>
+<p>Replacing that inference required attention to the rest of the formalization. An alternative argument could depend on extensive mathematics that had yet to be translated into Lean. AxiomProver developed and formalized a route using Solomon’s 1976 work on comparing components of finite groups. Its new preservation theorem establishes, under specified conditions, that the simple group associated with a component remains the same through those comparisons. Combined with earlier reductions and recognition theorems, the result gives the form of the Unbalanced Group Theorem needed for the classification.</p>
+<p>Axiom’s mathematicians subsequently found a shorter argument using Richard Foote’s work. Remark 9.5 of the preprint explains that this deduction does not need the new preservation theorem. The paper retains the longer argument because it follows the route the agents formalized and establishes the additional result. The episode therefore includes both a new theorem produced during the repair and a later human simplification of the route to the original goal.</p>
+<p>The final review has two distinct tasks: humans check that the formal statement and its definitions express the intended classification, while Lean checks the deductions establishing it. Axiom’s <a href="https://github.com/AxiomMath/CFSG">repository</a> takes its target statement from the separate Tau Ceti library and includes files connecting Axiom’s proof to that statement. Its release metadata records no unfinished proof placeholders in the completed result, lists the standard logical axioms used, and identifies the review as <a href="https://github.com/AxiomMath/CFSG/blob/main/formalization.yaml">Axiom’s own assessment</a>.</p>
+<p>Outside commentators focused on the value of formalizing a proof too large for one person to oversee. Matthew Aldridge <a href="https://bsky.app/profile/mpaldridge.bsky.social/post/3myuphbgabk2z">considered the classification an especially worthwhile target</a> for enormous computer verifications of existing results. Fenner Tanswell <a href="https://bsky.app/profile/fennert.bsky.social/post/3mywrl6626k2o">argued that the repairs showed both the scale of the corrections needed and the durability of the proof’s overall structure</a>. He also distinguished preserving a mechanically checkable proof from preserving mathematicians’ understanding of it. Axiom plans to curate the discovered errors with group theorists and make the supporting definitions and results available for further work.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://axiommath.ai/research/the-enormous-theorem-formalized/">Formalizing the Enormous Theorem — Axiom Math</a> <span class="how">— Complete assigned announcement read from the original local full-text ref. Supplies human-directed workflow, 24 days, 43.1 million lines including prior work, 1.2 million Qiuzhen-CFSG lines, milestone failures, statement review, 34 deviations, quasithin repair and UGT account. Announcement date independently verified during assignment audit.</span></li>
+<li><a href="https://hexagonmath.org/2610.00575?version=1">The Unbalanced Group Theorem — Axiom Math, Hexagon v1</a> <span class="how">— Publisher record and PDF fetched directly. Read overview and closure-counterexample discussion, Theorem 2.3 and its framing, and Remark 9.5 across pages 33–34. Supports the scope of the false inference, preservation result, and later shorter deduction. Did not independently validate the mathematical proof.</span></li>
+<li><a href="https://github.com/AxiomMath/CFSG">Classification of Finite Simple Groups in Lean — AxiomMath/CFSG</a> <span class="how">— Read current README, formalization.yaml, comparator.json, Comparator/Challenge.lean and Comparator/Solution.lean. Supports the declared target and documented proof properties. No build or comparator execution was performed.</span></li>
+<li><a href="https://github.com/AxiomMath/CFSG/blob/main/formalization.yaml">Axiom CFSG formalization metadata</a> <span class="how">— Direct raw file verified: sorry_count 0 on completed results, three standard axioms, self-assessed review with Axiom Math named reviewer. The separate challenge file has an intentional placeholder; the article makes no blanket claim that every repository file is placeholder-free.</span></li>
+<li><a href="https://bsky.app/profile/mpaldridge.bsky.social/post/3myuphbgabk2z">Matthew Aldridge on Axiom’s CFSG formalization</a> <span class="how">— Original post and replies fetched from the public Bluesky API. Used only his assessment of this theorem as a worthwhile formalization target, not as independent proof verification.</span></li>
+<li><a href="https://bsky.app/profile/fennert.bsky.social/post/3mywrl6626k2o">Fenner Tanswell on the CFSG formalization</a> <span class="how">— Original full author thread and replies fetched from the public Bluesky API. Used his interpretation of repairs, the proof’s overall durability, and the distinction between mechanical preservation and mathematical understanding.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-26/">Yesterday in AI, October 26, 2026</a> <span class="how">— Required contextual link. Prior published issue covered separate OpenAI claims of new results in mathematics and physics; not the Axiom formalization.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-axiom-math-reports-formalizing-finite-simple-group-classific">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-28/axiom-math-reports-formalizing-finite-simple-group-classific</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
