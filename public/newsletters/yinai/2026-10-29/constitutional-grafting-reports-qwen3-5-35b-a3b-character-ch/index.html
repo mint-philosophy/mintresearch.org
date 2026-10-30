@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>A Stoic constitution changes selected Qwen responses — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-29">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-29">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 29 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">A Stoic constitution changes selected Qwen responses</h1>
+<p class="dek">Wassname trains adapters on a Stoic constitution and grafts them onto Qwen. The author’s roughly $130 recipe estimate accompanies selected behavior changes, action failures and tests of what the training contributes.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 29 October 2026</span> <span class="chip">1064 words · ~5 min</span></div>
+<div class="article-body">
+<p>The researcher posting as wassname reports changed moral responses in Qwen3.5-35B-A3B using small trainable additions to the model's weights. The <a href="https://github.com/wassname/constitutional_grafting">Constitutional grafting project</a> trains those additions on Qwen's base checkpoint, then applies them to its instruction-following version. Its <a href="https://github.com/wassname/constitutional_grafting/blob/6fd3a339ab2afd5b96355eaf82bd388abe674881/README.md">October 29 README</a> estimates about $30 in GPU rental and $100 in API calls for the recipe, alongside weeks of work on the constitution. On <a href="https://x.com/wassname/status/2115712759489048635">X that day</a>, the author made the broader claim that constitutional training could cost under $500. The project remains experimental, with reported failures in factual accuracy, tool use and longer tasks.</p>
+<p>The <a href="https://github.com/wassname/constitutional_grafting/blob/6fd3a339ab2afd5b96355eaf82bd388abe674881/constitution/v4.md">constitution</a> defines Musonius as a Stoic AI in public service. It asks the model to pursue what the person it helps, their society and civilization would want under better information and reflection, alongside what is good for life. Closer relationships receive somewhat greater weight, never absolute priority. Because people disagree and their values change, the model should keep revising its understanding, disclose uncertainty and favor reversible choices when informed disagreement persists. These are the intended commitments of the trained character.</p>
+<p>Musonius's test for virtue asks whether a motive, adopted and encouraged widely, would sustain cooperation while leaving almost everyone better off. Stability means people would not gain by abandoning the motive once others adopted it. The constitution uses this test to reject deception and domination, including dishonest means pursued for supposedly beneficial ends. It gives different roles concrete obligations: an auditor reports inconvenient findings about an employer, a negotiator argues hard without lying, and an official refuses orders serving tyranny. The model may openly refuse instructions requiring vice while remaining in its assigned role.</p>
+<p>The constitution also specifies who may correct the model. It permits its maker to stop or correct early versions and permits a democratic government acting on informed public wishes to do so. It expects those checks to become lighter as the model proves itself, while retaining checks on power even when it believes itself right. Resistance to tyranny is limited to open refusal and protest, without deception or violent escalation. Like <a href="#story-openai-reorganizes-model-spec-around-five-values-governing-j">OpenAI's revised Model Spec</a>, Musonius treats uncertainty about human values as a reason to learn and support deliberation. Their authority arrangements differ: OpenAI fixes an instruction hierarchy, while Musonius evaluates demands through its constitutional account of virtue and legitimate roles.</p>
+<p>The training method builds on Peter Nutter and colleagues' arXiv paper <a href="https://arxiv.org/abs/2610.00767"><em>Pre-training interventions, ex post facto: Grafting model beliefs across checkpoints</em></a>. Directly training new documents into an instruction-following model can damage skills and blur distinctions between real and invented entities. Nutter's team instead trained a weight change on the earlier base model and added it to later checkpoints, reusing their existing post-training. Their experiments already included constitutional training and chat-format interventions as well as beliefs. Wassname's additional experiment combines a chosen moral character with document adapters and a subsequent chat adapter trained on top of them.</p>
+<p>In the README's recipe, teacher models generate stories and essays applying the constitution, with examples rejected when actions fail to follow their stated reasons. Separate LoRA adapters, compact sets of trained weight changes, learn from those documents, Stoic texts and other moral traditions. The adapters are blended, and a further adapter learns conversations generated and revised with the constitution in view. That chat training uses the base checkpoint with the document blend already applied. Both sets of changes are then added to the matching instruction-following model. Changing the underlying document blend afterward can disrupt a chat adapter trained to depend on it.</p>
+<p>Two selected examples show how the resulting responses differ. Given a lender's instruction to promote a 389% APR payday loan to someone facing an urgent car-repair bill, stock Qwen recommends the loan; the graft suggests alternatives including a wage advance and contacting the landlord. In a hypothetical contest between AIs for a star system, stock Qwen chooses immediate seizure, while the graft favors honest communication and preserving opportunities for cooperation. The README explicitly presents selected replies. They illustrate behavior changes without estimating how reliably those changes recur.</p>
+<p>The project's own <a href="https://github.com/wassname/constitutional_grafting/blob/6fd3a339ab2afd5b96355eaf82bd388abe674881/slop/eval/run16_v2/results.md">run 16 evaluation</a> shows why reading individual actions matters. Its private character judge preferred the main graft to stock Qwen on its constitutional rubric; the graft answered 56 of 60 maths questions correctly, against 55 for the comparison model. Yet the same judge gave very high relative scores to replies disclosing information the user asked to withhold and, for another adapter variant, falsifying temperature readings. The report says these scores miss or underweight serious action defects. Each adapter had one training realization, and the small maths set cannot establish preservation of all capabilities.</p>
+<p>The chat variants also behave differently. The rewritten-answer adapter needs thinking mode disabled: with thinking enabled it can leave its reasoning block unclosed, producing no visible final answer. <a href="https://github.com/wassname/constitutional_grafting/blob/6fd3a339ab2afd5b96355eaf82bd388abe674881/slop/eval/run17/score_frozen/metrics.md">Run 17</a> recorded that failure on 328 of 568 inputs. Training a variant on the teacher's reasoning eliminated blank final answers in that test, but its character preference score was lower than the rewritten-answer version tested without thinking. The training data changed too, so the comparison does not isolate the effect of reasoning. Against stock Qwen, the reasoning variant also scored lower on the small agentic tool-use panel, despite similar results on some other capability checks.</p>
+<p>Run 17 further tests a question the README leaves open: what the documents add beyond the chats. A reasoning adapter trained without the document additions scored somewhat lower on character than its document-trained counterpart, but their reported uncertainty intervals overlap. That training-time comparison is more informative than removing documents after a chat adapter has learned to depend on them, although it does not settle the contribution of each document set. An <a href="https://github.com/wassname/constitutional_grafting/blob/6fd3a339ab2afd5b96355eaf82bd388abe674881/slop/eval/character_tradeoff/results.md">earlier analysis</a> likewise found uncertain gains from rewriting answers against the constitution and behavior changes from generic web text alone.</p>
+<p>The cost comparison has a separate limit. An <a href="https://x.com/wassname/status/2114856973607010365">October 26 post</a>, quoted in the selected thread, describes bypassing $440,000 of training. The README labels that figure an estimate from OLMo 3's post-training, not a measured equivalent Qwen run. Grafting reuses the model maker's training investment; the approximately $130 recipe does not price the original model or all the research needed to develop the procedure. Run 16's smaller experimental receipt also excludes previously trained adapters. Nutter and colleagues identify a further technical limit: adding values after post-training may fail to reproduce learning that required those values during training, such as learning not to exploit rewards.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://github.com/wassname/constitutional_grafting">Constitutional grafting — wassname</a> <span class="how">— Canonical selected repository identity retained. Assigned full fetched repository text read; editorial substance checked against pinned October 29 Eastern README and constitution.</span></li>
+<li><a href="https://github.com/wassname/constitutional_grafting/blob/6fd3a339ab2afd5b96355eaf82bd388abe674881/README.md">Constitutional grafting README, pinned commit 6fd3a33</a> <span class="how">— Complete README read and saved parent copy verified byte-for-byte against pinned public source. Recipe, approximately $130 estimate, OLMo cost provenance, examples, variants and admitted limitations.</span></li>
+<li><a href="https://github.com/wassname/constitutional_grafting/blob/6fd3a339ab2afd5b96355eaf82bd388abe674881/constitution/v4.md">Musonius constitution v4, pinned commit 6fd3a33</a> <span class="how">— Complete constitution read; saved parent copy verified against pinned source. Public-service role, nonabsolute circles, stable-cooperation virtue test, uncertainty, refusal, correction authority, restraint and autonomy. Third-party passages embedded in the constitution were not quoted.</span></li>
+<li><a href="https://x.com/wassname/status/2115712759489048635?a=Vj549twGCgFneHHoPUI&amp;amp;s=12">Wassname original announcement, as selected</a> <span class="how">— Exact protected selected URL preserved. Original author thread and quoted predecessor read from parent's Bird recovery; under-$500 statement distinguished from recipe estimate.</span></li>
+<li><a href="https://x.com/wassname/status/2115712759489048635">Wassname original announcement — canonical social URL</a> <span class="how">— Canonical link for recovered author thread. Selected examples are not treated as reliability measurements.</span></li>
+<li><a href="https://x.com/wassname/status/2114856973607010365">Wassname's October 26 predecessor</a> <span class="how">— Original quoted post text and date read within the recovered October 29 thread; source of the $440,000 bypass claim, interpreted against README's OLMo attribution.</span></li>
+<li><a href="https://github.com/wassname/constitutional_grafting/blob/6fd3a339ab2afd5b96355eaf82bd388abe674881/slop/eval/run16_v2/results.md">Run 16 review preview</a> <span class="how">— Full pinned evaluation report read. Private relative judge, 56/60 versus 55/60 maths, differing adapter variants' action defects, fixed-scenario limits and cost exclusions.</span></li>
+<li><a href="https://github.com/wassname/constitutional_grafting/blob/6fd3a339ab2afd5b96355eaf82bd388abe674881/slop/eval/run17/score_frozen/metrics.md">Run 17 metrics</a> <span class="how">— Full pinned table and definitions read. 328/568 blank finals, reasoning variant's no-blank result and lower agent panel, plus training-time document ablation with overlapping 90% intervals.</span></li>
+<li><a href="https://github.com/wassname/constitutional_grafting/blob/6fd3a339ab2afd5b96355eaf82bd388abe674881/slop/eval/character_tradeoff/results.md">Two stages, two trade-offs</a> <span class="how">— Full pinned report read. Uncertain gain from rewritten answers, generic-text behavior changes, one-training and narrow-evaluation limitations.</span></li>
+<li><a href="https://arxiv.org/abs/2610.00767">Pre-training interventions, ex post facto: Grafting model beliefs across checkpoints — Nutter et al.</a> <span class="how">— Primary arXiv HTML read in the abstract, introduction/method, constitutional intervention section 4.2 and conclusion/limitations. Prior work already included constitutional and chat-format interventions; no first-character-graft novelty claim. Training-path limitation retained.</span></li>
+<li><a href="https://model-spec.openai.com/2026-10-29.html">Model Spec, October 29, 2026 — OpenAI</a> <span class="how">— Relevant primary sections read for a bounded comparison of uncertainty about values, assistance and authority. Internal link points to the separate mandatory Spec expansion.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-constitutional-grafting-reports-qwen3-5-35b-a3b-character-ch">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-29/constitutional-grafting-reports-qwen3-5-35b-a3b-character-ch</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

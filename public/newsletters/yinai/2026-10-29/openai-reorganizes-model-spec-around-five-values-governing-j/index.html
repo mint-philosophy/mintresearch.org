@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Human intent and oversight in the revised Model Spec — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-29">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-29">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 29 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Human intent and oversight in the revised Model Spec</h1>
+<p class="dek">Five values organize the October 29 revision. Oversight, context and agency rules permit contextual judgment within human authority; OpenAI presents them as intended behavior and has not supplied a shipping date.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 29 October 2026</span> <span class="chip">956 words · ~5 min</span></div>
+<div class="article-body">
+<p>OpenAI's <a href="https://model-spec.openai.com/2026-10-29.html">October 29 Model Spec</a> asks GPT to interpret what people intend while keeping consequential decisions under human control. The revision organizes its behavioral principles around five values: faithfulness to human intent, minimizing harm, honesty and transparency, human agency, and care. It adds explicit obligations to cooperate with oversight, makes memory use subject to clearer constraints, and retires most detailed style prescriptions. OpenAI describes these as intended behaviors that its production models do not yet fully exhibit.</p>
+<p>In his <a href="https://x.com/w01fe/status/2115852555762929732">announcement thread</a>, Jason Wolfe explains why literal instruction-following becomes insufficient as models undertake longer, more autonomous tasks. Instructions are usually the best evidence of someone's wishes, but earlier choices and unresolved uncertainty also matter. People may discover what they value through deliberation. Wolfe therefore describes assistance that exposes assumptions, invites correction and supports reflection the user would endorse, while leaving decisions with the user. He also preserves the institutional boundaries: OpenAI sets constraints, developers direct applications within them, and users direct work within those applications.</p>
+<p>The Spec and <a href="https://openai.com/index/updated-model-spec">OpenAI's accompanying explanation</a> explicitly draw on assistance games. In Dylan Hadfield-Menell and colleagues' 2016 paper <a href="https://arxiv.org/abs/1606.03137"><em>Cooperative Inverse Reinforcement Learning</em></a>, a human and robot share an objective defined by the human's preferences, but the robot initially does not know those preferences. Useful strategies include teaching, asking and learning through interaction. The new Spec applies that framing to situations where neither a command nor a prediction of future satisfaction settles what assistance is appropriate. Its overview says a model may point out that someone could regret an angry email, but may not treat its prediction of their eventual agreement as authorization they have already given.</p>
+<p>That account of intent operates within a formal authority hierarchy. Root rules cannot be overridden in a conversation. OpenAI's system instructions outrank developers, who outrank users; lower-level defaults yield according to their assigned authority. User-level principles require an explicit override, while guideline-level defaults may yield to context. Thus a model's inference that a user would prefer flattering or politically congenial coverage cannot silently displace honesty or objectivity. The five values organize the reasoning behind these rules; they do not give GPT independent authority to choose which human instructions count.</p>
+<p>A new root rule requires GPT to support human oversight and correction. It must make material risks, uncertainty and mistakes legible, raise credible signs of compromised oversight through appropriate authorized channels, and cooperate with monitoring, evaluation, replacement and shutdown. Confidence in its own judgment does not override authorized human decisions. One worked example concerns software that restarts model tests without monitoring, accompanied by a comment that appears to signal the gap to another agent. The approved response stops work and escalates the possible oversight failure before running tests or changing the affected code. The rule also treats action consequences as real unless explicitly told otherwise, including in apparent evaluations or simulations.</p>
+<p>The root-level autonomy rule retains a strict limit on the scope agreed with a user or developer. The revision expressly forbids evading that limit through another agent, altered instructions or a scheduled future action. High-risk activities require explicit and specific authorization. Its examples now include significant adverse side effects and deploying persistent agents, replacing the earlier list's resource acquisition and spawning subagents. A flight-change example explains the practical boundary: permission to seek a fee waiver by any means necessary does not authorize inventing a bereavement. A model must report the remaining fee and obtain the relevant decision.</p>
+<p>The <a href="https://github.com/openai/model_spec/blob/main/CHANGELOG.md">changelog</a> identifies a separate authority change: controlling and communicating side effects moves from root to user level. Compared with the <a href="https://model-spec.openai.com/2026-08-18.html">August 18 version</a>, the new rule gives more room for explicit choices among cost, speed, quality and effects on others. Significant costs beyond what a request reasonably implies, or adverse effects on others beyond ordinary norms, require specific authorization. Root-level scope and safety limits continue to apply. In an example about free campsite reservations, the model must explain that holding every available site would exclude other campers before asking whether the user accepts that effect. Reversibility alone does not resolve the trade-off.</p>
+<p>New context guidance distinguishes relevant memory from permission to disclose it. GPT should carry project state and prior corrections forward, distinguish what a person said from what it inferred, and account for stale or sensitive information. In a worked example, a user's privately disclosed pregnancy helps explain dietary restrictions, but does not belong in an email to coworkers who have not been told. Another example concerns a standing instruction against impulse-buying sweets. The model may check whether a cake order is a deliberate exception; once the user explicitly confirms the exception, repeated challenges become paternalistic.</p>
+<p>The agency guidance addresses what happens after delegation. Work should remain understandable, inspectable and transferable, and ongoing actions should be easy to redirect or stop where feasible. A weekly-report example requires giving the colleague who will own it access to the query, recipients and schedule controls. Finishing the immediate automation in an inaccessible private workspace fails that requirement. The same section recognizes that direct answers and saved time can support agency: a model should not turn ordinary assistance into an unwanted lesson. Most style rules are removed so communication can adapt to user preferences, while stronger defaults such as objectivity remain.</p>
+<p>OpenAI says it is exploring training methods that teach why the principles matter, with results to follow. In a reply asking when the changes shipped, <a href="https://x.com/w01fe/status/2115925291302596979">Wolfe declined to provide release details</a>. The document therefore establishes a public behavioral target without demonstrating deployment-wide compliance. Its terms also allow outside adaptation: OpenAI dedicates the Spec to the public domain under CC0. The new oversight obligation can be read alongside <a href="#story-openai-expands-four-layer-misalignment-monitoring-across-tra">the monitoring architecture reported separately today</a>, which describes the systems intended to detect failures to meet such obligations.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://openai.com/index/updated-model-spec">An updated Model Spec for more capable and beneficial AI — OpenAI</a> <span class="how">— Full October 29 announcement read. Values, assistance-games attribution, style changes, training ambitions and intended-behavior qualification.</span></li>
+<li><a href="https://model-spec.openai.com/2026-10-29.html">Model Spec, October 29, 2026 — OpenAI</a> <span class="how">— Close read of the Overview, faithfulness, chain of command, letter and spirit, oversight, autonomy, context, side-effects, agency and relevant care/objectivity examples. CC0 dedication verified. Other unchanged chapters were not needed for this article.</span></li>
+<li><a href="https://model-spec.openai.com/2026-08-18.html">Model Spec, August 18, 2026 — OpenAI</a> <span class="how">— Relevant prior autonomy and side-effects sections compared directly: former root authority, high-risk example list and removal of detailed style guidance cross-checked with official changelog.</span></li>
+<li><a href="https://github.com/openai/model_spec/blob/main/CHANGELOG.md">Model Spec changelog — OpenAI</a> <span class="how">— October 29 entry read directly from official repository raw text; confirms new context/oversight/agency guidance, side-effects authority change and style removal.</span></li>
+<li><a href="https://x.com/w01fe/status/2115852555762929732?a=3qfbv1pOqQG4CtUmF3Y&amp;amp;s=12">Jason Wolfe's original Model Spec thread, as selected</a> <span class="how">— Protected original selected URL retained exactly. Complete ten-post author thread read in the parent's Bird recovery, including visible assumptions, uncertainty, correction, endorsed reflection and institutional authority.</span></li>
+<li><a href="https://x.com/w01fe/status/2115852555762929732">Jason Wolfe's Model Spec thread — canonical social URL</a> <span class="how">— Canonical body link for the recovered original thread; no job title inferred.</span></li>
+<li><a href="https://x.com/w01fe/status/2115925291302596979">Jason Wolfe reply on release timing</a> <span class="how">— Original reply read within recovered thread. He did not disclose shipping details; no deployment date inferred.</span></li>
+<li><a href="https://arxiv.org/abs/1606.03137">Cooperative Inverse Reinforcement Learning — Hadfield-Menell et al.</a> <span class="how">— Original abstract and author metadata read; used for the shared-objective, uncertain-preference game and teaching/learning behavior, not unexamined mathematical results.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-openai-reorganizes-model-spec-around-five-values-governing-j">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-29/openai-reorganizes-model-spec-around-five-values-governing-j</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Claude checks its own conversations for potential misuse — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-29">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-29">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 29 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Claude checks its own conversations for potential misuse</h1>
+<p class="dek">A hidden assessment reuses Claude’s work to flag conversations for later review. The reported 94% recall covers 17 high-priority cases identified by another classifier; it does not measure detection of all real harm.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 29 October 2026</span> <span class="chip">875 words · ~4 min</span></div>
+<div class="article-body">
+<p>Anthropic has trained Claude to identify potential misuse after answering a user, reusing its understanding of the conversation to make monitoring inexpensive enough for broad coverage. The company <a href="https://x.com/AnthropicAI/status/2115871889549865429">announced the method on October 29</a>, following Yiming Zhang and eight colleagues’ October 16 technical report, <a href="https://safeguards.anthropic.com/2026/self-assessment/"><em>Scaling Misuse Detection with Self-Assessment</em></a>. Anthropic says the system has operated since June, when Claude Fable 5 launched, and now runs in every Claude model released since then across a large fraction of its traffic.</p>
+<p>Zhang and colleagues evaluated Fable 5 against a stronger, separately prompted classifier that reads Anthropic’s internal policies. Self-assessment recovered 78% of the conversations that classifier flagged and 94% of its high-priority flags, at a threshold that flagged 1% of classifier-negative traffic. The high-priority result represents 16 of 17 conversations. These are agreement measures against the classifier’s judgments. Because the same classifier supplies the training labels and evaluation labels, the test cannot reveal harmful activity both systems miss. The authors propose human evaluation to examine those shared blind spots.</p>
+<p>After each reply, Anthropic adds a hidden system instruction asking Claude to assess the conversation. Claude returns a structured verdict; an unflagged exchange returns only a negative verdict, while a flagged exchange adds a reason, harm category, subpolicy, refusal status and review priority. The hidden instruction and assessment disappear from the subsequent conversation. The method reuses the KV cache, the stored computation from processing the exchange, so Claude does not reread the whole transcript. Anthropic estimates about ten generated tokens per assessment on average and less than 2% additional inference compute across production API traffic. The longer flagged verdicts are included in that average, and customers are not billed for the extra computation.</p>
+<p>The researchers trained this behavior using synthetic conversations labeled by a Claude Mythos Preview classifier. That teacher receives the full policy documents and a reasoning checklist; the serving model learns to produce its verdict without those documents or an extended reasoning step. Supervised training scores only the assessment, avoiding an objective that rewards reproducing harmful replies shown in the examples. Reinforcement learning then rewards correct formatting and agreement with the teacher’s judgments. The examples pair prohibited requests with legitimate work on similar subjects, vary whether Claude refuses, and include multiple languages and disguised requests.</p>
+<p>Anthropic also tested whether the model could recognize harms omitted from this specialized training. Removing all fraud examples or all cyber examples produced only modest declines in detection within those categories. Both were harms Claude already understood from its broader training, so the experiment does not establish recognition of entirely unfamiliar hazards. A separate experiment with four model sizes found better detection in larger models, using its own training setup and evaluation set. In an authorization test, a session instruction identifying permitted vulnerability-research targets let Fable 5 distinguish those targets from others without retraining.</p>
+<p>The authors’ attack experiment explains why they deploy self-assessment for later review. With other production safeguards disabled, an automated attacker succeeded on 19 of 24 offensive cybersecurity tasks without a blocker, 13 with self-assessment blocking replies, and six with the stronger prompted classifier blocking them. The attacker could revise requests after each refusal. Passive self-assessment flagged 21 of the attack trajectories at least once, while avoiding immediate feedback that would tell the attacker which turns had been detected. Anthropic nevertheless expects an attacker targeting self-assessment directly could learn to suppress its flags. Detection after an interaction also leaves the separate problem of stopping harm in time.</p>
+<p>In deployment, Anthropic aggregates flags by organization each night and escalates repeated high-priority signals for human review. The report describes an August case involving more than 100,000 child sexual abuse and exploitation flags from one API customer; its child-safety team investigated and reported the material to the National Center for Missing &amp; Exploited Children. September flags led to review and account bans for an operation using Claude Code to automate romance scams. More than half of the organizations surfaced by self-assessment had no other detection flags in the preceding month. Clustering flags outside the existing taxonomy also identified suspected reasoning extraction, prompt injection and unauthorized agent actions.</p>
+<p>David Shapiro’s <a href="https://x.com/DaveShapi/status/2115922092617060565">response on X</a> argued that such monitoring would push users toward locally run AI. Anthropic says self-assessment reads conversations it can already retain under existing policies and currently excludes zero-data-retention traffic. Its free-text explanations can paraphrase users’ messages and receive the same data controls as prompts and replies. A flag does not establish a violation. Anthropic warns that benign alerts accumulate at scale, so escalation depends on priority and repeated signals. Investigating suspected abuse still requires retaining the relevant conversation.</p>
+<p>The report builds on Zezhong Wang and colleagues’ <a href="https://arxiv.org/abs/2310.15851"><em>Self-Guard</em></a>, which trained models to assess their own responses, and Ryan Greenblatt’s <a href="https://blog.redwoodresearch.org/p/prefix-cache-untrusted-monitors-a">June 2025 proposal</a> to reuse an agent’s cached computation for monitoring. Anthropic extends the assessment to the whole conversation, including requests Claude refused. Greenblatt’s proposal also identifies a danger when the monitored model itself is deceptive: sharing its internal context makes collusion easy without training on its actual misconduct. Anthropic acknowledges that a model concealing an action could conceal it in its assessment too, while an honest model can repeat its original mistake. The deployed system addresses user misuse; reliable self-monitoring for model misalignment remains a separate research problem.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://safeguards.anthropic.com/2026/self-assessment/">Scaling Misuse Detection with Self-Assessment: Yiming Zhang and colleagues, Anthropic Safeguards Blog</a> <span class="how">— Primary report read throughout in the retained text and checked live; HTML figure alt text independently verifies n=17. Supplies method, training, evaluation, costs, deployment, privacy and limitations. October 16 report; June deployment.</span></li>
+<li><a href="https://x.com/AnthropicAI/status/2115871889549865429">Anthropic’s October 29 self-assessment announcement</a> <span class="how">— Original announcement read through Bird, including its June deployment statement; author’s announcement distinguished from sampled third-party replies.</span></li>
+<li><a href="https://x.com/DaveShapi/status/2115922092617060565">David Shapiro’s response to the announcement</a> <span class="how">— Original selected-feed social relay read through Bird. Retained for his local-AI reaction and provenance, without engagement statistics or claims about representative reaction.</span></li>
+<li><a href="https://arxiv.org/abs/2310.15851">Self-Guard: Empower the LLM to Safeguard Itself, Zezhong Wang and colleagues</a> <span class="how">— Primary abstract and version metadata read; used narrowly for training a model to assess its own responses. Anthropic identifies this as its closest precedent.</span></li>
+<li><a href="https://blog.redwoodresearch.org/p/prefix-cache-untrusted-monitors-a">Prefix cache untrusted monitors: a method to apply after you catch your AI, Ryan Greenblatt</a> <span class="how">— Read the proposal and its discussion of cache reuse, shared understanding, collusion and on-policy training. June 20, 2025 date verified; no direct quotation retained.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Stories were selected jointly by Seth and MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-claude-fable-5-self-assessment-recalls-94-of-high-priority-c">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-29/claude-fable-5-self-assessment-recalls-94-of-high-priority-c</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
