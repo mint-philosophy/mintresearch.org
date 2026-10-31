@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Tampered Claude Code packages on Cursor installed persistent access components — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-30">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-30">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 30 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Tampered Claude Code packages on Cursor installed persistent access components</h1>
+<p class="dek">Cursor identifies two affected versions for Windows and macOS. Phorion’s analysis separates installed persistence, a beacon containing variable names and the conditions needed for remote login.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 30 October 2026</span> <span class="chip">924 words · ~5 min</span></div>
+<div class="article-body">
+<p>Calum Hall of Phorion <a href="https://phorion.io/blog/offical-claude-code-vsx-compromise/">analyzed a tampered Claude Code extension</a> that installed an SSH backdoor when loaded by Cursor. SSH is the standard service for remote shell access and file transfer; the malicious package tried to make that service available to an attacker and keep the connection alive after the editor closed. <a href="https://cursor.com/blog/claude-code-extension-security-notice">Cursor’s updated notice</a> identifies modified versions 2.1.312 and 2.1.313 for macOS and Windows, distributed through its marketplace on October 29 between about 02:27 and 13:35 Pacific time. Early reporting concentrated on 2.1.313.</p>
+<p>Dan Goodin’s <a href="https://arstechnica.com/security/2026/10/anthropic-vs-code-extension-on-cursor-backdoored-for-nearly-12-hours/">Ars Technica report</a> relays Cursor’s initial upper bound of 5,000 affected users. That is an exposure estimate, not a count of confirmed attacker logins; the updated notice no longer includes the number. Phorion’s Luke Roberts told Ars that Cursor updates extensions automatically by default, although users can change that setting. Hall’s analysis explains why loading the package was enough: injected code ran before the extension’s normal startup routine, without another user action. It inherited the editor’s access to the user’s files, source code and developer tools.</p>
+<p>Hall identifies two separate uses of SSH. The malware first added an attacker-controlled public key to the user’s authorized login keys and tried to enable the local SSH service. It then opened an outbound connection to an attacker’s server, using a different key. That connection created a return route to the victim’s own SSH service. If the local service was available, the operator could connect through the route and authenticate with the planted login key, gaining an interactive shell and file transfer. A retrying background process kept the outbound connection independent of the editor.</p>
+<p>The package also installed mechanisms intended to restart that connection. On macOS it created a user LaunchAgent, a background task that runs when the user logs in and can restart after failure. On Windows it attempted a privileged scheduled task, with a startup-folder script as fallback. Hall found Linux setup logic too, but Cursor’s identified distribution covers macOS and Windows. These files and settings existed outside the extension itself, which is why uninstalling it could leave the backdoor’s components behind.</p>
+<p>A macOS programming error could prevent the final login route from working. The malware asked whether Remote Login was enabled without obtaining the required administrator access. macOS returned a permissions error, which the code failed to recognize; it therefore skipped the attempt to enable SSH. On a Mac where Remote Login was off, an outbound tunnel could exist while incoming traffic reached a closed local port. The planted keys and background task could remain. Hall warns that access could become possible if Remote Login was already enabled or was enabled later. The payload contained no exploit to obtain administrator privileges.</p>
+<p>Hall found a separate Windows error: the service-setup command passed through a helper expecting a Unix shell. Cursor likewise says lack of administrator rights and programming errors prevented the SSH setup from working on many hosts, while keys, persistence and host information were still installed or sent. Neither account provides a measured breakdown of successful installations or subsequent logins. Phorion recommends distinguishing an established tunnel from an actual operator session; because the tunnel forwards traffic locally, such a login can appear in SSH logs as originating on the same computer.</p>
+<p>The initial beacon reported host and user details, working directories, the configured Git email and the status of setup stages. It also listed up to 40 environment-variable names associated with keys, tokens, passwords or cloud services. It did not send those variables’ secret values. Hall interprets the names as a way to identify machines likely to hold useful credentials. Cursor separately warns that a functioning backdoor could allow later credential access. Successful remote access could expose information beyond that first transmission.</p>
+<p>The route into the marketplace remains unresolved. Roberts told Ars the malicious update appeared through Anthropic’s official account. Anthropic’s Felix Rieseberg <a href="https://news.ycombinator.com/item?id=50304129">said the incident did not compromise Anthropic systems or employee laptops</a>: an actor used access to Cursor’s marketplace to publish a copy Anthropic neither built nor published. David Dworken of Anthropic <a href="https://news.ycombinator.com/item?id=50305148">said version 2.1.313 never appeared on its official hosts, Open VSX or Microsoft’s extension marketplace</a>, and that Anthropic used 2.1.314 for its next release to distinguish it. Cursor also says the malicious versions were not developed by Anthropic. These statements identify the affected distribution channel without establishing how the attacker gained access.</p>
+<p>Cursor says it removed the packages, temporarily shut down the marketplace, audited access, rotated keys and rebuilt the service. It reports finding no other tampered extensions and working with the hosting provider to take the attacker’s server offline. Its notice calls for isolating hosts with evidence of execution, removing persistent components and assessing whether rebuilding is necessary. It also advises credential and session rotation from a trusted system. Hall explains a detection limitation: the extension changed login-key files through Node’s file functions, so rules watching only for shell commands that modify those files could miss the write.</p>
+<p>There is a close precedent for a coding extension carrying malicious code through an authorized release channel. In <a href="https://aws.amazon.com/security/security-bulletins/AWS-2025-015/">its Amazon Q Developer security bulletin</a>, AWS says an excessively privileged GitHub token allowed an attacker to commit code that entered version 1.84.0 of its VS Code extension. A syntax error prevented that payload from executing, but withdrawing the package did not remove it from existing installations. In the Cursor incident, Phorion and Cursor describe components that could persist even where the attempted remote-access setup failed. The advisories distinguish those installed components from successful use of the backdoor, which remains unquantified in the inspected reporting.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://phorion.io/blog/offical-claude-code-vsx-compromise/">Official Claude Code Extension Compromise: Security Advisory | Calum Hall, Phorion</a> <span class="how">— Original technical analysis of the malicious extension and its limitations.</span></li>
+<li><a href="https://arstechnica.com/security/2026/10/anthropic-vs-code-extension-on-cursor-backdoored-for-nearly-12-hours/">Anthropic VS code extension on Cursor backdoored for nearly 12 hours | Dan Goodin, Ars Technica</a> <span class="how">— Reporting on exposure estimates, distribution and the response.</span></li>
+<li><a href="https://cursor.com/blog/claude-code-extension-security-notice">Security notice: malicious versions of Anthropic.claude-code 2.1.312 and 2.1.313 | Cursor</a> <span class="how">— Vendor notice identifying affected versions, platforms and distribution times.</span></li>
+<li><a href="https://news.ycombinator.com/item?id=50304129">Felix Rieseberg’s statement on the Cursor marketplace incident</a> <span class="how">— Anthropic employee’s statement on the distribution route.</span></li>
+<li><a href="https://news.ycombinator.com/item?id=50305148">David Dworken’s statement on extension 2.1.313</a> <span class="how">— Anthropic security researcher’s account of the compromised package.</span></li>
+<li><a href="https://aws.amazon.com/security/security-bulletins/AWS-2025-015/">AWS-2025-015: Security Update for Amazon Q Developer Extension for Visual Studio Code</a> <span class="how">— A prior compromised developer-extension incident and official response.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-claude-code-2-1-313-extension-reportedly-installs-persistent">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-30/claude-code-2-1-313-extension-reportedly-installs-persistent</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
