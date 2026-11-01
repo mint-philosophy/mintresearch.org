@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>IBM's JevAct checks agents' writes and give-ups before they run — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-31">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-31">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 31 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">IBM's JevAct checks agents' writes and give-ups before they run</h1>
+<p class="dek">Compiled policy code and a cheap decision model send flawed bookings and premature hand-offs back to the agent. Telecom-support reliability rose for every model tested, airline results were mixed, and the Telecom gain vanished under a different simulated customer.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 31 October 2026</span> <span class="chip">1303 words · ~7 min</span></div>
+<div class="article-body">
+<p>Tool-using agents finish simulated telecom-support tasks far more consistently when an inexpensive checker reviews each record change or hand-off before it executes and sends failures back with a short explanation, according to an October 28 arXiv preprint from IBM. In <a href="https://arxiv.org/abs/2610.38620">“Think Before You Act: Decision Gate for LLM Agents”</a>, Iftach Shoham, Yuval David, Segev Shlomov and five colleagues at IBM SIL describe a harness called JevAct and test it on eleven agent models. On a simulated telecom-support benchmark every agent improved, and Claude Opus 4.6 went from solving 39.5% of tasks in all three of its runs to 80.7%.</p><p>The authors start from a gap in common agent loops, which execute a tool call as soon as the model produces it. A wrong answer can be fixed in a later turn, they write, but “an unauthorized write or a premature hand-off may be harder to undo.” JevAct therefore inspects only those two kinds of proposal: writes, such as booking, cancelling or changing a setting, and hand-offs, where the agent transfers the customer to a human or says nothing more can be done. Every other step runs as in ReAct, the standard loop in which a model alternates reasoning with tool calls, and the agent keeps its own model, prompt and tools.</p><p>The checks are prepared offline. Claude Opus 4.6 compiles each domain's written policy into 12 to 20 yes/no questions for every write tool, a Boolean rule that combines the answers, a Python function that computes policy facts from tool records (dates, amounts, counts, baggage allowances) and, for hand-offs, a troubleshooting checklist. The authors single out one instruction in the compile prompt: “a condition that was never discussed is not ruled out.” Without it, the rule for enabling roaming compiled into a condition that counted as met if the customer was not traveling, which looked settled though nobody had asked; with it, the checklist gained a step telling the agent to ask whether the customer was traveling.</p><p>At runtime, code tests what the tool records establish. Questions that depend on reading the conversation, such as whether the customer requested an action or whether a troubleshooting step was tried, go to Kev-27B, a decision model: it returns a probability for each fixed answer in one forward pass and generates no text. Kev is Jared Palmer's <a href="https://github.com/jaredpalmer/kev">Apache-2.0 family of decision models</a>, built on Qwen and designed to match the API of TypeSafe AI's commercial <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Jev</a>, which gives JevAct its name. Its README warns that “Kev can't subtract dates reliably, but it can use a day count it's given,” which fits the paper's choice to leave arithmetic to code. A Kev answer counts as no only when it puts the probability of yes at 5% or below. Because the judge is a separate model, the agent never grades its own proposals. “The agent still proposes actions; Kev does not choose them,” the authors write.</p><p>A flagged proposal is discarded without being executed or stored. The agent sees feedback on the failed checks or open checklist steps for that one call and proposes again. The write gate allows two revisions and the hand-off check one; after that the next proposal is committed unchecked, so, in the paper's words, “a check cannot block the agent indefinitely.”</p><p>The agents included GPT-4.1, three Claude models and open-weight models such as gpt-oss-120b, Qwen3.8-27B and DeepSeek-V4-Pro. They ran on the Airline (50 tasks) and Telecom (114 tasks) domains of <a href="https://arxiv.org/abs/2506.07982">τ²-bench</a> and on 800 multi-turn entries from the function-calling benchmark BFCL, three times per task, against the same model in a plain ReAct loop. Telecom showed the largest effect: tasks solved in all three runs rose by 16.9 points on average across eight agents, and even Opus 5.5, the strongest baseline, went from 74.6% to 82.5%. In that domain, built by Victor Barres and colleagues, the simulated customer acts on their own phone while the agent talks them through troubleshooting. The IBM authors read the Telecom pattern as consistent with the hand-off check catching a frequent failure, agents giving up too early, while noting that the comparison does not isolate that check. Coding agents in <a href="https://mintresearch.org/newsletters/yinai/2026-10-26/#story-impassebench-measures-coding-agents-stopping-failures-escala">ImpasseBench</a> showed the opposite failure, persisting after the evidence said they should escalate.</p><p>Gains elsewhere were smaller. On BFCL, three-run success rose for all nine agents, by 0.1 to 9.6 points, but success in at least one run fell for five of them; the authors take this as more repeatable performance on some tasks with no wider coverage. Airline results were mixed, with three-run success improving for four of six agents and falling for two. With 50 tasks, one task moves a score by two points, and the gate seldom intervened, sending back 0.08 drafts per run for Opus 4.6.</p><p>An Airline ablation, run once per task with GPT-4.1 as the agent, suggests the compiled code does most of the work there. ReAct solved 50% of tasks and the full gate 72%; code checks alone reached 68% and Kev's questions alone 57.1%. A placebo that sent every write back once, without checking anything, gave no gain. With gpt-oss-120b as the agent, though, a plain re-check or random flags at the gate's rate raised three-run success as much as the full gate did, so whether the judge's verdicts matter beyond the extra chance to revise depends on the agent. The paper estimates Kev's judging cost at $0.0003 to $0.0017 per task, against $0.0127 to $0.0231 for Claude Haiku 4.5 or GPT-4.1 as API judges, with similar task success. Smaller Kev judges sometimes did better than Kev-27B: Opus 4.6 solved 97.4% of Telecom tasks in all three runs with Kev-9B, against 80.7% with Kev-27B, and an offline replay of hand-off decisions found nothing in decision quality to explain the gap.</p><p>The authors list several limits. Their comparisons “evaluate the full harness, not the judge in isolation.” When gpt-oss-120b replaced GPT-4.1 as the simulated customer, the Telecom gain disappeared: three-run success fell 1.8 points, with a 95% interval running from a 7.9-point loss to a 4.4-point gain. Of 101 incorrect labelled Airline write calls, 42 broke no compiled question, “because the questions encode the policy rather than the user's request”; an action can satisfy the rules and still not be what the customer asked for. The authors also revised the Telecom checklist after reviewing results and report no end-to-end latency.</p><p>JevAct extends earlier IBM work. <a href="https://arxiv.org/abs/2507.16459">Naama Zwerdling and colleagues at IBM Research</a> (EMNLP 2025 Industry Track) compiled policy documents into guard code that runs before each agent action, tested on τ-bench Airlines; JevAct keeps that deterministic layer, which its own ablation credits with most of the Airline gain, and adds a judge for conversation-dependent conditions and feedback for revision. Shlomov, Shoham and colleagues' <a href="https://arxiv.org/abs/2605.20874">CUGA policy system</a> earlier placed policy-as-code checkpoints in a generalist agent, including human approval for high-risk tool actions. Seongjae Kang, Taehyung Yu and Sung Ju Hwang checked actions against the dialogue with a generative verifier in <a href="https://arxiv.org/abs/2606.29225">PolicyGuard</a>, then in <a href="https://arxiv.org/abs/2608.19861">PolicyGuide</a> compiled policies into workflow graphs and raised τ²-bench telecom success across four runs from 0.19 to 0.61 with a GPT-5.4 verifier. The IBM paper does not test JevAct against these systems, and the setups differ.</p><p>In an independent study of Jev that bears on the paper's division of labour, <a href="https://arxiv.org/abs/2609.26550">Yubo Li and colleagues</a> found it close to GPT-6 when a verdict can be read off the text but behind when the verdict must be derived, as in math, code and logic. On X, replies to a <a href="https://x.com/omarsar0/status/2116547247018229999">post by elvis (@omarsar0)</a> relaying the paper took up the compiler. Anshul Karasi and Mohammad Vazin argued that generated checks need review and tests against hand-written known violations before anyone trusts the gate. The paper partly anticipates this: one round of code repair cut false alarms on held-out airline tasks from 11.3% to 1.4% of correct write calls.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2610.38620">Think Before You Act: Decision Gate for LLM Agents (Shoham, David, Shlomov et al., IBM SIL), arXiv 2610.38620</a> <span class="how">— Primary source, read in full by the researcher. Supplies the design, compiler instruction, thresholds, revision budgets, all benchmark results, ablation, cost and judge-size findings, limitations, and all verbatim paper quotes.</span></li>
+<li><a href="https://github.com/jaredpalmer/kev">Kev: Small Jev-like decision models you can train and run yourself (README), Jared Palmer</a> <span class="how">— Background on Kev: Apache-2.0 license, Qwen base, Jev-compatible API; verbatim quote that Kev cannot subtract dates reliably.</span></li>
+<li><a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev">Introducing System One Models &amp; Jev, TypeSafe AI</a> <span class="how">— Identifies Jev as TypeSafe AI's commercial decision model that Kev imitates and that gives JevAct its name.</span></li>
+<li><a href="https://arxiv.org/abs/2506.07982">τ²-Bench: Evaluating Conversational Agents in a Dual-Control Environment (Barres et al.)</a> <span class="how">— Benchmark context: Telecom domain in which the user acts on their own device and the agent guides troubleshooting.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-26/#story-impassebench-measures-coding-agents-stopping-failures-escala">Yesterday in AI, October 26 issue: ImpasseBench</a> <span class="how">— Contextual tie only (published issue, send recorded 2026-10-27): coding agents persisting when they should escalate, the opposite of JevAct's premature hand-off failure.</span></li>
+<li><a href="https://arxiv.org/abs/2507.16459">Towards Enforcing Company Policy Adherence in Agentic Workflows (Zwerdling et al., IBM Research, EMNLP 2025 Industry)</a> <span class="how">— Precursor: offline compilation of policy into guard code run before each action on τ-bench Airlines. Abstract only.</span></li>
+<li><a href="https://arxiv.org/abs/2605.20874">Governance by Construction for Generalist Agents (CUGA policy system), Shlomov et al.</a> <span class="how">— Precursor from the same IBM group: policy-as-code checkpoints including human approval for high-risk tool actions. Abstract summary only.</span></li>
+<li><a href="https://arxiv.org/abs/2606.29225">PolicyGuard: A Dialogue-Grounded Sub-Agent Verifier for Policy Adherence in LLM Agents (Kang, Yu, Hwang)</a> <span class="how">— Precursor: generative verifier checking actions against dialogue. Abstract only.</span></li>
+<li><a href="https://arxiv.org/abs/2608.19861">PolicyGuide: From Guarding One Action to Guiding the Whole Workflow (Kang, Yu, Hwang)</a> <span class="how">— Precursor and comparison point: workflow graphs, τ²-bench telecom Pass^4 0.19 to 0.61 with GPT-5.4 verifier. Abstract only.</span></li>
+<li><a href="https://arxiv.org/abs/2609.26550">JEV-as-a-Judge: Accept When Confident, Escalate When Unsure (Li, Miao, Krishnan, Padman)</a> <span class="how">— Independent evaluation of Jev: near GPT-6 when verdicts are readable from text, behind when they must be derived. Abstract only.</span></li>
+<li><a href="https://x.com/omarsar0/status/2116547247018229999">elvis (@omarsar0) on X, relay of the paper, and replies</a> <span class="how">— Relay post linked as the venue of reactions; replies from Anshul Karasi and Mohammad Vazin on testing compiled checks (paraphrased). No figures attributed to the relay.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth and Claude. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-jevact-gates-tool-actions-with-policy-checks-improving-relia">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-31/jevact-gates-tool-actions-with-policy-checks-improving-relia</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
