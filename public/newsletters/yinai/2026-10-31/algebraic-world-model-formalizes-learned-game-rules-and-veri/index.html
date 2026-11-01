@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Algebraic World Model learns game rules and proves what follows from them — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-31">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-31">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 31 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Algebraic World Model learns game rules and proves what follows from them</h1>
+<p class="dek">Pan and colleagues verified 183 winning replays and proved two modified levels impossible under learned rules. Wrong initial bounds and later engine checks show where formal deduction still depends on empirical testing.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 31 October 2026</span> <span class="chip">1046 words · ~5 min</span></div>
+<div class="article-body">
+<p>An AI agent can learn explicit rules for an unfamiliar game and construct machine-checked proofs that no sequence of moves wins under those rules. Guancheng Pan of Zhejiang University, Qixin Tan, Yang Yuan and Andrew Chi-Chih Yao demonstrate this in <a href="https://arxiv.org/abs/2610.40503"><em>Algebraic World Model: From Exploration to Proofs</em></a>, posted to arXiv on October 29. Their system verified winning replays for 183 levels and proved two specially modified levels impossible within their budgets. Two initially incorrect cost bounds expose the distinction the authors investigate: a proof can follow correctly from a learned model whose rules misdescribe the game.</p>
+<p>The Algebraic World Model, or AWM, starts with exploration. A language-model agent records hypotheses as Python code, with supporting observations and checks against recorded state changes. If a hypothesis contradicts an observation or its checker fails, the system blocks further actions until the agent revises or withdraws it. The agent then reorganizes its hypotheses into objects and shared rules, using transformations guided by category theory. Each transformation requires a supporting Lean statement and must preserve the distinctions tested against recorded and deliberately corrupted transitions. Finally, the agent formalizes the model in Lean 4, whose proof-checking kernel verifies deductions from the stated rules.</p>
+<p>The running example, lp85, makes the method concrete. Buttons move colored tiles; each goal slot must receive its matching color. AWM first wrote eleven hypotheses about four button mechanisms, then recognized that all four rearrange tile positions and replaced the separate descriptions with one shared rule. Because rearrangement preserves the number of tiles of each color, removing the only tile of a required color makes the modeled goal unreachable. The <a href="https://arxiv.org/src/2610.40503v1/anc/lp85-lean/README.md">released Lean project</a> connects that invariant to an impossibility theorem and separately provides winning witnesses for the original levels. Its replay theorems compute each successive state from the initial screen and compare it with the recorded play. Budget-display rules remain outside this Lean model.</p>
+<p>On all 25 public ARC-AGI-3 games, using Claude Opus 5, AWM cleared every level with an official score of 99.9. Lean replayed all 183 certified winning trajectories against the learned rules and checked their final goals. The certified runs used 7,448 actions, 43 percent of the human baseline’s 17,135. That ratio excludes exploratory play and unsuccessful sessions: counting everything sent to the game engine gives 24,604 actions, and certified clears followed uncertified sessions in 22 games. The authors also tested frozen rules on unseen transitions and modified games, finding that some rules generalized to changed layouts and detected changed mechanics. These checks provide additional empirical evidence about particular rules.</p>
+<p>AWM’s score is competitive with other systems that execute code. Haoyu Zhao and colleagues’ <a href="https://arxiv.org/abs/2610.11794"><em>Memento 3</em></a>, which the authors identify as their closest comparison, already cleared every public level with a score of 100.0. It maintains a written rulebook, compiles it into code and accepts updates after checking their agreement with observations. The much lower bare-model scores in AWM’s table come from a standard setup without code execution, so that comparison cannot isolate the contribution of AWM’s formal reasoning.</p>
+<p>For the impossibility experiment, the researchers modified two levels of sc25, a grid game in which a block moves and casts spells to reach an exit. They set budgets of 18 and 35, one unit below the minimum winning costs of 19 and 36 established by exhaustive engine search. AWM, now using Claude Opus 5.5, produced closed Lean proofs in all six runs, three per level. The proofs exclude every legal winning sequence under the learned models, including sequences never tried. Twelve baseline runs of Opus 5.5 and GPT-6 Astra with coding tools produced no such proofs. AWM additionally received its structured procedure, a generic Lean skeleton and rule-checking tools, so this tests complete agent configurations.</p>
+<p>Four of AWM’s six initial bounds matched the engine’s minimum costs. The other two, 20 and 47, followed from overly restrictive rules that excluded cheaper legal moves. Told only that a cheaper win existed, without its cost or route, AWM repaired both models within four further attempts and proved revised bounds. In one level, growing the block onto fuel collected it; the original rule missed that refund. In the other, terrain blocked a shot that the model had wrongly treated as limited in range. The corrected level-five bound was 37 under a convention that charged for the winning move, equivalent to the engine’s 36. The authors apply that accounting allowance to every agent.</p>
+<p>The researchers then checked whether the model proofs extended to the actual games. Appendix C.5 reports five successful transfers out of six, using a fixed opening and every engine-generated transition reachable within the sealed budget. Some certificates were repaired or completed, with costs translated to account for prepaid actions, refunds and the free winning move. The authors checked that the resulting invariant held initially, survived each permitted transition and excluded a win. One level-four invariant still failed because its fuel-collection assumptions disagreed with real transitions. These were subsequent certificate audits, not additional autonomous proofs: offline programs established graph extraction and correspondence with the engine outside an end-to-end Lean verification. The fixed-opening audit also has a narrower scope than the four-opening search that established the reference costs.</p>
+<p>The authors’ error-injection tests show which mistakes formal checking catches. Lean-based verification detected invalid proof certificates, mismatches between Python and Lean, and reversed bounds; a separate statement audit flagged theorems made trivially true by impossible premises. Neither caught the deliberately incorrect game rules or references to a wrong goal or model version. Explicit proof dependencies nevertheless helped an agent investigate faulty rules: on level four, providing the list of rules used in a proof raised successful counterexample discovery from 16 of 42 runs to 29. The same intervention helped much less on the harder level five.</p>
+<p>Independent checking of impossibility has a precedent in <a href="https://ai.dmi.unibas.ch/papers/eriksson-et-al-icaps2017.pdf"><em>Unsolvability Certificates for Classical Planning</em></a>, by Salomé Eriksson, Gabriele Röger and Malte Helmert at the University of Basel. Their 2017 work let a checker validate that a supplied planning task had no solution. AWM additionally has to learn the model that its proof uses. Its <a href="https://ephemeral6.github.io/awm-site/">released models and proof records</a> make those assumptions inspectable, but translating screens into states still happens in Python outside Lean. The experiments concern discrete, deterministic games with immediate feedback; richer hidden state, delayed feedback and random dynamics remain untested.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2610.40503">Algebraic World Model: From Exploration to Proofs - Pan, Tan, Yuan and Yao, arXiv:2610.40503v1</a> <span class="how">— Read complete retained full HTML paper, main Sections 1-6 and Appendices A-D, including tables, captions and C.5 transfer scope. Supports method, models, 183 replays, action accounting, sealed experiments, wrong bounds and repairs, transfer and mutation tests.</span></li>
+<li><a href="https://ephemeral6.github.io/awm-site/">Algebraic World Model project website</a> <span class="how">— Read complete static primary project page directly, including parser and proof scope. Followed links to lp85 and sealed-run artifacts. No local rerun claimed.</span></li>
+<li><a href="https://arxiv.org/src/2610.40503v1/anc/lp85-lean/README.md">lp85 Lean model README and ancillary proof project</a> <span class="how">— Read full README, Proof/Reachable.lean, Proof/Levels.lean and tools/check.py. Checked theorem statements, invariant proof structure, eight original-level replay witnesses, negative control and Python-only budget scope. Did not compile the project.</span></li>
+<li><a href="https://ephemeral6.github.io/awm-site/games/lp85/">lp85 model, replay and proof documentation</a> <span class="how">— Read complete page and displayed rule code. Confirms replay claims are relative to parsed observations and modeled components; inspected artifact links rather than independently replaying all games.</span></li>
+<li><a href="https://ephemeral6.github.io/awm-site/sealed/">Sealed sc25 experiment records</a> <span class="how">— Read viewer scope and historical-run metadata; inspected level-4 69fe87 and level-5 4f4628 final interviews and archived FinalProof.lean/L5Bound.lean proof logic and premises. Large generated certificate terms and imported tables were not exhaustively audited, and no cold compilation or engine rerun was performed. Historical runs were not conflated with newer downloadable implementations.</span></li>
+<li><a href="https://arxiv.org/abs/2610.11794">Memento 3: Model-Based Recursive Self-Improvement through Reflective Rulebooks - Zhao et al.</a> <span class="how">— Read original arXiv abstract and metadata directly. Supports rulebook-to-code comparison and public-game score; full predecessor paper not claimed read.</span></li>
+<li><a href="https://ai.dmi.unibas.ch/papers/eriksson-et-al-icaps2017.pdf">Unsolvability Certificates for Classical Planning - Eriksson, Röger and Helmert, ICAPS 2017</a> <span class="how">— Read original PDF abstract and opening introduction directly. Supports independently checked unsolvability certificates for supplied classical-planning tasks; no broader literature survey claimed.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-algebraic-world-model-formalizes-learned-game-rules-and-veri">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-31/algebraic-world-model-formalizes-learned-game-rules-and-veri</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

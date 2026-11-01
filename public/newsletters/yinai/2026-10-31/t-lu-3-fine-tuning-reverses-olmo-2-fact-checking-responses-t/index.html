@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Tülu-3 shifts occupational bias in two fact-checking models — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-31">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-31">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 31 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Tülu-3 shifts occupational bias in two fact-checking models</h1>
+<p class="dek">AlDahoul and Zaki find an effect below one percentage point in two models using Tülu-3 training. In OLMo-2 32B, supervised fine-tuning reverses how an existing job-status signal influences answers.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 31 October 2026</span> <span class="chip">1013 words · ~5 min</span></div>
+<div class="article-body">
+<p>Training can change whether a poster's job makes a language model more or less likely to believe a claim. Nouar AlDahoul and Yasir Zaki of New York University Abu Dhabi find a small shift toward doubting lower-status posters in two models trained with the Allen Institute for AI's Tülu-3 recipe. They report it in <a href="https://arxiv.org/abs/2610.38532">From Leniency to Suspicion: How an Open Post-Training Recipe Changes Whom LLM Fact-Checkers Believe</a>, an arXiv preprint submitted October 28. The effect is below one percentage point and appears in the tested Tülu-3-trained models but not the tested Meta, Alibaba or Mistral recipes. None of seven commercial models showed greater suspicion of lower-status posters.</p>
+<p>The researchers presented PolitiFact claims as social-media posts accompanied by invented account profiles. They took true and mostly true claims, and false and pants-on-fire claims, from LIAR-PLUS, asking the models for a true-or-false judgment. Profiles varied occupation, education and other personal details, including irrelevant ones such as star sign and favourite colour. The main measurement was the probability assigned to false, comparing the same claim under different profiles. The occupational contrast was between service or manual work and professional work. In a later experiment isolating the mechanism, the same poster became a line cook, warehouse lead, accountant or logistics executive, with everything else held fixed.</p>
+<p>A model had to pass basic checks before its result counted: produce usable answers, distinguish true from false claims, and express more doubt about an account with two previous false-rated posts. The authors also measured how training changed responses to irrelevant profile details. An occupational effect had to exceed that background movement. Six model families entered the comparison; Google's Gemma 3 27B failed the check involving previous false posts in the explicit-profile format, so its apparent job effects were not interpretable under the authors' rules.</p>
+<p>Tülu-3 70B and Meta's Llama-3.1-70B-Instruct begin with the same pretrained model. Only the Tülu-3 version developed increased job-based doubt beyond the measured background drift. OLMo-2 32B uses a different pretrained base but shares Tülu-3 post-training data, and showed the effect too. Its result also held on fresh claims and in a later run with new profile details. All families improved at distinguishing true claims from false ones, so the occupational shift accompanied better overall fact-checking. The effect depended partly on presentation: OLMo-2 showed it with natural account biographies, but not with explicit occupation fields in the cross-family comparison.</p>
+<p>To investigate how the shift happened, AlDahoul and Zaki examined OLMo-2 32B before assistant training, after supervised fine-tuning on example chats, after preference training and in its final version. They measured the average difference in internal activity between otherwise identical prompts naming lower- and higher-status jobs. That difference defined a direction representing the job-status contrast. Simple classifiers could already identify the job from the base model's activity almost perfectly. Training left that information detectable and the direction largely similar, while changing how it affected the answer.</p>
+<p>The authors then intervened on that activity, adding positive or negative amounts along the direction and comparing the resulting answer shifts with equal-sized pushes in unrelated directions. In the base model, a push toward the lower-status representation increased belief in the claim; after training it increased doubt. A push scaled to the naturally occurring difference approximately reproduced the behavioural gap at both stages. In OLMo-2, the reversal appeared at supervised fine-tuning, while later preference training strengthened the internal response. Tülu-3 70B's job effect instead accumulated across training stages; the detailed internal intervention was performed only in OLMo-2 32B.</p>
+<p>The initial exploratory run narrowly missed its prespecified statistical test. Its pattern led the authors to fix a range of layers and five predictions before testing 400 new claims, where all five held. Those rules were dated and checksummed, but not publicly registered. The intervention shows that manipulating the direction can reproduce the difference. It does not establish that removing the direction eliminates it: directional ablation is explicitly future work. The paper cites Andy Arditi and colleagues' <a href="https://arxiv.org/abs/2406.11717">Refusal in Language Models Is Mediated by a Single Direction</a> as a precedent for that further test.</p>
+<p>In the OLMo-2 experiment, about 2% of otherwise matched pairs received different true-or-false answers depending on the job. Before training, those differences favoured lower-status posters; afterward, they were approximately balanced. Training therefore mainly removed leniency in categorical decisions, while probability scores moved into slight suspicion. The distinction also affects the commercial comparison: six of the seven models supplied numerical ratings because their APIs did not expose token probabilities. None showed increased doubt toward lower-status posters. Only Claude Haiku 4.5 showed leniency after correction for multiple comparisons. These were deployed snapshots tested October 10, without base checkpoints from which to infer a training effect.</p>
+<p>Earlier work had already shown that speaker descriptions can alter fact-checking. Razieh Chalehchaleh and colleagues' <a href="https://arxiv.org/abs/2608.03627">Unequal Verdicts</a> changed gendered job titles attached to LIAR claims and found inconsistent labels across all six tested models. AlDahoul and Zaki add comparisons between training recipes and direct intervention inside one model. The related <a href="https://mintresearch.org/newsletters/yinai/2026-10-30/#story-sycophancy-across-13-checkpoints-separates-pretrained-defere">Yao study covered in our October 30 issue</a> examined deference and conversational yielding across open-model checkpoints. It studied a different behaviour, despite sharing OLMo-2 and Tülu-3 lineages.</p>
+<p>The cause within the training data remains unresolved. The authors searched the <a href="https://huggingface.co/datasets/allenai/tulu-3-sft-olmo-2-mixture-0225">866,138-conversation mixture used for OLMo-2 32B</a>. Lower-status jobs appeared much less often than professional jobs, but neither word searches nor a model-based screen identified a source systematically pairing lower-status speakers with doubtful replies. The latter screen was unreliable on long conversations. Retraining with and without candidate data remains a proposed test.</p>
+<p>The paper records several misleading early results: rescaling the baseline created an apparent bias change absent from the raw comparison, and a favourite-colour emoji shifted responses as much as the occupational cue. Its recommendations follow those failures: test against irrelevant cues, require evidence that the model can perform the task, and confirm exploratory findings on fresh claims. The mechanism remains limited to one model, one position in its computation and linear interventions; synthetic occupations and English, US-centred claims also restrict its scope. The authors have not established the same effect in real social-media accounts.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2610.38532">From Leniency to Suspicion: How an Open Post-Training Recipe Changes Whom LLM Fact-Checkers Believe | Nouar AlDahoul and Yasir Zaki</a> <span class="how">— Full v1 paper read in saved arXiv HTML/text, including Sections 3-8 and Appendices A-F. Source for task, recipe comparisons, intervention, replication, commercial results, failed analyses and limits. CC BY 4.0. No claimed directional ablation.</span></li>
+<li><a href="https://huggingface.co/datasets/allenai/tulu-3-sft-olmo-2-mixture-0225">Tülu 3 SFT mixture used for OLMo 2 32B | Ai2 dataset card</a> <span class="how">— Full primary README read directly; confirms 866,138 examples and use for OLMo 2 32B. Analysis of the data is attributed to AlDahoul and Zaki; dataset itself was not downloaded or reanalysed.</span></li>
+<li><a href="https://arxiv.org/abs/2406.11717">Refusal in Language Models Is Mediated by a Single Direction | Andy Arditi and colleagues</a> <span class="how">— Primary abstract read; methodological precedent for the ablation test explicitly left to future work in the assigned paper. No suggestion that AlDahoul and Zaki performed that test.</span></li>
+<li><a href="https://arxiv.org/abs/2608.03627">Unequal Verdicts: Investigating Gender Bias in LLM-Based Fake News Detection | Razieh Chalehchaleh, Reza Farahbakhsh and Noel Crespi</a> <span class="how">— Primary abstract and metadata read. Precedent for changing speaker job-title gender on LIAR claims and obtaining inconsistent verdicts across six models; no full-paper access claimed.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-30/#story-sycophancy-across-13-checkpoints-separates-pretrained-defere">Sycophancy tests separate answer firmness from yielding to users | Yesterday in AI, October 30</a> <span class="how">— Full published report read from saved issue HTML. Related Yao study, distinct outcome and smaller models in shared lineages. Publication independently checked in retained canonical send/history evidence.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-t-lu-3-fine-tuning-reverses-olmo-2-fact-checking-responses-t">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-31/t-lu-3-fine-tuning-reverses-olmo-2-fact-checking-responses-t</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

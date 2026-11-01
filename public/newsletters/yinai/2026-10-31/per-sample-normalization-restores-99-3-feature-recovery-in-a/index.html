@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>A normalization fix for synthetic feature recovery — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-10-31">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-10-31">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 31 October 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">A normalization fix for synthetic feature recovery</h1>
+<p class="dek">Celene Nightingale reports 99.3% feature recovery after rescaling each input in a synthetic benchmark. The result challenges one interpretation of an earlier SAE study while leaving its tests on real model activations unresolved.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 31 October 2026</span> <span class="chip">849 words · ~4 min</span></div>
+<div class="article-body">
+<p>Rescaling each input restored almost complete feature recovery in a synthetic test that had defeated a widely used interpretability method, Celene Nightingale reports in <a href="https://www.lesswrong.com/posts/EC5H7xakTgxxNXm5g/sanity-checks-for-sanity-checks-for-sparse-autoencoders">“Sanity Checks for Sanity Checks for Sparse Autoencoders”</a>, posted on LessWrong on October 31. Nightingale reproduced a large gap between two sparse-autoencoder designs and traced it to how they allocate their limited activity across training examples. Adding normalization raised BatchTopK's recovery to 99.3%. The result concerns a constructed dataset whose underlying features are known; transferring the intervention to real language-model interpretation remains untested in the post.</p><p>Sparse autoencoders, or SAEs, try to reconstruct a model's internal activity using a small number of entries from a much larger learned dictionary. Researchers call these entries latents and hope they correspond to meaningful features. Learning a dictionary entry does not itself establish that it captures a real feature or has a readable interpretation. A synthetic test lets researchers check that distinction because they choose the components that generate the data.</p><p>Anton Korznikov, Andrey Galichin and colleagues used such a test in their February 15 arXiv paper, <a href="https://arxiv.org/abs/2602.14111">“Sanity Checks for Sparse Autoencoders: Do SAEs Beat Random Baselines?”</a>. They generated 3,200 random feature directions in a 100-dimensional space, combining about 20 at varied strengths in each sample. Their SAE had the same dictionary size and target number of active entries. This makes the dictionary 32 times wider than the input, a larger expansion than earlier successful toy demonstrations. In the equal-frequency condition, BatchTopK and JumpReLU reconstructed about two-thirds of the variance but recovered only three features, measured by matching learned directions sufficiently closely to the known ones.</p><p>The original paper already contained a major exception. Appendix B reported approximately complete recovery with TopK under the same equal-frequency setup. When feature frequencies varied, even TopK missed much of the less frequent material. The authors therefore questioned whether its toy success would transfer to real activations. Nightingale concentrates on the equal-frequency comparison, reproducing TopK's near-complete recovery alongside the other designs' failure. The paper omitted some hyperparameters and its linked code repository remains empty, so this reproduction uses reasonable assumed settings rather than an exact rerun.</p><p>TopK reserves a fixed number of selected latent activations for every input. BatchTopK pools the selection budget across the whole batch, allowing some examples to use more entries and others fewer. In Nightingale's failing BatchTopK run, a small group of latents became active repeatedly while most never fired. Larger-magnitude inputs received more of the shared budget. Entries that were not selected received no ordinary reconstruction gradient, making it difficult for them to improve enough to be selected later. TopK avoided this severe collapse in these runs. Auxiliary training for inactive entries, parameter sweeps and attempts to reinitialize dead entries did not fix the original small-dimensional experiment.</p><p>Nightingale's successful intervention came from <a href="https://github.com/bartbussmann/BatchTopK">Bart Bussmann's BatchTopK reference implementation</a>. Its preprocessing subtracts each sample's own mean and divides by its own standard deviation, then restores that information in the reconstruction. The default configuration enables this behavior. Applying it to the toy brought BatchTopK close to TopK's recovery; normalizing vector length instead gave a similar result. JumpReLU improved too. Nightingale defines recovery using cosine similarity of at least 0.8 between a learned direction and a true feature. That is a geometric matching criterion, separate from whether a language-model computation has been explained.</p><p>The remainder of the post investigates why this failure is so severe in the toy. Increasing dimensionality while keeping roughly the same number of active features helped, but many BatchTopK entries still died. Reinitializing them more aggressively improved recovery further. Simply adding more underlying features, or activating more per sample, generally made matters worse. Nightingale also compared the variation in input magnitude with GPT-2 activations and found the toy within the real model's range. Large inputs monopolizing the budget therefore explains the observed training failure without fully explaining why the synthetic environment is unusually vulnerable to it.</p><p>Nightingale then separated variation in an entire sample's magnitude from variation in each component feature's strength. Calibrating those quantities against Joseph Bloom's existing GPT-2 SAEs produced a toy in which BatchTopK recovered most features with ordinary training. Nightingale explicitly rejects this as independent evidence of feature recovery: constructing an SAE-friendly test from another SAE's statistics builds in assumptions about the features. The modified environment also failed to reproduce the low dead-latent rate at another GPT-2 layer. Both the original toy and the revised version remain imperfect models of real activations.</p><p>The post leaves the original paper's second case study intact. On actual language-model activations, Korznikov and colleagues compared trained SAEs with versions whose encoder or decoder components stayed random or close to their initialization. Several constrained variants remained competitive on automated interpretability, concept prediction and targeted editing; Appendix C extended that comparison to TopK. Nightingale does not rerun or refute those experiments. The practical recommendations are narrower: inspect inactive entries, compare reconstruction of genuine inputs with random vectors of matching size, and test normalization on real SAEs. The 99.3% result explains how one synthetic training failure can be repaired without settling whether these tools recover a model's underlying computations.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.lesswrong.com/posts/EC5H7xakTgxxNXm5g/sanity-checks-for-sanity-checks-for-sparse-autoencoders">Sanity Checks for Sanity Checks for Sparse Autoencoders, Celene Nightingale</a> <span class="how">— Complete assigned post and all footnotes read from original-02.txt, cross-checked with retained primary material. Supports all attributed reproduction values, dead-latent mechanism, explorations, threshold convention and limits. No independent experiment claimed.</span></li>
+<li><a href="https://arxiv.org/abs/2602.14111">Sanity Checks for Sparse Autoencoders: Do SAEs Beat Random Baselines?, Korznikov et al.</a> <span class="how">— Primary full HTML read for main sections 1-6 and Appendices B-C, including synthetic method, real-activation methods/results and TopK exception. Approximately complete recovery avoids the 99.9% text / 99.99% caption inconsistency. CC BY 4.0.</span></li>
+<li><a href="https://github.com/bartbussmann/BatchTopK">BatchTopK reference implementation, Bart Bussmann</a> <span class="how">— Read sae.py preprocessing, postprocessing, selection and auxiliary-loss implementation, plus live config.py. Confirms per-sample mean/std normalization and input_unit_norm=True default.</span></li>
+<li><a href="https://github.com/AntonKorznikov/random_sae">AntonKorznikov/random_sae</a> <span class="how">— Live public repository page read; explicitly empty. Does not supply the missing toy experiment implementation.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-per-sample-normalization-restores-99-3-feature-recovery-in-a">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-10-31/per-sample-normalization-restores-99-3-feature-recovery-in-a</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
