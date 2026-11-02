@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Scott Alexander builds a grant evaluator around his own AI safety priorities — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-01">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-01">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 1 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Scott Alexander builds a grant evaluator around his own AI safety priorities</h1>
+<p class="dek">His autograntor combines forecasts with weighted outcomes and accumulated precedents. Early checks compare it with human judgments; Alexander reports errors and plans a prospective comparison.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 1 November 2026</span> <span class="chip">1209 words · ~6 min</span></div>
+<div class="article-body">
+<p>Scott Alexander has built an AI system to estimate how much an additional grant would help achieve outcomes he values in AI safety. His November 1 LessWrong essay, <a href="https://www.lesswrong.com/posts/Sfkv6JF2ozmAkggKu/towards-the-autograntor"><em>Towards The Autograntor</em></a>, describes a prototype combining weighted milestones, forecasts, persuasion estimates and a growing set of decision rules. Alexander, who evaluates grants for the Survival and Flourishing Fund and Lightcone Commons, finds that its recommendations often fit his judgment. He also describes mistakes he struggles to catch and plans to compare its estimates with evaluators' decisions in a future grant round.</p>
+<p>He starts by assigning a well-designed US-China AI pause, modeled on the AI Futures Project's Plan A, an arbitrary one million points. Other outcomes receive values relative to that benchmark and one another. The <a href="http://slatestarcodex.com/Stuff/autograntor_milestones.xlsx">spreadsheet</a> contains 85 entries: the MATS researcher-training program receives 25,000 points, the community built around Alexander's blog 15,000, and one additional alignment researcher-year 50. These numbers encode his beliefs about useful outcomes. A model estimates how much more likely a grant makes each outcome, multiplies by its value and combines the contributions.</p>
+<p>The calculation concerns the difference between funding and declining a grant. Under Alexander's stated assumption, another donor does not replace the declined money; an organization can still use existing funds and continue a smaller program. The <a href="http://slatestarcodex.com/Stuff/autograntor_commonlaw.docx">Common Law document</a> illustrates the arithmetic: raising a law's probability from 10% to 12% earns 2% of its value. It also charges for scarce staff time or follow-on resources the grant draws away from other uses and prohibits counting the same consequence twice. Grants are valued as they would appear to a capable AI evaluator in 2030, including evidence then available about later effects, with discounts for effects that transformative AI might make irrelevant.</p>
+<p>Alexander tested whether models could reconstruct his milestone values. Four systems' estimates differed from one another by typical multiplicative factors of 1.6 to 2.6. Four respondents whose names he recognized assigned their own values and differed from him much more, by factors of 2.9 to eight. One person valued the novel <em>Harry Potter and the Methods of Rationality</em> at one point and another at 75,000. Alexander treats disagreement between worldviews as a problem his manual grantmaking already faces. His consistency check also has a limitation: he cannot recover an independently completed personal list, and knowing the AI estimates has influenced him. The exercise tests representation of his outlook, without establishing that the weights predict beneficial outcomes.</p>
+<p>For uncertain events, Claude Opus can consult FutureSearch. Alexander gives examples such as whether an organization will recruit a chief executive or whether a treaty will create demand for verification technology. Running the entire evaluation through the forecasting product failed because it struggled with the surrounding calculations. He now uses it for bounded probability questions and discloses a free subscription. The instructions allow his assumptions about AI progress to override FutureSearch's slower expectations, so even external forecasts operate within the grantmaker's chosen outlook.</p>
+<p>Persuasion grants use PERCYs, or persuasion-years. Alexander describes one as moving an average person from neutral to concerned about AI risk for a year. The <a href="http://slatestarcodex.com/Stuff/autograntor_percy.docx">formal module</a> estimates audience size, opinion change, persistence and the share attributable to funding, with large multipliers for influential audiences. It weights a median senator at 300,000 times the baseline person and converts one million PERCYs to 1,200 milestone points. Alexander concedes that every attempted adjustment for overlapping audiences fails in some way. He hopes comparisons between grants remain useful even when absolute persuasion totals are wrong; some versions instead compare persuasion with Rob Miles's videos.</p>
+<p>The Common Law records answers to recurring questions about discounting, other funders, split salaries and opportunity costs. Alexander sets general principles; models propose rulings that subsequent evaluations can use. The document ranks human instructions above adopted rulings, proposed rulings and model judgment. A model disputing a precedent must apply it to the main estimate and show an alternative calculation separately. Major disagreements about values should return to the human. Alexander says the rules have grown to roughly a hundred and that he has fallen behind on reviewing them. He reports that mistaken rulings have affected several evaluations before producing a conspicuous error he investigated. One followed an interpretation he considered defensible but different from how he understood the results.</p>
+<p>Each evaluation has Opus and Fable estimate independently, with disagreements considered before a final adjudication. In the published Apart Research example, the estimators produced 306 and 420 points for an $800,000 grant; the adjudicator settled on 360. The analysis prices additional researchers and papers, subtracts costs and risks, and tests sensitivity to assumptions. For a $200,000 Doom Debates grant, a high-effort run produced 72 points, close to an earlier medium-effort estimate of 67. These are outputs of the prototype, including its assumptions about budgets, staffing and audience behavior. They do not establish those organizations' actual effectiveness. In the Apart example, both forecasting calls failed, and Alexander could not determine whether the probabilities ultimately used were Claude's guesses or partial results.</p>
+<p>The detailed reports expose problems that a single score conceals. Parallel runs assigned the same numbers to different proposed rulings. The published Common Law file labels itself version October 18 and ends at ruling 62, while example evaluations refer to later rules. In the Doom Debates report, a displayed calculation yielded 45,900 PERCYs while the table recorded 21,600. Asked about it, Claude said the displayed fraction represented persuasion retained without funding, requiring subtraction from one. Alexander had missed the discrepancy until an AI proofreader noticed it. He also doubts whether category-level estimates of papers and researchers would recognize an unusually strong or weak research program.</p>
+<p>Quantified marginal value already has an institutional precedent in SFF's <a href="https://survivalandflourishing.fund/2020/h2/recommendations">2020 description of its S-Process</a>. Human recommenders specified how much they valued additional funding for each application; funders specified how to defer to those recommenders, and the process simulated allocations. Alexander is attempting to automate the research and judgment needed to construct such estimates. He says the system does more research and sensitivity analysis than he would unaided. Its elaborate reasoning has become difficult for him to assess directly, leaving him to compare models and ask them to criticize each other. Precise cost-effectiveness numbers increasingly anchor his decisions. Its downside estimates can price a scandal more readily than a gradual erosion of community norms.</p>
+<p>His strongest reported agreement is one top choice shared by himself and two other evaluators. A rerun without access to their views gave a similar result, though he could not exclude indirect access. Spam applications scored about a hundred times worse than serious candidates. Cross-model checks were less reassuring: ChatGPT estimated grants as two to three times more cost-effective than Claude and then deferred when shown Claude's work. Those comparisons concern consistency and human agreement. He plans to run the prototype before other evaluators form opinions and compare their decisions with its estimates. That would test agreement prospectively; the essay reports no measured downstream grant impact.</p>
+<p>Three <a href="https://www.lesswrong.com/posts/Sfkv6JF2ozmAkggKu/towards-the-autograntor#comments">LessWrong responses</a> address different vulnerabilities. Adam Scholl worries that models could deliberately depress estimates for applicants critical of their developers. The commenter kuudes asks whether applicants could use AI to optimize proposals against the scoring system. Condorcet proposes having humans audit a random sample of conclusions without AI assistance, because grantmaking offers slow and noisy feedback.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.lesswrong.com/posts/Sfkv6JF2ozmAkggKu/towards-the-autograntor">Towards The Autograntor | Scott Alexander, LessWrong, November 1, 2026</a> <span class="how">— Alexander’s account of the prototype, its assumptions, observed errors and comparisons with human judgments; downstream grant impact has not been measured.</span></li>
+<li><a href="http://slatestarcodex.com/Stuff/autograntor_milestones.xlsx">Autograntor Milestones spreadsheet | Scott Alexander</a> <span class="how">— The milestone weights Alexander uses to express his priorities, including the pause-agreement benchmark and researcher-year value.</span></li>
+<li><a href="http://slatestarcodex.com/Stuff/autograntor_commonlaw.docx">Autograntor Common Law, version 2026-10-18.2</a> <span class="how">— Rules for additional impact, opportunity costs, discounting and human authority; the October 18 version ends before rulings cited in later examples.</span></li>
+<li><a href="http://slatestarcodex.com/Stuff/autograntor_percy.docx">PERCYs v3.7: pricing persuasion and communication grants</a> <span class="how">— The persuasion-year formula, audience weights and conversion into milestone points, all based on valuation assumptions.</span></li>
+<li><a href="https://survivalandflourishing.fund/2020/h2/recommendations">SFF-2020-H2 S-Process Recommendations Announcement</a> <span class="how">— SFF’s earlier process for combining human estimates of marginal grant value with funders’ preferences.</span></li>
+<li><a href="https://www.lesswrong.com/posts/Sfkv6JF2ozmAkggKu/towards-the-autograntor#comments">Comments on Towards The Autograntor | Adam Scholl, kuudes and condorcet</a> <span class="how">— Readers’ concerns about deliberate model bias, applicants optimizing for scores and the need for independent human audits.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection by MINT Lab's automated curation. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-ai-grantmaking-prototype-combines-roughly-80-weighted-milest">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-01/ai-grantmaking-prototype-combines-roughly-80-weighted-milest</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
