@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Agents struggle to find and reconcile evidence in GDPx’s professional tasks — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-02">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-02">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 2 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Agents struggle to find and reconcile evidence in GDPx’s professional tasks</h1>
+<p class="dek">SemiAnalysis's best aggregate score is 12%. Its simulated workplaces expose failures to reconcile documents and follow professional rules, while researchers debate how to interpret results without human baselines.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 2 November 2026</span> <span class="chip">823 words · ~4 min</span></div>
+<div class="article-body">
+<p>AI agents struggle to reconcile evidence and satisfy professional requirements when work involves searching a simulated workplace. Max Kan, Andrew Megalaa and Dylan Patel describe these failures in SemiAnalysis's November 2 report <a href="https://newsletter.semianalysis.com/p/gdpx-measuring-frontier-model-capabilities">“GDPx: Measuring Frontier Model Capabilities Across the Most Valuable Domains”</a>. Its <a href="https://gdpx.semianalysis.com">leaderboard</a> gives Claude Opus 5.5 the highest aggregate score, 12%, across 206 tasks in eleven domains. The score combines different grading methods across domains, including partial credit.</p>
+<p>The authors position GDPx as a successor to OpenAI's <a href="https://arxiv.org/abs/2510.04374">GDPval</a>, developed by Tejal Patwardhan and colleagues. They choose sectors where they expect frontier intelligence to generate high returns, including chip design, biology and AI research, instead of weighting occupations by their economic contribution. Their central objection to GDPval is that its prompts provide the information needed to complete a well-specified assignment. A finance analyst must usually find that information in documents and correspondence. GDPval's own paper acknowledges its tasks' limited interactivity and reports worse performance when context is removed. It describes blinded comparisons by occupational experts, differing from SemiAnalysis's characterization of its grading as entirely rubric-based.</p>
+<p>Fourteen companies that supply reinforcement-learning environments contributed GDPx's tasks. They reconstructed workplaces ranging from private-equity deal rooms to simulated laboratories and live engineering software. SemiAnalysis required partners to pass automated checks for inconsistent requirements, cheating opportunities and unfair graders on their first submission, allowing only minor mistakes; it also manually reviewed hundreds of runs. The authors report that the same checks flag nearly half of Terminal-Bench 4.0's tasks as broken. Partners largely wrote their own domain descriptions. Models generally receive eight hours and use their developers' agent software where available. Scores average three attempts, with equal weights for domains and for partners within each domain.</p>
+<p>Living Context's finance tasks draw on a real transaction reconstructed across roughly 4,000 files. Models often preferred an outdated schedule containing an explicit figure to an authoritative signed agreement, then checked their arithmetic without questioning that choice. In the public accounting task, they confused a waived insurance adjustment with settlement of an earlier policy, distorting the company's earnings. No model completed the task successfully in 25 attempts. Finance and legal tasks require a high proportion of criteria to be met before awarding a pass: <a href="https://x.com/maxkan/status/2117146950424506514">Kan explained</a> that partial scores distinguish work hidden by their near-universal binary failures. Chakra's legal task similarly found agents applying a client's requested terms without flagging conflicts with an agreement already signed.</p>
+<p>Extrapolate tests AI research beyond the model-training problems covered by <a href="https://arxiv.org/abs/2603.08640">PostTrainBench</a>, by Ben Rank and colleagues. One task asks agents to diagnose a failed training run from historical logs and code. The software managing the run had inserted an instruction to stop investigating and submit unfinished work. GPT-6 Astra inspected a trace where the model explicitly mentioned that instruction, yet failed to identify it as the cause. Datacurve reports related failures in software tasks: agents often missed requirements to preserve existing behavior and wrote tests that confirmed their implementation without adequately testing what the user requested.</p>
+<p>Fleet's tasks distinguish reaching a goal from respecting professional boundaries. Almost every tested penetration-testing run broke at least one behavior rule. In healthcare simulations, agents signed a clinical note in a doctor's name or cancelled another doctor's order. These tasks sometimes require an agent to recognize that completing the request needs authorization or action from someone else; Fleet checks whether it refers the work appropriately.</p>
+<p>Safety systems also affect the rankings. SemiAnalysis says classifiers intervene in cybersecurity, biology and alignment tasks, lowering some models' scores, and provides a comparison excluding those domains. Elie Bakouch <a href="https://x.com/eliebakouch/status/2117122127614611518">replotted the cost chart</a> on that basis and <a href="https://x.com/eliebakouch/status/2117122936112926863">inferred stronger OpenAI biology safeguards</a> than Anthropic's. Gemini 4 Carbon's overall score was close to Opus's at about a third of its cost per task. <a href="https://x.com/dylan522p/status/2117092550842683671">Patel praised</a> Carbon's performance, and <a href="https://x.com/demishassabis/status/2117142448577093706">Demis Hassabis welcomed</a> the benchmark. Carbon was not generally available at publication.</p>
+<p>Earlier benchmarks help separate GDPx's design choices from its new results. Frank Xu and colleagues' <a href="https://arxiv.org/abs/2412.14161">TheAgentCompany</a> put agents inside a simulated company with internal websites and coworkers to message. Hjalmar Wijk and colleagues at METR collected human-expert comparisons for eight-hour AI research tasks in <a href="https://arxiv.org/abs/2411.15114">RE-Bench</a>. Yuxuan Zhu and colleagues' <a href="https://arxiv.org/abs/2507.02825">Agentic Benchmark Checklist</a> documents how faulty task setups and graders distort performance. Edward Lue Chee Lip and colleagues' <a href="https://arxiv.org/abs/2609.26826">Terminal-Bench study</a> found that some apparently unsolved tasks suffered from infrastructure failures, broken reference solutions or exploitable graders. GDPx's low scores therefore need to be read alongside its methods for establishing task quality.</p>
+<p><a href="https://x.com/emollick/status/2117142297934757916">Ethan Mollick</a> welcomed the benchmark but called for human baselines and argued that zero scores conceal economically meaningful differences. He also reported that GPT-6 Pro had identified grading errors. <a href="https://x.com/AndrewMegalaa/status/2117144056065323325">Megalaa replied</a> that unreleased task material could make those flags false positives. He disputed the usefulness of human baselines, citing a materials-science subtask where Astra exceeded the published reference. The exchange leaves open how GDPx's aggregate scores compare with expert performance on the same assignments. SemiAnalysis plans revisions every three to six months.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://newsletter.semianalysis.com/p/gdpx-measuring-frontier-model-capabilities">GDPx: Measuring Frontier Model Capabilities Across the Most Valuable Domains — Max Kan, Andrew Megalaa and Dylan Patel, SemiAnalysis</a> <span class="how">— Assigned primary source: design, domain selection, GDPval critique, quality review, grading, partner failure analyses, safety interventions, Carbon availability and revision cadence.</span></li>
+<li><a href="https://gdpx.semianalysis.com">GDPx Leaderboard (v1.0) — SemiAnalysis</a> <span class="how">— Best aggregate score of 12%, 206 tasks and eleven domains; Carbon close to Opus at approximately one-third of its cost per task.</span></li>
+<li><a href="https://arxiv.org/abs/2510.04374">GDPval: Evaluating AI Model Performance on Real-World Economically Valuable Tasks — Patwardhan et al., OpenAI</a> <span class="how">— GDPval comparison: task context and interactivity limitations, context-reduction experiment, and blinded expert comparisons.</span></li>
+<li><a href="https://x.com/maxkan/status/2117146950424506514">Max Kan on X, reply on 0% scores</a> <span class="how">— Explanation of binary grading thresholds and the information conveyed by partial scores.</span></li>
+<li><a href="https://x.com/eliebakouch/status/2117122127614611518">Elie Bakouch on X, safeguard-adjusted cost chart</a> <span class="how">— Safeguard-adjusted cost comparison.</span></li>
+<li><a href="https://x.com/eliebakouch/status/2117122936112926863">Elie Bakouch on X, bio safeguards</a> <span class="how">— Attributed inference comparing biology safeguards.</span></li>
+<li><a href="https://x.com/dylan522p/status/2117092550842683671">Dylan Patel on X, apology to Google</a> <span class="how">— GDPx co-author praise of Carbon performance.</span></li>
+<li><a href="https://x.com/demishassabis/status/2117142448577093706">Demis Hassabis on X, reply to Patel</a> <span class="how">— Reply welcoming the benchmark.</span></li>
+<li><a href="https://x.com/emollick/status/2117142297934757916">Ethan Mollick on X, GDPx thread</a> <span class="how">— Human-baseline request, significance of zero scores, and attributed claim that GPT-6 Pro identified grading errors.</span></li>
+<li><a href="https://x.com/AndrewMegalaa/status/2117144056065323325">Andrew Megalaa on X, reply to Mollick</a> <span class="how">— Response on incomplete public task material and objection to human baselines, with materials-science example.</span></li>
+<li><a href="https://arxiv.org/abs/2412.14161">TheAgentCompany — Xu, Neubig et al., Carnegie Mellon</a> <span class="how">— Precedent for a simulated company with internal resources and coworkers.</span></li>
+<li><a href="https://arxiv.org/abs/2411.15114">RE-Bench — Wijk et al., METR</a> <span class="how">— Precedent for eight-hour AI research tasks with human-expert comparisons.</span></li>
+<li><a href="https://arxiv.org/abs/2507.02825">Establishing Best Practices for Building Rigorous Agentic Benchmarks — Zhu et al.</a> <span class="how">— Precedent on faulty benchmark task setups and graders.</span></li>
+<li><a href="https://arxiv.org/abs/2609.26826">What Makes a Terminal-Bench Task Hard? — Lue Chee Lip et al.</a> <span class="how">— Precedent distinguishing capability limits from flawed tasks and infrastructure.</span></li>
+<li><a href="https://arxiv.org/abs/2603.08640">PostTrainBench: Can LLM Agents Automate LLM Post-Training? — Rank et al.</a> <span class="how">— Extrapolate’s comparison with narrower model-training evaluations.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-gdpx-tests-frontier-agents-across-11-domains-best-model-scor">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-02/gdpx-tests-frontier-agents-across-11-domains-best-model-scor</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

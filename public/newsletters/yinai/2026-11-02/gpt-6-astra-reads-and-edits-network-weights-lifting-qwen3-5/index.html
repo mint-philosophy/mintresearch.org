@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>GPT-6 Astra edits Qwen's weights to repair repetitive reasoning — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-02">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-02">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 2 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">GPT-6 Astra edits Qwen's weights to repair repetitive reasoning</h1>
+<p class="dek">MIT researchers used a general-purpose model to inspect and alter neural networks. Their largest mathematics gain came from fixing a failure that prevented Qwen from finishing answers; a model without that failure did not improve.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 2 November 2026</span> <span class="chip">862 words · ~4 min</span></div>
+<div class="article-body">
+<p>Editing a small language model's weights helped it stop repeating itself and finish mathematics problems it could already solve. Rikiya Takehi, Jayden Teoh, Alex Zhang and Omar Khattab of MIT CSAIL report the result in their November 2 research blog <a href="https://rikiyat.github.io/blog/weight-space-programming/">“Sparks of Weight-Space Programming: LLMs can natively read &amp; write neural network weights.”</a> They gave GPT-6 Astra access to neural networks' numerical parameters and asked it to interpret or change their behavior without conventional training. Eight experiments test different combinations of reading weights, writing code and evaluating the resulting network.</p>
+<p>The main experiment used Qwen3.5-0.8B, whose <a href="https://huggingface.co/Qwen/Qwen3.5-0.8B/blob/main/README.md#L856">model card</a> warns that its written reasoning can enter loops and fail to terminate. Astra received a CPU-only Python environment, practice mathematics problems and a limited budget for running the model. It traced the repetition to a direction in the model's internal representations reinforced by two layers, then edited their weights to suppress that direction. Mathematics accuracy rose from 7.9% to 48.1% on MATH-500. The evaluated problems were withheld from Astra.</p>
+<p>The repair changed only a tiny fraction of Qwen's weights. Answers that previously repeated until the output limit were much more likely to finish, and instruction following also improved. In Astra's own check on held-out practice problems, almost every newly correct answer had previously been cut off; accuracy on answers that originally finished was unchanged. Ahsen Khaliq of Hugging Face rebuilt the checkpoint from the published changes, verified that it matched the authors' version and <a href="https://huggingface.co/RikiyaT/Qwen3.5-0.8B-weight-space-programming">reran MATH-500</a>, obtaining a similar improvement.</p>
+<p>This required sustained tool use. The <a href="https://github.com/RikiyaT/lm_understand-logs/blob/main/exp8_math/README.md">released logs</a> show that the successful run took about twenty hours, including an outage, and that smaller evaluation budgets produced different, much weaker edits. Codex's built-in tools were disabled, but Astra could write Python that ran in the researchers' sandbox and inspect the results. The result combined weight editing with repeated behavioral tests.</p>
+<p>The authors tested whether the procedure could improve a model whose mistakes came from something other than repetition. Gemma 3 270M rarely hit its output limit; Astra found ordinary arithmetic and algebra errors without a single component it could remove to fix them. Its edits produced no established mathematics improvement. The authors conclude that weight editing removed an obstacle hiding Qwen's ability, while the Gemma experiment did not show that it could supply a missing ability.</p>
+<p>Other experiments used much smaller networks and sometimes required no tools. Given weights from four identically shaped game-playing networks, Astra identified every game. The input channels were described, though the game names were withheld. It also identified shapes generated by small diffusion models, but drew outlines where the models generated filled shapes. In a physics simulation, a single edit to a stuck car's policy changed repeated failure into success across all tested episodes. These tasks show useful interpretation and intervention on compact networks, under more constrained conditions than the Qwen experiment.</p>
+<p>With Python, Astra identified the training languages and copying mechanisms of small character-level transformers without running them. It also wrote networks encoding game-playing programs from scratch. Their performance exceeded some reinforcement-learning baselines, but stronger baselines won in two of the three arcade games. Another experiment exposed a limit to diagnosis from weights alone: Astra could not distinguish an honest Gemma model from a sycophantic copy until it was allowed to inspect where the models directed attention while processing sample texts.</p>
+<p>These edits have precedents. Andy Arditi and colleagues' <a href="https://arxiv.org/abs/2406.11717">2024 refusal study</a>, which the blog cites, showed that subtracting a single direction from model weights could disable refusals. Aristotelis Lazaridis and colleagues had <a href="https://arxiv.org/abs/2606.13705">repaired repetition loops in Gemma models</a> in June, in one case by reversing a single neuron's sign; the MIT post does not cite that work. <a href="https://arxiv.org/abs/2610.07334">Weight Oracles</a> trained language models specifically to interpret other networks' weights. The MIT team's contribution is having a general-purpose frontier model perform such analysis and editing without specialized training for the task.</p>
+<p>Sean Goedecke's <a href="https://seangoedecke.com/llms-are-not-superhuman-at-reading-and-writing-neural-network-weights/">response</a> argues that familiar techniques explain the results. For the game networks, he shows that a short Python calculation produces heatmaps revealing features such as Breakout's paddle row. For Qwen, he describes contrasting repetitive and productive text, locating the weights contributing to the difference and trimming them, an approach he compares with the <a href="https://github.com/p-e-w/heretic">Heretic</a> model-editing tool. His objection is to interpreting the experiments as superhuman research, not to the practical achievement.</p>
+<p>Matthew Honnibal <a href="https://honnibal.dev/blog/astra-read-write-misleading">likewise objects</a> to combining raw-weight, no-tool demonstrations with experiments that use Python and run the target model. The distinction affects what capability the reader should infer. In a <a href="https://simonwillison.net/2026/Nov/3/qwen-can-interpret-model-weights/">November 3 follow-up</a>, Simon Willison reproduced three of the four game identifications using Qwen 3.8 27B on his laptop, showing that this part of the result is not unique to Astra.</p>
+<p>Lucas Beyer also <a href="https://x.com/giffmana/status/2117346161866514524">pointed out</a> that the Qwen prompt mentioned repetitive reasoning. <a href="https://x.com/jayden_teoh_/status/2117363471008350347">Teoh explained</a> that Claude Code expanded the team's one-line task into that prompt without human feedback; <a href="https://x.com/a1zhang/status/2117364329133621614">Zhang acknowledged</a> the hints and said the team initially mistook the result for a broader capability gain. The authors have released the logs and edited model and are developing a benchmark. Their proposed uses include detecting hidden behaviors and changing unwanted ones, but the experiments currently establish a collection of specific successes and failures.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://rikiyat.github.io/blog/weight-space-programming/">Sparks of Weight-Space Programming: LLMs can natively read &amp; write neural network weights — Takehi, Teoh, Zhang, Khattab (MIT CSAIL)</a> <span class="how">— Primary source, read in full by the researcher. Supplies authors, date, definition, all eight experiments and their figures, the Gemma null result, related-work citations, speculative applications, and the verbatim author quotes.</span></li>
+<li><a href="https://github.com/RikiyaT/lm_understand-logs/blob/main/exp8_math/README.md">lm_understand-logs: Experiment 8 README and run artifacts</a> <span class="how">— Codex CLI setup with tools disabled; the different 10- and 25-pass edits; 158 turns and 20.3 hours; Astra's 579 rescues (576 originally truncated) with unchanged accuracy on finished outputs; turn-1 prompt naming repetition as in scope.</span></li>
+<li><a href="https://huggingface.co/RikiyaT/Qwen3.5-0.8B-weight-space-programming">Qwen3.5-0.8B edited by an LLM with no training — Hugging Face model card</a> <span class="how">— Ahsen Khaliq's hash-verified rebuild and independent MATH-500 re-run at 51.0%.</span></li>
+<li><a href="https://huggingface.co/Qwen/Qwen3.5-0.8B/blob/main/README.md#L856">Qwen3.5-0.8B model card (thinking-loop warning) — Qwen</a> <span class="how">— Verbatim warning that the model is more prone to thinking loops and may fail to terminate.</span></li>
+<li><a href="https://seangoedecke.com/llms-are-not-superhuman-at-reading-and-writing-neural-network-weights/">LLMs are not superhuman at reading and writing neural network weights — Sean Goedecke</a> <span class="how">— Critique: human-researcher claim, heatmap argument, Heretic playbook comparison, machine-code analogy, later edit; verbatim quotes.</span></li>
+<li><a href="https://honnibal.dev/blog/astra-read-write-misleading">The 'Astra can read and write weights to improve Qwen' post is misleading — Matthew Honnibal</a> <span class="how">— Tabulation that only Experiments 1, 2 and 4 used raw weights without tools on 17K-172K networks; argument against combining settings; verbatim quote.</span></li>
+<li><a href="https://simonwillison.net/2026/Nov/3/qwen-can-interpret-model-weights/">Qwen 3.8 27B on my laptop can interpret model weights, too — Simon Willison</a> <span class="how">— Replication of the Experiment 1 game prompts on a local Qwen 3.8 27B: three of four games identified, Freeway missed.</span></li>
+<li><a href="https://x.com/giffmana/status/2117346161866514524">Lucas Beyer on X, with co-author replies</a> <span class="how">— Beyer's verbatim point that the prompt hints at looping.</span></li>
+<li><a href="https://x.com/jayden_teoh_/status/2117363471008350347">Jayden Teoh reply on X</a> <span class="how">— Teoh's account that Claude Code expanded the one-line task into the prompt without human feedback.</span></li>
+<li><a href="https://x.com/a1zhang/status/2117364329133621614">Alex Zhang reply on X</a> <span class="how">— Zhang's acknowledgement of hints in the prompt, the team's initial capability reading, the Arditi et al. link, and the promise to clarify.</span></li>
+<li><a href="https://x.com/SchmidhuberAI/status/2117446822855888956">Jürgen Schmidhuber reply on X</a> <span class="how">— 'Old hat' reply pointing to 1990s fast weight programmers.</span></li>
+<li><a href="https://arxiv.org/abs/2406.11717">Refusal in Language Models Is Mediated by a Single Direction — Arditi et al. (NeurIPS 2024)</a> <span class="how">— Precedent for single-direction removal, cited by the blog; abstract-level only (13 models, erasing direction disables refusal).</span></li>
+<li><a href="https://arxiv.org/abs/2512.12895">Wait, Wait, Wait... Why Do Reasoning Models Loop? — Pipis et al.</a> <span class="how">— Cited precedent on reasoning-model loops; abstract-level finding on distilled students.</span></li>
+<li><a href="https://arxiv.org/abs/2202.05262">Locating and Editing Factual Associations in GPT (ROME) — Meng et al.</a> <span class="how">— Cited precedent for targeted weight edits without retraining.</span></li>
+<li><a href="https://arxiv.org/abs/2610.07334">Weight Oracles: Reading Neural Network Weights with Language Models — Kabra et al.</a> <span class="how">— Cited precedent: trained weight readers that flag backdoors; contrast with the blog's untrained model.</span></li>
+<li><a href="https://arxiv.org/abs/2606.13705">When Can One Neuron Fix Repetition Loops in LLMs? — Lazaridis et al.</a> <span class="how">— Uncited June 2026 precedent repairing Gemma 4 repetition loops by weight edits, one sign-inverted neuron in one model; abstract-level.</span></li>
+<li><a href="https://transformer-circuits.pub/2021/framework/index.html">A Mathematical Framework for Transformer Circuits — Elhage et al.</a> <span class="how">— Identified from the blog's bibliography as the method Astra matched in Experiment 3; not opened.</span></li>
+<li><a href="https://github.com/p-e-w/heretic">Heretic — p-e-w</a> <span class="how">— Training-free model modification tool named by Goedecke; repository metadata only.</span></li>
+<li><a href="https://arxiv.org/abs/2102.11174">Linear Transformers Are Secretly Fast Weight Programmers — Schlag, Irie, Schmidhuber (ICML 2021)</a> <span class="how">— Background for Schmidhuber's fast-weight-programmer lineage; abstract-level.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-gpt-6-astra-reads-and-edits-network-weights-lifting-qwen3-5">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-02/gpt-6-astra-reads-and-edits-network-weights-lifting-qwen3-5</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
