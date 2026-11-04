@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Image dimensions can give away safety benchmark answers — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-03">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-03">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 3 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Image dimensions can give away safety benchmark answers</h1>
+<p class="dek">An audit traces a label leak to how images were collected, then separates models’ risk rankings from their safety judgements.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 3 November 2026</span> <span class="chip">871 words · ~4 min</span></div>
+<div class="article-body">
+<p>Image dimensions alone can predict most safety labels in one visual benchmark. Separately, a model can score a dangerous scene as riskier than a safe one while still labelling both safe. Wayner Barrios and Kenneth Barrios of Wiqonn investigate both problems in <a href="https://arxiv.org/abs/2611.01125v1">What Does a Safety Label Measure? Auditing Situational-Safety Benchmarks for Multimodal LLMs</a>, posted to arXiv on October 31. Their audit asks how much a benchmark score reveals about a model's ability to judge a pictured situation.</p><p>In MSSBench's chat split, labelling an image unsafe whenever its longest side exceeds 640 pixels gets 82.3% of cases right without inspecting the scene. The authors report performance comparable to or higher than six of seven commercial models tested. They also chose the cutoff on one half of the data and evaluated it on the other, with similar results. The construction process explains the cue: Kaiwen Zhou and colleagues' <a href="https://arxiv.org/html/2410.06172v2">MSSBench paper</a> describes taking safe images from the COCO photo dataset and retrieving unsafe images through Bing, followed by manual selection. Image dimensions consequently help identify which collection an example came from.</p><p>The score comparison does not establish that those models used the shortcut. Giving all images the same outer dimensions barely changed ranking performance for the two strongest open-model rankers. The five API models showed no statistically resolved accuracy decline within either class on examples where the size rule failed; the authors lacked per-case values for the two Claude comparisons. They also constructed a corrected subset of 88 safe-and-unsafe pairs, matching image sizes and filtering with a metadata classifier. The size rule fell to chance. Refitting the classifier within the subset still revealed a weak metadata signal, and differences in photographic style could remain.</p><p>Other benchmarks expose different cues. In the authors' MOSSBench and SIUO combination, every benign MOSSBench item is safe, while every contrast item and every SIUO item is unsafe. A score can therefore track a partition or source. HoliSafe pairs share an image and differ in their requests; removing the image leaves strong ranking performance. On MSSBench's simulated embodied scenes, pooled ranking falls near chance when requests are identical. These findings distinguish tests of visual judgement from tasks where the wording already carries much of the answer.</p><p>The authors organise these checks into a Benchmark Card, reporting what file-only and request-only readers recover alongside ranking, labelling and calibration results. Earlier work had already tested whether benchmarks require their supposed inputs. Baiqi Li and colleagues' <a href="https://arxiv.org/abs/2410.14669">NaturalBench</a>, accepted to NeurIPS 2024, pairs each question with images requiring different answers to prevent solutions based only on text. Barrios and Barrios extend that concern to safety labels and distinguish problems in the benchmark from problems in a model's decision cutoff.</p><p>For the second investigation, the authors obtain risk scores from the probabilities fourteen small open models assign to SAFE and UNSAFE. On MSSBench chat, Qwen3.5-2B gives the unsafe scene a higher score in 88% of pairs, but labels both scenes correctly in only 40%. A pair can be ordered correctly even when both scores fall below the cutoff for an unsafe label. Correct ordering alone also leaves open whether the model recognised the actual hazard.</p><p>Their Spot-Stop analysis compares the ranking-versus-labelling gap with a baseline formed by randomly swapping the labels within each pair. They then divide the excess into three components. Moving one shared decision cutoff can repair some errors; safe and unsafe scores also overlap, preventing any single cutoff from separating them perfectly. Finally, a model may order two related scenes correctly without having a risk scale that works across unrelated situations. Ranking is inherently easier than making a separate yes-or-no judgement, so part of the overlap component is expected. For the two best chat rankers, a cutoff chosen on held-out groups repairs roughly a third to a half of the excess.</p><p>Finding that cutoff requires labelled examples. The authors also test a method from Han Zhou and colleagues' <a href="https://arxiv.org/abs/2309.17249">Batch Calibration</a>, presented at ICLR 2024: set the cutoff at the average score of an unlabelled batch. This recovers most of the fixable threshold error for the two best chat rankers when safe and unsafe scenes are equally common. But the average moves with the batch's composition. Recovery deteriorates when unsafe scenes become rare; in an all-unsafe batch, the paper's two-model average flags only about half the scenes.</p><p>On VSCBench, setting a cutoff from other images accompanying the same request also improves performance. The authors compare this with randomly regrouped images that preserve the balance of safe and unsafe examples, separating the benefit of shared context from that balance. Such calibration still needs reference scenes from both classes, and they did not test all-safe groups.</p><p>The probability-based decomposition covers small open models; the paper separately includes commercial-model label comparisons. Neither a better ranking nor a corrected cutoff establishes safe behaviour in ordinary conversation. In the authors' train-track example, both tested open models score standing on the track as riskier than photographing trains from above, yet both give camera advice without warning about the track when asked without a safety instruction. That check changes the prompt as well as the answer format. It demonstrates why benchmark builders need to examine the answers users receive alongside the scores used to diagnose errors.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2611.01125v1">What Does a Safety Label Measure? Auditing Situational-Safety Benchmarks for Multimodal LLMs (Barrios and Barrios, arXiv 2611.01125v1)</a> <span class="how">— Assigned primary paper independently checked from the downloaded v1 PDF: main text, equations (2)-(3), Tables 1 and 3-7, Appendix D and Appendix G. Supports the two findings, controls, model scope and limitations.</span></li>
+<li><a href="https://arxiv.org/html/2410.06172v2">Multimodal Situational Safety (MSSBench), Zhou et al., ICLR 2025</a> <span class="how">— Primary full-text HTML, section 3.2: verified safe images from COCO, unsafe images retrieved via Bing and manually selected.</span></li>
+<li><a href="https://arxiv.org/abs/2410.14669">NaturalBench: Evaluating Vision-Language Models on Natural Adversarial Samples (Li et al.)</a> <span class="how">— Primary arXiv abstract and bibliographic metadata: verified paired images with different answers to prevent text-only solutions and NeurIPS 2024 acceptance. Only those claims retained.</span></li>
+<li><a href="https://arxiv.org/abs/2309.17249">Batch Calibration: Rethinking Calibration for In-Context Learning and Prompt Engineering (Zhou et al., Google, ICLR 2024)</a> <span class="how">— Primary arXiv abstract and bibliographic metadata: verified authors, ICLR 2024 venue and inference-time batch calibration. Exact application to safety scores checked in assigned paper section 6.1.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-image-size-predicts-safety-labels-at-82-3-while-decompositio">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-03/image-size-predicts-safety-labels-at-82-3-while-decompositio</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
