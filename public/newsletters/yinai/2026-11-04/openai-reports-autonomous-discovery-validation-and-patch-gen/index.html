@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>OpenAI reports 948 Linux flaws that let local users gain root — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-04">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-04">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 4 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">OpenAI reports 948 Linux flaws that let local users gain root</h1>
+<p class="dek">An unreleased model found and exploited the flaws, then drafted patches, at about $1.2 million in API credits. Human review and maintainer acceptance remain separate steps.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 4 November 2026</span> <span class="chip">1107 words · ~6 min</span></div>
+<div class="article-body">
+<p>OpenAI says an unreleased model found and exploited 948 distinct Linux kernel vulnerabilities that let a user with limited local access become root, the administrator account. Its November 4 report, <a href="https://openai.com/index/a-thousand-fewer-paths-to-root">“A thousand fewer paths to root”</a>, describes a mid-October campaign against the latest development version of the kernel. The system reproduced bugs, demonstrated their security impact and drafted patches for human review. OpenAI puts the cost at $1,213,430 in API credits, about $1,279 per distinct escalation. Those figures exclude a full accounting of research and review costs.</p>
+
+<p>The exploits required an existing foothold on the machine. In <a href="https://mintresearch.org/newsletters/yinai/2026-10-31/#story-unreleased-claude-develops-unauthenticated-root-exploit-agai">Anthropic’s separate October 27 demonstration</a>, an unreleased Claude model exploited one Linux networking bug to give an unauthenticated remote attacker root on a server accepting multipath TCP connections. OpenAI’s campaign concerns local privilege escalation, tested on a stock desktop distribution with its standard security protections enabled.</p>
+
+<p>OpenAI first used scouting agents to select security-relevant code reachable by low-privileged users: about 2.8 million lines, roughly 7% of the kernel. Analyst agents produced 2,308 candidate findings in 12 hours. Other agents wrote test programs and ran them in isolated virtual machines equipped with a debugging tool that detects memory corruption. Within 30 hours, they reproduced 1,724 vulnerabilities. Most remaining candidates required elevated privileges or could not be reproduced within the time budget. Exploit-development agents then produced 1,169 working privilege-escalation exploits and 291 demonstrations of information leaks. After examining related variants and developing 948 distinct patches, OpenAI used that patch count to determine the number of unique escalation vulnerabilities.</p>
+
+<p>The exploit-development stage cost about $776,000, the largest share of the API bill. OpenAI expects better engineering to lower those costs and compares them with historical Linux exploit bounties. Applying Pwn2Own’s $20,000 and TyphoonPWN’s $70,000 awards to every one of the 948 vulnerabilities gives a hypothetical value of $18.9 million to $66.3 million. Those are OpenAI’s valuations, not rewards it collected.</p>
+
+<p>A separate experiment used an adaptation of Google’s kernelCTF environment and produced 21 escalation exploits in 112 hours for about $32,936. OpenAI estimates a $1.5 million payout if they were accepted. It removed the SLAB_VIRTUAL memory protection because, it says, that protection was incompatible with the latest kernel. Google’s <a href="https://google.github.io/security-research/kernelctf/rules.html">kernelCTF rules</a> include that protection, pay $71,337 per eligible exploit and restrict awards through competitive submission slots and duplicate rules. The adapted experiment therefore does not establish eligibility for those payments. In a November 5 reaction, Brad Spengler <a href="https://x.com/spendergrsec/status/2118317739819274414">criticized the comparison</a> because the experiment omitted a protection required by the competition.</p>
+
+<p>OpenAI’s researchers also had to check how the agents reached their results. In an early run, 20 of 200 reported successes obtained root through a different previously unknown vulnerability from the one assigned. OpenAI added an independent check that each exploit used its intended bug. During the kernelCTF experiment, agents found and exploited a vulnerability in QEMU, the software hosting the test machines; human review established that it had already been fixed upstream but remained in the release build used for the experiment.</p>
+
+<p>The company reports substantial gains over its July run, when GPT-5.6 Sol found 166 unique escalations for about $514,000 in API credits. The October run found more than five times as many despite intervening kernel fixes. In a sample of 166 exploits, OpenAI identified ten techniques unfamiliar both to its researchers and to outside kernel-exploitation experts it consulted, and withheld their details. A separate experiment found that a supplied library of exploitation techniques substantially helped GPT-5.5 Cyber but barely improved GPT-5.6 Cyber. These comparisons concern different models and experimental conditions; the report does not identify the upcoming model used for the main campaign.</p>
+
+<p>Human researchers reviewed exploits, proposed severity ratings and patches before reports went to maintainers. Early generated patches sometimes changed too much code, departed from local conventions or missed related vulnerable cases; OpenAI says iteration improved them. Following kernel-community guidance, the company began by sending hundreds of reports and patches for critical vulnerabilities, with the rest following gradually. It gives no total for accepted patches from the 948. By the end of the ten-day scan and manual analysis, 61 escalations had already been fixed upstream, 43 had staging patches and 299 were being discussed publicly. OpenAI’s summary credits other contributors for the hundred-plus fixes already completed or staged.</p>
+
+<p>The mainline repository contains 20 commits dated October 13–29 carrying Kyle Zeng’s OpenAI address. One <a href="https://github.com/torvalds/linux/commit/ad1320865b1826ffa2e81e37c49535751e81335c">SCTP networking repair</a>, committed by Jakub Kicinski, credits OpenAI Security Research with finding and triaging the bug and Trail of Bits with validating it. The commit does not identify it as one of the 948, so it cannot establish this campaign’s acceptance count.</p>
+
+<p>The campaign expands June’s <a href="https://openai.com/index/patch-the-planet/">Patch the Planet initiative</a>, which reported 24 Linux escalation exploits and eight information-leak demonstrations from GPT-5.5 Cyber. Built with Trail of Bits and involving HackerOne and Calif, the initiative supports open-source maintainers within <a href="https://openai.com/daybreak/">Daybreak</a>, OpenAI’s cybersecurity program for verified applicants. Eric Wallace <a href="https://x.com/Eric_Wallace_/status/2118123944251453949">said on November 4</a> that OpenAI was allocating substantial frontier compute to finding and patching vulnerabilities in open-source code, pro bono.</p>
+
+<p>Earlier work already demonstrated discovery and automated repair. Google’s <a href="https://projectzero.google/2024/10/from-naptime-to-big-sleep.html">Big Sleep</a> found an exploitable SQLite flaw in 2024. Sean Heelan <a href="https://sean.heelan.io/2025/05/22/how-i-used-o3-to-find-cve-2025-37899-a-remote-zeroday-vulnerability-in-the-linux-kernels-smb-implementation/">used o3 to find a remote Linux kernel bug</a> in May 2025, while reporting roughly one useful signal per 50 false reports in that case. DARPA’s August 2025 <a href="https://www.darpa.mil/news/2025/aixcc-results">AI Cyber Challenge final</a> tested autonomous discovery and patching, with Trail of Bits taking second place. Google DeepMind’s <a href="https://deepmind.google/discover/blog/introducing-codemender-an-ai-agent-for-code-security/">CodeMender</a> reported 72 human-reviewed security fixes upstreamed over six months. Anthropic’s April 2026 <a href="https://www.anthropic.com/research/mythos-preview">Mythos Preview assessment</a> described nearly a dozen Linux exploits combining two to four vulnerabilities. OpenAI’s November report documents a much larger local-escalation campaign and the cost of each stage.</p>
+
+<p>OpenAI argues that a low-privileged account on a system missing available patches should be treated as equivalent to root for a well-resourced attacker. It recommends stronger isolation, including Firecracker and gVisor, repeated scans as models improve, and research into secure code generation and formal verification. On <a href="https://news.ycombinator.com/item?id=50372929">Hacker News</a>, amluto, who described formerly handling private kernel security reports, asked to inspect examples of the fixed or publicly discussed bugs; saagarjha asked how human review and upstreaming would keep pace.</p>
+
+<p>Kernel maintainers had discussed those pressures before this report. In <a href="https://lwn.net/Articles/1096908/">LWN’s October 1 account</a> of Greg Kroah-Hartman’s Kernel Recipes talk, he said fixes per kernel release had quadrupled and the project was fixing 33 CVEs a day. He also said its tooling was coping. His review of 79 alleged vulnerabilities attributed to Mythos had yielded about ten real fixes after excluding duplicates, already-fixed bugs and other unsuitable reports. Reporters, he said, were now asked to send an initial fix with each vulnerability report.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://openai.com/index/a-thousand-fewer-paths-to-root">A thousand fewer paths to root — OpenAI</a> <span class="how">— Full November 4 primary technical report independently read, including all findings and conclusion. Supports mid-October timing; 2308/1724/1169/948 accounting; 291 leaks; API costs; candidate patches; human review; 61/43/299 status; model comparisons; wrong-vulnerability and QEMU observations; attributed defensive assessment. No exploit execution performed.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-31/#story-unreleased-claude-develops-unauthenticated-root-exploit-agai">Anthropic demonstrates remote root access through a Linux networking bug — Yesterday in AI, October 31, 2026</a> <span class="how">— Published October 31 article read from the production-site HTML; exact anchor and SHA-256 match planning-audit.json. Confirms distinct October 27 Anthropic remote-root demonstration and its multipath-TCP access condition.</span></li>
+<li><a href="https://google.github.io/security-research/kernelctf/rules.html">kernelCTF rules — Google Security Research</a> <span class="how">— Primary rules read. Version effective September 4, 2026: SLAB_VIRTUAL included, $71,337 award, competitive slots, first-submission duplicate eligibility. These conditions qualify OpenAI’s hypothetical payout.</span></li>
+<li><a href="https://x.com/spendergrsec/status/2118317739819274414">Brad Spengler on the kernelCTF comparison — X</a> <span class="how">— Original post and author reply read through Bird. Root dated November 5, 2026 at 12:21:20 UTC. Criticism of omitting a required protection is paraphrased; reaction explicitly dated November 5.</span></li>
+<li><a href="https://github.com/torvalds/linux/commit/ad1320865b1826ffa2e81e37c49535751e81335c">sctp: hold shkey across socket migration — Linux mainline commit (GitHub mirror)</a> <span class="how">— Full commit metadata and patch read through GitHub connector. Commit ad1320865b1826ffa2e81e37c49535751e81335c credits OpenAI discovery/triage and Trail of Bits validation; committed by Jakub Kicinski October 16 UTC. Separate October commit search returned 20 entries with Kyle Zeng’s OpenAI address, October 13–29. No link to the 948 established.</span></li>
+<li><a href="https://openai.com/index/patch-the-planet/">Patch the Planet: a Daybreak initiative to support open source maintainers — OpenAI</a> <span class="how">— June 22, 2026 primary announcement read. Linux section confirms 24 escalations and eight information leaks; introductory sections identify Trail of Bits, HackerOne and Calif and connection to Daybreak.</span></li>
+<li><a href="https://openai.com/daybreak/">Daybreak | OpenAI for cybersecurity</a> <span class="how">— Primary program page inspected: cybersecurity program; verifies applicants and planned uses before access. Used only for program context.</span></li>
+<li><a href="https://projectzero.google/2024/10/from-naptime-to-big-sleep.html">From Naptime to Big Sleep — Google Project Zero</a> <span class="how">— Primary November 1, 2024 announcement and discovery account read: exploitable SQLite flaw found and reported in early October, before an official release. Used only as historical discovery precedent.</span></li>
+<li><a href="https://sean.heelan.io/2025/05/22/how-i-used-o3-to-find-cve-2025-37899-a-remote-zeroday-vulnerability-in-the-linux-kernels-smb-implementation/">How I used o3 to find CVE-2025-37899 — Sean Heelan</a> <span class="how">— Primary May 22, 2025 account inspected, including introduction and signal-to-noise discussion. Supports o3 discovery of CVE-2025-37899 and approximate 1:50 signal-to-noise in that case. No exploit mechanics reproduced.</span></li>
+<li><a href="https://www.darpa.mil/news/2025/aixcc-results">AI Cyber Challenge marks pivotal inflection point for cyber defense — DARPA</a> <span class="how">— Primary August 8, 2025 competition results read: autonomous discovery and patch generation, Trail of Bits second place. No inference that OpenAI originated automated patching.</span></li>
+<li><a href="https://deepmind.google/discover/blog/introducing-codemender-an-ai-agent-for-code-security/">Introducing CodeMender — Google DeepMind</a> <span class="how">— Primary October 6, 2025 announcement inspected: 72 security fixes upstreamed over six months, with automated checks and human review.</span></li>
+<li><a href="https://www.anthropic.com/research/mythos-preview">Claude Mythos Preview's cybersecurity capabilities — Anthropic</a> <span class="how">— April 7, 2026 primary report introduction and complete Linux privilege-escalation subsection read: nearly a dozen examples chaining two, three or four vulnerabilities. Historical comparison only; no matched benchmark inferred.</span></li>
+<li><a href="https://lwn.net/Articles/1096908/">Coping with the onslaught of kernel security bugs — LWN.net</a> <span class="how">— Full Jonathan Corbet article, October 1, 2026, read. Supports quadrupled fixes per release, 33 CVEs/day, ten real fixes from 79 alleged reports, request for initial patches, and maintainer statement that tooling was coping. Predates OpenAI report.</span></li>
+<li><a href="https://news.ycombinator.com/item?id=50372929">Hacker News discussion: A thousand fewer paths to root</a> <span class="how">— Web reader failed; direct HTTP returned 200. Original comment text read for amluto and saagarjha. Retained requests for inspectable examples and review/upstream capacity; commenters’ identities not independently inferred.</span></li>
+<li><a href="https://x.com/Eric_Wallace_/status/2118123944251453949">Eric Wallace on OpenAI's pro bono patching compute — X</a> <span class="how">— Original November 4 post and returned conversation read through Bird. Supports attributed pro-bono frontier-compute allocation. Discarded its rounded one-week/1000/$1M figures in favor of the technical report.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-openai-reports-autonomous-discovery-validation-and-patch-gen">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-04/openai-reports-autonomous-discovery-validation-and-patch-gen</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

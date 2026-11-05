@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Truthful models and the obligation to keep beliefs consistent — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-04">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-04">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 4 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Truthful models and the obligation to keep beliefs consistent</h1>
+<p class="dek">Revisiting Hofweber and colleagues' 2024 argument about which models face rationality norms, how to measure their confidence, and what later editing experiments found.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 4 November 2026</span> <span class="chip">1150 words · ~6 min</span></div>
+<div class="article-body">
+<p>Training a language model to tell the truth can also give it an obligation to keep its beliefs consistent, Thomas Hofweber, Peter Hase, Elias Stengel-Eskin and Mohit Bansal argue in <a href="https://arxiv.org/abs/2406.03442v1">“Are language models rational? The case of coherence norms and belief revision”</a>. Their arXiv paper first appeared on June 5, 2024; Hase introduced it in <a href="https://x.com/peterbhase/status/1798741915388846331">a nine-post thread</a> the next day. We revisit that work here, alongside revisions <a href="https://arxiv.org/abs/2406.03442">submitted in August 2024 and November 2025</a>. The authors argue for standards governing model beliefs and develop experimental tests in a companion paper.</p>
+
+<p>Hase's reason for asking was interpretability. Explaining behavior through beliefs and desires becomes more useful if the system's beliefs fit together predictably. He suggested that rational systems would therefore be easier to understand and make safe, an expectation rather than an experimental finding. In his <a href="https://x.com/peterbhase/status/1798742081604886554">closing post</a>, Hase credits Hofweber, <a href="https://philosophy.unc.edu/people/thomas-hofweber/">a UNC Chapel Hill philosopher</a>, as the lead. In a <a href="https://x.com/FredZhang0/status/1798752446858358962">reply exchange with Fred Zhang</a>, Hase <a href="https://x.com/peterbhase/status/1798987556819980568">specified</a> that they were investigating the conditions for rational belief, without testing rational decision-making.</p>
+
+<p>The authors distinguish a toaster, to which rationality standards do not apply, from a person whose contradictory beliefs violate them. A model might be <em>arational</em> in the first sense or <em>irrational</em> in the second. They grant, for the argument, that models can internally represent the world. But representation alone does not establish belief: imagining oneself as a French restaurant's head chef can be perfectly successful while false; believing oneself to be the chef cannot. Drawing on Bernard Williams, Peter Railton and David Velleman, they take truth to be a standard by which beliefs are correct or defective.</p>
+
+<p>Ordinary next-token pretraining, on their account, gives internal states a different job: reproduce patterns in the training text. Even an accurate world model can serve that job instrumentally. If a simpler, inaccurate representation predicted the text better, it would succeed by the training objective's standard. The authors therefore argue that pretraining alone does not generally give internal representations the purpose required for belief. Their argument allows exceptions, including data deliberately selected for truthfulness.</p>
+
+<p>Rewarding truthful answers during fine-tuning can supply that purpose, they argue. Perceptual input, such as a camera properly connected to the world, can also make internal states answer to reality. Training on text chosen because it is true offers another route; a corpus that happens to contain mostly truths does not establish the same function. The authors leave open how close these connections must be: human feedback might reward agreement with raters' opinions, while perception might connect a model to appearances. Their argument therefore depends on how closely training connects internal states to truth.</p>
+
+<p>Once a model has beliefs directed at truth, the authors argue, logical consistency follows as an obligation: a proposition and its negation cannot both be true. They extend this reasoning to <em>credences</em>, or degrees of confidence. A model's confidence that Paris is in France and its confidence that Paris is not in France should sum to one. They draw on James Joyce's 1998 <a href="https://doi.org/10.1086/392661">“A Nonpragmatic Vindication of Probabilism”</a>: under the accuracy measure they discuss, the Brier score, an incoherent set of credences can be replaced by a coherent set that is closer to the truth however the world turns out.</p>
+
+<p>The authors also propose a way to measure those credences. The paper calls it the Minimal Assent Connection; Hase's <a href="https://x.com/peterbhase/status/1798741932103057824">thread calls it the Minimal Assent Criterion</a>. Ask whether a proposition is true, sum the probabilities assigned to answers expressing agreement, and divide by the combined probabilities of agreement and disagreement. This excludes evasions and refusals from the denominator. Using only the probabilities of yes and no is a practical approximation whose accuracy needs testing. The measure concerns beliefs revealed in answers; it cannot detect a belief a model conceals by lying. Nor does the calculation guarantee consistency between answers to separately worded questions about a proposition and its negation.</p>
+
+<p>Hase and colleagues' 2021 arXiv paper <a href="https://arxiv.org/abs/2111.13654">“Do Language Models Have Beliefs?”</a> evaluated logical consistency and belief updates. Saurav Kadavath and colleagues' 2022 <a href="https://arxiv.org/abs/2207.05221">“Language Models (Mostly) Know What They Know”</a> studied confidence through probabilities assigned to an answer's correctness. Collin Burns and colleagues instead sought belief information in hidden activations in <a href="https://arxiv.org/abs/2212.03827">“Discovering Latent Knowledge in Language Models Without Supervision”</a>, published at ICLR 2023; Benjamin Levinstein and Daniel Herrmann <a href="https://arxiv.org/abs/2307.00175">reported failures of those probes to generalize</a>. Herrmann and Levinstein's <a href="https://arxiv.org/abs/2405.21030">“Standards for Belief Representations in LLMs”</a>, first posted in May 2024, includes coherence among four criteria for identifying belief-like representations. Hofweber and colleagues explain why coherence would be required of states with a truth-directed function.</p>
+
+<p>In the original paper, the authors also question whether language models receive evidence in the sense presupposed by Bayesian accounts of learning. Engineers changing a model's weights do not thereby make the model itself reason from evidence. Nevertheless, if coherence obligations apply before an edit, they also apply afterwards. The <a href="https://arxiv.org/abs/2406.03442v3">November 2025 revision</a> develops the consequences: in a case with one culprit, adopting the belief that the butler did it should displace the belief that the maid did. Keeping conditional credences fixed offers a plausible way to coordinate further changes, using ordinary conditionalization when the new belief is certain and Jeffrey conditionalization when it is uncertain. The authors explicitly leave room to debate the updating rule.</p>
+
+<p>Hase's thread also explains why inconsistent answers can be difficult to diagnose. A model trained on contradictory text and then rewarded for truthfulness has been trained toward conflicting objectives. The authors propose controlling the consistency of the training corpus to separate those influences. Geoff Keeling and Winnie Street raise a related measurement concern in their July 2024 arXiv paper <a href="https://arxiv.org/abs/2407.08388">“On the attribution of confidence to large language models”</a>: credences may plausibly exist even when experimental techniques fail to measure them accurately.</p>
+
+<p>The group implemented a controlled test in <a href="https://arxiv.org/abs/2406.19354">“Fundamental Problems With Model Editing: How Should Rational Belief Revision Work in LLMs?”</a>, by Hase, Hofweber, Xiang Zhou, Stengel-Eskin and Bansal, published in Transactions on Machine Learning Research in December 2024. They trained an 83-million-parameter model on claims about a hypothetical world constructed from Wikidata, with dependencies between facts specified in advance. An idealized Bayesian model supplied comparison probabilities. The language model memorized over 90% of 100,000 true facts. But among edits for which a downstream answer should change, its accuracy on those downstream answers was only 1%. That result concerns the small model and editing method tested.</p>
+
+<p>The <a href="https://arxiv.org/abs/2406.03442v2">August 2024 revision</a> of the philosophical paper described the initial probability results favorably while already reporting poor belief revision. The 2025 version gives a fuller account: the model learned which claims were usually true, but its confidence was imprecise and edits produced incoherence. In the companion experiment, changing someone's place of education should change the most likely occupation under the hypothetical world's rules. The model learned the edited education fact while failing to make the corresponding occupation update.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://x.com/peterbhase/status/1798741915388846331">Peter Hase X thread: "New CS+Philosophy paper! Are language models rational?"</a> <span class="how">— Original post and surrounding conversation retrieved directly through Bird; text, author and date checked.</span></li>
+<li><a href="https://x.com/peterbhase/status/1798742081604886554">Hase thread, paper-link post</a> <span class="how">— Original post and surrounding conversation retrieved directly through Bird; text, author and date checked.</span></li>
+<li><a href="https://x.com/peterbhase/status/1798741932103057824">Hase thread, MAC post</a> <span class="how">— Original post and surrounding conversation retrieved directly through Bird; text, author and date checked.</span></li>
+<li><a href="https://x.com/FredZhang0/status/1798752446858358962">Fred Zhang reply to Hase thread</a> <span class="how">— Original post and surrounding conversation retrieved directly through Bird; text, author and date checked.</span></li>
+<li><a href="https://x.com/peterbhase/status/1798987556819980568">Hase reply to Fred Zhang</a> <span class="how">— Original post and surrounding conversation retrieved directly through Bird; text, author and date checked.</span></li>
+<li><a href="https://arxiv.org/abs/2406.03442v1">Are language models rational? The case of coherence norms and belief revision (arXiv:2406.03442v1)</a> <span class="how">— Full original paper read directly. Sections 1–5 support the philosophical argument, its conditional scope, the MAC definition, revealed-belief limitation, accuracy argument and controlled-corpus proposal. Uses Connection already in v1; no experiments reported in that version.</span></li>
+<li><a href="https://arxiv.org/abs/2406.03442v2">Are language models rational? (arXiv:2406.03442v2)</a> <span class="how">— Section 5 read directly: favorable initial assessment of probabilities accompanied by an explicit finding that belief revision falls far short of an ideal Bayesian agent.</span></li>
+<li><a href="https://arxiv.org/abs/2406.03442v3">Are language models rational? (arXiv:2406.03442v3)</a> <span class="how">— Full substantive paper read directly. Sections 4–5 support conditional belief-revision obligations, Bayesian methods as plausible candidates, and the later account of companion experiments.</span></li>
+<li><a href="https://arxiv.org/abs/2406.03442">arXiv abstract page and version history for 2406.03442</a> <span class="how">— Primary arXiv submission history read directly: June 5, 2024; August 10, 2024; November 14, 2025.</span></li>
+<li><a href="https://arxiv.org/abs/2406.19354">Fundamental Problems With Model Editing: How Should Rational Belief Revision Work in LLMs? (arXiv:2406.19354; TMLR 2024)</a> <span class="how">— Full substantive arXiv paper and Appendix A read directly. Sections 6.1–6.5, Table 4 and Appendix A establish the setup and the downstream-change subset behind 1%. TMLR December 2024 publication corroborated by the indexed official OpenReview PDF header.</span></li>
+<li><a href="https://doi.org/10.1086/392661">A Nonpragmatic Vindication of Probabilism, James M. Joyce (Philosophy of Science, 1998)</a> <span class="how">— DOI resolves successfully to Cambridge's publisher page; bibliographic details verified. The accuracy argument is reported through Hofweber et al. section 3.3, not as an independent full read of Joyce.</span></li>
+<li><a href="https://arxiv.org/abs/2111.13654">Do Language Models Have Beliefs? Methods for Detecting, Updating, and Visualizing Model Beliefs</a> <span class="how">— Primary arXiv abstract and metadata read directly; description limited to that evidence. No claim that this work directly responded to Hofweber et al.</span></li>
+<li><a href="https://arxiv.org/abs/2207.05221">Language Models (Mostly) Know What They Know (Kadavath et al.)</a> <span class="how">— Primary arXiv abstract and metadata read directly; description limited to that evidence. No claim that this work directly responded to Hofweber et al.</span></li>
+<li><a href="https://arxiv.org/abs/2212.03827">Discovering Latent Knowledge in Language Models Without Supervision (Burns et al.)</a> <span class="how">— Primary arXiv abstract and metadata read directly; description limited to that evidence. No claim that this work directly responded to Hofweber et al.</span></li>
+<li><a href="https://arxiv.org/abs/2307.00175">Still No Lie Detector for Language Models (Levinstein and Herrmann)</a> <span class="how">— Primary arXiv abstract and metadata read directly; description limited to that evidence. No claim that this work directly responded to Hofweber et al.</span></li>
+<li><a href="https://arxiv.org/abs/2405.21030">Standards for Belief Representations in LLMs (Herrmann and Levinstein)</a> <span class="how">— Primary arXiv abstract and metadata read directly; description limited to that evidence. No claim that this work directly responded to Hofweber et al.</span></li>
+<li><a href="https://arxiv.org/abs/2407.08388">On the attribution of confidence to large language models (Keeling and Street)</a> <span class="how">— Primary arXiv abstract and metadata read directly; description limited to that evidence. No claim that this work directly responded to Hofweber et al.</span></li>
+<li><a href="https://philosophy.unc.edu/people/thomas-hofweber/">Thomas Hofweber faculty page, UNC Department of Philosophy</a> <span class="how">— Institutional page read directly; confirms UNC Philosophy appointment.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-peter-hase-peterbhase-twitter-truthfulness-gives-language-mo">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-04/peter-hase-peterbhase-twitter-truthfulness-gives-language-mo</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
