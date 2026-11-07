@@ -145,6 +145,11 @@ test('public bibliography routes forward the original request and preserve backe
   }
 });
 
+test('bibliography routing answers 503 when the backend call fails', async () => {
+  const env = environment({ BIBLIOGRAPHY: { fetch: async () => { throw new Error('Worker exceeded resource limits'); } } });
+  assert.equal((await worker.fetch(request('/bibliography/api/state'), env)).status, 503);
+});
+
 test('bibliography routing protects owner routes and keeps the public allowlist bounded', async () => {
   const env = environment({ BIBLIOGRAPHY: { fetch() { assert.fail('private or invalid request forwarded'); } } });
   assert.equal((await worker.fetch(request('/bibliography/edit/'), env)).status, 303);
