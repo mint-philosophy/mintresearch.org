@@ -28,5 +28,6 @@ test('built index includes the public publications and excludes nonpublic and Fe
   assert.equal(searchRecords(records, 'artificial persons')[0].url, 'https://arxiv.org/abs/2607.08695');
   assert.ok(records.some(record => record.url === 'https://mintresearch.org/cv/'));
   assert.ok(records.every(record => !record.url.includes('fellowship.mintresearch.org')));
-  assert.ok(!records.some(record => record.url === 'https://doi.org/10.1002/japp.70120'));
+  assert.equal(searchRecords(records, 'dignity dilemma')[0].url, 'https://doi.org/10.1002/japp.70120');
+  assert.ok(!records.some(record => record.title === 'Mechanistic Auditing Is Necessary for AI Governance'));
 });
