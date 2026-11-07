@@ -21,6 +21,10 @@ test('mirror uses shared backend and preserves suggestion origin, body and clien
   assert.equal(seen.headers.get('CF-Connecting-IP'), '203.0.113.7');
   assert.equal(await seen.text(), '{"suggestion":"example"}');
 });
+test('mirror answers 503 when the backend call fails', async () => {
+  const env = { BIBLIOGRAPHY: { fetch: async () => { throw new Error('Worker exceeded resource limits'); } } };
+  assert.equal((await worker.fetch(new Request(origin + '/api/state'), env)).status, 503);
+});
 test('mirror blocks editor APIs and redirects edit UI to owner authentication', async () => {
   const env = { BIBLIOGRAPHY: { fetch: () => { throw new Error('must not reach backend'); } } };
   for (const path of ['/api/editor/state', '/owner/login', '/unknown']) assert.equal((await worker.fetch(new Request(origin + path), env)).status, 404);

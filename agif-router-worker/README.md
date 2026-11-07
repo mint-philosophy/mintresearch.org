@@ -80,6 +80,15 @@ MINT zone. The M5 OAuth account does not own that zone; do not deploy the MINT
 Worker with that account. Run `npm run check:agif-presentations` from the repo
 root and `npm --prefix agif-router-worker test` before deployment from the M4.
 
+Exception, approved by Seth on 7 November 2026: Ned Howells-Whitaker may deploy
+small maintenance and reliability fixes like the bibliography 503 handling
+without asking first. He deploys from his own machine with the shared
+`lab@mintresearch.org` Wrangler login. That login can see two Cloudflare
+accounts, so set `CLOUDFLARE_ACCOUNT_ID=2b3c6c03e00ea15cd86a45e9f880e74b`. Run
+the same checks and tests first, deploy only from `main` once the fix is
+merged, and record the deployed version here or in the PR. Larger changes still
+go through Seth.
+
 `bibliography.mintresearch.org` is the public bibliography mirror. It uses the
 same `BIBLIOGRAPHY` service and stored state as the Fellowship bibliography,
 with the main MINT Resources sidebar. Public suggestion requests retain the

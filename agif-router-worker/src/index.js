@@ -348,6 +348,18 @@ function unavailable() {
   });
 }
 
+// The service-binding call rejects when the backend dies (for example over its CPU
+// limit). Answer 503 instead of letting the router throw too.
+async function fetchBibliography(request, env) {
+  if (!env.BIBLIOGRAPHY) return unavailable();
+  try {
+    return await env.BIBLIOGRAPHY.fetch(request);
+  } catch (error) {
+    console.error('Bibliography backend failed:', error?.message || error);
+    return unavailable();
+  }
+}
+
 function editorHeaders(extra = {}) {
   return responseHeaders({
     'Content-Type': 'application/json; charset=utf-8',
@@ -695,9 +707,8 @@ async function handleFellowship(request, env) {
       url.pathname = '/bibliography/';
       return redirect(url.href);
     }
-    if (!env.BIBLIOGRAPHY) return unavailable();
     // Preserve origin, body, cookies and client IP for the backend's own checks.
-    return env.BIBLIOGRAPHY.fetch(request);
+    return fetchBibliography(request, env);
   }
   if (url.pathname === '/login') return handleLogin(request, env);
   if (url.pathname === '/logout') {
@@ -773,9 +784,8 @@ async function handleBibliographyMirror(request, env) {
   if (!methods) return new Response('Not found', { status: 404 });
   if (!methods.includes(request.method)) return new Response('Method not allowed', { status: 405, headers: { Allow: methods.join(', ') } });
   if (pathname === '/edit' || pathname === '/edit/') return redirect('https://fellowship.mintresearch.org/bibliography/edit/', 302);
-  if (!env.BIBLIOGRAPHY) return unavailable();
   // Keep the incoming origin and client headers for backend suggestion validation.
-  const response = await env.BIBLIOGRAPHY.fetch(request);
+  const response = await fetchBibliography(request, env);
   if (pathname !== '/' || request.method !== 'GET' || response.status !== 200 || !response.headers.get('Content-Type')?.includes('text/html')) return response;
   const headers = new Headers(response.headers);
   headers.delete('Content-Length');
