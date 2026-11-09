@@ -7,6 +7,7 @@ import {
   PAPER_COLUMNS,
   compareRows,
   parseCsv,
+  publicExportRow,
   rowLabel,
   serializeCsv,
   validateIncomingRows,
@@ -174,9 +175,9 @@ async function fetchNotionRows({ token, viewId }) {
 
 function pageToCsvRow(page) {
   const properties = page.properties || {};
-  return Object.fromEntries(
+  return publicExportRow(Object.fromEntries(
     PAPER_COLUMNS.map((column) => [column, propertyToCsvValue(properties[column])]),
-  );
+  ));
 }
 
 function propertyToCsvValue(property) {

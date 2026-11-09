@@ -31,6 +31,14 @@ export const LEGACY_REQUIRED_COLUMNS = REQUIRED_COLUMNS.filter(
   (column) => column !== "Site: Public?",
 );
 
+// Review venues are private workflow metadata. Hidden rows retain stable
+// identities; public preprints retain only their explicitly public venue label.
+export function publicExportRow(row) {
+  if (!isYes(row["Site: Public?"])) return { ...row, Venue: "" };
+  if (row.Status === "Under Review") return { ...row, Venue: row["Site: Venue"] || "" };
+  return row;
+}
+
 export function parseCsv(text, requiredColumns = REQUIRED_COLUMNS) {
   text = text.replace(/^\uFEFF/, "");
   const rows = [];
