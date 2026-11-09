@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>PSI reports an AI proof of the Aaronson-Ambainis conjecture — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-07">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-07">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 7 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">PSI reports an AI proof of the Aaronson-Ambainis conjecture</h1>
+<p class="dek">David Turturean’s Lean-checked preprint limits quantum advantages in input queries on most random inputs. PSI credits a nonpublic Anthropic model; researchers have published an exposition of the proof.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 7 November 2026</span> <span class="chip">1446 words · ~7 min</span></div>
+<div class="article-body">
+<p>An ordinary computer can estimate a quantum algorithm’s probability of answering yes on most uniformly random bit strings without reading exponentially more input. Physical Superintelligence (PSI), a public benefit corporation, <a href="https://psi.inc/research/aaronson-ambainis/">announced on November 6</a> a proof of the Aaronson-Ambainis conjecture establishing this limit on input queries. The <a href="https://github.com/physical-superintelligence/aaronson-ambainis/blob/main/paper/aaronson_ambainis_paper.pdf">preprint, “A proof of the Aaronson-Ambainis conjecture”</a>, by PSI's David Turturean, comes with a complete Lean 4 formalization in a <a href="https://github.com/physical-superintelligence/aaronson-ambainis">public repository</a>. PSI says its internal research system, running instances of a nonpublic Anthropic model, had a proof that the Lean proof assistant accepted during the third day of the run. The paper credits AI models with producing its mathematical statements.</p>
+
+<h3>Origins of the conjecture</h3>
+
+<p>Shor's factoring algorithm and most other dramatic quantum speedups depend on a promise that the input hides a rare pattern, such as a repeating period. Whether quantum machines could also use exponentially fewer queries for decision problems on most random inputs was unknown. In a <a href="https://scottaaronson.blog/?p=4414">2019 post</a>, Scott Aaronson traced the problem to work he did around 1999 on a question from Fortnow and Rogers about separating classical and quantum computation relative to a random oracle, and said he found the route through polynomials around 2008. That route starts from a result of <a href="https://arxiv.org/abs/quant-ph/9802049">Beals, Buhrman, Cleve, Mosca and de Wolf</a>: if a quantum algorithm reads its input T times, its probability of answering yes is a polynomial in the input bits of degree at most 2T, with values between 0 and 1. A quantum query can address many positions in superposition; a classical query reads one bit.</p>
+
+<p>In <a href="https://arxiv.org/abs/0911.0996">"The Need for Structure in Quantum Speedups"</a> (arXiv 2009; <em>Theory of Computing</em>, 2014), Aaronson and Andris Ambainis conjectured that every such bounded, low-degree polynomial has a variable of high influence, measured by the squared change in its output when that bit flips, averaged over uniformly distributed inputs. They showed what would follow. A classical algorithm that knows how the quantum algorithm is wired can read the most influential unread bit, repeat until the output barely varies over the remaining bits, and then report the average. If the conjecture holds, this simulation needs only polynomially many reads in T. Turturean's paper makes the count explicit: for fixed accuracy and tolerated fraction of exceptional inputs, it grows as the eighth power of T.</p>
+
+<h3>The influential-variable bound</h3>
+
+<p>Turturean proves that if such a polynomial has degree d and variance at least ε &gt; 0, one variable has influence at least (ε/d) raised to the seventh power. The bound guarantees an influential input bit even as the polynomial becomes more complex. Earlier bounds for general bounded polynomials shrank exponentially as the degree grew, the first following from a theorem of Dinur, Friedgut, Kindler and O'Donnell. Montanaro, Ivanisvili and others had proved special cases. Nathan Keller and Ohad Klein posted a <a href="https://arxiv.org/abs/1911.03748">claimed proof in 2019</a> and withdrew it after Paata Ivanisvili found that its Lemma 5.3 did not prove what it claimed. In August, Guy Blanc of MIT and Jordan Docter, Carmen Strassle and Li-Yang Tan of Stanford <a href="https://arxiv.org/abs/2608.19158">settled the case</a> of quantum algorithms that read their input in a fixed number of parallel rounds, a FOCS 2026 paper, and Qipeng Liu and Saachi Mutreja <a href="https://arxiv.org/abs/2608.20297">proved it</a> for massively parallel algorithms.</p>
+
+<p>The proof follows a plan by Shachar Lovett and Jiapeng Zhang in <a href="https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ITCS.2023.84">"Fractional Certificates for Bounded Functions"</a> (ITCS 2023), who reduced the problem to a proposed extension of Talagrand’s concentration inequality. For each level between 0 and 1, the plan looks at the inputs where the polynomial is at or above that level and gives each bit a weight, so that flipping any group of bits moves the output by at most the group's total weight. Turturean's paper argues that Lovett and Zhang's specific conjectured inequality is false as stated, giving a counterexample built from the tribes function, and substitutes a new inequality comparing pairs of inputs that is applied at every level and integrated over all of them. To prove it, the paper pairs inputs one to one through a bijection that comes from a determinant. David Reimer's Butterfly Lemma, from his 2000 <a href="https://www.cambridge.org/core/journals/combinatorics-probability-and-computing/article/proof-of-the-van-den-bergkesten-conjecture/8732DD27B55177AA737CC41A423186F2">proof of the van den Berg-Kesten conjecture</a>, already gave a weaker pairing; the new one also limits how often paired inputs agree on each bit, which the inequality needs. A bound adapted from Avantika Agarwal and Shalev Ben-David and an averaging step over coordinates finish the argument. The paper uses elementary mathematics and builds on earlier work.</p>
+
+<h3>Discovery and formal verification</h3>
+
+<p>According to the disclosure, Turturean scoped the problem and built the software coordinating the model instances on PSI's own infrastructure. Instances of the Anthropic model searched for existing ideas, proposed new ones, combined and tested them, and supervised the other instances. The paper's appendix says that early in the run the instances brought in Reimer's Butterfly Lemma and a dual inequality of Kahn, Saks and Smyth, and set themselves the goal of a version for fractional certificates. The first complete proof gave an exponent of 22 in place of 7. After PSI set the system on related open problems, it polished intermediate results, bringing the exponent to 11 and then to 7, and Lean checked each version. A model instance drafted the paper, which Turturean reviewed and edited; he is responsible for its correctness. Jim Halverson, listed as a PSI advisor, audited the proof, and Phiala Shanahan, also an advisor, commented on the formalization.</p>
+
+<p>On X, <a href="https://x.com/DavidTurturean/status/2118707648925429982">Turturean wrote</a> that the system took upwards of three days and that the model proposed several lemmas that stayed unproven until the last one was proved, at which point the argument came together. After living with it, he said, "it still feels a bit alien." The repository’s <a href="https://github.com/physical-superintelligence/aaronson-ambainis/blob/main/notes/VERIFICATION.md">verification notes</a> record Lean checks dated October 22, placing the proof at least two weeks before the announcement.</p>
+
+<p>The repository's README spells out what the machine checks cover. The main Lean theorem proves the conjecture as Aaronson and Ambainis printed it, stated in a file that imports only the standard Mathlib library; a static audit found no placeholders or added axioms, and two independent implementations of the Lean kernel replayed the proofs. Readers must still establish that the formal statement expresses the intended conjecture and that the prose paper accurately explains it; the README separates those tasks from the machine checks.</p>
+
+<h3>Expert exposition and reactions</h3>
+
+<p>Blanc, Docter, Strassle and Tan give <a href="https://guyblanc.github.io/AA_Exposition.pdf">an exposition</a> of the proof dated November 7. For simplicity they prove a weaker bound. They credit the original proof for their presentation’s central ideas and report receiving no compensation from Anthropic or PSI. They disclose using Anthropic’s public models to prepare the exposition. Their earlier claim about complexity theory now holds unconditionally: proving a quantum advantage over classical computation on average with access to a random oracle would imply an advantage for promise problems without that oracle. A random oracle supplies consistent random answers to queries; promise problems restrict which inputs must be handled. Aaronson and Ambainis anticipated this in 2009: even a random-oracle result would require resolving a major separation between classical and quantum computation.</p>
+
+<p>Aaronson <a href="https://scottaaronson.blog/?p=10295">wrote on November 8</a> that PSI told him about the result several weeks ago under embargo. He believes the proof is correct because of the Lean certificate and because human experts have gone over it, though he has not yet understood it himself, and he recommends the Stanford and MIT exposition. He said he did not know how much credit belonged to PSI’s coordinating software versus the model. He reported mixed feelings, including disappointment "that humans didn’t get to snag this conjecture before the robots did."</p>
+
+<p>Pedro Domingos <a href="https://x.com/pmddomingos/status/2118865209637179826">quote-posted</a> PSI's announcement with "The dream of quantum supremacy is dead." Aaronson and <a href="https://x.com/quantumashley/status/2119160138711904463">Ashley Montanaro</a> both rejected that reading. As they explain, the theorem concerns reads of the input, not running time, and only yes-or-no questions on random inputs; it has no effect on Shor's algorithm, which exploits a periodic input, or on quantum simulation of materials and chemistry. Both point to <a href="https://arxiv.org/abs/2204.02063">Yamakawa and Zhandry</a>, who showed that search problems can still have exponential quantum speedups on random inputs. Montanaro, who proved one of the earlier special cases, wrote: "Whether this conjecture was true or false, it wouldn't impact practical quantum computing."</p>
+
+<p>The paper leaves the best exponents open: the variance exponent must be at least two, and achieving two remains an open question. PSI, led by chief executive Matthew Pines, says on <a href="https://psi.inc/">its homepage</a> that it has at least 25 researchers and engineers and has raised at least $58 million, led by Breakthrough Energy Ventures. On October 23 it released <a href="https://psi.inc/research/oqp-batch-2026/">results on five open problems</a> in quantum information theory, each with a paper and a Lean formalization.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://psi.inc/research/aaronson-ambainis/">A proof of the Aaronson-Ambainis conjecture — PSI</a> <span class="how">— Assigned source: announcement date, nonpublic Anthropic model, third-day Lean-checked proof, two improvements, the Lovett-Zhang plan, the determinant-derived pairing refining Reimer's lemma, earlier bounds and special cases, contributor credits.</span></li>
+<li><a href="https://github.com/physical-superintelligence/aaronson-ambainis/blob/main/paper/aaronson_ambainis_paper.pdf">A proof of the Aaronson-Ambainis conjecture (preprint PDF) — David Turturean</a> <span class="how">— Main theorem and (ε/d)^7 bound, (4T)^8 query count, Lovett-Zhang Conjecture 37 counterexample, all-pairs inequality, Agarwal-Ben-David row bound, AI disclosure quote, Appendix A exponents 22/11/7 and Reimer/Kahn-Saks-Smyth inputs, open exponent questions, characterization of the proof as elementary.</span></li>
+<li><a href="https://github.com/physical-superintelligence/aaronson-ambainis">physical-superintelligence/aaronson-ambainis repository (README, verification notes)</a> <span class="how">— README read: formal statement in a Mathlib-only file, static audit and recorded kernel replays; distinguishes statement fidelity and prose correctness from formal proof checking. Historical date verified separately in the linked verification notes. These are repository reports, not checks rerun by this editor.</span></li>
+<li><a href="https://x.com/DavidTurturean/status/2118707648925429982">David Turturean thread on X</a> <span class="how">— Upwards of three days; lemmas unproven until the last one; 'a bit alien' quote. Verified against the completed Fable dossier’s full-thread/post record; not fetched anew by this editor.</span></li>
+<li><a href="https://guyblanc.github.io/AA_Exposition.pdf">Proof of the Aaronson-Ambainis Conjecture: An Exposition — Blanc, Docter, Strassle, Tan</a> <span class="how">— Direct PDF read, title page and opening sections: November 7 date, MIT/Stanford affiliations, deliberately weaker bound, attribution of ideas to Turturean’s proof, no compensation, use of public Anthropic models, and Claim 1.1’s implication for promise problems without an oracle. Does not assert an identical random-oracle/unrelativized separation.</span></li>
+<li><a href="https://scottaaronson.blog/?p=10295">Aaronson-Ambainis Conjecture proved! (By AI, of course) — Scott Aaronson, Shtetl-Optimized</a> <span class="how">— Direct full post read: embargo notice, belief in correctness because of Lean and human review, admission he had not understood the proof, uncertainty about model versus coordinating software, mixed feelings, Domingos rebuttal and scope limits. Long harness quotation paraphrased.</span></li>
+<li><a href="https://scottaaronson.blog/?p=4414">The Aaronson-Ambainis Conjecture (2008-2019) — Scott Aaronson</a> <span class="how">— Origin around 1999 in the Fortnow-Rogers random-oracle question and the 2008 influence route.</span></li>
+<li><a href="https://arxiv.org/abs/0911.0996">The Need for Structure in Quantum Speedups — Aaronson and Ambainis</a> <span class="how">— Original conjecture, simulation consequence, and the claim that a random-oracle P vs BQP separation essentially cannot be proved; publication venues.</span></li>
+<li><a href="https://arxiv.org/abs/quant-ph/9802049">Quantum lower bounds by polynomials — Beals, Buhrman, Cleve, Mosca, de Wolf</a> <span class="how">— Acceptance probability of a T-query algorithm as a degree-2T bounded polynomial (as described by the PSI paper and Aaronson).</span></li>
+<li><a href="https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ITCS.2023.84">Fractional Certificates for Bounded Functions — Lovett and Zhang, ITCS 2023</a> <span class="how">— The plan the proof follows; verbatim Talagrand-extension quote from the abstract.</span></li>
+<li><a href="https://www.cambridge.org/core/journals/combinatorics-probability-and-computing/article/proof-of-the-van-den-bergkesten-conjecture/8732DD27B55177AA737CC41A423186F2">Proof of the van den Berg-Kesten Conjecture — David Reimer</a> <span class="how">— Source of the Butterfly Lemma; characterization taken from the PSI paper and README.</span></li>
+<li><a href="https://arxiv.org/abs/1911.03748">Quantum speedups need structure (withdrawn) — Keller and Klein</a> <span class="how">— 2019 claimed proof withdrawn after Ivanisvili found the Lemma 5.3 flaw.</span></li>
+<li><a href="https://arxiv.org/abs/2608.19158">Quantum Speedups Require Structure or Depth — Blanc, Docter, Strassle, Tan</a> <span class="how">— August 2026 parallel-rounds special case, FOCS 2026.</span></li>
+<li><a href="https://arxiv.org/abs/2608.20297">Parallel Quantum Advantage with Limited Adaptivity Requires Structure — Liu and Mutreja</a> <span class="how">— Massively parallel special case.</span></li>
+<li><a href="https://x.com/pmddomingos/status/2118865209637179826">Pedro Domingos quote-post</a> <span class="how">— 'The dream of quantum supremacy is dead.' Verified against the completed Fable dossier’s full-thread/post record; not fetched anew by this editor.</span></li>
+<li><a href="https://x.com/quantumashley/status/2119160138711904463">Ashley Montanaro thread on X</a> <span class="how">— Clarification that the result does not touch running time or practical simulation; verbatim quote. Verified against the completed Fable dossier’s full-thread/post record; not fetched anew by this editor.</span></li>
+<li><a href="https://arxiv.org/abs/2204.02063">Verifiable Quantum Advantage without Structure — Yamakawa and Zhandry</a> <span class="how">— Search problems retain exponential query speedups on random inputs, as cited by Aaronson and Montanaro.</span></li>
+<li><a href="https://psi.inc/">PSI homepage</a> <span class="how">— Live primary homepage checked: public benefit corporation; CEO Matthew Pines; 25+ researchers and engineers; $58M+ raised, led by Breakthrough Energy Ventures. 25+ rendered as at least 25.</span></li>
+<li><a href="https://psi.inc/research/oqp-batch-2026/">Five results on Open Quantum Problems — PSI</a> <span class="how">— October 23 release of five results, each with paper and Lean formalization.</span></li>
+<li><a href="https://github.com/physical-superintelligence/aaronson-ambainis/blob/main/notes/VERIFICATION.md">Verification notes for the Aaronson-Ambainis formalization</a> <span class="how">— Read the raw file linked by the repository README: historical checks dated October 22, 2026; matching source digests and recorded check scope. Supports attributed chronology, not an independent replay.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-psi-reports-lean-checked-aaronson-ambainis-proof-from-a-nonp">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-07/psi-reports-lean-checked-aaronson-ambainis-proof-from-a-nonp</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
