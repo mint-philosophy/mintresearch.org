@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Apiiro finds credential strings in 1,122 public Claude Code settings files — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-08">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-08">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 8 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Apiiro finds credential strings in 1,122 public Claude Code settings files</h1>
+<p class="dek">Permanent command approvals can save embedded passwords in project files that later reach GitHub. Anthropic’s Boris Cherny acknowledged the missing secret scrubbing and discussed possible fixes.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 8 November 2026</span> <span class="chip">986 words · ~5 min</span></div>
+<div class="article-body">
+<p>Apiiro researchers Shmulik Cohen and Matan Giladi <a href="https://apiiro.com/blog/coding-agents-leaking-secrets-github-dont-ask-again">reported on November 5</a> that Claude Code’s saved permission rules contained credential strings in 1,122 public GitHub files. Their investigation follows a password from a local configuration file into a command, then into a permanent approval rule, and finally into a published repository. In the subsequent <a href="https://news.ycombinator.com/item?id=50407882">Hacker News discussion</a>, mirrored by <a href="https://app.hncompanion.com/item?id=50407882&amp;utm_source=bsky">HN Companion</a>, Anthropic’s Boris Cherny acknowledged that Claude Code historically lacked secret scrubbing and said the team would prototype prevention measures.</p>
+<p>Claude Code can save an approved shell command in <code>.claude/settings.local.json</code> when a developer chooses “Yes, and don’t ask again.” Anthropic’s <a href="https://code.claude.com/docs/en/permissions">permissions documentation</a> says a rule without a wildcard matches one exact command. If the command includes a database password or API token copied from local configuration, that credential can become part of the saved rule. Apiiro reproduced the behaviour with Opus 5.5 and Fable 5.1. Its documentation comparison of 16 coding agents identified Claude Code as the only one it could confirm writes the full approved command to a project file by default.</p>
+<p>Anthropic’s <a href="https://code.claude.com/docs/en/settings">settings documentation</a> describes a safeguard: when Claude Code first writes the file inside a Git repository, it adds an entry to the user’s global Git excludes file. That protection does not travel with the project in its own <code>.gitignore</code>. Apiiro identifies exposure routes through a copied project on a machine or container lacking the global exclusion, a folder that becomes a repository later, or a file already tracked by Git. In the Hacker News exchange, Cohen withdrew his initial suggestion that a fresh clone alone would cause the problem. In 539 of 1,105 examined repositories, a Claude-co-authored commit changed the settings file; as <a href="https://itwire.com/business-it-news/security/claude-code-approval-files-found-exposing-company-secrets-on-github-says-apirro-researchers">iTWire noted</a>, that does not establish that those commits introduced each credential.</p>
+<p>Apiiro searched GitHub between November 1 and 3, dividing searches by file size to work around the search result cap. It found 104,185 public copies of the local settings file and classified 1,122, about 1.1%, as containing credentials. Its rules looked for known provider key formats and passwords or tokens paired with public hosts; a language-model reviewer examined masked values, and a candidate counted only when the rules and review agreed. Apiiro did not use or test the credentials. One organization it notified confirmed that its key had been live.</p>
+<p>The classified files contained 1,379 distinct credential strings, including database passwords and Supabase service-role keys. Larger files were more likely to contain them: about one in ten files over 8 KB, compared with fewer than one in 500 under 500 bytes. Adding Git history, shared settings and other agent files brought Apiiro’s total to 2,539 distinct strings across 1,994 repositories. The historical search found credentials absent from current copies, showing why deleting a file does not remove everything previously published.</p>
+<p>Apiiro also ran Gitleaks and TruffleHog over the files. Both missed 215 of the 1,122 files it classified as containing credentials. The researchers attribute much of the gap to ordinary passwords inside commands, such as values following <code>PGPASSWORD=</code>, which lack the distinctive prefixes or formats of provider-issued keys. They argue that the predictable local file path also makes these records useful to credential-stealing malware. Their examples include the September 2025 <a href="https://sysdig.com/blog/shai-hulud-the-novel-self-replicating-worm-infecting-hundreds-of-npm-packages">Shai-Hulud worm</a>, which used TruffleHog to search victims’ files, and the earlier <a href="https://blog.gitguardian.com/the-nx-s1ngularity-attack-inside-the-credential-leak/">Nx package compromise</a>, which tried to enlist AI command-line tools to search for credentials.</p>
+<p>Users had reported the mechanism well before Apiiro’s scan. <a href="https://github.com/anthropics/claude-code/issues/5544">GitHub issue #5544</a>, filed in August 2025, described plaintext credentials in approved commands; <a href="https://github.com/anthropics/claude-code/issues/11982">#11982</a> that November reported the missing project ignore entry. In <a href="https://github.com/anthropics/claude-code/issues/13106">#13106</a>, filed that December, a user described discovering tokens in a committed settings file after receiving a security alert. Automation closed all three without a staff response. Apiiro also credits <a href="https://ironpeak.pages.dev/blog/leaking-secrets-from-the-claud">ironPeak’s February investigation</a> and scanning tool, and cites Lakera’s April finding of credentials in 33 such files across 30 published npm packages.</p>
+<p>Broader GitHub research gives those findings context. Michael Meli, Matthew McNiece and Bradley Reaves’ NDSS 2019 paper <a href="https://www.ndss-symposium.org/ndss-paper/how-bad-can-it-git/">“How Bad Can It Git?”</a> found leaks in more than 100,000 repositories using distinctive credential formats. GitGuardian’s <a href="https://dev.to/gitguardian/the-state-of-secrets-sprawl-2026-ai-service-leaks-surge-81-and-29m-secrets-hit-public-github-2bgj">2026 report</a> found secrets in 3.2% of Claude Code-assisted public commits against a 1.5% baseline, while cautioning against attributing the difference simply to tool failure. Apiiro’s investigation documents a specific way an approval system can create a file containing credentials.</p>
+<p>Cherny, introducing himself as part of the Claude Code team, responded on November 7. He argued that automatic Git exclusion meant the exposed files had been manually created and committed, recommended host-side secret scanning, and urged users to switch to auto mode, where a classifier reviews commands. When the commenter bluebands observed that auto mode still asks about sensitive commands and can save a permanent approval, Cherny replied, “Yeah good catch.” His proposed experiments included improving auto-mode detection and adding basic secret scanning; the exchange did not announce a shipped fix.</p>
+<p>Commenters also debated Cherny’s comparison of auto mode with manual review. Anthropic’s <a href="https://claude.com/blog/auto-mode-default-in-claude-code">August article</a> reported that, in a study of 1,053 paid testers, people caught 13.6% of planted dangerous commands while auto mode blocked 89%. RossBencina linked Zimo Ji and colleagues’ arXiv paper <a href="https://arxiv.org/abs/2604.04978">“Measuring the Permission Gate: A Stress-Test Evaluation of Claude Code’s Auto Mode”</a>. On 128 ambiguous DevOps tasks, the researchers reported that 81% of dangerous actions went unblocked; some actions were project-file edits outside the classifier’s scope. That evaluation tests permission enforcement under a different task design, and does not measure how often approval files retain secrets.</p>
+<p>Apiiro recommends referencing credentials through variables such as <code>$DB_URL</code>, so the saved command contains the variable name, and using appropriate command patterns instead of approvals containing literal passwords. It advises rotating exposed credentials before cleaning up files and repository history. The researchers notified affected organizations on November 2 and 3 and Anthropic before publication; their November 8 update incorporated Cherny’s response. His comments left the choice and timing of a product change open.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://apiiro.com/blog/coding-agents-leaking-secrets-github-dont-ask-again">Coding Agents Copy Your Secrets to a Hidden File. Thousands Are on GitHub (Shmulik Cohen, Matan Giladi, Apiiro)</a> <span class="how">— Primary research: mechanism, scan method and scope, classified-string counts, scanner comparison, disclosure chronology and recommendations. Retained dossier includes the source read in full; targeted audit corroborates core claims. Lakera figure and malware examples are attributed through Apiiro. Credentials were not tested.</span></li>
+<li><a href="https://news.ycombinator.com/item?id=50407882">Hacker News thread, item 50407882</a> <span class="how">— Original response exchange: Cherny’s stated affiliation, historical absence of secret scrubbing, manual-creation argument, auto-mode recommendation, proposed prototypes, bluebands reply, and Cohen’s fresh-clone correction. Retained researcher extracts and targeted audit.</span></li>
+<li><a href="https://app.hncompanion.com/item?id=50407882&amp;utm_source=bsky">HN Companion mirror of Hacker News item 50407882</a> <span class="how">— Approved companion retained and linked in the opening; mirrors the original HN discussion. Used as a relay, not independent corroboration.</span></li>
+<li><a href="https://code.claude.com/docs/en/permissions">Configure permissions (Claude Code documentation)</a> <span class="how">— Retained direct documentation excerpts: exact-command matching and permanent approval-rule storage.</span></li>
+<li><a href="https://code.claude.com/docs/en/settings">Settings files and precedence (Claude Code documentation)</a> <span class="how">— Retained direct documentation excerpts: global Git excludes mechanism and manually created local settings files.</span></li>
+<li><a href="https://github.com/anthropics/claude-code/issues/5544">GitHub issue #5544 (anthropics/claude-code)</a> <span class="how">— Retained direct issue review: August 2025 plaintext-credential complaint and automated closure.</span></li>
+<li><a href="https://github.com/anthropics/claude-code/issues/11982">GitHub issue #11982 (anthropics/claude-code)</a> <span class="how">— Retained direct issue review: November 2025 missing project-ignore complaint and automated closure.</span></li>
+<li><a href="https://github.com/anthropics/claude-code/issues/13106">GitHub issue #13106 (anthropics/claude-code)</a> <span class="how">— Retained direct issue review: December 2025 user account of exposed tokens and duplicate closure.</span></li>
+<li><a href="https://itwire.com/business-it-news/security/claude-code-approval-files-found-exposing-company-secrets-on-github-says-apirro-researchers">Claude Code approval files found exposing company secrets on GitHub, says Apirro researchers (iTWire)</a> <span class="how">— Retained coverage summary: co-authored settings modifications do not prove introduction of each secret. Not used as independent validation of Apiiro’s scan.</span></li>
+<li><a href="https://sysdig.com/blog/shai-hulud-the-novel-self-replicating-worm-infecting-hundreds-of-npm-packages">Shai-Hulud: The novel self-replicating worm infecting hundreds of NPM packages (Sysdig)</a> <span class="how">— Linked technical precedent cited by Apiiro: Shai-Hulud’s use of TruffleHog. Dossier contains a fetch summary; prose attributes the example through Apiiro.</span></li>
+<li><a href="https://blog.gitguardian.com/the-nx-s1ngularity-attack-inside-the-credential-leak/">The Nx "s1ngularity" Attack: Inside the Credential Leak (GitGuardian)</a> <span class="how">— Linked technical precedent cited by Apiiro: malicious Nx packages attempted to use AI command-line tools to find secrets. Dossier contains a fetch summary.</span></li>
+<li><a href="https://ironpeak.pages.dev/blog/leaking-secrets-from-the-claud">Leaking secrets from the claud (ironPeak)</a> <span class="how">— Earlier investigation and scanning tool credited by Apiiro; retained fetch summary, no numerical claim about its prevalence estimate.</span></li>
+<li><a href="https://www.ndss-symposium.org/ndss-paper/how-bad-can-it-git/">How Bad Can It Git? Characterizing Secret Leakage in Public GitHub Repositories (Meli, McNiece, Reaves, NDSS 2019)</a> <span class="how">— Retained abstract-level precedent: Meli, McNiece and Reaves, NDSS 2019, found leaks in over 100,000 repositories using distinctive credential formats. No full-paper claim.</span></li>
+<li><a href="https://dev.to/gitguardian/the-state-of-secrets-sprawl-2026-ai-service-leaks-surge-81-and-29m-secrets-hit-public-github-2bgj">The State of Secrets Sprawl 2026 (GitGuardian, via DEV Community)</a> <span class="how">— GitGuardian’s own syndicated report, retained summary: 3.2% versus 1.5% commit leak rates and caution against a simple causal tool-failure interpretation.</span></li>
+<li><a href="https://claude.com/blog/auto-mode-default-in-claude-code">Auto mode is now the default in Claude Code (Anthropic)</a> <span class="how">— Anthropic auto-mode study: planted commands and 1,053 testers; raw reporter recorded checking the numerical results against the live article after the dossier’s summary-level retrieval.</span></li>
+<li><a href="https://arxiv.org/abs/2604.04978">Measuring the Permission Gate: A Stress-Test Evaluation of Claude Code's Auto Mode (Ji et al., arXiv 2604.04978)</a> <span class="how">— Ji and colleagues’ auto-mode stress test: retained abstract, 128 ambiguous DevOps tasks, 81% false-negative rate and project-file edits outside classifier scope. Raw reporter recorded an abstract recheck. This is not a test of saved credentials; full paper was not read.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-apiiro-reportedly-finds-secrets-in-1-122-public-claude-code">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-08/apiiro-reportedly-finds-secrets-in-1-122-public-claude-code</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

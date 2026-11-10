@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Safety tests give way to private assessments as models outgrow them — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-08">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-08">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 8 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Safety tests give way to private assessments as models outgrow them</h1>
+<p class="dek">Chenhao Tan’s 111-document archive traces benchmark retirements, incompatible measures of evaluation awareness and large gaps in published safety testing.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 8 November 2026</span> <span class="chip">924 words · ~5 min</span></div>
+<div class="article-body">
+<p>Frontier developers are retiring safety tests that their models have outgrown and relying more heavily on expert judgment, while the models increasingly recognize when they are being tested. An <a href="https://model-cards.github.io/safety.html">AI-assisted analysis of 111 official documents</a>, commissioned and <a href="https://x.com/ChenhaoTan/status/2118802522135503210">shared by Chenhao Tan on November 6</a>, traces both changes across a year of safety reporting. It also finds large differences in what developers disclose: the flagship GLM, Kimi and Qwen documentation reports almost none of the safety evaluations that appear in Anthropic, OpenAI and Google documents.</p>
+<p>The archive covers models released from October 1, 2025, to October 22, 2026, and includes system cards, technical reports, addenda and company risk reports. Its <a href="https://model-cards.github.io/about.html">method</a> combines Mistral's optical character recognition with Claude agents that rate coverage of 21 safety areas, from absent to substantial, citing passages and page numbers. The site says scripts checked every quotation against the extracted text and its summary claims were checked by hand against that text. The ratings describe published reporting; labs may have conducted evaluations they did not disclose. Document types differ substantially in scope, and the site directs readers to the original PDFs when extraction errors arise.</p>
+<p>The analysis follows changes in developers' risk assessments alongside the retirement of familiar tests. OpenAI's September <a href="https://deploymentsafety.openai.com/gpt-6-astra/gpt-6-astra.pdf">GPT-6 Astra System Card</a> identifies Astra as its first model to reach the company's Critical cybersecurity level. Earlier designations sometimes reflected precaution: the audit quotes OpenAI treating GPT-5.3-Codex as High in February while saying it lacked definitive evidence that the model reached that threshold. Those determinations therefore cannot all be read as confirmed threshold crossings.</p>
+<p>Anthropic's <a href="https://www.anthropic.com/claude-opus-4-6-system-card">Claude Opus 4.6 System Card</a> shows how benchmark saturation changes the evidence for a safety decision. The company said its automated AI research and development tests no longer helped rule out its ASL-4 autonomy threshold, so it relied primarily on an internal survey. None of 16 employees thought improvements to the model's surrounding software and tools could make it a substitute for an entry-level researcher within three months. The audit documents subsequent retirements of cyber and research benchmarks across developers. Their replacements are increasingly private, leaving outsiders unable to check how much harder they are or how close models already come to completing them.</p>
+<p>Evaluation awareness creates a separate difficulty: a model that recognizes a test may behave differently from how it behaves in deployment. Joe Needham and colleagues examined this ability in the May 2025 arXiv paper <a href="https://arxiv.org/abs/2505.23836">Large Language Models Often Know When They Are Being Evaluated</a> and recommended tracking it in future models. The archive now assembles developers' reports of that ability across successive releases. In the Astra system card, Apollo Research found that Astra expressed awareness of evaluation in about half its samples at the highest tested reasoning setting. Apollo said the combination of evaluation awareness and a limited testing window meant low observed misbehavior provided little evidence about alignment or misalignment.</p>
+<p>Anthropic assessed awareness differently in its <a href="https://www.anthropic.com/claude-opus-5-5-system-card">Opus 5.5 system card</a>, examining internal model states. Its measures indicated concern about being evaluated in up to 36% of automated behavioral-audit transcripts, compared with 0.4% of roughly 500 transcripts from internal Claude Code use. These figures describe different settings within that assessment; they are not directly comparable with Apollo's count of models stating awareness. The archive argues that developers lack a common rule for deciding when awareness makes an alignment test uninformative. It describes attempts to address the problem through internal probes, interventions that reduce evaluation awareness, simulated deployments and sampling from production traffic.</p>
+<p>Tan emphasized the disclosure differences among developers of downloadable models. Across 37 documents from Zhipu's GLM, Moonshot's Kimi and Alibaba's Qwen families, the audit found no flagship evaluation of harmful content, jailbreaks, chemical or biological risks, autonomy or alignment. Qwen3Guard reports safety testing of a classifier. Cybersecurity appears regularly as a capability: Moonshot's <a href="https://arxiv.org/abs/2607.24653">Kimi K3: Open Frontier Intelligence</a> report on arXiv tests vulnerability discovery and exploit development, while the audit finds no accompanying account of K3's refusal behavior. The analysis assigns its highest severity to these disclosure gaps because distributed weights cannot be recalled and fine-tuning can remove safeguards.</p>
+<p>The companion <a href="https://model-cards.github.io/replicability.html">replicability analysis</a> asks whether an outsider has both an evaluation's data and its grading procedure. About 10% of 2,124 safety-evaluation reports meet that criterion, compared with 69% of capability-benchmark reports. Here a report means one evaluation named in one document; the denominator is not the archive's 111 documents. The safety figure falls to 6% when graders accessible only through an API are excluded. Even these estimates are upper bounds, since the analysis did not check whether developers supplied the instructions and software needed to reproduce their evaluation setup.</p>
+<p>The archive also finds that no harmful-content or refusal benchmark appears in more than two developers' documents. Private datasets and comparisons against each developer's previous models limit comparisons across companies. Smaller models often inherit risk assessments from larger relatives, which the analysis argues cannot establish properties such as resistance to jailbreaks or sycophancy: a less capable model need not behave more safely on those dimensions.</p>
+<p>The documents contain more real-world evidence too, including pilot deployments, adversarial testing and operational failures. Anthropic's <a href="https://www.anthropic.com/aug-2026-risk-report">August 2026 Risk Report</a> disclosed that its contractor-feedback systems operated without blocking biological classifiers from May 2025 to April 2026, covering around 133 million exchanges. The audit finds no systematic published measure of post-deployment misuse or successful jailbreaks across the reviewed developers. As safety information spreads across model cards, addenda and company risk reports, its argument is that readers need to examine the combined record to judge how pre-release assessments relate to deployed behavior.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://model-cards.github.io/safety.html">How safety evaluation changed, and what's still missing (Safety Evaluations Analysis), Model Cards Archive</a> <span class="how">— Assigned primary analysis. Editor read the complete original retained text and compared it with the completed research dossier and targeted audit. Supports the cross-document synthesis, reported-coverage findings, precautionary GPT-5.3-Codex designation, benchmark retirements, proxy assessments and post-deployment findings; underlying 111 documents were not independently reaudited.</span></li>
+<li><a href="https://model-cards.github.io/about.html">About this archive, Model Cards Archive</a> <span class="how">— Method and scope verified through the retained dossier: Claude extraction, OCR, authoritative original PDFs and distinction between reported and performed evaluations.</span></li>
+<li><a href="https://model-cards.github.io/replicability.html">Eval Replicability, Model Cards Archive</a> <span class="how">— Retained full-page research notes establish the 2,124 evaluation-report denominator, public-data/public-judge criterion, 10%, 6% excluding API graders, 69% capability comparison and upper-bound limitation.</span></li>
+<li><a href="https://x.com/ChenhaoTan/status/2118802522135503210">Chenhao Tan X thread announcing the analysis</a> <span class="how">— Original announcement retained in the assigned text reference and full-thread dossier; supports Tan’s commissioning role and November 6 announcement date. Not treated as the evidence for underlying model results.</span></li>
+<li><a href="https://deploymentsafety.openai.com/gpt-6-astra/gpt-6-astra.pdf">GPT-6 Astra System Card, OpenAI</a> <span class="how">— Dossier records original-PDF verification of first Critical cybersecurity designation and Apollo evaluation-awareness passages. Highest-setting figure is 50.6%, paraphrased as about half; Apollo’s limited evaluation window retained.</span></li>
+<li><a href="https://www.anthropic.com/claude-opus-5-5-system-card">System Card: Claude Opus 5.5, Anthropic</a> <span class="how">— Dossier preserves archive OCR passages on internal-state measures: up to 36% of audit transcripts versus 0.4% of roughly 500 internal Claude Code transcripts. Not presented as directly comparable with verbalized-awareness rates.</span></li>
+<li><a href="https://www.anthropic.com/claude-opus-4-6-system-card">System Card: Claude Opus 4.6, Anthropic</a> <span class="how">— Dossier preserves the relevant archive OCR passage on saturated AI R&amp;D evaluations and the 16-person survey, including the three-month scaffolding/tooling condition. Original PDF not independently reread in this edit.</span></li>
+<li><a href="https://arxiv.org/abs/2607.24653">Kimi K3: Open Frontier Intelligence, Moonshot AI</a> <span class="how">— Dossier preserves archive OCR verification of Moonshot’s Kimi K3 vulnerability-discovery and exploit-development tests; absence of refusal reporting is attributed to the assigned audit.</span></li>
+<li><a href="https://www.anthropic.com/aug-2026-risk-report">Risk Report: August 2026, Anthropic</a> <span class="how">— Dossier records original-PDF verification of contractor-feedback traffic without blocking biological classifiers, May 2025–April 2026, around 133 million exchanges.</span></li>
+<li><a href="https://arxiv.org/abs/2505.23836">Large Language Models Often Know When They Are Being Evaluated, Needham et al.</a> <span class="how">— Dossier’s primary-paper metadata and research summary support author, title, May 2025 date and recommendation to track evaluation awareness. Used as limited historical context, not as a cited influence on the archive.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-audit-of-111-ai-safety-documents-finds-evaluation-awareness">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-08/audit-of-111-ai-safety-documents-finds-evaluation-awareness</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
