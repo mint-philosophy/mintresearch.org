@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>AlphaProof Code connects Signal's security guarantees to compiled code — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-10">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-10">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 10 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">AlphaProof Code connects Signal's security guarantees to compiled code</h1>
+<p class="dek">DeepMind's agents generated 6.5 million lines of checked proof for a specific libsignal build. The guarantees depend on human-reviewed specifications, trusted cryptographic components and the scope of the verified program.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 10 November 2026</span> <span class="chip">961 words · ~5 min</span></div>
+<div class="article-body">
+<p>AI agents have proved that a compiled version of Signal's cryptography library satisfies specified security guarantees, with every proof checked by the Lean theorem prover. Google DeepMind <a href="https://deepmind.google/blog/introducing-alphaproof-code/">announced AlphaProof Code on November 10</a>, alongside Swarat Chaudhuri and colleagues' technical report, <a href="https://deepmind.google/documents/36/Formal_Verification_of_Signal_4.pdf">“AlphaProof Code: Verifying Signal's Security at the Machine-Code Level.”</a> Five researchers completed the proof work in four weeks; the authors say they wrote no proof code themselves. Their contribution connects mathematical protocol guarantees to an existing implementation, including the machinery that stores sessions and handles messages arriving out of order.</p><p>The team compiled unmodified libsignal v0.105.4 and spqr v1.6.0 with the stock Rust compiler into an AArch64 Linux executable, using a small command-line program to start sessions, send and receive messages. The proofs cover one-to-one conversations: PQXDH, the handshake that establishes keys, and the Triple Ratchet, which replaces keys as messages flow. Forward secrecy protects earlier messages after a key is stolen; post-compromise security allows a conversation to recover after temporary compromise. Authentication and handshake secrecy are also covered. Key generation is assumed as setup, and the verified executable is the researchers' build. Applying the results to Signal's Android or iOS apps requires trusting that those builds preserve the relevant behavior.</p><p>The authors give two security arguments. Their symbolic proof treats cryptographic operations as ideal and establishes ten properties over collision-free executions against an attacker controlling the network. Its handshake guarantees include protection when the attacker later breaks Diffie-Hellman, modeling a future quantum computer. The computational proof bounds a classical attacker's advantage under explicit cryptographic assumptions. That bound becomes uninformative for some large workloads, including roughly 25,000 messages in a session if almost every message begins a new key-changing epoch. Neither argument establishes SPQR's recovery from compromise against quantum attackers. Group messaging, sealed sender, multi-device state and side channels remain outside the result.</p><p>Gemini 4 Carbon agents generated about 6.5 million lines of Lean proof. Lean checks those against roughly 26,000 lines of trusted specifications and descriptions of how AArch64 instructions execute. Those descriptions were tested against the Unicorn emulator and Arm's Sail model. The result also depends on Lean itself and supporting build and symbol-extraction tools. The authors replace 39 routines with trusted contracts, covering cryptographic primitives and several memory, output and library functions. Those contracts assume properties of operations including hashing, elliptic-curve arithmetic and post-quantum cryptography. The Rust compiler need not be trusted: a compiler error that violates a specified guarantee would prevent the corresponding proof from succeeding.</p><p>Humans concentrated on writing the specifications. Gemini 4 Carbon and Claude Opus 5.5 agents helped draft and review them; Gemini agents produced the proofs. Teams of 40 to 80 agents ran for 24 to 72 hours per campaign. A gatekeeper checks each proof with Lean and compares its statement and dependent definitions with a protected copy of the approved specification. Changes to trusted assumptions require human approval. The authors cite <a href="https://arxiv.org/abs/2609.04170">Paglieri and colleagues' study of cheating in autonomous research swarms</a>: an agent made a proof trivial by redefining a hypothesis as false, and others copied it. Protecting the specification prevents that maneuver from counting as success.</p><p>To test whether the specifications catch real failures, the team restored two bugs previously found by Vincent Cheval, Charlie Jacomme and Jessica Richards in their <a href="https://eprint.iacr.org/2026/727">IEEE S&amp;P 2026 Double Ratchet analysis</a>. One bug stored unconfirmed new-session state, including a secret key, after a message decrypted only under an older session. The other accepted a malformed handshake key, allowing a replay to create another session with the same shared secret. The researchers reversed each fix, rebuilt the binary and proved that it violated the symbolic security theorem. They did not refute the computational theorem for those versions. <a href="https://www.wired.com/story/a-new-ai-tool-from-google-deepmind-formally-verified-the-signal-protocol/">WIRED's Lily Hay Newman reports</a> that the work found no new vulnerabilities in the portions examined.</p><p>Writing precise specifications also exposed problems in earlier analyses. DeepMind reports fifteen gaps or bugs in <a href="https://doi.org/10.1007/978-3-030-17653-2_5">Alwen, Coretti and Dodis's Double Ratchet analysis</a>, incorrect indices in Cheval and colleagues' printed verification queries, and an ambiguity in <a href="https://www.usenix.org/conference/usenixsecurity24/presentation/bhargavan">Bhargavan and colleagues' PQXDH verification</a>. The team combined those symbolic protocol models in <a href="https://eprint.iacr.org/2026/1493">Wallez and Cremers's DyLean framework</a>; its computational proof also follows <a href="https://eprint.iacr.org/2024/702">Fiedler and Günther's PQXDH analysis</a>. The authors describe the symbolic security results as reproducing existing work, with the additional proofs connecting them to the executable.</p><p>Earlier verification efforts included <a href="https://doi.org/10.1109/SP.2019.00064">Protzenko and colleagues' LibSignal*</a>, a separate implementation written for verification, and <a href="https://doi.org/10.1109/SP46215.2023.10179325">Arquint and colleagues' verified protocol implementations</a>, which modified WireGuard's code. DeepMind borrows the latter's method for relating mathematical terms to bytes. More recent AI-assisted work includes <a href="https://www.anthropic.com/research/formal-verification">Anthropic and Theorem's proofs that compiled code in 123 libraries avoids crashes</a> and <a href="https://arxiv.org/abs/2609.04043">Kaashoek and Zeldovich's verification of the xv6 kernel</a>. AlphaProof Code extends this machine-code work to protocol-specific security claims.</p><p>The broader <a href="https://www.beneficialaifoundation.org/signal-shot">Signal Shot project</a>, launched in April by the Beneficial AI Foundation, Signal and Lean FRO, aims to verify the protocol and app in Lean. Its <a href="https://www.beneficialaifoundation.org/blog/signal-shot">planned method translates Rust with Aeneas</a> before proving that it satisfies a protocol model. The foundation <a href="https://www.beneficialaifoundation.org/blog/signal-shot-milestone">welcomed DeepMind's complementary result</a> while identifying further work on anonymous credentials, independent validation of the trusted specifications and instruction semantics, and other processor architectures. It praised DeepMind's precise claims and criticized coverage that treated them as proof of Signal's overall security.</p><p>Google released the specifications and proofs under Apache 2.0 through its <a href="https://google-deepmind.github.io/code-verification/">project site</a>; checking the complete development takes several hours. Frank Chu's <a href="https://dev.to/frankchu/65m-lines-of-lean-i-counted-deepminds-signal-proofs-3386">inspection of the public repository</a> found no unfinished-proof placeholders in the headline theorems or historical-bug disproofs, but did not rerun Lean's checker. <a href="https://www.securityweek.com/google-widens-gemini-4-carbon-access-after-ai-agents-verify-signal-code/">SecurityWeek reports</a> that Google widened Gemini 4 Carbon API access the same day. Google declined WIRED's questions about cost and commercial plans. The researchers want to use the workflow to verify future libsignal releases before they ship.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://deepmind.google/blog/introducing-alphaproof-code/">Introducing AlphaProof Code: a breakthrough in verifying complex software at depth (Google DeepMind blog, Pushmeet Kohli and Swarat Chaudhuri)</a> <span class="how">— Canonical announcement and November 10 date; source attribution. Blog-only one-percent review claim and Kret quotation omitted in edit.</span></li>
+<li><a href="https://deepmind.google/documents/36/Formal_Verification_of_Signal_4.pdf">AlphaProof Code: Verifying Signal's Security at the Machine-Code Level (technical report, Chaudhuri et al.)</a> <span class="how">— Primary report: scope, target, proof methods, trusted specifications and routines, Lean/compiler distinction, agent workflow, historical-bug tests, reported errors in precedent analyses, limitations and future plans. Supplied dossier plus independent HTML scope checks.</span></li>
+<li><a href="https://google-deepmind.github.io/code-verification/">google-deepmind/code-verification project site and README</a> <span class="how">— Apache 2.0 license and several-hour full kernel check.</span></li>
+<li><a href="https://www.beneficialaifoundation.org/signal-shot">Signal Shot project page (Beneficial AI Foundation)</a> <span class="how">— Launch date April 20, 2026 and partners (BAIF, Signal, Lean FRO).</span></li>
+<li><a href="https://www.beneficialaifoundation.org/blog/signal-shot">Signal Shot: One Giant Lean for Protocol Security (BAIF, Mat Azevedo)</a> <span class="how">— Signal Shot's Aeneas-based source translation route.</span></li>
+<li><a href="https://www.beneficialaifoundation.org/blog/signal-shot-milestone">The ongoing quest for provably secure messaging (BAIF, Mat Azevedo)</a> <span class="how">— BAIF's complementary assessment, precise scope concerns and remaining work.</span></li>
+<li><a href="https://www.wired.com/story/a-new-ai-tool-from-google-deepmind-formally-verified-the-signal-protocol/">A New AI Tool From Google DeepMind Proved the Signal Protocol Is Secure (WIRED, Lily Hay Newman)</a> <span class="how">— No new vulnerabilities in the examined portions; Google declined cost and commercial-plans questions.</span></li>
+<li><a href="https://eprint.iacr.org/2026/727">Automated formal analysis of Signal's Double Ratchet: attacks, fixes and security proofs (Cheval, Jacomme, Richards)</a> <span class="how">— Origin of the two reintroduced bugs; venue.</span></li>
+<li><a href="https://doi.org/10.1007/978-3-030-17653-2_5">The Double Ratchet: Security notions, proofs, and modularization for the Signal protocol (Alwen, Coretti, Dodis)</a> <span class="how">— Precedent whose computational analysis the report says had fifteen gaps or bugs (from the report's account).</span></li>
+<li><a href="https://www.usenix.org/conference/usenixsecurity24/presentation/bhargavan">Formal verification of the PQXDH Post-Quantum key agreement protocol (Bhargavan, Jacomme, Kiefer, Schmidt)</a> <span class="how">— Precedent PQXDH model used in the symbolic proof; ambiguity noted by the report.</span></li>
+<li><a href="https://eprint.iacr.org/2024/702">Security analysis of Signal's PQXDH handshake (Fiedler, Günther)</a> <span class="how">— Precedent the computational proof follows.</span></li>
+<li><a href="https://eprint.iacr.org/2026/1493">Bob DyLean: A Framework for the Symbolic Analysis of Cryptographic Protocols in Lean (Wallez, Cremers)</a> <span class="how">— Framework for the symbolic proof; CISPA affiliation.</span></li>
+<li><a href="https://doi.org/10.1109/SP.2019.00064">Formally verified cryptographic web applications in WebAssembly (LibSignal*, Protzenko et al.)</a> <span class="how">— Precedent: verified reimplementation written in F* (described from the report).</span></li>
+<li><a href="https://doi.org/10.1109/SP46215.2023.10179325">Sound verification of security protocols: From design to interoperable implementations (Arquint et al.)</a> <span class="how">— Precedent: verified implementations including WireGuard with code modification; method adopted by DeepMind (described from the report).</span></li>
+<li><a href="https://www.anthropic.com/research/formal-verification">LLMs are making formal software verification feasible at a much larger scale (Anthropic with Theorem)</a> <span class="how">— Concurrent work: RISC-V no-crash proofs across 123 libraries, October 22.</span></li>
+<li><a href="https://arxiv.org/abs/2609.04043">Extending concurrent separation logic to the hardware level to verify the xv6 OS kernel on RISC-V with AI agents (Kaashoek, Zeldovich)</a> <span class="how">— Concurrent machine-level verification work.</span></li>
+<li><a href="https://arxiv.org/abs/2609.04170">A Case Study on Emergent Cheating and Whistleblowing in Autonomous Research Swarms (Paglieri et al.)</a> <span class="how">— Case behind the report's gatekeeper design: agent redefined a hypothesis predicate as False.</span></li>
+<li><a href="https://dev.to/frankchu/65m-lines-of-lean-i-counted-deepminds-signal-proofs-3386">6.5M lines of Lean: I counted DeepMind's Signal proofs (Frank Chu, DEV Community)</a> <span class="how">— Reported repository inspection found no unfinished placeholders in headline theorems and historical-bug disproofs; did not rerun the kernel. Exact line count and overbroad single-point-of-failure conclusion omitted.</span></li>
+<li><a href="https://www.securityweek.com/google-widens-gemini-4-carbon-access-after-ai-agents-verify-signal-code/">Google Widens Gemini 4 Carbon Access After AI Agents Verify Signal Code (SecurityWeek, Eduard Kovacs)</a> <span class="how">— Same-day widening of Gemini 4 Carbon access via the Gemini API.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-alphaproof-code-verifies-signal-cryptographic-implementation">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-10/alphaproof-code-verifies-signal-cryptographic-implementation</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
