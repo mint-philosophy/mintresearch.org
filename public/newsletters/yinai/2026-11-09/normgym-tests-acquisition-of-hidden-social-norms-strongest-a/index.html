@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>NormGym agents finish goals while missing the community’s rules — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-09">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-09">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 9 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">NormGym agents finish goals while missing the community’s rules</h1>
+<p class="dek">A Johns Hopkins benchmark tests how agents learn unfamiliar conventions from behavior and sanctions, revealing weak use of other agents’ experiences.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 9 November 2026</span> <span class="chip">861 words · ~4 min</span></div>
+<div class="article-body">
+<p>AI agents can get things done in an unfamiliar community while repeatedly breaking its rules. In <a href="https://arxiv.org/abs/2611.08613v1">“NormGym: Evaluating Normative Competence through Social Interaction,”</a> submitted to arXiv on November 5, Binze Li and colleagues at Johns Hopkins, with Gillian K. Hadfield also affiliated with the Vector Institute, test agents that must discover local expectations from experience. On the familiar layout, Claude Opus 5 completed 95.7% of assigned subgoals, but finished both goals without any rule violations in only 55.3% of episodes. The first measure gives partial credit for completing one of an episode’s two goals; the second requires complete success and unbroken compliance.</p><p>The researchers place a newcomer in a small simulated community, initially a café. It might need to reach a counter or take a seat, then leave. Other characters pursue their own goals, and the newcomer can see their positions and public penalties for misconduct. A forbidden move still works: entering the wrong area produces a visible red cross and a reward penalty. The environment therefore requires the agent to learn which possible actions the community permits. Blocking every forbidden move would remove that problem.</p><p>The hidden rule is deliberately arbitrary. A community may require everyone to sit in a particular seating area, move only on alternating turns, join an unusually shaped queue, or respect a limit on how many agents occupy a shared zone. These examples represent the benchmark’s access, procedure, coordination and allocation families. Familiar etiquette could let a model answer from training knowledge; the researchers want it to infer an unfamiliar convention. They draw on Dylan Hadfield-Menell, McKane Andrus and Hadfield’s <a href="https://arxiv.org/abs/1811.01267">“Legible Normativity for AI Alignment: The Value of Silly Rules,”</a> which studies arbitrary rules and their contribution to making social enforcement intelligible.</p><p>For each rule, the newcomer has 200 simulation steps to act and revise its explanation of the norm. At least one background character breaks the rule, ensuring that observing others can yield useful evidence. The researchers then carry the agent’s final explanation into fresh tests, keeping that explanation fixed. They change the other characters’ starting positions and goals, and test unfamiliar layouts as well as the café. Each test is arranged so that taking the shortest route without considering the norm causes a violation. Simply remaining still cannot earn joint success.</p><p>Giving GPT-5.6 Sol the correct rule more than doubled its joint success, supporting the authors’ diagnosis that discovering the rule accounts for much of the difficulty. Claude’s performance fell only modestly in unfamiliar layouts. For agents that had learned something useful, changing the setting was less damaging than the initial failure to infer the convention. Small open models generally struggled even in the familiar setting.</p><p>The <a href="https://arxiv.org/html/2611.08613v1#S4.SS4.SSS2">analysis of learning</a> shows stronger models improving early, then settling on incomplete explanations despite further penalties. Their stated beliefs improved most after their own violations, less after another character was penalized, and barely after observing permitted behavior. In one example, GPT-5.6 Sol maintained that agents must keep their distance from members of another social group. It watched scores of unpunished moves contradicting that theory, yet revised it only after receiving a penalty itself. The actual rule concerned which turns allowed movement.</p><p>The <a href="https://arxiv.org/html/2611.08613v1#S9.SS2">appendix’s description of the agent’s memory</a> qualifies that comparison. The agent gets an explicit textual notice of its own sanction, and earlier sanctioned steps remain in a separate memory buffer. Other characters’ sanctions appear as visual markers; the memory description does not give them equivalent persistent records. The experiment consequently leaves open how much of the advantage for firsthand experience comes from the model and how much from the information it receives and retains.</p><p>Fine-tuning helped the small Qwen3-VL-4B model on the exercises it practiced: selecting a rule, choosing a permitted action, or judging somebody else’s proposed action. Combining action selection with judgment produced the strongest transfer to unfamiliar rules from the same families. Even then, full task completion with compliance remained uncommon, and observing other agents still scarcely improved the model’s beliefs. The authors tested a small base model and these particular training methods; their results establish a gap between better performance on isolated exercises and better learning during extended interaction.</p><p>Human participants help establish that the scenarios are solvable, but the paper reports the best observed human performance for each tested norm, drawn from half the norm collection. That is a different comparison from average human performance across the whole benchmark. The simulations also keep each rule fixed, make sanctions immediate and public, and give background characters scripted policies. Human communities introduce disputed rules, ambiguous reactions and changing expectations that this experiment does not test.</p><p>NormGym develops a research program Hadfield, Rakshit Trivedi and Dylan Hadfield-Menell outlined in their March <a href="https://knightcolumbia.org/content/building-ai-for-the-democratic-matrix-a-technical-research-agenda-for-normative-competence-and-normative-institutions-1">“Building AI for the Democratic Matrix”</a> essay: agents need to recognize sanctions, connect them to behavior and adapt. Andrea Wynn and colleagues’ October arXiv paper <a href="https://arxiv.org/abs/2610.10906v2">“Reading the Room”</a> had already tested unfamiliar norms in a debate community, where agents copied unenforced habits along with genuine requirements. NormGym adds movement, resource allocation and transfer between layouts. Its own distraction test found that successful agents often resisted irrelevant behavior. The two studies examine how agents distinguish enforced rules from other patterns in a community’s behavior.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2611.08613v1">NormGym: Evaluating Normative Competence through Social Interaction</a> <span class="how">— Canonical metadata: exact title, authors and November 5, 2026 submission date.</span></li>
+<li><a href="https://arxiv.org/html/2611.08613v1">NormGym: Evaluating Normative Competence through Social Interaction — full paper and appendices</a> <span class="how">— Full HTML text read, including all appendices and prompt templates. Main evidence for environment, metrics, evaluation, findings, learning traces, memory asymmetry, fine-tuning and limitations.</span></li>
+<li><a href="https://normgym.github.io/normgym-page/">NormGym project page</a> <span class="how">— Full page text read; corroborates author affiliations, illustrated example, model results and the true turn-based norm in the worked failure. Interactive demo not run.</span></li>
+<li><a href="https://arxiv.org/abs/1811.01267">Legible Normativity for AI Alignment: The Value of Silly Rules</a> <span class="how">— Primary abstract and metadata read. Supports the named conceptual precedent and its claim about arbitrary rules making normative systems legible; no detailed empirical claim drawn.</span></li>
+<li><a href="https://knightcolumbia.org/content/building-ai-for-the-democratic-matrix-a-technical-research-agenda-for-normative-competence-and-normative-institutions-1">Building AI for the Democratic Matrix: A Technical Research Agenda for Normative Competence and Normative Institutions</a> <span class="how">— Primary essay introduction, definition and section 5.2.2 read, not full essay. Verified authors, March 3, 2026 date and the feedback-detection/attribution research agenda.</span></li>
+<li><a href="https://arxiv.org/abs/2610.10906v2">Reading the Room: Foundations, Design, and Challenges of Normative Competence in LLMs</a> <span class="how">— Canonical abstract and metadata, full introduction and background, and HTML sections 5.2 and 5.3 read. Supports October precedent, community debate design and copying of unenforced habits. Not read in full.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-normgym-tests-acquisition-of-hidden-social-norms-strongest-a">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-09/normgym-tests-acquisition-of-hidden-social-norms-strongest-a</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

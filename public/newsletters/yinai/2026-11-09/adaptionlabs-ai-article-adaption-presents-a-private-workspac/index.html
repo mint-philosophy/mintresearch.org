@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Adaption connects document preparation to custom model training — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-09">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-09">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 9 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Adaption connects document preparation to custom model training</h1>
+<p class="dek">Public guides describe how Forge, Blueprint and AutoScientist turn documents or task descriptions into datasets and models, with editable choices and results users can inspect.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 9 November 2026</span> <span class="chip">729 words · ~4 min</span></div>
+<div class="article-body">
+<p>Adaption describes its <a href="https://adaptionlabs.ai/app?tab=build">workspace</a> as a way to turn an organization's documents or desired model behavior into training data and, through AutoScientist, a customized model. Its public documentation describes a connected sequence of data preparation, training, evaluation and export. These capabilities have appeared over several months: Sudip Roy announced <a href="https://adaptionlabs.ai/blog/forge">Forge</a>, its document-processing feature, on April 23; Adaption Research Staff introduced <a href="https://adaptionlabs.ai/blog/autoscientist">AutoScientist</a> on May 13; and cofounders Sara Hooker and Roy announced <a href="https://adaptionlabs.ai/blog/introducing-invent-a-dataset">Invent a Dataset</a> on September 3.</p><p>Adaption's <a href="https://docs.adaptionlabs.ai/runbooks/processing-unstructured-documents/">document-processing guide</a> explains the practical choices behind Forge. Users upload or import files such as PDFs, slide decks and spreadsheets, then decide whether each training example should contain a whole document or one page. Whole documents can supply context for a repeated instruction, such as extracting contract dates and values. Individual pages can become answers for which the system generates suitable questions. That choice changes what a model will learn: extracting information from a complete contract requires different examples from answering a question about one policy page.</p><p>The <a href="https://docs.adaptionlabs.ai/runbooks/adaptive-data-app-walkthrough/">Adaptive Data walkthrough</a> then asks users to identify which columns contain instructions, answers and supporting material. Users can request deduplication, clearer wording or checks intended to reduce unsupported answers. Once processing finishes, the interface is documented as displaying original and changed examples side by side, alongside quality scores. Users can expand a completed dataset with additional examples, translations or localization for a particular country. The guide excludes non-text tabular inputs such as financial time series.</p><p>Hooker and Roy's September announcement describes a separate starting point for teams without suitable source material. <a href="https://adaptionlabs.ai/blog/introducing-invent-a-dataset">Invent a Dataset</a> takes a description of the behavior the model should learn, chooses a dataset structure and generates examples. Their examples include classifying customer requests and following policies that vary across regions or products. Users set the size and scope within the same process. Adaption proposes connecting the generated dataset to AutoScientist, so a description of a task can lead to a trained model. The generated examples determine which instances of the requested behavior the model will encounter during training.</p><p>Adaption also lets users describe requirements for those examples through <a href="https://adaptionlabs.ai/blog/blueprint">Blueprint</a>, which Hooker and Roy introduced on March 17. The announcement describes controls for tone, answer length and content policies, with objectives and penalties intended to steer generated data. The company's <a href="https://docs.adaptionlabs.ai/resources/faq/">technical FAQ</a> explains that its software interface passes freeform Blueprint instructions to the model generating each example, alongside structured controls for length, safety categories and grounding. Blueprint steers the training data; users can then evaluate the model trained on those examples through AutoScientist.</p><p>For model training, the <a href="https://docs.adaptionlabs.ai/runbooks/autoscientist-app-walkthrough">AutoScientist walkthrough</a> describes a proposed configuration that users can inspect and change before launching. Users choose the training columns and may retain original examples instead of enhanced versions. The system can suggest adding domain-specific or more varied examples, with separate costs shown for expansion and training. It also proposes the base model and training settings. Users can constrain model size for their intended deployment. After training, the documented outputs include downloadable weights, the configuration, comparisons against the base model and charts showing training and validation errors. Users can compare the resulting model with its starting point and inspect the choices made during training.</p><p>Adaption's <a href="https://adaptionlabs.ai/blog/autoscientist">May evaluation</a> compared AutoScientist with configurations chosen by its own researchers. The company reported average win rates rising from 48% to 64%, using its in-house domain evaluations. Researchers could use information about the model, domain and dataset size; AutoScientist received that information and could also learn from earlier runs. The comparison tests the combined automated process against the researchers' configurations; it does not isolate the contribution of data changes. Hosted training already has precedents: <a href="https://docs.together.ai/docs/fine-tuning/overview">Together AI</a> documents uploading examples and running either full fine-tuning or smaller adapter updates. Adaption's stated addition is to optimize the examples and training choices together.</p><p>Users' published records show how outcomes can differ. Hugging Face contributor <a href="https://huggingface.co/lohithaaa/LegalMind-Gemma4-31B-BillAnalyst">lohithaaa</a> reports using AutoScientist for a model that analyzes US congressional bills, with gains on Adaption's internal evaluation. The contributor disabled automatic rewording to preserve exact amounts and statutory references. In a <a href="https://huggingface.co/datasets/manifesta/verified-math-code-17k">math-and-code dataset report</a>, contributor manifesta describes an adapted model performing worse than its base and uses training records to investigate an unusually short, unstable run. Both contributors use platform results to assess their own runs. Their reports illustrate how preserving exact source text and inspecting training records can affect the decisions users make.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://adaptionlabs.ai/app?tab=build">Adaption App</a> <span class="how">— Canonical selected URL; no readable public app body. Supplied browser audit establishes login requirement, not authenticated behavior.</span></li>
+<li><a href="https://adaptionlabs.ai/blog/forge">Forge: Turn Unstructured Documents Into AI Ready Datasets</a> <span class="how">— Full announcement read; Sudip Roy, April 23, 2026.</span></li>
+<li><a href="https://adaptionlabs.ai/blog/autoscientist">AutoScientist: Automating the Science of Model Training</a> <span class="how">— Full announcement read; Adaption Research Staff, May 13, 2026; company evaluation and its comparison conditions.</span></li>
+<li><a href="https://adaptionlabs.ai/blog/introducing-invent-a-dataset">Invent a Dataset: Data Generation for Custom Models</a> <span class="how">— Full announcement read; Sara Hooker and Sudip Roy, September 3, 2026; objective-to-dataset workflow.</span></li>
+<li><a href="https://docs.adaptionlabs.ai/runbooks/processing-unstructured-documents/">Processing Unstructured Documents</a> <span class="how">— Public guide read in full; document/page split and mapping examples. Undated.</span></li>
+<li><a href="https://docs.adaptionlabs.ai/runbooks/adaptive-data-app-walkthrough/">Adaptive Data App Walkthrough</a> <span class="how">— Full substantive guide read; input mapping, recipes, comparison, expansion and time-series limitation. Undated.</span></li>
+<li><a href="https://adaptionlabs.ai/blog/blueprint">Blueprint: A Specification Layer for Adaptive Data</a> <span class="how">— Full announcement read; Hooker and Roy, March 17, 2026; specification controls.</span></li>
+<li><a href="https://docs.adaptionlabs.ai/resources/faq/">FAQ</a> <span class="how">— Full substantive FAQ read; Blueprint implementation and structured controls. Undated.</span></li>
+<li><a href="https://docs.adaptionlabs.ai/runbooks/autoscientist-app-walkthrough">AutoScientist App Walkthrough</a> <span class="how">— Full substantive guide read; editable choices, augmentation, model export and diagnostic outputs. Undated.</span></li>
+<li><a href="https://docs.together.ai/docs/fine-tuning/overview">Overview — Together AI fine-tuning</a> <span class="how">— Relevant overview and data-upload sections read; hosted training and adapter/full-fine-tuning precedent. No claim to have checked all linked methods.</span></li>
+<li><a href="https://huggingface.co/lohithaaa/LegalMind-Gemma4-31B-BillAnalyst">LegalMind-Gemma4-31B-BillAnalyst</a> <span class="how">— Relevant model description, training procedure, evaluation and author sections read; participant self-report, not an independent benchmark.</span></li>
+<li><a href="https://huggingface.co/datasets/manifesta/verified-math-code-17k">Verified Math &amp; Code, 17,000 rows</a> <span class="how">— Relevant dataset description, full training-results discussion, limitations and acknowledgments read; participant account of regression and diagnosis.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-adaptionlabs-ai-article-adaption-presents-a-private-workspac">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-09/adaptionlabs-ai-article-adaption-presents-a-private-workspac</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
