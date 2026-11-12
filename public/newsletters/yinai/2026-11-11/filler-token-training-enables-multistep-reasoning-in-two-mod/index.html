@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Models learn to reason through strings of dots — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-11">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-11">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 11 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Models learn to reason through strings of dots</h1>
+<p class="dek">Schulz and tvb trained two models to solve multistep tasks with dots in place of written reasoning. Their method teaches the intermediate answers explicitly, then keeps those answers out of the text the models read.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 11 November 2026</span> <span class="chip">935 words · ~5 min</span></div>
+<div class="article-body">
+<p>Language models can be trained to solve multistep problems while the text between question and answer consists entirely of dots. Wuschel Schulz and a coauthor writing as tvb report this in <a href="https://www.lesswrong.com/posts/EHkwCDAmhWPAWEziM/llms-can-learn-some-multi-step-reasoning-on-filler-tokens-2">“LLMs can learn (some) multi-step reasoning on filler tokens”</a>, a November 11 LessWrong research update from MARS 5 and the Meridian Visiting Researcher Programme. Their specially trained models improved on three of seven synthetic task families compared with training on final answers alone. One model learned to track changes to three lamps through 60 moves. The experiment shows how useful computation can proceed without readable intermediate text under an engineered training procedure.</p>
+
+<p>Schulz and tvb fine-tuned Qwen3.6-35B-A3B and gpt-oss-20b using small trainable additions to the models, called adapters. At each dot position, they trained the model to predict the corresponding intermediate state of a worked solution. The next input remained a dot: the predicted state was never written into the text for the model to read back. Information could still travel between positions through the network’s internal representations. During evaluation, the researchers supplied the dots in advance and read predictions from the model. Left to generate its own text, the trained model would write out its reasoning. This differs from ordinary next-token training, and the result does not establish that deployed assistants spontaneously reason this way.</p>
+
+<p>The researchers compared their procedure with a precedent from Jacob Pfau, William Merrill and Samuel Bowman at New York University. Their 2024 arXiv paper, <a href="https://arxiv.org/abs/2404.15758">“Let’s Think Dot by Dot: Hidden Computation in Transformer Language Models”</a>, showed that models could use meaningless extra tokens to solve algorithmic problems they struggled with when answering immediately. Its training mixed worked solutions with examples containing dots followed by an answer. Schulz and tvb instead supervised the intermediate prediction at every dot. When they compared the two approaches on the same progressively lengthening tasks, with repeated training runs, their method outperformed answer-only training; the older recipe did not.</p>
+
+<p>The authors’ <a href="https://github.com/stegano-ai/filler-token-reasoning/blob/main/figures/tables/results.md">results table</a> indicates that the three clear successes were running sums with remainders, tracking a ball under shuffled cups, and tracking the lamps. In the lamp task, each move either passes the lamps’ states around a ring or toggles one lamp depending on another. Qwen answered 79% of the 60-move test problems correctly; its answer-only counterpart passed no curriculum stage. The researchers advanced training after success on a small checkpoint test, so passing a stage did not mean perfect accuracy on the larger final test. Across the other tasks, gains were small or absent. Models using dots struggled with chained arithmetic, lookup tables and logical deductions, while models trained to write their reasoning reached the longest tested length in every task family.</p>
+
+<p>Pfau and colleagues also explained a theoretical limit: adding filler positions does not give a fixed-depth transformer unlimited capacity for successive computation. Schulz and tvb accept that limit. They investigate how much of a finite sequence of operations can fit within the model’s existing layers. A task described as 60 successive moves need not require 60 network layers, because an algorithm can combine some operations. Their result therefore concerns the practical reach of computation at finite task lengths; it does not show that dots remove the architectural limit.</p>
+
+<p>To explore that reach, Schulz and tvb used Opus 5.5 agents to construct algorithms within an executable approximation of each transformer. They checked that the algorithms used permitted operations and returned the correct intermediate states and answers, then searched for constructions requiring fewer layers. The shallowest algorithms they found grew deeper as tasks lengthened, but usually much more slowly than the number of task steps. These constructions establish upper bounds on sufficient depth. They neither prove the minimum depth required nor show which algorithms the trained models learned. The numerical curves also depend on a chosen assumption that one internal processing operation can act as a lookup table over at most 32 bits of input.</p>
+
+<p>The experiments show that fitting an algorithm into the available layers does not guarantee that training will discover it. Chained arithmetic and function composition had comparatively shallow constructions but stalled after only a few steps in practice. Schulz and tvb suggest that models have difficulty moving larger amounts of information, such as lookup tables or logical premises, between token positions. Their own research on steganographic reasoning motivated the study: when a model answers correctly after producing apparently unrelated text, success alone cannot establish that the words secretly encode the calculation. The model might be using those positions for computation without relying on their textual content.</p>
+
+<p>For oversight, the authors worry that pressure to avoid verbalizing parts of a calculation could eventually teach similar behavior. That possibility is an extrapolation from their specially supervised training runs. They did not test a monitor, train against one, or investigate whether the internal computation could be decoded. Identical dots contain no intermediate reasoning for a text reader to inspect, but the network’s internal states provide a separate source of evidence.</p>
+
+<p>Kaley Brauer, Claudio Mayrink Verdun and Samuel Marks examined that possibility in the separate arXiv paper <a href="https://arxiv.org/abs/2607.03502">“Reading Between the Dots: Decoding Hidden Computation across Filler Tokens.”</a> On tasks with identifiable intermediate values, they recovered those values from the hidden states of DeepSeek V3 and Kimi K2 with 82–94% accuracy using their best decoding setup. Their result does not establish that Schulz and tvb’s trained models are equally readable. It shows why losing the written reasoning and losing access to the computation are different questions. Schulz and tvb’s immediate recommendation concerns experiment design: researchers studying concealed reasoning should first check whether their chosen tasks can be solved using filler positions alone.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.lesswrong.com/posts/EHkwCDAmhWPAWEziM/llms-can-learn-some-multi-step-reasoning-on-filler-tokens-2">LLMs can learn (some) multi-step reasoning on filler tokens — Wuschel Schulz and tvb, LessWrong</a> <span class="how">— Primary source: editor read the complete live post by direct HTTP, including appendix, and checked the supplied local text and dossier. Supports engineered training, comparisons, task examples, algorithm constructions, limitations and authors’ oversight hypothesis. No direct quotations beyond the title.</span></li>
+<li><a href="https://github.com/stegano-ai/filler-token-reasoning/blob/main/figures/tables/results.md">stegano-ai/filler-token-reasoning — GitHub</a> <span class="how">— Editor directly checked README and figures/tables/results.md. Supports lamp task 60-step result at 79% final accuracy, no answer-only stage passed, gate/final-test distinction and open-reasoning baselines. Identification of the three strongest task families is an editorial inference from this table, explicitly marked as such.</span></li>
+<li><a href="https://arxiv.org/abs/2404.15758">Let's Think Dot by Dot: Hidden Computation in Transformer Language Models — Pfau, Merrill, Bowman (NYU)</a> <span class="how">— Editor checked primary abstract and PDF pages 1–6; supports filler-token precursor, worked-solution/filler mixture and fixed-depth expressivity limit. Controlled comparison of training recipes is reported by Schulz and tvb, not by this earlier paper.</span></li>
+<li><a href="https://arxiv.org/abs/2607.03502">Reading Between the Dots: Decoding Hidden Computation across Filler Tokens — Brauer, Mayrink Verdun, Marks</a> <span class="how">— Editor checked primary arXiv abstract. Supports hidden-state decoding on DeepSeek V3 and Kimi K2, 82–94% with best LLM-judge setup on decomposable tasks; not evidence about the selected study’s models.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-filler-token-training-enables-multistep-reasoning-in-two-mod">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-11/filler-token-training-enables-multistep-reasoning-in-two-mod</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
