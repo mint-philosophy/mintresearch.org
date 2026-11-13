@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Chip fingerprints trace six Chinese models’ starting weights — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-12">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-12">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 12 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Chip fingerprints trace six Chinese models’ starting weights</h1>
+<p class="dek">Will DePue traces hardware-dependent patterns in published weights, tests them on physical GPUs, and finds stronger Nvidia-specific evidence for DeepSeek-V4-Flash than for the other five models.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 12 November 2026</span> <span class="chip">917 words · ~5 min</span></div>
+<div class="article-body">
+<p>A model's published weights can retain evidence of the hardware that generated its starting values, even after training has changed billions of parameters. Will DePue of Unemployment Labs reports Blackwell-compatible patterns in six Chinese models in his November 12 technical report, <a href="https://unemploymentlabs.com/checkpoint-forensics">Top Chinese Frontier AI Models Carry the Fingerprint of Export-Controlled NVIDIA Blackwell GPUs</a>. His evidence is strongest for DeepSeek-V4-Flash, whose preserved values distinguish Nvidia hardware from an AMD alternative. The other five match Blackwell layouts that specially configured AMD chips can also produce.</p><p>DePue identifies the patterns in DeepSeek-V4-Flash and V4-Pro, Moonshot AI's Kimi K3 and K3.1-Pro, MiniMax-M3 and Ant Group's Ling-3.1-flash. Earlier models from all four developers match Nvidia's older Hopper hardware. Six released models do not amount to six independent training runs: Kimi K3.1-Pro uses K3's seed and may be the same model with additional post-training. The method can identify groups of compatible chips; it cannot distinguish members that produce the same pattern, such as a B200 from a B300.</p><p>The pattern comes from how training software generates random starting values. PyTorch uses a deterministic number generator called Philox: give it the same starting input, or seed, and the same settings, and it generates the same numbers. To fill a large array quickly, the software distributes that work across parallel GPU threads. The <a href="https://github.com/pytorch/pytorch/blob/main/aten/src/ATen/native/cuda/DistributionTemplates.h">PyTorch code</a> makes the number of threads depend on the chip's processing units, called streaming multiprocessors. Different thread counts place each sequence's numbers in different positions. In the configurations DePue examines, Hopper chips have 132 such units, while the two Blackwell groups have 148 and 152. Reproducing the initial weights requires both the correct seed and the correct placement pattern.</p><p>Training leaves two kinds of evidence. Some rows in the model's embedding table, which associates tokens with numerical representations, belong to tokens never encountered during training. Those rows can preserve their initial values almost exactly. Weights that training does update may retain a weaker relationship with their starting values: across a large sample, higher initial values still tend to predict slightly higher final ones. DePue finds that relationship in DeepSeek-V4-Flash under the Blackwell layout; it disappears under Hopper. Survival depends on the model and its training, so the method cannot assume every published checkpoint will contain a readable trace.</p><p>DePue searches candidate seeds and layouts, then tests the selected combination against weights held out of that search. Holding those weights aside checks whether the pattern predicts values beyond the ones used to find it. He also accounts for the many opportunities to obtain an accidental match across roughly six trillion candidate combinations. Under his statistical model, the reported matches exceed the strongest resemblance expected by chance across that search. Those calculations measure evidence for a shared initialization pattern; the identification of a chip still depends on which hardware and software can generate it.</p><p>The <a href="https://unemploymentlabs.com/checkpoint-forensics">physical-chip checks</a> test that identification with unmodified PyTorch. A Blackwell B300 recreated 445 entire DeepSeek-V4-Flash rows bit for bit, while a Hopper H100 recreated DeepSeek-V3's preserved values. Neither chip reproduced the other model's rows, and changing the seed by one eliminated the matches. A rented GB200 also reproduced Kimi K3's preserved rows. DePue reports agreement with disclosed hardware across 24 models, but those cases include related models and 11 checkpoints taken before training. He therefore treats the agreement as a consistency check, not a measured classification accuracy.</p><p>AMD supplies a concrete alternative. Its MI300X normally has 304 processing units, but can be partitioned into two groups of 152 or limited to 148. DePue confirmed on a physical MI300X that these configurations reproduce the layouts associated with Blackwell. He then examined a calculation whose numerical results differ slightly between Nvidia and AMD. Of 377 preserved values where the vendors' outputs diverged, DeepSeek-V4-Flash matched Nvidia in 363 and AMD in none. That additional test excludes the tested AMD alternative for V4-Flash. It could not settle the other five models; DePue considers AMD unlikely because it would require unusual configurations matching Blackwell's unit counts.</p><p>The surviving traces identify initialization, which can precede training on different machines. A developer could generate starting weights on one system, transfer them, or continue training an existing checkpoint on new hardware. A mixed system could preserve Nvidia initialization even if Huawei chips subsequently helped train the model. DePue argues the traces support an inference that Blackwell also performed training, but the weights cannot establish that inference, the chips' location or ownership, or how the developers obtained access. His report explicitly leaves offshore rental open and draws no finding of smuggling or an export-control violation.</p><p>A failed search is also inconclusive about hardware. DePue recovered no fingerprint from DeepSeek-V4.1-Flash. Some Qwen models were initialized on ordinary CPUs, which leaves no GPU layout to recover; Baidu's PaddlePaddle software yielded an initialization seed for ERNIE-5.5 without revealing a chip. Closed models cannot be examined because the method requires their weights. These cases show how its reach depends on software choices and surviving numerical traces.</p><p>Earlier research connects this work to model provenance. In <a href="https://arxiv.org/abs/2502.12292">Independence Tests for Language Models</a>, Sally Zhu and colleagues developed tests for whether models share a random initialization, including tests that remained effective after extensive fine-tuning. DePue's analysis uses surviving initialization to infer compatible hardware. His <a href="https://github.com/macrogrants/checkpoint-forensics">public reproduction repository</a> now includes preserved rows for DeepSeek-V3 and four of the six headline models, with pinned source revisions and hashes. It offers comparisons that run on a laptop and separate checks using stock PyTorch on a GPU, allowing others to inspect the numerical evidence directly.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://unemploymentlabs.com/checkpoint-forensics">Top Chinese Frontier AI Models Carry the Fingerprint of Export-Controlled NVIDIA Blackwell GPUs — Will DePue, Unemployment Labs</a> <span class="how">— Primary selected source. Read the full retained report in the named source file, including appendices; checked live primary page for the lead, AMD test, physical replication and current public-code availability. Supports model identities, seed/layout mechanism, surviving traces, held-out tests, physical controls, 24-case qualification, non-independent Kimi releases, null results and limits. Bulk reporting derives from the supplied full text. No training-size estimate or substantive legal interpretation retained.</span></li>
+<li><a href="https://github.com/pytorch/pytorch/blob/main/aten/src/ATen/native/cuda/DistributionTemplates.h">DistributionTemplates.h — PyTorch source</a> <span class="how">— Read calc_execution_policy and the distribution kernel in the live source. The thread grid is capped using multiProcessorCount and maxThreadsPerMultiProcessor; the kernel initializes per-thread Philox state. Corroborates the mechanism, without independently reproducing the experiment.</span></li>
+<li><a href="https://arxiv.org/abs/2502.12292">Independence Tests for Language Models — Sally Zhu, Ahmed Ahmed, Rohith Kuditipudi and Percy Liang</a> <span class="how">— Read primary arXiv metadata and abstract. Supplies the limited related-work comparison: statistical tests of shared initialization remain effective after extensive fine-tuning. Not presented as a work cited by DePue or a direct antecedent he relied upon; no full-paper methods claim.</span></li>
+<li><a href="https://github.com/macrogrants/checkpoint-forensics">checkpoint-forensics — public reproduction repository</a> <span class="how">— Read current repository landing page and README. Verified five supplied models (DeepSeek-V3 plus four headline models), laptop replay, stock-PyTorch GPU check, pinned revisions and hash checks. Did not execute code or claim independent replication.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-six-chinese-frontier-models-show-blackwell-initialization-fi">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-12/six-chinese-frontier-models-show-blackwell-initialization-fi</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
