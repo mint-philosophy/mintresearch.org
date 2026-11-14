@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Research agents leave better approaches untried — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-13">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-13">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 13 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Research agents leave better approaches untried</h1>
+<p class="dek">Bespoke Labs finds that 58% of research runs missed the method family behind their task’s best observed solution. Its analysis separates trying a different approach from repeated tuning.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 13 November 2026</span> <span class="chip">945 words · ~5 min</span></div>
+<div class="article-body">
+<p>AI research agents can spend a day improving an early idea without trying the approach that produced a better solution elsewhere in the same experiment. In <a href="https://bespokelabs.ai/blog/how-models-explore-ideas">“How models explore ideas,”</a> published on November 10, Anirudha Ramesh and colleagues at Bespoke Labs report that 58% of runs never visited the family of methods behind their task’s best observed solution. Their coauthors include <a href="https://x.com/alexgdimakis/status/2121022776794644848?a=0Gil86mSKuhkZE8qb28&amp;s=12">Alex Dimakis</a>. The comparison concerns the best solution found in the study; the researchers have not established the best possible solution to each problem.</p>
+<p>The team examined 348 runs by 12 models on <a href="https://benchmarks.bespokelabs.ai/autoresearchexam/">AutoResearchExam</a>, a benchmark of 29 machine-learning research and engineering tasks released in September. Agents work for 24 hours in a shared software harness, Terminus 2, receiving a validation score and their remaining time after each submission. They never see the hidden test scores used for evaluation. The benchmark averages those hidden scores over time, using the submission with the best validation result so far; finding a useful solution early earns more credit than reaching it near the deadline.</p>
+<p>Ramesh and colleagues wanted to examine something that this score leaves unresolved: whether an agent improves by developing one method or by trying substantially different methods. They call a family of similar approaches an “idea basin,” borrowing the term from Ziyang Cai and colleagues’ arXiv paper <a href="https://arxiv.org/abs/2610.07447">Fork-and-Flush: Escaping Idea Basins in Autoresearch Agents</a>. Tuning a gradient-boosted model and training a small neural network could occupy different basins even if they achieve similar scores.</p>
+<h3>Identifying changes of approach</h3>
+<p>The researchers grouped submissions by their code’s method without using scores. Sonnet first summarized each submission; Bespoke’s Nimble model then judged which of two summaries was more similar to a third, without being told which agent produced them. The researchers used those judgments to place submissions on a two-dimensional map for each task and divide it into method families. Consecutive submissions with identical code were removed, leaving 9,179 submissions for analysis.</p>
+<p>The appendix checks whether the map reproduces similarity judgments withheld during its construction. It gets 89% right, compared with 60% for a baseline that knows only which run produced a submission. That supports the claim that the map captures more than run identity, but the check still measures agreement with Nimble. The article reports no human validation of the resulting categories and links no analysis dataset or code with which to examine alternative groupings. Its exploration measures therefore depend on the model summaries, similarity judgments and grouping procedure.</p>
+<p>The blog illustrates these families with a task requiring agents to <a href="https://github.com/bespokelabsai/AutoResearchExam/tree/main/cpu-decoder-graph-executor">accelerate transformer decoder computations on CPUs</a>. Agents may combine operations, reuse memory or exploit fixed weights, while keeping outputs within strict numerical limits; one inaccurate test instance reduces the submission’s score to zero. Claude Opus 5.5 moved early from ordinary NumPy computation to writing its own just-in-time compiler. Gemini 3.8 Flash settled within two hours on NumPy supplemented with assembly kernels and spent the remaining time tuning that approach. Qwen3.8 Max stayed with automatically tuned matrix-library calls. These are differences in implementation strategy that a score alone would not reveal.</p>
+<h3>New approaches and repeated tuning</h3>
+<p>Across the study, 47% of runs never left their first method family. When agents did switch, half the switches returned to an approach already tried. More submissions did not reliably mean broader exploration: the most frequent submitters made roughly as many changes of approach as lower-volume models and used the extra attempts for refinement. Submission volume also tracked a larger gap between validation and hidden test performance, consistent with agents adapting too closely to the feedback they could see.</p>
+<p>A move to a previously untried family was followed by about nine times the validation-score gain of an ordinary refinement step. Returning to an old family produced gains similar to staying put. The advantage was concentrated early: after the first six hours, switches and refinements produced similar gains. Runs that switched after the halfway point did not gain more hidden test score in the remaining time than those that stayed. Among models, directing a greater share of switches toward new methods was associated with better scores; switching frequently by itself was not.</p>
+<p>Agents chose their own switches, so these comparisons cannot establish what would happen if a harness forced them to change approach. A model might switch when it has already identified a promising alternative. The headline 58% result has a separate measurement ambiguity: the article does not specify whether validation or hidden test performance identifies the best observed solution, or whether the percentage uses all 348 runs or the 338 with enough distinct submissions for its switch-rate analysis. It supports the finding that many agents leave a successful approach untried, without fixing that percentage’s precise denominator.</p>
+<p>Cai and colleagues tested a related intervention in Fork-and-Flush: periodically create parallel branches that inherit the workspace but begin with fresh conversations, then continue from the best branch. Their abstract reports gains over single-run and independent parallel baselines at equal compute across 13 tasks. Shangyin Tan and colleagues’ arXiv paper <a href="https://arxiv.org/abs/2610.20563">Scaling Discovery Requires Forgetting</a>, also coauthored by Dimakis, similarly tests restarting from the best candidate after discarding accumulated sessions and candidate history. Those experiments give reasons to investigate context resets, but Bespoke did not test either intervention on AutoResearchExam.</p>
+<p>AutoResearchExam already compresses the conversation into a handoff summary before each new experiment while retaining the workspace and previous experiment history. The exploration analysis shows that agents can remain within a narrow method family under that arrangement. Bespoke proposes encouraging broader exploration early and sustaining useful changes later. Testing that proposal would require comparing modified agents or harnesses under matched budgets and checking whether the extra changes improve hidden test performance.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://bespokelabs.ai/blog/how-models-explore-ideas">How models explore ideas, Anirudha Ramesh and colleagues, Bespoke Labs, November 10, 2026</a> <span class="how">— Editor read full primary blog, worked examples, method and appendix directly. Verified authors, date, counts, score-blind grouping, map validation, exploration and gain findings. Inspected links; no analysis dataset/code link or human validation is reported. Exact denominator and score criterion for 58% are unspecified.</span></li>
+<li><a href="https://x.com/alexgdimakis/status/2121022776794644848?a=0Gil86mSKuhkZE8qb28&amp;amp;s=12">Alex Dimakis on X, assigned social pointer</a> <span class="how">— Approved canonical URL preserved from assignment. Editor attempted full-thread retrieval with Bird; x-profile cookie retrieval failed. No post content, date or social-only claim is relied on.</span></li>
+<li><a href="https://benchmarks.bespokelabs.ai/autoresearchexam/">AutoResearchExam, Bespoke Labs</a> <span class="how">— Editor read benchmark setup, scoring, behavior analysis and harness description. Supports September 9 release, 29 tasks, 24-hour window, validation-selected checkpoint hidden-test AUARC and conversation compaction.</span></li>
+<li><a href="https://github.com/bespokelabsai/AutoResearchExam/tree/main/cpu-decoder-graph-executor">Accelerating transformer decoder graphs on CPUs, AutoResearchExam task README</a> <span class="how">— Editor read task README directly: required output accuracy, allowed optimizations, speed measurement and zero score for one inaccurate instance.</span></li>
+<li><a href="https://arxiv.org/abs/2610.07447">Fork-and-Flush: Escaping Idea Basins in Autoresearch Agents, Ziyang Cai et al.</a> <span class="how">— Editor read original arXiv abstract and metadata. Supports idea basins, fresh-context workspace-preserving branches, best-branch continuation and equal-compute comparison across 13 tasks. No full-paper read claimed.</span></li>
+<li><a href="https://arxiv.org/abs/2610.20563">Scaling Discovery Requires Forgetting, Shangyin Tan et al.</a> <span class="how">— Editor read original arXiv abstract and metadata. Supports coauthorship, plateau finding and intervention that discards sessions/history and resumes from the best candidate. No full-paper read claimed.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-alex-dimakis-alexgdimakis-twitter-research-agents-miss-best">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-13/alex-dimakis-alexgdimakis-twitter-research-agents-miss-best</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

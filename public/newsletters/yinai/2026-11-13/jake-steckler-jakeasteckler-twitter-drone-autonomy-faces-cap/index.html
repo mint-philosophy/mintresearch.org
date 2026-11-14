@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>The computing limits on autonomous military drones — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-13">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-13">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 13 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">The computing limits on autonomous military drones</h1>
+<p class="dek">Jake Steckler separates capability, response speed, onboard hardware and vulnerable communications, then forecasts when smaller models could match today’s frontier.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 13 November 2026</span> <span class="chip">1048 words · ~5 min</span></div>
+<div class="article-body">
+<p>General-purpose AI still struggles to make dependable decisions quickly enough for military drones, and the most capable models need more computing power than most aircraft can carry. Jake Steckler, a GovAI research scholar and former Army aviation officer, examines these limits in <a href="https://www.governance.ai/research-paper/general-purpose-ai-and-the-future-of-drone-autonomy-in-contested-environments">General-Purpose AI and the Future of Drone Autonomy in Contested Environments</a>, a 64-page technical report published on November 12. His conditional forecast puts models matching today’s frontier benchmark performance within reach of onboard hardware in roughly one to three years. Those dates concern fitting models into memory; dependable battlefield use would also require better task performance and faster responses.</p>
+<p>Steckler starts with communications. A drone relying on a distant computer needs a connection that an adversary can disrupt. Moving the computer to a nearby vehicle or ground station reduces dependence on distant infrastructure, but preserves a vulnerable radio link. Transmitting sensor data also adds delay, limits the information the model receives and can reveal the station’s position. Losing that station could disable every aircraft depending on it. Running a model onboard removes the inference connection, although coordination between drones can still depend on communications. Captured aircraft also risk exposing model weights and mission data. Steckler previously raised this case for dispersed tactical decision-making in the <a href="https://mintresearch.org/newsletters/yinai/2026-10-20/#story-stefan-torges-article-three-nuclear-command-safeguards-could">debate over centralized military AI command</a>.</p>
+<p>Task capability presents a separate difficulty. Today’s strongest demonstrations use specialized systems trained for bounded activities, including drone racing and completing part of a flight after losing an operator’s link. Those systems can fail when conditions depart from their training. Militaries want broader capabilities: interpreting plain-language orders, responding to unexpected events and making context-sensitive decisions. Steckler finds that general-purpose models have yet to demonstrate this consistently. He cites Jingyu Guo and colleagues’ <a href="https://arxiv.org/abs/2603.19822">HUGE-Bench</a> arXiv paper, which tests whether robotics models can turn brief instructions into safe drone movements. According to his reading, the best model achieved roughly a quarter of expert performance on obstacle navigation. Models that fit onboard could still lack the training data needed for unfamiliar battlefield conditions.</p>
+<p>Response speed limits even models that can solve a task. Steckler compares published model timings and calculated response estimates with task windows derived from reference studies and battlefield assumptions. Avoiding an obstacle requires responses in tens of milliseconds; replanning a route can allow seconds. Frontier models operating through data centers take seconds to answer simple image questions, with longer delays in the robotics experiments he reviews. These figures cover model processing, excluding the full sequence from sensing to physical movement. A degraded connection adds further delay, and asking a model to reason longer can improve its answer while making it too slow. Smaller robotics models respond faster, but conventional controllers would still handle flight stabilization and other urgent functions.</p>
+<p>Onboard computing introduces limits on memory, weight and power. Steckler assigns illustrative computing configurations to different platforms: small reconnaissance drones receive 16 GB of memory, while larger drones receive 128 GB. The small-drone example uses DJI’s <a href="https://www.dji.com/support/product/manifold-3">Manifold 3</a>, whose whole module draws 33 watts. The larger example uses Nvidia’s <a href="https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-thor/">Jetson Thor</a>, which can draw up to 130 watts. Extra computing consumes capacity otherwise available for flight time or payload and makes each expendable aircraft more expensive. These are estimates of what platforms could support, not an inventory of equipment installed on every drone in those classes.</p>
+<p>To estimate which models fit, Steckler adapts <a href="https://epoch.ai/data-insights/consumer-gpu-model-gap">Venkat Somala and Luke Emberson’s work at Epoch AI</a> on consumer graphics cards. He assumes compressed model weights plus memory for software and the model’s working context. His estimates put Claude Fable 5 and GPT-6 Astra beyond onboard hardware and into multiple-server territory. Their parameter counts are unconfirmed; Astra’s assumed size is an upper bound. Longer mission instructions or sensor histories would also require more memory. Even models that activate only some parameters at a time must store all their weights.</p>
+<p>The shorter forecast depends on models becoming more efficient. Chaojun Xiao and colleagues’ <a href="https://www.nature.com/articles/s42256-025-01137-0">Densing law of LLMs</a>, published in Nature Machine Intelligence, found that the parameters needed for equivalent benchmark performance roughly halved every 3.5 months. Steckler extrapolates that trend to today’s frontier models. Under his assumptions, equivalent capabilities could fit on the larger reference hardware from late 2027 through spring 2028, and on the smaller hardware from late 2028 through mid-2029. Hardware memory growth alone produces much later dates. The comparison uses Artificial Analysis’s general-capability index as a proxy because no widely accepted benchmark establishes dependable military drone autonomy. His check against Kimi K3.1 Pro also finds that it needed more parameters to match Fable 5 than the trend predicted.</p>
+<p>Steckler expects sophisticated onboard autonomy to reach expensive large aircraft before cheap drones deployed in large numbers. Militaries also need models they can host and adapt themselves, which favors smaller open-weight systems. In his comparison, the best Chinese open model fitting each platform scores above the best American counterpart. That ranking concerns general capabilities, without establishing combat performance or military adoption. Kateryna Bondar’s April <a href="https://www.csis.org/analysis/how-russia-building-sovereign-drone-ecosystem-ai-driven-autonomy">CSIS report</a> provides separate evidence about Russian development: it describes applications built on Qwen, DeepSeek, Llama and Mistral, and reports Nvidia computing hardware inside Russian drones.</p>
+<p>For the Pentagon’s <a href="https://mintresearch.org/newsletters/yinai/2026-10-02/#story-pentagon-announces-autonomous-warfare-command-and-orders-pro">Project Agincourt autonomy initiative</a>, Steckler recommends retaining a substantial force of human pilots and testing systems against mission-specific standards, including disrupted communications and adversarial deception. His August <a href="https://carnegieendowment.org/research/2026/08/confronting-the-barriers-to-ai-diffusion-in-the-us-military">Carnegie paper</a> examined broader barriers to military AI adoption; this report estimates the computing and response-time constraints behind them. He also wants military data made usable for training and experimentation with mixed arrangements in which nearby computers handle complex decisions while onboard systems perform urgent tasks.</p>
+<p>For frontier developers, Steckler proposes restricted access for vetted defense firms, models designed for constrained onboard hardware, and monitoring of coding agents used in drone development. Anthropic’s <a href="https://mintresearch.org/newsletters/yinai/2026-09-12/#story-anthropic-reports-claude-helped-russian-developers-build-aut">September account of Russian developers using Claude for drone software</a> illustrates the concern. The competing safety position includes Dario Amodei’s February <a href="https://www.anthropic.com/news/statement-department-of-war">statement</a> that frontier systems lack the reliability needed for fully autonomous weapons. Steckler acknowledges risks to civilians and the possibility of adversaries obtaining released or captured models. He nevertheless argues that US developers should weigh those risks against militaries adopting less reliable alternatives. He proposes withholding especially drone-relevant capabilities from public release while allowing vetted access, funding customizable American models, and strengthening controls and enforcement on both data-center and onboard chips.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.governance.ai/research-paper/general-purpose-ai-and-the-future-of-drone-autonomy-in-contested-environments">General-Purpose AI and the Future of Drone Autonomy in Contested Environments (Technical Report), Jake Steckler, GovAI</a> <span class="how">— Independently read landing page and complete PDF text, including tables, footnotes, appendix captions and references. Verified author, November 12 date, four constraints, forecast assumptions and recommendations. Embedded figure pixels were not independently inspected; retained values appear in prose or tables.</span></li>
+<li><a href="https://govai.b-cdn.net/Technical_Report_General_Purpose_AI_and_the_Future_of_Drone_Autonomy_in_Contested_Environments.pdf">General-Purpose AI and the Future of Drone Autonomy in Contested Environments, full technical report</a> <span class="how">— Independently close-read full extracted text, pages 1 to 64, including appendix tables and references. Primary evidence for the edited report.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-20/#story-stefan-torges-article-three-nuclear-command-safeguards-could">How military AI could concentrate command in one person (YiNAI, October 20)</a> <span class="how">— Read relevant published story text at the live verified anchor and checked its story-index entry in deep_history.json. Context only; not a same-report continuation.</span></li>
+<li><a href="https://arxiv.org/abs/2603.19822">HUGE-Bench: A Benchmark for High-Level UAV Vision-Language-Action Tasks (arXiv 2603.19822)</a> <span class="how">— Read primary metadata and abstract; verified Guo authorship and benchmark purpose. Quarter-of-expert comparison is explicitly Steckler’s reading in PDF footnote 38, not an independent recalculation.</span></li>
+<li><a href="https://www.dji.com/support/product/manifold-3">Support for Manifold 3, DJI</a> <span class="how">— Read primary specifications: 16 GB and 33 W for whole module.</span></li>
+<li><a href="https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-thor/">Jetson Thor specifications, Nvidia</a> <span class="how">— Read primary specifications: 128 GB and 40 to 130 W for Jetson T5000.</span></li>
+<li><a href="https://epoch.ai/data-insights/consumer-gpu-model-gap">Frontier AI performance becomes accessible on consumer hardware within a year, Epoch AI (Somala and Emberson)</a> <span class="how">— Read authorship and hardware methodology: compressed weights, context cache and runtime overhead. Methodological precedent, not a forecast of combat reliability.</span></li>
+<li><a href="https://www.nature.com/articles/s42256-025-01137-0">Densing law of LLMs, Chaojun Xiao et al., Nature Machine Intelligence</a> <span class="how">— Read primary publication metadata and abstract: November 6, 2025, and 3.5-month capability-density doubling. Replaces the old arXiv version as evidence for the published estimate.</span></li>
+<li><a href="https://www.csis.org/analysis/how-russia-building-sovereign-drone-ecosystem-ai-driven-autonomy">How Russia Is Building a Sovereign Drone Ecosystem for AI-Driven Autonomy, Kateryna Bondar, CSIS</a> <span class="how">— Read dated author attribution and relevant primary report passages on adapted open models and Nvidia hardware. Retained as separate field evidence, not proof of GovAI’s model ranking.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-02/#story-pentagon-announces-autonomous-warfare-command-and-orders-pro">The Pentagon's autonomy plan takes shape, with a command still to build (YiNAI, October 2)</a> <span class="how">— Read relevant published story text at the live verified anchor and checked its story-index entry in deep_history.json. Context only; not a same-report continuation.</span></li>
+<li><a href="https://carnegieendowment.org/research/2026/08/confronting-the-barriers-to-ai-diffusion-in-the-us-military">Confronting the Barriers to AI Diffusion in the U.S. Military, Jake Steckler, Carnegie Endowment</a> <span class="how">— Read August 10 authorship, executive summary and stated scope of eight adoption barriers; used only as precedent.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-12/#story-anthropic-reports-claude-helped-russian-developers-build-aut">Russian developers used Claude to write software for autonomous attack drones (YiNAI, September 12)</a> <span class="how">— Read relevant published story text at the live verified anchor and checked its story-index entry in deep_history.json. Context only; not a same-report continuation.</span></li>
+<li><a href="https://www.anthropic.com/news/statement-department-of-war">Statement from Dario Amodei on Our Discussions with the Department of War, Anthropic</a> <span class="how">— Independently read February 26 statement and autonomous-weapons reliability argument; paraphrased.</span></li>
+<li><a href="https://x.com/jakeasteckler/status/2120902215254655195?a=dvihkBACVMi_04k6lbg&amp;amp;s=12">Jake Steckler’s selected X post on drone autonomy</a> <span class="how">— Canonical selected URL preserved from assignment. Bird retrieval failed at OpenClaw x-profile cookie access. The inherited reporter claims a full ten-post read via an unavailable dossier; this editor has not verified that thread and relies on the independently read GovAI report for substantive claims.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-jake-steckler-jakeasteckler-twitter-drone-autonomy-faces-cap">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-13/jake-steckler-jakeasteckler-twitter-drone-autonomy-faces-cap</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
