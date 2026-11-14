@@ -956,7 +956,7 @@ async function sendMessage() {
       return;
     }
 
-    // Read OpenAI Responses API SSE stream (raw passthrough from worker)
+    // Read the worker's filtered SSE stream (OpenAI event type names, text only)
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let buf = '';

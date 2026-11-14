@@ -1,10 +1,13 @@
 /**
  * Minty Chatbot Worker
  *
- * Cloudflare Worker that proxies chat requests to OpenAI's Assistants API.
- * Handles CORS, per-IP and global rate limiting via KV, and streams
- * assistant responses back to the client as Server-Sent Events.
+ * Cloudflare Worker that proxies chat requests to OpenAI's Responses API.
+ * Handles CORS, per-client and global rate limiting (Rate Limiting binding
+ * plus a Durable Object counter), and streams a filtered copy of the
+ * response back to the client as Server-Sent Events.
  */
+
+import { DurableObject } from 'cloudflare:workers';
 
 // ---------------------------------------------------------------------------
 // CORS helpers
@@ -49,55 +52,160 @@ function handleOptions(origin) {
 }
 
 // ---------------------------------------------------------------------------
-// Rate limiting (KV-backed)
+// Rate limiting
+//
+// Two layers:
+//   1. CHAT_BURST (Workers Rate Limiting binding): a cheap per-client burst
+//      limit. It is approximate and per Cloudflare location, so it only
+//      smooths bursts; it is not the quota.
+//   2. ChatLimiter (Durable Object, one instance): the exact quotas. Per-client
+//      hourly and daily counts and the global daily cap are checked and
+//      incremented in one synchronous SQL transaction, so concurrent requests
+//      cannot overshoot. If the limiter cannot be reached, the request is
+//      refused (fail closed).
+//
+// Clients are keyed by IPv4 address, or by /64 prefix for IPv6.
 // ---------------------------------------------------------------------------
 
+/** Expand an IPv6 address to 8 hextets, or return null if it does not parse. */
+function expandIPv6(addr) {
+  let a = addr.toLowerCase().split('%')[0];
+  // Fold an embedded dotted-quad tail into two hextets.
+  const v4 = a.match(/(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (v4) {
+    const o = v4.slice(1).map(Number);
+    if (o.some((n) => n > 255)) return null;
+    a = a.slice(0, v4.index)
+      + ((o[0] << 8) | o[1]).toString(16) + ':' + ((o[2] << 8) | o[3]).toString(16);
+  }
+  const halves = a.split('::');
+  if (halves.length > 2) return null;
+  const head = halves[0] ? halves[0].split(':') : [];
+  const tail = halves.length === 2 && halves[1] ? halves[1].split(':') : [];
+  let groups;
+  if (halves.length === 2) {
+    const fill = 8 - head.length - tail.length;
+    if (fill < 1) return null;
+    groups = [...head, ...Array(fill).fill('0'), ...tail];
+  } else {
+    groups = head;
+  }
+  if (groups.length !== 8 || !groups.every((g) => /^[0-9a-f]{1,4}$/.test(g))) return null;
+  return groups.map((g) => parseInt(g, 16).toString(16));
+}
+
+/** Rate-limit key for a client: the IPv4 address, or the IPv6 /64 prefix. */
+function clientKey(ip) {
+  if (!ip) return 'unknown';
+  if (ip.includes(':')) {
+    const groups = expandIPv6(ip);
+    if (!groups) return 'unknown';
+    // IPv4-mapped IPv6 (::ffff:a.b.c.d): key on the IPv4 address.
+    if (groups.slice(0, 5).every((g) => g === '0') && groups[5] === 'ffff') {
+      const hi = parseInt(groups[6], 16), lo = parseInt(groups[7], 16);
+      return `v4:${hi >> 8}.${hi & 255}.${lo >> 8}.${lo & 255}`;
+    }
+    return `v6:${groups.slice(0, 4).join(':')}::/64`;
+  }
+  return /^\d{1,3}(\.\d{1,3}){3}$/.test(ip) ? `v4:${ip}` : 'unknown';
+}
+
 /**
- * Check and increment rate-limit counters.
- * Returns null if the request is allowed, or a Response (429) if blocked.
+ * Check and consume one message of quota.
+ * Returns null if the request is allowed, or a Response (429/503) if not.
  */
 async function checkRateLimit(ip, env, origin) {
-  const now = new Date();
-  const hourKey = `ip:${ip}:h:${now.toISOString().slice(0, 13)}`;
-  const dayKey = `ip:${ip}:d:${now.toISOString().slice(0, 10)}`;
-  const globalKey = `global:${now.toISOString().slice(0, 10)}`;
+  const key = clientKey(ip);
 
-  const maxHour = parseInt(env.MAX_MESSAGES_PER_IP_HOUR, 10) || 10;
-  const maxDay = parseInt(env.MAX_MESSAGES_PER_IP_DAY, 10) || 30;
-  const maxGlobal = parseInt(env.MAX_GLOBAL_DAILY, 10) || 500;
-
-  // KV entries expire after 2 days so stale keys clean themselves up.
-  const TTL = 172800; // 2 days in seconds
-
-  // Read all three counters in parallel.
-  const [hourVal, dayVal, globalVal] = await Promise.all([
-    env.RATE_LIMIT.get(hourKey),
-    env.RATE_LIMIT.get(dayKey),
-    env.RATE_LIMIT.get(globalKey),
-  ]);
-
-  const hourCount = parseInt(hourVal, 10) || 0;
-  const dayCount = parseInt(dayVal, 10) || 0;
-  const globalCount = parseInt(globalVal, 10) || 0;
-
-  if (hourCount >= maxHour) {
-    return rateLimitResponse('Hourly message limit reached. Try again later.', 3600, origin);
-  }
-  if (dayCount >= maxDay) {
-    return rateLimitResponse('Daily message limit reached. Try again tomorrow.', 86400, origin);
-  }
-  if (globalCount >= maxGlobal) {
-    return rateLimitResponse('Service is busy. Please try again tomorrow.', 86400, origin);
+  try {
+    const { success } = await env.CHAT_BURST.limit({ key });
+    if (!success) {
+      return rateLimitResponse('Too many messages at once. Give it a minute.', 60, origin);
+    }
+  } catch (err) {
+    console.error('Burst limiter error:', err.message);
+    return jsonResponse(503, { error: 'Service temporarily unavailable' }, origin);
   }
 
-  // Increment all three counters in parallel.
-  await Promise.all([
-    env.RATE_LIMIT.put(hourKey, String(hourCount + 1), { expirationTtl: TTL }),
-    env.RATE_LIMIT.put(dayKey, String(dayCount + 1), { expirationTtl: TTL }),
-    env.RATE_LIMIT.put(globalKey, String(globalCount + 1), { expirationTtl: TTL }),
-  ]);
+  let verdict;
+  try {
+    const stub = env.CHAT_LIMITER.get(env.CHAT_LIMITER.idFromName('global'));
+    verdict = await stub.consume(key, {
+      maxHour: parseInt(env.MAX_MESSAGES_PER_IP_HOUR, 10) || 10,
+      maxDay: parseInt(env.MAX_MESSAGES_PER_IP_DAY, 10) || 30,
+      maxGlobal: parseInt(env.MAX_GLOBAL_DAILY, 10) || 500,
+    });
+  } catch (err) {
+    console.error('Quota limiter error:', err.message);
+    return jsonResponse(503, { error: 'Service temporarily unavailable' }, origin);
+  }
 
-  return null; // request allowed
+  switch (verdict) {
+    case 'ok':
+      return null;
+    case 'hour':
+      return rateLimitResponse('Hourly message limit reached. Try again later.', 3600, origin);
+    case 'day':
+      return rateLimitResponse('Daily message limit reached. Try again tomorrow.', 86400, origin);
+    case 'global':
+      return rateLimitResponse('Service is busy. Please try again tomorrow.', 86400, origin);
+    default:
+      console.error('Quota limiter returned unexpected verdict:', verdict);
+      return jsonResponse(503, { error: 'Service temporarily unavailable' }, origin);
+  }
+}
+
+/**
+ * Single-instance quota counter. All counters live in one SQLite table and
+ * each consume() runs synchronously, so check-and-increment is atomic.
+ * Windows are UTC calendar hours and days.
+ */
+export class ChatLimiter extends DurableObject {
+  constructor(ctx, env) {
+    super(ctx, env);
+    this.sql = ctx.storage.sql;
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS counters (
+      k TEXT PRIMARY KEY,
+      n INTEGER NOT NULL,
+      expires INTEGER NOT NULL
+    )`);
+    this.sql.exec('CREATE INDEX IF NOT EXISTS counters_expires ON counters (expires)');
+  }
+
+  consume(key, { maxHour, maxDay, maxGlobal }) {
+    const now = new Date();
+    const nowMs = now.getTime();
+    const iso = now.toISOString();
+    const hourEnd = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours() + 1);
+    const dayEnd = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1);
+
+    const hourKey = `ip:${key}:h:${iso.slice(0, 13)}`;
+    const dayKey = `ip:${key}:d:${iso.slice(0, 10)}`;
+    const globalKey = `global:${iso.slice(0, 10)}`;
+
+    return this.ctx.storage.transactionSync(() => {
+      this.sql.exec('DELETE FROM counters WHERE expires <= ?', nowMs);
+
+      const count = (k) => {
+        const rows = this.sql.exec('SELECT n FROM counters WHERE k = ?', k).toArray();
+        return rows.length ? rows[0].n : 0;
+      };
+
+      if (count(hourKey) >= maxHour) return 'hour';
+      if (count(dayKey) >= maxDay) return 'day';
+      if (count(globalKey) >= maxGlobal) return 'global';
+
+      const bump = (k, expires) => this.sql.exec(
+        `INSERT INTO counters (k, n, expires) VALUES (?, 1, ?)
+         ON CONFLICT(k) DO UPDATE SET n = n + 1`,
+        k, expires,
+      );
+      bump(hourKey, hourEnd);
+      bump(dayKey, dayEnd);
+      bump(globalKey, dayEnd);
+      return 'ok';
+    });
+  }
 }
 
 function rateLimitResponse(message, retryAfter, origin) {
@@ -139,6 +247,9 @@ RULES:
 // ---------------------------------------------------------------------------
 
 const OPENAI_BASE = 'https://api.openai.com/v1';
+
+/** Shape of an OpenAI Responses API response id. */
+const RESPONSE_ID_RE = /^resp_[A-Za-z0-9_-]+$/;
 const OPENAI_HEADERS = (apiKey) => ({
   'Authorization': `Bearer ${apiKey}`,
   'Content-Type': 'application/json',
@@ -187,10 +298,13 @@ async function createStreamingResponse(apiKey, message, env, previousResponseId,
 // ---------------------------------------------------------------------------
 // SSE stream transformer
 //
-// Reads the OpenAI Responses API SSE stream and re-emits a simplified stream:
-//   1. First event:  { responseId }    (client stores for multi-turn)
-//   2. Deltas:       { delta: "text" }
-//   3. Final event:  { done: true }
+// Reads the OpenAI Responses API SSE stream and re-emits only what the client
+// needs. Event shapes keep the OpenAI `type` names the site widget already
+// parses, but carry no other upstream fields (instructions, snapshot, tool
+// calls):
+//   1. { type: "response.created", response: { id } }   (multi-turn handle)
+//   2. { type: "response.output_text.delta", delta }      (text)
+//   3. { type: "done" }                                   (end of stream)
 // ---------------------------------------------------------------------------
 
 function buildClientStream(openaiResponse) {
@@ -200,9 +314,15 @@ function buildClientStream(openaiResponse) {
   let buffer = '';
   let responseId = null;
   let sentResponseId = false;
+  let out = null;
+  const send = (obj) => out.enqueue(encoder.encode(`data: ${JSON.stringify(obj)}\n\n`));
 
   const transform = new TransformStream({
-    transform(chunk, controller) {
+    start(controller) {
+      out = controller;
+    },
+
+    transform(chunk) {
       buffer += decoder.decode(chunk, { stream: true });
 
       const lines = buffer.split('\n');
@@ -220,26 +340,22 @@ function buildClientStream(openaiResponse) {
           continue;
         }
 
-        if (event.type === 'response.created' && event.response?.id) {
+        if (event.type === 'response.created' && !sentResponseId
+            && typeof event.response?.id === 'string' && RESPONSE_ID_RE.test(event.response.id)) {
           responseId = event.response.id;
-          if (!sentResponseId) {
-            controller.enqueue(
-              encoder.encode(`data: ${JSON.stringify({ responseId })}\n\n`)
-            );
-            sentResponseId = true;
-          }
+          send({ type: 'response.created', response: { id: responseId } });
+          sentResponseId = true;
         }
 
-        if (event.type === 'response.output_text.delta' && event.delta) {
-          controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify({ delta: event.delta })}\n\n`)
-          );
+        if (event.type === 'response.output_text.delta'
+            && typeof event.delta === 'string' && event.delta) {
+          send({ type: 'response.output_text.delta', delta: event.delta });
         }
       }
     },
 
-    flush(controller) {
-      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`));
+    flush() {
+      send({ type: 'done' });
     },
   });
 
@@ -277,6 +393,14 @@ async function handleChat(request, env, origin) {
     return jsonResponse(400, { error: `Message must be ${maxLen} characters or fewer` }, origin);
   }
 
+  // Validate the multi-turn handle, if given (null/absent = new conversation).
+  if (previousResponseId != null
+      && (typeof previousResponseId !== 'string'
+          || previousResponseId.length > 200
+          || !RESPONSE_ID_RE.test(previousResponseId))) {
+    return jsonResponse(400, { error: 'Invalid responseId' }, origin);
+  }
+
   // Rate limiting.
   const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
   const blocked = await checkRateLimit(ip, env, origin);
@@ -311,9 +435,8 @@ async function handleChat(request, env, origin) {
       apiKey, message.trim(), env, previousResponseId, snapshot, vectorStoreId
     );
 
-    // Forward the raw OpenAI SSE stream to the client.
-    // The frontend parses response.created and response.output_text.delta events.
-    return new Response(openaiStream.body, {
+    // Forward a filtered copy of the OpenAI SSE stream (see buildClientStream).
+    return new Response(buildClientStream(openaiStream), {
       status: 200,
       headers: {
         'Content-Type': 'text/event-stream',

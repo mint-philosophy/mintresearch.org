@@ -8,7 +8,7 @@ Minty chat on mintresearch.org.
 ```
 User double-clicks Minty sprite
   -> Chat bubble (frontend JS, injected via scripts/inject_minty.py)
-  -> POST to Cloudflare Worker (minty-chatbot.mintresearch.workers.dev)
+  -> POST to Cloudflare Worker (minty-chatbot.mintresearch.org)
   -> Worker: validates origin, rate-limits, then fetches two site assets:
        /assets/minty/vector-store-id.txt   (which vector store to search)
        /assets/minty/snapshot.txt          (current-lab snapshot -> system prompt)
@@ -45,13 +45,17 @@ fresh store on content change and swaps the published pointer, then garbage-
 collects superseded stores. `setup/sync_vector_store.py --adds-only` remains
 safe for manual additive fixes.
 
-## Rate Limiting (3 layers)
+## Rate Limiting
+
+Clients are keyed by IPv4 address or IPv6 /64. If the quota Durable Object
+is unreachable, the Worker refuses the request.
 
 | Layer | Limit | Configurable |
 |-------|-------|-------------|
 | Client-side | 15 messages/session, 3s cooldown | CHAT_JS in inject_minty.py |
-| Worker (per-IP) | 10/hour, 30/day | wrangler.toml vars |
-| Worker (global) | 500/day | wrangler.toml vars |
+| Worker (per-client burst) | 4/minute, approximate (Rate Limiting binding) | wrangler.toml `[[ratelimits]]` |
+| Worker (per-client) | 10/hour, 30/day (Durable Object, exact) | wrangler.toml vars |
+| Worker (global) | 500/day (Durable Object, exact) | wrangler.toml vars |
 | OpenAI project | Monthly spending cap | OpenAI dashboard |
 
 ## Deploying the Worker (code changes only)

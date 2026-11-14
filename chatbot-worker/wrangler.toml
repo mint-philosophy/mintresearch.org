@@ -20,6 +20,23 @@ MAX_GLOBAL_DAILY = "500"
 MAX_INPUT_LENGTH = "1000"
 MAX_OUTPUT_TOKENS = "4096"
 
-[[kv_namespaces]]
-binding = "RATE_LIMIT"
-id = "0c9e131c47344fbb8e20d00bf88a551e"
+# Per-client burst limit (approximate, per Cloudflare location). Clients are
+# keyed by IPv4 address or IPv6 /64. The exact hourly/daily quotas are in the
+# ChatLimiter Durable Object below.
+[[ratelimits]]
+name = "CHAT_BURST"
+namespace_id = "7301"
+
+  [ratelimits.simple]
+  limit = 4
+  period = 60
+
+# Exact per-client hourly/daily quotas and the global daily cap
+# (MAX_* vars above), checked and incremented atomically.
+[[durable_objects.bindings]]
+name = "CHAT_LIMITER"
+class_name = "ChatLimiter"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ChatLimiter"]
