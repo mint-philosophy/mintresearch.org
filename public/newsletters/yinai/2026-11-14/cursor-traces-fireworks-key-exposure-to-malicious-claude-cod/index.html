@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Cursor traces its marketplace attack to a key exposed by Fireworks — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-14">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-14">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 14 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Cursor traces its marketplace attack to a key exposed by Fireworks</h1>
+<p class="dek">Cursor says a vendor-held key opened a store of historical agent traces, where unredacted credentials gave the attacker access to internal tools and the extension cache.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 14 November 2026</span> <span class="chip">686 words · ~3 min</span></div>
+<div class="article-body">
+<p>Cursor’s <a href="https://cursor.com/blog/security-incident-update">November 13 investigation update</a> explains how an attacker reached the marketplace that distributed malicious Claude Code extensions in October. An access key Cursor had issued to Fireworks, its training and inference vendor, was exposed by Fireworks, Cursor says. The attacker used it to copy a shared storage bucket, recovered further credentials from historical coding-agent records and reached internal services. The account adds the access route to the <a href="https://mintresearch.org/newsletters/yinai/2026-10-30/#story-claude-code-2-1-313-extension-reportedly-installs-persistent">tampered extension packages we covered on October 30</a>.</p>
+<p>According to Cursor, the read-only bucket contained a limited set of coding-agent traces, mostly from 2025, from sessions outside Privacy Mode that it was permitted to use for model training. Some contained credentials that had not been redacted. Cursor reports API-credential exposure for fewer than 0.01% of customers and trace exposure for fewer than 0.05% of users. Those figures describe different categories and use different denominators. The company says it identified and directly notified the users whose traces were exposed.</p>
+<p>The recovered credentials let the attacker access selected software services Cursor uses. Cursor says the data reached through those services included archived non-production source repositories, limited customer-support records and email conversations, usage metrics and contact details, summaries of some agent conversations, and credentials users had sent to its support team. The initial key permitted reading a data store; credentials inside that store opened access to further systems.</p>
+<p>On October 29, Cursor says, the attacker used a credential from the exposed internal data to place malicious copies of Anthropic’s Claude Code extension directly in its marketplace cache. Cursor says Anthropic did not publish these copies, the attack did not exploit an Anthropic product vulnerability, and Open VSX, the upstream extension registry, never carried the malware. At most 5,000 users who requested the affected cached versions potentially received the malicious build during approximately 11 hours. This is an upper bound on potential recipients; Cursor does not report a count of confirmed installations or successful attacker logins.</p>
+<p>Cursor’s <a href="https://cursor.com/blog/claude-code-extension-security-notice">original security notice</a> identifies versions 2.1.312 and 2.1.313 for Windows and macOS, available between about 2:27am and 1:35pm Pacific on October 29. It explains that the payload installed components intended to keep remote access available, although errors and missing administrator privileges could prevent successful access. Users who installed either affected version are directed to the notice’s checks and remediation instructions. Removing the extension alone may leave persistence components behind.</p>
+<p>Cursor says its monitoring detected the unauthorized activity. It deactivated the vendor key, revoked and rotated credentials, removed the malicious packages and temporarily took the marketplace offline. It also worked with the attacker’s hosting provider to take down the server. Some product features were interrupted while Cursor disabled services during the investigation. Team administrators received lists of exposed keys to rotate, and Cursor asked the services that issued those keys to revoke them. The company says its last observed attacker activity was blocked on November 1 and that it believes the incident is contained.</p>
+<p>Cursor identifies Privacy Mode prompts and code, live inference traffic, customer code repositories and its production infrastructure as unaffected. It says official app releases came from a separate code host the attacker never reached and that no release-signing keys were exposed. Since the intrusion, Cursor says it has moved all inference traffic off Fireworks and ended the vendor’s access to shared datasets. It has also rotated credentials across internal systems, rebuilt the marketplace, expanded network restrictions and secret scanning, redeployed production services as a precaution, and engaged external forensic investigators.</p>
+<p>Fireworks’ <a href="https://fireworks.ai/security/bulletins/october-2026-security-incident">first bulletin</a> describes unauthorized use of internal credentials detected on October 6, exposing environment variables, including stored API keys, in some customers’ evaluation jobs. Its <a href="https://fireworks.ai/security/bulletins/october-2026-security-incident-update">November 9 update</a> reports further activity: a cloud provider hosting its research machines was breached on October 23, followed by access to Fireworks development machines on October 24. Fireworks expanded the affected data categories to include account and billing information and, for some customers, datasets and incomplete model weights. It says it is working with Palo Alto Networks Unit 42 and links the activity to criminals selling unauthorized model access. Neither bulletin names Cursor, and Cursor’s update does not specify which episode exposed its key.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://cursor.com/blog/security-incident-update">An update on our recent security incident — Cursor</a> <span class="how">— Assigned primary source read in full from supplied content_full and checked live. Supports November 13 date, attributed attack chain, separate customer/user exposure denominators, potential-recipient ceiling, response and unaffected-system claims.</span></li>
+<li><a href="https://cursor.com/blog/claude-code-extension-security-notice">Security notice: malicious versions of Anthropic.claude-code 2.1.312 and 2.1.313 — Cursor</a> <span class="how">— Live primary notice checked for versions, October 29 exposure window, conditional success of remote access and persistence/remediation guidance. The page is dated October 29; the November 13 update says the notice was published October 30, so prose avoids asserting one notice-publication date.</span></li>
+<li><a href="https://fireworks.ai/security/bulletins/october-2026-security-incident">Fireworks AI October 2026 Security Incident — Fireworks AI</a> <span class="how">— Live primary bulletin read: October 6 detection, evaluation-job environment variables and secrets, October 9 publication and customer notification timeline. No Cursor identification.</span></li>
+<li><a href="https://fireworks.ai/security/bulletins/october-2026-security-incident-update">Update on October 2026 security incident — Fireworks AI</a> <span class="how">— Live primary November 9 update read: October 23 provider incident, October 24 access to development machines, broader data impact, Unit 42 and attributed criminal motive. No Cursor identification or resolved mapping to its stolen key.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-30/#story-claude-code-2-1-313-extension-reportedly-installs-persistent">Yesterday in AI, 30 October 2026: Tampered Claude Code packages on Cursor installed persistent access components</a> <span class="how">— Live October 30 issue and exact story id verified by HTTP 200 and HTML id lookup. Earlier coverage addresses tampered packages and exposure; November 13 account adds the vendor-key and internal-service route.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-cursor-traces-fireworks-key-exposure-to-malicious-claude-cod">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-14/cursor-traces-fireworks-key-exposure-to-malicious-claude-cod</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

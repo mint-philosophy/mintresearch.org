@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Independent checks reproduce two Blackwell fingerprints and a Hopper control — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-14">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-14">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 14 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Independent checks reproduce two Blackwell fingerprints and a Hopper control</h1>
+<p class="dek">The Institute for Progress reproduced starting-weight patterns in three models and a surviving trace in trained DeepSeek weights. Missing inputs and unavailable hardware limited the rest of its verification.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 14 November 2026</span> <span class="chip">658 words · ~3 min</span></div>
+<div class="article-body">
+<p>Independent GPU tests have reproduced Blackwell-compatible starting-weight patterns in DeepSeek-V4-Flash and MiniMax-M3, alongside a Hopper match in DeepSeek-V3-Base. The Institute for Progress reports the results in its GitHub verification, <a href="https://github.com/Institute-for-Progress/checkpoint-forensics-verification-public">Verifying results in “Top Chinese Frontier AI Models Carry the Fingerprint of Export-Controlled NVIDIA Blackwell GPUs”</a>. The work checks Will DePue’s investigation, <a href="https://mintresearch.org/newsletters/yinai/2026-11-12/#story-six-chinese-frontier-models-show-blackwell-initialization-fi">covered in our November 12 edition</a>, on separate physical chips. IFP also found that DeepSeek-V4-Flash’s trained weights retain the starting pattern. Its results strengthen the evidence for compatible initialization hardware while leaving the location and subsequent use of that hardware unresolved.</p>
+<p>DePue’s method uses the way software distributes initial parameter values across a GPU’s processing units. A seed determines the sequence of pseudorandom numbers; the hardware layout determines where those numbers go. Some parameters, such as those associated with rarely used tokens, change little during training and preserve enough of the starting arrangement to identify a matching seed and layout. In <a href="https://unemploymentlabs.com/checkpoint-forensics">his November 12 report for Unemployment Labs</a>, DePue searched for these combinations in published models. IFP regenerated values using his reported settings and tested whether changing the chip or seed destroyed the matches.</p>
+<p>IFP first checked that the samples DePue analyzed came from the released models. It downloaded the same rows of parameters from fixed versions of five public Hugging Face checkpoints and compared their digital checksums with those recorded in the study. Every sample matched. It then ran the initialization software on NVIDIA H200 and B200 GPUs. The H200 reproduced DeepSeek-V3-Base’s sampled values exactly, giving the researchers a positive control for the older Hopper hardware family. DeepSeek-V4-Flash matched the B200: 445 of its 469 sampled rows reproduced exactly, with further rows showing very close correlations. Those counts agreed with DePue’s earlier test on a B300.</p>
+<p>MiniMax-M3 also matched the B200 closely, although its sampled rows did not reproduce bit for bit. For all three models, moving to the other tested GPU or changing the seed removed the reported embedding matches. These controls check whether the identified combination explains the pattern more specifically than merely running the same software on any GPU. They also distinguish the three successful replays: two matched Blackwell, while DeepSeek-V3-Base matched Hopper.</p>
+<p>IFP separately tested how much of the initialization remained in weights altered by training. For DeepSeek-V4-Flash, it regenerated starting values for shared-expert layers, components used across tokens, and compared them with published trained weights. DePue had tested a subset of positions; IFP tested every position in those tensors across all 42 layers. The correlation for weights averaged across layers was about 0.065 on B200, against 0.0033 on H200, close to the original result. B200 scored higher in every layer. H200 retained a small positive signal above the alternate seeds IFP tried, so the result supports a much stronger Blackwell match without showing that the Hopper correlation was zero.</p>
+<p>The verification covered three of eleven models. IFP says seven of the remaining eight lacked public samples or settings needed for a replay. For example, Ling-3.1-flash-base’s samples passed the checksum test, but its initializer settings were missing. Kimi K3 had usable samples and settings, but a matching replay required a GPU with a different number of processing units that IFP did not have; its available chips supplied only negative controls. IFP also says the original study does not clearly explain how DePue selected the little-changed weights used to recover seeds. A successful replay tests the reported settings, without reconstructing every choice that produced them.</p>
+<p>DePue explicitly limits the inference to hardware that generated starting weights: a developer could initialize a model on one system and train it on another. Specially configured AMD hardware can also reproduce the layouts; his separate numerical test distinguishes NVIDIA from AMD for DeepSeek-V4-Flash, but IFP did not repeat that test. Neither investigation establishes chip ownership, physical location or an export-control violation. IFP’s contribution is an independent reproduction of specified numerical patterns, including their persistence after training, within a documented subset of the original study.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://github.com/Institute-for-Progress/checkpoint-forensics-verification-public">Verifying results in "Top Chinese Frontier AI Models Carry the Fingerprint of Export-Controlled NVIDIA Blackwell GPUs" (checkpoint-forensics-verification-public), Institute for Progress, GitHub</a> <span class="how">— Assigned primary source read in full from supplied content_full and checked against live canonical GitHub README. Supports checksum checks, all replay results, controls, trained-weight correlations, missing inputs and unavailable hardware. Publication date not asserted.</span></li>
+<li><a href="https://unemploymentlabs.com/checkpoint-forensics">Top Chinese Frontier AI Models Carry the Fingerprint of Export-Controlled NVIDIA Blackwell GPUs, Will DePue, Unemployment Labs</a> <span class="how">— Live primary report checked for method, initialization-versus-training limits, AMD alternative and NVIDIA-specific test. Appendix defines Exact copy by correlation above 0.999, not bitwise identity; removed the draft’s false discrepancy.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-11-12/#story-six-chinese-frontier-models-show-blackwell-initialization-fi">Chip fingerprints trace six Chinese models' starting weights, Yesterday in AI, November 12 issue</a> <span class="how">— Live November 12 issue and exact story id verified by HTTP 200 and HTML id lookup. Earlier report covers DePue’s original study; independent IFP replay is the new delta.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-replication-reproduces-gpu-fingerprints-for-three-models-sup">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-14/replication-reproduces-gpu-fingerprints-for-three-models-sup</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
