@@ -4,9 +4,13 @@ Generate chatbot content records from the public website sources.
 
 The floating Minty helper uses OpenAI file_search over uploaded local files.
 This script turns everything a visitor can read on mintresearch.org into
-markdown records: newsletters, research reports, Seth Lazar's CV, the lab
-people roster, and the visible text of the static HTML pages (home, guide,
+markdown records: newsletters, research reports, the lab people roster, and
+the visible text of the static HTML pages (home, guide, Seth Lazar's CV,
 AGI Governance Fellowship, agent reports, newsletter landing page).
+
+The CV record is extracted from public/cv/index.html, the file the site
+serves at /cv/, so it cannot lag the public page. src/data/cv.json is an
+archive that the served page is no longer built from; do not read it here.
 
 Filenames are deterministic across runs — they key incremental sync. Stale
 .md files owned by the preceding manifest (records no longer generated, e.g.
@@ -48,6 +52,14 @@ HTML_PAGES: list[tuple[str, str, str, str]] = [
         "public/guide/index.html",
         f"{SITE_BASE_URL}/guide/",
         "Lab Infrastructure Guide (Agentic Research Infrastructure for AI Alignment, Governance and Adaptation)",
+    ),
+    (
+        # Stem predates the move to the served page; kept so the record
+        # keeps its filename (cv-seth-lazar.md) in the manifest and store.
+        "cv-seth-lazar",
+        "public/cv/index.html",
+        f"{SITE_BASE_URL}/cv/",
+        "Curriculum Vitae: Seth Lazar — employment, education, publications, grants, events, talks, teaching, service",
     ),
     (
         "page-agi-governance-fellowship",
@@ -150,69 +162,6 @@ def generate_astro_records(
         filename = f"{prefix}-{source_path.stem}.md"
         records[filename] = render_astro_page(source_path, canonical_url, kind_label)
     return records
-
-
-# --------------------------------------------------------------------------
-# CV (src/data/cv.json)
-# --------------------------------------------------------------------------
-
-
-def cv_entry_lines(entry: dict) -> list[str]:
-    when = str(entry.get("years") or entry.get("year") or "").strip()
-    text = (entry.get("text") or entry.get("citation") or "").strip()
-    line = f"- {when}: {text}" if when else f"- {text}"
-    lines = [line]
-    details = (entry.get("details") or "").strip()
-    if details:
-        lines.append(f"  - Details: {details}")
-    abstract = (entry.get("abstract") or "").strip()
-    if abstract:
-        lines.append(f"  - Abstract: {abstract}")
-    return lines
-
-
-def render_cv(source_path: Path) -> str:
-    data = json.loads(source_path.read_text(encoding="utf-8"))
-    meta = data.get("meta", {})
-    name = meta.get("name", "Seth Lazar")
-
-    lines = [
-        record_header(source_path, f"{SITE_BASE_URL}/cv/"),
-        f"# Curriculum Vitae: {name}",
-        "",
-        f"- Title: {meta.get('title', '')}",
-        f"- Department: {meta.get('department', '')}",
-        f"- Institution: {meta.get('institution', '')}",
-        f"- Email: {meta.get('email', '')}",
-        f"- Websites: {', '.join(meta.get('websites', []))}",
-        f"- Lab: {meta.get('lab', '')}",
-        "",
-    ]
-
-    for section in data.get("sections", []):
-        heading = section.get("heading", section.get("id", "Section"))
-        section_type = section.get("type", "entries")
-        lines.extend([f"## {heading}", ""])
-
-        if section_type == "entries":
-            for entry in section.get("entries", []):
-                lines.extend(cv_entry_lines(entry))
-            lines.append("")
-        elif section_type == "grouped":
-            for group in section.get("groups", []):
-                lines.extend([f"### {group.get('heading', '')}", ""])
-                for entry in group.get("entries", []):
-                    lines.extend(cv_entry_lines(entry))
-                lines.append("")
-        elif section_type == "text":
-            content = (section.get("content") or "").replace("\t", " — ")
-            lines.extend([content.strip(), ""])
-        else:
-            raise ValueError(
-                f"unknown CV section type {section_type!r} in {section.get('id')}"
-            )
-
-    return "\n".join(lines).rstrip() + "\n"
 
 
 # --------------------------------------------------------------------------
@@ -529,15 +478,6 @@ def main() -> None:
     report_records = generate_astro_records("reports", "report", "Research report", output_dir)
     records.update(report_records)
     counts["reports"] = len(report_records)
-
-    cv_path = REPO_DIR / "src" / "data" / "cv.json"
-    if cv_path.is_file():
-        records["cv-seth-lazar.md"] = render_cv(cv_path)
-        counts["cv"] = 1
-    else:
-        print(f"WARNING: missing CV data {cv_path}", file=sys.stderr)
-        counts["cv"] = 0
-        warnings += 1
 
     people_path = REPO_DIR / "src" / "data" / "people.ts"
     if people_path.is_file():
