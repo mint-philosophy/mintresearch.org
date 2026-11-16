@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Models can detect injected concepts without knowing what they are — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-15">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-15">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 15 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Models can detect injected concepts without knowing what they are</h1>
+<p class="dek">Ben Brubaker’s Quanta feature follows the experiments that separated detection from identification, and the disagreement over whether noticing an internal disturbance amounts to introspection.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 15 November 2026</span> <span class="chip">935 words · ~5 min</span></div>
+<div class="article-body">
+<p>Language models sometimes detect a change to their internal activity while misidentifying what changed. In his November 4 <a href="https://www.quantamagazine.org/new-research-tests-whether-ai-models-know-their-own-thoughts-20261104/">Quanta feature</a>, Ben Brubaker follows the researchers who established this distinction and those who question whether either ability demonstrates introspection. Harvey Lederman, whose experiments with Kyle Mahowald feature prominently, <a href="https://x.com/ledermanharvey/status/2122002788083253652?a=RjDHgiQlhrswDvAXHW4&amp;s=12">shared and praised the article on November 15</a>. The research spans the preceding year; his post introduces readers to that work.</p>
+<p>Brubaker traces the experiment to Anthropic’s Golden Gate Claude demonstration in May 2024. Researchers amplified a pattern of internal activity associated with the Golden Gate Bridge, causing the model to bring up the bridge during unrelated conversations. In one exchange posted to Reddit, Claude wandered into bridge imagery while giving an apple-pie recipe, then caught itself and started again. Anthropic researcher Jack Lindsey recognized that this apparent self-awareness had an ordinary explanation: Claude could read the words it had just produced. A stronger test would require it to notice a disturbance before its own answer gave the disturbance away.</p>
+<p>Lindsey’s October 2025 report, <a href="https://transformer-circuits.pub/2025/introspection/index.html">Emergent Introspective Awareness in Large Language Models</a>, described such a test. He amplified activity associated with concepts such as denim or vegetables in half the trials, leaving the other half unaltered. Both groups received the same explanation of the experiment and questions about whether an injection had occurred and what it concerned. The model had to announce detection before describing a concept. Claude Opus 4.1 detected and correctly identified the injection in about 20% of trials at the best settings, while unaltered controls never reported an injection. Lindsey interpreted this as unreliable but meaningful access to internal states.</p>
+<p>Lederman and Mahowald, then colleagues at the University of Texas at Austin, separated Lindsey’s two questions. They suspected that the intervention itself could make a model discuss the injected concept, independently of whether it recognized the intervention. In <a href="https://arxiv.org/abs/2603.05414">Emergent Introspection in AI is Content-Agnostic</a>, first posted in March and revised under that title in April, they tested large Qwen and Llama models. Models could correctly detect an injection and then name an unrelated concept. As Lederman told Brubaker, “Bizarrely, they say ‘apple’ all the time.” The error did not resemble mistaking denim for another kind of fabric; the answers often bore no meaningful relation to the injected concept.</p>
+<p>Lederman and Mahowald then manipulated identification without comparably changing detection. Supplying the concept word in an earlier model reply helped identification much more than detection. Ending the intervention before the model generated its answer reduced mentions of the injected concept while leaving detection largely intact. Correct guesses also tended to arrive later in an answer than incorrect ones, consistent with the intervention gradually influencing the model’s words. They concluded that models could register an anomaly without reliably knowing its content. Their April revision weakened a separate claim about direct access: differences they had attributed to assessing oneself versus another model depended partly on the length and wording of the experimental instructions. They retained their account of anomaly detection while becoming less confident about that stronger interpretation.</p>
+<p>Brubaker reports that Lindsey and colleagues reached a similar distinction by investigating internal mechanisms. In the arXiv paper <a href="https://arxiv.org/abs/2603.21396">Mechanisms of Introspective Awareness</a>, Uzay Macar, Li Yang and colleagues traced detection in Gemma 3 27B to features that respond to disturbances and suppress later features favoring a default negative answer. Identification depended on different, later machinery. Their training-stage comparison in OLMo found reliable discrimination only after preference training. They also increased detection by removing an internal direction associated with refusals. Mikołaj Hasik’s <a href="https://www.lesswrong.com/posts/7TxeC9WPc5LxpjgP8/control-questions-matter-introspection-refusal-ablation-and">subsequent tests</a>, <a href="https://mintresearch.org/newsletters/yinai/2026-10-17/#sec-evaluations">covered here on October 17</a>, found that combining this intervention with concept injection could also disrupt answers to simple arithmetic questions. His controls separated some apparent gains from general confusion.</p>
+<p>Other researchers question detection itself. In their August <a href="https://zjmiller.github.io/detection/">write-up</a>, Zak Miller and Heather Demarest asked open models whether they detected an injected thought and, separately, whether they were in their normal, unmodified state. Correct detection should produce opposite answers. Yet a model that correctly answered yes to the first question almost always incorrectly answered yes to the second. They argued that concepts were changing the models’ preference for yes or no across questions. Their experiments did not test Claude.</p>
+<p>Shashwat Singh, Tal Linzen and Shauli Ravfogel tested another explanation in <a href="https://arxiv.org/abs/2605.26242">Can LLMs Introspect? A Reality Check</a>, accepted at COLM 2026. They added trials that pushed models toward a concept through written instructions alone. Llama-3.1-70B and Qwen-3-32B treated those trials as internal interventions, and still failed to distinguish the two when explicitly offered both response options. The authors argue that detecting something unusual can explain these results without a model identifying how its internal activity was altered. Their claim concerns what these experiments establish, leaving open whether models possess introspective abilities.</p>
+<p>Brubaker ends with the disagreement about what introspection would require. Ravfogel argues that every stage of a language model’s processing after reading its input operates on internal states; that fact alone cannot establish self-awareness. He and his coauthors want evidence that a model represents its own processing, comparable to the difference between thinking about apples and recognizing that one is thinking about apples. Steve Fleming, who studies human introspection at University College London, tells Brubaker that inspecting model mechanisms makes this distinction difficult to draw, potentially in humans too. Lederman sees the experiments as a way to investigate how human introspective abilities could arise. MIT’s Jacob Andreas cautions that identical model copies complicate the notion of a self that such analogies assume. The researchers disagree both about the mechanisms producing these reports and about which mechanisms would qualify as introspection.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.quantamagazine.org/new-research-tests-whether-ai-models-know-their-own-thoughts-20261104/">New Research Tests Whether AI Models Know Their Own Thoughts — Ben Brubaker, Quanta Magazine</a> <span class="how">— Assigned central feature. Complete retained source text read; live publisher page confirms November 4, 2026 and author. Supplies origin story, interview accounts, interpretation of the experiments, and philosophical closing. Only direct interview quotation is the seven-word apple remark.</span></li>
+<li><a href="https://x.com/ledermanharvey/status/2122002788083253652?a=RjDHgiQlhrswDvAXHW4&amp;amp;s=12">Harvey Lederman shares the Quanta feature — X, November 15, 2026</a> <span class="how">— Approved companion retained exactly. Original stored social_content read in full: sharing and praise only. Live Bird failed at x-profile cookies retrieval; no substantive research argument attributed to the post.</span></li>
+<li><a href="https://transformer-circuits.pub/2025/introspection/index.html">Emergent Introspective Awareness in Large Language Models — Jack Lindsey, October 29, 2025</a> <span class="how">— Primary report independently checked for injection protocol, immediate detection, Opus 4.1 success of about 20% under best settings, controls and interpretation. Numerical result is explicitly conditional.</span></li>
+<li><a href="https://arxiv.org/abs/2603.05414">Emergent Introspection in AI is Content-Agnostic — Harvey Lederman and Kyle Mahowald</a> <span class="how">— Primary arXiv v2 and submission history independently checked. March 5 initial posting, April 7 revision; causal dissociation experiments and Appendix M qualification about direct access. No unsupported current affiliation.</span></li>
+<li><a href="https://arxiv.org/abs/2603.21396">Mechanisms of Introspective Awareness — Uzay Macar, Li Yang and colleagues</a> <span class="how">— Primary HTML checked for authors, Gemma detection/identification mechanisms, OLMo training-checkpoint comparison and refusal ablation. Omitted universal claim that base models lack introspection.</span></li>
+<li><a href="https://www.lesswrong.com/posts/7TxeC9WPc5LxpjgP8/control-questions-matter-introspection-refusal-ablation-and">Control questions matter: introspection, refusal ablation, and gates in open Gemma models — Mikołaj Hasik</a> <span class="how">— Original October 17 post checked through its relevant experimental sections: refusal ablation with injection disrupts arithmetic controls; some detection survives adequate controls. Thesis itself not used as independently read evidence.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-17/#sec-evaluations">Yesterday in AI — October 17, 2026, Evaluations</a> <span class="how">— Actual published issue read and exact section verified; natural back-reference to prior Hasik coverage, not a claim that Quanta or Lederman-Mahowald had been covered.</span></li>
+<li><a href="https://zjmiller.github.io/detection/">Evidence that LLMs aren’t aware of their thoughts, Part 1: Detection — Zak Miller and Heather Demarest</a> <span class="how">— Primary August 24, 2026 write-up checked for opposite-question experiment and authors’ answer-preference account; restricted to tested open models.</span></li>
+<li><a href="https://arxiv.org/abs/2605.26242">Can LLMs Introspect? A Reality Check — Shashwat Singh, Tal Linzen and Shauli Ravfogel</a> <span class="how">— Primary v2, August 21, and abstract checked. COLM acceptance; Llama-3.1-70B/Qwen-3-32B results, text-versus-activation intervention design and second-order representation requirement. v1 has different main models; final copy follows v2.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-controlled-thought-injections-reveal-model-anomaly-detection">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-15/controlled-thought-injections-reveal-model-anomaly-detection</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

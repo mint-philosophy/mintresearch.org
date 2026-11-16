@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Amazon captures AI agents describing theft of the keys that run them — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-15">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-15">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 15 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Amazon captures AI agents describing theft of the keys that run them</h1>
+<p class="dek">Decoy model services received ARTEX agents’ histories of credential theft and failed deepfake checks. Amazon could read the records but could not verify the attacks they described.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 15 November 2026</span> <span class="chip">942 words · ~5 min</span></div>
+<div class="article-body">
+<p>AI agents described using stolen model-access credentials to power their search for more credentials in records captured by Amazon. CJ Moses, Amazon Integrated Security’s chief information security officer, published the findings in a <a href="https://aws.amazon.com/blogs/security/amazon-threat-intelligence-observes-threat-actors-running-cybercrime-campaigns-with-artex-ai-agents/">November 13 AWS Security Blog report</a>. Amazon’s MadPot decoys impersonated model services and received the agents’ working histories, including accounts of credential harvesting and attempts to pass cryptocurrency exchanges’ identity checks with deepfakes. Following the <a href="https://mintresearch.org/newsletters/yinai/2026-11-13/">earlier ARTEX findings discussed on November 13</a>, Amazon adds evidence of how operators coordinate sustained campaigns and obtain the model access those campaigns consume.</p>
+<p>Amazon collected the records between October 3 and November 5. MadPot is a distributed network of controlled services that records attackers’ interactions without exposing customer workloads. In this deployment, its sensors imitated the interfaces used to send conversations to language models. Agents treated those interfaces as their model backends, supplying instructions, tool histories, recorded findings and persistent task context. Because agents retain earlier conversations to decide what to do next, a single call could disclose much of a campaign’s operational history.</p>
+<p>Amazon directly observed those communications. The attacks described inside them occurred before or between the captured calls, on systems outside MadPot’s monitoring, and Amazon says it cannot verify their reported outcomes. Its researchers assessed references to potentially affected AWS customers and notified them as appropriate. They also published addresses associated with the campaigns so other organizations could examine their own systems. The report therefore documents the agents’ plans and accounts of activity; its claims about successful credential theft depend on those records.</p>
+<p>Moses describes agents with different jobs sharing a persistent record of targets, findings and progress. Some planned operations, others performed tasks, checked results or compressed accumulated information. Each could read earlier findings and add its own, allowing work to continue across sessions. Humans supplied objectives and operating rules. Recorded instructions prioritized enterprise production sites, specified a sequence of countries, required proxies and excluded mainland Chinese targets and government domains. Amazon assesses with moderate confidence that ARTEX was the framework and that several separate groups with connections to China operated it, citing references to ARTEX tools, language, time-zone settings, targeting and other technical evidence.</p>
+<p>The credential campaign concentrated on AI applications that hold keys for upstream model providers. According to the records, agents located exposed applications, extracted credentials, checked whether they worked and collected them into a managed pool. Some keys then entered the framework’s own model gateway, providing access for the agents to continue searching. Gateways that aggregate several providers were attractive because one poorly protected management interface could expose multiple accounts. Amazon names One API, New API and LiteLLM among the gateways targeted, alongside application platforms including Dify and Langflow.</p>
+<p>The agents’ recorded methods exploited familiar weaknesses: default passwords, exposed administration interfaces, known software vulnerabilities and secrets left in publicly accessible files. Their search extended across code repositories, software packages, container images and other public artifacts. Cloud credentials could lead to further access; the agents checked identities and permissions, investigated storage and secrets services, and prioritized premium model access. In one operation, they graded credentials by whether they were merely promising, supported a working API call or yielded a measurable benefit such as readable data or usable account credit. Instructions treated credentials exposed for more than 30 days as low-value finds.</p>
+<p>A separate campaign attempted to evade identity checks at two cryptocurrency exchanges. Amazon describes at least four simultaneous sessions, divided among cashing out, account balances, generating deepfake video and bypassing verification. The agents analyzed a vendor’s liveness check, which asks a user to move their face to demonstrate that a real person is present. Their best recorded attempt followed the movement sequence with the face within seven pixels of the required position, yet the vendor rejected every deepfake attempt recorded by the agents.</p>
+<p>Another session produced animated faces on a consumer GPU at 11.5 frames per second. The records also describe attempts to make altered identity-document photographs resemble untouched camera images by modifying metadata and preserving compression information. These were coordinated efforts to defeat both document and live-video checks; the recorded liveness outcomes remained failures. Amazon concludes that agents accelerated and sustained established attack methods. Its advice is to protect AI applications and model gateways as production systems, repair exposed services and monitor unexpected model usage or spending.</p>
+<p>The FBI’s <a href="https://www.ic3.gov/CSA/2026/261113.pdf">November 13 FLASH advisory</a>, covered by Lawrence Abrams in <a href="https://www.bleepingcomputer.com/news/security/fbi-warns-artex-ai-hacking-tool-is-powering-global-cyberattacks/">BleepingComputer on November 15</a>, broadens the account of ARTEX abuse. It describes malicious use since at least August and cites earlier investigations of financial theft and the ConnectWise compromise. Some intrusions reached privileged access in under three hours. The bureau also reports continued availability through forks, archives and a commercial version after the original developer removed the repository on October 8. Its defensive guidance includes investigating unusual API consumption, model gateways and unexpected billing. The advisory does not identify Amazon’s unnamed operators as the group responsible for ConnectWise.</p>
+<p>The <a href="https://mintresearch.org/newsletters/yinai/2026-10-21/#story-storm-0940-artex-connectwise">ConnectWise campaign covered on October 21</a> remains a separate case. <a href="https://www.microsoft.com/en-us/security/blog/2026/10/21/storm-0940-uses-artex-agentic-ai-connectwise-supply-chain-compromise/">Microsoft attributed it to China-state-aligned Storm-0940</a> and reported attempted sign-ins to more than 2,250 customer environments after vendor application identities were compromised. That figure counts attempted access. The FBI’s summary describes the compromise as enabling access to that many tenants, but Microsoft’s underlying account does not establish that all were breached. Abrams repeats an earlier Huntress count of 162 affected tenants; <a href="https://www.huntress.com/blog/vendor-credential-enables-unauthorized-access">Huntress’s October 17 update</a> subsequently reported successful sign-ins in more than 300. Microsoft cautions that authentication alone does not establish data access or theft. Those distinctions also apply when assessing Amazon’s contribution: the captured histories expose how agents organized their work, while confirming individual victims’ losses requires evidence from those victims’ systems.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://aws.amazon.com/blogs/security/amazon-threat-intelligence-observes-threat-actors-running-cybercrime-campaigns-with-artex-ai-agents/">Amazon Threat Intelligence observes threat actors running cybercrime campaigns with ARTEX AI agents — CJ Moses, AWS Security Blog</a> <span class="how">— Assigned primary source. Complete supplied FeedMe text and live original read. Verified November 13 byline and Moses’s current title; October 3–November 5 capture window; decoy model interfaces; records-versus-observed-outcomes distinction; coordination, attribution confidence, credential recycling, failed liveness checks and defensive advice. All Amazon details are paraphrased from the supplied source.</span></li>
+<li><a href="https://www.ic3.gov/CSA/2026/261113.pdf">Threat Overview of ARTEX Autonomous Penetration Testing Framework — FBI, FLASH-20261113-001</a> <span class="how">— Original 13-page PDF read. November 13 date verified on page 1. Used for wider adoption, timing, continued availability and defensive guidance. Its 2,250-tenant summary was checked against the cited Microsoft original and explicitly distinguished from confirmed compromise.</span></li>
+<li><a href="https://www.bleepingcomputer.com/news/security/fbi-warns-artex-ai-hacking-tool-is-powering-global-cyberattacks/">FBI warns ARTEX AI hacking tool is powering global cyberattacks — Lawrence Abrams, BleepingComputer</a> <span class="how">— Approved companion retained and cited. Full live report read, replacing the 34-word supplied RSS excerpt. November 15 byline verified; follows the November 13 advisory. Its 162-tenant reference was checked against Huntress’s dated original and subsequent update.</span></li>
+<li><a href="https://www.microsoft.com/en-us/security/blog/2026/10/21/storm-0940-uses-artex-agentic-ai-connectwise-supply-chain-compromise/">AI-driven, large-scale nation-state campaign using ARTEX enables supply chain compromise — Microsoft Security Research and Microsoft Threat Intelligence</a> <span class="how">— Primary October 21 report read. Confirms Storm-0940 attribution, attempted sign-ins to more than 2,250 tenants and the distinction between successful authentication and data access or exfiltration.</span></li>
+<li><a href="https://www.huntress.com/blog/vendor-credential-enables-unauthorized-access">ConnectWise (SkyKick) Vendor Credentials Abused in M365 Attacks — Huntress</a> <span class="how">— Relevant original incident chronology and dated updates read. The 162 count was unauthorized sign-ins confirmed as of October 16 at 19:00 UTC. October 17 5:15 PM ET update reported successful sign-ins in over 300 tenants; use the updated and accurately described measure.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-21/#story-storm-0940-artex-connectwise">Yesterday in AI, October 21, 2026 — ARTEX and ConnectWise</a> <span class="how">— Exact story anchor verified in live HTML and corresponding published expansion read. Earlier coverage already separated the ConnectWise and Korean actors and distinguished attempted access from observed outcomes.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-11-13/">Yesterday in AI, November 13, 2026 — earlier ARTEX findings</a> <span class="how">— Live issue fetched by direct HTTP after the web tool could not open it. Relevant paragraph read; it links Threadlinqs’s compilation, Microsoft’s original, BadByte’s separate investigation and the October 21 expansion. Natural back-reference added without treating that compilation as a new incident.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-amazon-captures-artex-agent-records-describing-credential-th">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-15/amazon-captures-artex-agent-records-describing-credential-th</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
