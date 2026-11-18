@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
-"""Inject the Minty floating overlay into Astro-rendered HTML pages.
+"""Inject the Minty floating overlay into the site's hand-edited HTML pages.
 
-Usage:
-    python3 inject_minty.py dist/cv/index.html public/cv/index.html
-    python3 inject_minty.py dist/index.html public/index.html
+The primary pages are edited directly in public/, so name the served page as
+both source and target:
 
-Reads the dist HTML, injects the three Minty blocks (sprite HTML, CSS,
-JS module) before </body>, and writes to the output path.
+    python3 scripts/inject_minty.py public/cv/index.html public/cv/index.html
+
+Reads the source HTML, removes any earlier overlay, injects the three Minty
+blocks (sprite HTML, CSS, JS module) and the chat script before </body>, and
+writes the target path.
+
+With no arguments it does the same for six pages, reading each from the last
+build's dist/ output and writing it over public/. Run `npm run build` first, or
+any hand edit made in public/ since that build is lost.
 """
 
 import sys
