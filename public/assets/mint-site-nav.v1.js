@@ -113,7 +113,6 @@
       children: [
         { id: 'governing-with-agents', type: 'page', href: '/governing-with-agents/', label: 'Governing with Agents' },
         { id: 'ai-culture', type: 'page', href: '/ai-culture/', label: 'AI (etc) in Culture' },
-        { id: 'agif-overview', type: 'page', href: 'https://fellowship.mintresearch.org/', label: 'AGI Governance Fellowship' },
         { id: 'agi-governance-bibliography', type: 'page', href: 'https://bibliography.mintresearch.org/', label: 'AGI Governance Bibliography' }
       ]
     },
