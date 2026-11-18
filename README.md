@@ -18,7 +18,10 @@ routes were removed, and hashed shared asset bundles remain in `public/_astro/`.
 - The source of truth for page content is `public/*.html` (each page sits at `public/<page>/index.html`).
 - `npm run build` copies primary pages unchanged and builds only the remaining
   report, archive, and RTS sources under `src/pages/`.
-- Edits go directly into the served HTML. To re-apply the Minty overlay after edits, run `python3 scripts/inject_minty.py`.
+- Edits go directly into the served HTML. To re-apply the Minty overlay after editing a page, run
+  `python3 scripts/inject_minty.py public/<page>/index.html public/<page>/index.html`. Run with no
+  arguments, the script reads six pages from the last build's `dist/` output and writes them over
+  `public/`, so run `npm run build` first or hand edits made since that build are lost.
 - The homepage People section is loaded at runtime from `public/assets/people/latest-people.csv`.
 - The homepage Papers list is loaded at runtime from `public/assets/papers/latest-paper-deliverables.csv`.
 - Volatile infrastructure facts in `public/guide/index.html` bind to
@@ -131,57 +134,26 @@ The canonical wrappers and their isolated deck sources are:
 public/nc/index.html           -> public/nc/deck.html
 public/FDC.html                -> public/FDC-deck.html
 public/agi-reckoning-sais/index.html -> public/agi-reckoning-sais/deck.html
-public/should-we-build-agi/index.html -> public/should-we-build-agi/deck.html
-public/agi-institutions/index.html     -> public/agi-institutions/deck.html
-public/societal-adaptation/index.html  -> public/societal-adaptation/deck.html
 ```
 
-All six use the same shell and responsive fitting contract. The first three are
-listed under `Talks`. The Fellowship branch links only to `/agif/`; its three
-presentation wrappers remain `noindex` and outside primary navigation and the
-sitemap.
+All three use the same shell and responsive fitting contract and are listed
+under `Talks`.
 
-`/should-we-build-agi/` is the canonical framed Day 1 page. Its isolated,
-`noindex` deck loads an inline text editor from
-`public/should-we-build-agi/inline-editor.js`.
-The editing controls appear only when the separate Cloudflare Worker confirms
-the request's edge-observed IP against the secret allowlist; every save is
-checked again server-side. Authorized browsers default to a small pencil control
-above the deck footer. It expands to Edit/Save/Cancel/Hide controls and remembers
-the user's compact or expanded preference locally. Saved plain-text
-overrides live in Workers KV and are applied with `textContent` before Pretext
-measures the slide. The tracked HTML remains the failure-safe source: if the
-Worker is unavailable, the base deck renders normally and the controls stay
-hidden. Worker code, tests, deployment configuration, and the exact-IP caveat
-live in `agi-editor-worker/`. The client uses the custom domain first, with the
-Worker's `workers.dev` address and a second custom domain as DNS fallbacks.
-
-The three AGI Governance Fellowship teaching decks have canonical framed
-main-site routes:
-
-```text
-/should-we-build-agi/ -> public/should-we-build-agi/index.html
-/agi-institutions/    -> public/agi-institutions/index.html
-/societal-adaptation/ -> public/societal-adaptation/index.html
-```
-
-Day 1 is the existing interactive 17-slide `/should-we-build-agi/` deck. Day 2
-is Fable's native 35-slide HTML/Pretext deck, and Day 3 is the native 8-slide
-`Resilience and Adaptation` HTML/Pretext deck. The Day 2 and Day 3 public
-artifacts exclude their private source notes and editor payloads and use the
-same responsive reflow and static navigation approach as Day 1.
-The wrappers retain the full MINT site chrome and presentation-mode control;
-both the wrappers and isolated `deck.html` files remain `noindex`. The
-indexable `/agif/` overview links to the wrappers, while the three day routes
-stay outside primary navigation and the sitemap. `agif-router-worker/` retains
-the former `agif1`, `agif2`, and `agif3` hosts only as permanent redirects to
-the framed pages, with an HTTP `X-Robots-Tag`; the old hosts no longer proxy
-standalone decks. Run
-`npm run check:agif-presentations` and
+The AGI Governance Fellowship decks are not served from `public/`.
+`agif-router-worker/` serves the hub and all six presentations at
+`https://fellowship.mintresearch.org/` from its isolated `site-assets/` tree,
+behind one permanent password gate; only the bibliography is public. Its README
+is the guide to the routes, secrets, owner editing and deployment. The old
+main-site paths `/agif/`, `/should-we-build-agi/`, `/agi-institutions/` and
+`/societal-adaptation/` serve content-free `noindex` redirect pages to the
+Fellowship host; never put presentation content back under `public/`. Inline
+editing happens on the Fellowship host behind its separate owner login;
+`agi-editor-worker/` is a read-only compatibility endpoint whose writes return
+HTTP 410. Run `npm run check:agif-presentations` and
 `npm --prefix agif-router-worker test` before publishing any Fellowship deck or
 changing the routing Worker.
 
-For the six shell-backed presentations listed above, keep deck code isolated
+For the three shell-backed presentations listed above, keep deck code isolated
 inside its iframe so deck-specific keyboard controls, scaling, styles, and
 animations cannot conflict with the site shell. Their deck sources remain
 `noindex`; only their branded wrapper routes are canonical and indexable. The
