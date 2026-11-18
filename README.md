@@ -98,8 +98,7 @@ automatically for an active child, and uses an accessible disclosure button:
 - `Papers`: `https://blindrefusal.mintresearch.org/` and
   `https://coherence.mintresearch.org/`
 - `Resources`: `/governing-with-agents/`, `/ai-culture/`, and the AGI Governance
-  Fellowship link at `https://fellowship.mintresearch.org/`; individual teaching
-  decks remain absent from primary navigation
+  Bibliography at `https://bibliography.mintresearch.org/`
 
 Only add maintained, intentionally public project microsites. A presentation
 leaf may remain `noindex` while still being linked for participants. Do not
@@ -139,19 +138,20 @@ public/agi-reckoning-sais/index.html -> public/agi-reckoning-sais/deck.html
 All three use the same shell and responsive fitting contract and are listed
 under `Talks`.
 
-The AGI Governance Fellowship decks are not served from `public/`.
-`agif-router-worker/` serves the hub and all six presentations at
-`https://fellowship.mintresearch.org/` from its isolated `site-assets/` tree,
-behind one permanent password gate; only the bibliography is public. Its README
-is the guide to the routes, secrets, owner editing and deployment. The old
-main-site paths `/agif/`, `/should-we-build-agi/`, `/agi-institutions/` and
-`/societal-adaptation/` serve content-free `noindex` redirect pages to the
-Fellowship host; never put presentation content back under `public/`. Inline
-editing happens on the Fellowship host behind its separate owner login;
-`agi-editor-worker/` is a read-only compatibility endpoint whose writes return
-HTTP 410. Run `npm run check:agif-presentations` and
-`npm --prefix agif-router-worker test` before publishing any Fellowship deck or
-changing the routing Worker.
+The AGI Governance Fellowship decks are no longer part of the website. On
+Seth's instruction of 18 November 2026 the six presentations and their overview,
+the router Worker's `site-assets/` tree and saved deck text, the old main-site
+redirect pages (`/agif/`, `/should-we-build-agi/`, `/agi-institutions/`,
+`/societal-adaptation/`), the retired `agi-editor-worker/` and the deck checks
+were moved to Seth's research folder,
+`Seth-Work/Research/6 Past Writing/2026/AGI Governance Fellowship decks/`. They
+were last present here at commit `94b5c57b`. Do not add Fellowship presentation
+content back to this repository. `agif-router-worker/` still serves the AGI
+Governance Bibliography and its mirror, the owner login used for bibliography
+editing, and the private fellows directory; former presentation routes on
+`fellowship.mintresearch.org` return a short notice. Its README covers routes,
+secrets and deployment. Run `npm --prefix agif-router-worker test` before
+changing it.
 
 For the three shell-backed presentations listed above, keep deck code isolated
 inside its iframe so deck-specific keyboard controls, scaling, styles, and

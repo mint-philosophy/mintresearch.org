@@ -141,8 +141,9 @@ only when the temporary paper should follow the registered papers.
 
 The Talks, Papers, and Resources groups are collapsed
 by default and expand automatically when one of their children is active. The
-AGI Governance Fellowship is a link within Resources. Each
-heading is a button with `aria-expanded` and `aria-controls`; consumers should
+AGI Governance Bibliography is a link within Resources; the AGI Governance
+Fellowship link was removed when its decks moved off the website on
+18 November 2026. Each heading is a button with `aria-expanded` and `aria-controls`; consumers should
 preserve the button semantics and style it with `.nav-group`. Static
 no-JavaScript fallbacks may use collapsed
 `<details class="nav-fallback-group">` elements with the same leaves.

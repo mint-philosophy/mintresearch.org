@@ -6,7 +6,7 @@ The floating Minty helper uses OpenAI file_search over uploaded local files.
 This script turns everything a visitor can read on mintresearch.org into
 markdown records: newsletters, research reports, the lab people roster, and
 the visible text of the static HTML pages (home, guide, Seth Lazar's CV,
-AGI Governance Fellowship, agent reports, newsletter landing page).
+agent reports, newsletter landing page).
 
 The CV record is extracted from public/cv/index.html, the file the site
 serves at /cv/, so it cannot lag the public page. src/data/cv.json is an
@@ -60,12 +60,6 @@ HTML_PAGES: list[tuple[str, str, str, str]] = [
         "public/cv/index.html",
         f"{SITE_BASE_URL}/cv/",
         "Curriculum Vitae: Seth Lazar — employment, education, publications, grants, events, talks, teaching, service",
-    ),
-    (
-        "page-agi-governance-fellowship",
-        "public/agif/index.html",
-        f"{SITE_BASE_URL}/agif/",
-        "AGI Governance Fellowship — presentation materials for Days 1, 2, and 3",
     ),
     (
         "page-agent-reports",
