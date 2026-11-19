@@ -283,9 +283,14 @@
         </h2>
         <p class="lead">
           MINT runs a local-first research infrastructure on a Mac Studio.
-          Scheduled services collect research material, maintain a searchable
-          paper corpus, prepare a weekday news briefing, and support lab work in
-          Slack. Public pages are static files deployed through GitHub Pages.
+          FeedMe reads hundreds of sources three times a day and ranks what
+          matters to the lab. Yesterday in AI is written from its shortlist,
+          with Seth choosing and approving every issue. A searchable paper
+          corpus, with its own paper-fetching and review services, sits behind
+          the lab's Slack agents and a read-only server for collaborators'
+          assistants. Shared services handle credentials, model access,
+          backups and the public route in. Public pages are static files
+          deployed through GitHub Pages.
         </p>
         <div class="stats infra-stats">
           <div class="stat-card">
@@ -353,34 +358,37 @@
         </h2>
         <p>
           FeedMe is the shared collection and ranking layer. The full 04:00 run
-          invokes each source adapter, removes material seen in earlier runs,
-          classifies every new item, summarizes eligible longform pieces, ranks
-          the results, and builds a story-aware curator slate. The 12:00 and
-          20:00 runs refresh X, Bluesky, and arXiv without repeating the full
-          source sweep.
+          starts all seven fetchers at once, drops repeats and stale items,
+          scores every new item against the lab's interest profile, summarizes
+          long pieces, and groups the survivors into stories on the day's
+          slate. The 12:00 and 20:00 runs are top-ups with six fetchers that
+          merge new stories into the same slate. Items count as seen only once
+          the slate accepts a run, so a failed run is fetched again. A watchdog
+          checks the morning run thirteen times before 08:00 and restarts it if
+          it stalls.
         </p>
         <div class="infra-flow" aria-label="Content pipeline">
           <div class="infra-node">
             <span class="infra-kicker">Collect</span>
-            <strong>Source adapters</strong>
-            <small>X, Bluesky, RSS/Atom, Gmail, arXiv, and PhilPapers</small>
+            <strong>Fetchers</strong>
+            <small>X, Bluesky, feeds and podcasts, the newsletter inbox, arXiv, and PhilPapers</small>
           </div>
           <span class="infra-arrow" aria-hidden="true">&rarr;</span>
           <div class="infra-node">
             <span class="infra-kicker">Process</span> <strong>FeedMe</strong>
-            <small>Deduplicate, classify, summarize, rank, and plan stories</small>
+            <small>Drop repeats, score, summarize, and group into stories</small>
           </div>
           <span class="infra-arrow" aria-hidden="true">&rarr;</span>
           <div class="infra-node infra-node-hub">
             <span class="infra-kicker">Route</span>
-            <strong>Curator + intake</strong>
-            <small>Finalized slate, #firehose, and the #papers corpus queue</small>
+            <strong>Slate + Slack picks</strong>
+            <small>The day's slate of up to 300 sources, and 20 to 25 morning picks in #firehose</small>
           </div>
           <span class="infra-arrow" aria-hidden="true">&rarr;</span>
           <div class="infra-node">
             <span class="infra-kicker">Serve</span>
-            <strong>Research services</strong>
-            <small>YiNAI, Weekly Source Digest, and Corpus Agent</small>
+            <strong>Newsletter + corpus</strong>
+            <small>Yesterday in AI, and papers fetched into the corpus</small>
           </div>
         </div>
         <h3>Source adapters</h3>
@@ -390,10 +398,7 @@
               <div>
                 <div class="card-title">X timelines</div>
                 <div class="card-sub">
-                  BirdClaw reads the chronological Following timeline, with its
-                  local cache as a bounded fallback. Bird reads the algorithmic
-                  For You timeline through an authenticated OpenClaw browser
-                  session; both paths expand threads and linked articles.
+                  BirdClaw reads the followed and recommended timelines through a signed-in session, with fallbacks when a live read fails. It expands busy conversations into threads, stopping at the first refusal or rate limit, and fetches the full text of articles that short posts point to.
                 </div>
               </div>
             </div>
@@ -403,9 +408,7 @@
               <div>
                 <div class="card-title">Bluesky feeds</div>
                 <div class="card-sub">
-                  An authenticated AT Protocol client reads Following, Discover,
-                  Mutuals, AI Papers, and ML Blend, then expands threads before
-                  writing normalized items.
+                  An authenticated AT Protocol client reads five feeds and expands threads before writing normalized items.
                 </div>
               </div>
             </div>
@@ -413,12 +416,9 @@
           <div class="card no-expand">
             <div class="card-head">
               <div>
-                <div class="card-title">RSS and Atom</div>
+                <div class="card-title">Feeds, journals and podcasts</div>
                 <div class="card-sub">
-                  Direct HTTP requests read configured Substack publications,
-                  independent blogs, and selected journal or custom feeds. RSS
-                  and Atom entries retain publication and source-priority
-                  metadata for later ranking.
+                  About 380 web feeds, journals and podcasts are read each run, keeping recent unseen entries. Journals get longer windows and a cap on new articles, and the morning run adds podcast captions. A weekly source finder reads roundup posts and adds high-confidence recurring sources.
                 </div>
               </div>
             </div>
@@ -428,10 +428,7 @@
               <div>
                 <div class="card-title">Newsletter inbox</div>
                 <div class="card-sub">
-                  The Gmail API reads editorial newsletters from the lab inbox.
-                  The adapter resolves tracking links and retrieves full articles
-                  with parallel HTTP requests, using a serial authenticated
-                  browser fallback for protected or truncated sources.
+                  The Gmail API reads newsletter mail from a dedicated inbox, strips tracking, and filters out account and promotional mail. Full text for cut-short or paid articles comes through web requests or signed-in browsers, including the university library.
                 </div>
               </div>
             </div>
@@ -441,10 +438,7 @@
               <div>
                 <div class="card-title">arXiv</div>
                 <div class="card-sub">
-                  Category <code>/new</code> pages for <code>cs.CY</code>,
-                  <code>cs.AI</code>, <code>cs.CL</code>, <code>cs.LG</code>, and
-                  <code>cs.HC</code> provide fresh paper IDs; the arXiv Atom API
-                  supplies metadata and abstracts for classification.
+                  New paper listings are read every run, dropping papers already seen. Each paper gets its authors and institutions, and paper posts by trusted researchers are marked to pass scoring.
                 </div>
               </div>
             </div>
@@ -454,9 +448,7 @@
               <div>
                 <div class="card-title">PhilPapers</div>
                 <div class="card-sub">
-                  PhilPapers JSON browse endpoints supply recent records from
-                  philosophy of AI, computer and information ethics, privacy,
-                  misinformation, social media, and technology ethics.
+                  The morning run reads recent PhilPapers additions alongside arXiv, across the lab's philosophy and technology-ethics categories.
                 </div>
               </div>
             </div>
@@ -469,10 +461,7 @@
               <div>
                 <div class="card-title">Yesterday in AI</div>
                 <div class="card-sub">
-                  Finalized curator artifacts and protected manual rows feed the
-                  weekday issue. The writer checks the draft, publishes the
-                  hosted issue before email delivery, and posts only the issue
-                  link to <code>#mint-community</code>.
+                  Seth marks stories on the day's slate in the curator app. An evening selector chooses about forty sources and checks each against earlier issues; a 23:00 plan goes to Seth's pitch room, and nothing is written until Seth approves it. Agents then write the digest, research and edit the Read mores, and send Seth a preview. Only an approved issue is published on the website, emailed once to each subscriber, and linked in <code>#mint-community</code>.
                 </div>
               </div>
             </div>
@@ -480,12 +469,9 @@
           <div class="card no-expand">
             <div class="card-head">
               <div>
-                <div class="card-title">Weekly Source Digest</div>
+                <div class="card-title">Slack picks</div>
                 <div class="card-sub">
-                  Every Friday at 08:45, the source digester reads seven days of
-                  FeedMe artifacts for configured high-priority publications,
-                  recovers full text, builds one evidence packet per source, and
-                  fact-checks a spoken script plus a linked Markdown digest.
+                  After the morning run, two model passes narrow the passed items to a varied 20 to 25, which are posted to <code>#firehose</code> with full-text summaries. Links shared by Seth and lab members are scored and posted there too.
                 </div>
               </div>
             </div>
@@ -495,23 +481,18 @@
               <div>
                 <div class="card-title">Corpus Agent</div>
                 <div class="card-sub">
-                  <code>news-pdf-bot</code> recovers papers from
-                  <code>#firehose</code> and cross-posts them to
-                  <code>#papers</code>. The corpus pipeline ingests those files
-                  and local submissions into LanceDB; the persistent
-                  <code>corpus-agent</code> serves grounded search and literature
-                  reviews through <code>@Minty</code> in Slack.
+                  <code>news-pdf-bot</code> fetches papers linked in <code>#firehose</code> and cross-posts them to <code>#papers</code>, filing a request when it cannot get a file. The corpus pipeline ingests them, and the persistent <code>corpus-agent</code> answers research questions from the corpus through <code>@Minty</code> in Slack.
                 </div>
               </div>
             </div>
           </div>
         </div>
         <p class="infra-note">
-          The Morning Briefing product was retired on 11 July 2026, and current
-          FeedMe runs do not invoke it. Retained modules supply reusable
-          full-text retrieval and fallback-ranking code. Daily
-          <code>#feed-*</code> posting was retired on 18 July; selector
-          auto-promotion to <code>#firehose</code> remains active.
+          A sign-in keeper holds the browsers that read paid sites, the
+          university library and X, tests each login at 09:10 and 17:10, and
+          emails Seth when one needs renewing. Each source is judged against its
+          own recent normal, and Seth is told once when an important source
+          fails and once when it recovers.
         </p>
       </section>
       <section id="corpus" class="fade-in">
@@ -523,40 +504,47 @@
           </span>
         </h2>
         <p>
-          Paper ingestion is a queue-backed set of focused services. Local
-          folders and Slack provide intake, the handoff service coordinates
-          work, analysis prepares structured outputs, one writer owns database
-          mutation, and a final tidy stage handles downstream organization.
+          Paper ingestion is a queue-backed set of focused services. Papers
+          arrive from the <code>#papers</code> channel, a local intake folder
+          and a shared Google Drive inbox; papers that an ordinary download
+          cannot get are found by a separate fetching service working through
+          the university library. Each paper is fingerprinted so repeats are
+          set aside before any costly work, then identified, converted,
+          embedded and analysed. One writer owns every database change, and
+          the archive keeps the original PDF on Drive and an entry in the
+          lab's Zotero library.
         </p>
         <ol class="service-pipeline">
           <li>
             <code>corpus-intake-local</code
-            ><span>Watch local paper intake.</span>
+            ><span>Work the local intake folder overnight, every 5 minutes.</span>
           </li>
           <li>
             <code>corpus-intake-slack</code
-            ><span>Receive papers and links from Slack.</span>
+            ><span>Take papers from Slack from 08:00 to midnight, every 10 minutes.</span>
           </li>
           <li>
             <code>corpus-ingest-handoff</code
-            ><span>Validate and dispatch queued work.</span>
+            ><span>Hand unfinished work over at midnight and top up the overnight queue.</span>
           </li>
           <li>
             <code>corpus-analyze</code
-            ><span>Convert, embed, enrich, and analyze papers.</span>
+            ><span>Answer 41 research questions and write six summaries per paper.</span>
           </li>
           <li>
             <code>corpus-db-writer</code
-            ><span>Serialize durable LanceDB writes.</span>
+            ><span>Check each handoff against its archived files, write it, and read it back.</span>
           </li>
           <li>
             <code>corpus-tidy</code
-            ><span>Finalize files, catalog records, and reports.</span>
+            ><span>Clear intake copies once the archived copy is confirmed.</span>
           </li>
         </ol>
         <div class="callout">
-          A single database writer is deliberate: it keeps concurrent intake and
-          analysis from competing over the same LanceDB state.
+          A single database writer is deliberate: every change takes the same
+          write lock, and a handoff whose files or passages do not match is
+          refused and kept for a person to settle, so searches only ever see
+          papers that match their archived files.
         </div>
       </section>
       <section id="corpus-overview" class="fade-in">
@@ -644,7 +632,9 @@
           directly from the web as Markdown. Each document is represented at
           several levels: bibliographic metadata, full text, searchable chunks,
           embeddings, structured research-question analysis, and hierarchical
-          summaries. The current document embedding policy is
+          summaries. Every Sunday the corpus is regrouped into topic clusters,
+          and each paper keeps a list of its ten closest neighbours. The
+          current document embedding policy is
           <code data-infra-field="models.paperEmbeddings"
             >Voyage voyage-context-3, 2048d</code
           >.
@@ -665,50 +655,59 @@
           </span>
         </h2>
         <p>
-          The corpus agent combines lexical and vector retrieval over papers,
-          chunks, semantic dimensions, and summaries. It supports quick lookup,
-          broad literature review, similarity search, and catch-up requests.
-          Results are grounded in local corpus records and returned with source
-          links.
+          Tag <code>@Minty</code> in a lab channel with a question and it
+          offers buttons for a mode and a model. A model rewrites the question
+          several ways, the agent pulls matching corpus papers, and the answer
+          cites only that evidence, with real links added by the program. Long
+          answers and deep reviews arrive as a PDF. Tag it on a paper or PDF
+          and it adds the paper to the corpus instead.
         </p>
         <table class="ref-table">
           <thead>
             <tr>
-              <th>Request</th>
+              <th>Mode</th>
               <th>Best use</th>
-              <th>Retrieval shape</th>
+              <th>Searches</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><code>search</code></td>
-              <td>Fast factual or bibliographic lookup</td>
-              <td>Hybrid ranked retrieval</td>
+              <td><code>Fast Search</code></td>
+              <td>Quick factual or bibliographic lookup</td>
+              <td>Paper corpus</td>
             </tr>
             <tr>
-              <td><code>deep review</code></td>
-              <td>Substantive literature synthesis</td>
-              <td>Planned multi-query review</td>
+              <td><code>Fast Review</code></td>
+              <td>A short review of a focused question</td>
+              <td>Paper corpus</td>
             </tr>
             <tr>
-              <td><code>catch me up</code></td>
-              <td>Recent work on a topic</td>
-              <td>Time-aware corpus search</td>
+              <td><code>Deep Review</code></td>
+              <td>Substantive literature synthesis, delivered as a PDF</td>
+              <td>Paper corpus</td>
             </tr>
             <tr>
-              <td><code>similar</code></td>
-              <td>Find papers near a known paper</td>
-              <td>Document embeddings</td>
+              <td><code>Conversation</code></td>
+              <td>Follow-up discussion in the thread</td>
+              <td>Paper corpus and thread context</td>
             </tr>
             <tr>
-              <td><code>dimension</code></td>
-              <td>Search a research-question field</td>
-              <td>Structured analysis</td>
+              <td><code>AI governance</code></td>
+              <td>Questions about AI laws, bills and policies</td>
+              <td>Governance dataset, refreshed daily</td>
+            </tr>
+            <tr>
+              <td><code>Teaching</code></td>
+              <td>Questions about training models from human feedback</td>
+              <td>Open textbook and course videos</td>
             </tr>
           </tbody>
         </table>
         <div class="callout">
-          Deep reviews use the shared Codex router. The default model is
+          Outside Slack, a read-only corpus server gives Seth's and invited
+          collaborators' assistants eleven search and lookup tools and a set of
+          review skills, from a quick answer to a deep review. Background jobs
+          use the shared model router; the default model is
           <code data-infra-field="models.daemonDefault">gpt-5.6-sol</code>, with
           <code data-infra-field="models.intelligenceEffort">xhigh</code>
           reasoning for intelligence-heavy work.
@@ -725,10 +724,9 @@
         <p>
           Minty is the lab's research-management agent. The root
           <code>AGENTS.md</code> is the always-on contract for identity,
-          operating boundaries, verification, and collaboration.
-          Project-specific <code>THREAD.md</code>, <code>HANDOFF.md</code>,
-          <code>LOG.md</code>, and <code>TODO.md</code> files carry workstream
-          context.
+          operating boundaries, verification, and collaboration. Each
+          persistent workstream keeps one <code>THREAD.md</code> with its rules,
+          sources, decisions and blockers, so a new agent can pick it up.
         </p>
         <div class="cards">
           <div class="card no-expand">
@@ -866,30 +864,62 @@
             <tr>
               <td>04:00</td>
               <td><code>feedme-daily</code></td>
-              <td>Full source collection and ranking</td>
+              <td>Full source collection, scoring and the day's slate, then the Slack picks</td>
             </tr>
             <tr>
-              <td>On finalization; 04:30 fallback</td>
-              <td>
-                <code>yesterday-in-ai-write-consumer</code><br />
-                <code>yesterday-in-ai</code>
-              </td>
-              <td>Write, verify, publish, and deliver Yesterday in AI</td>
+              <td>04:42 to 08:00</td>
+              <td><code>feedme-daily-watchdog</code></td>
+              <td>Thirteen checks on the morning run; restart it if it stalls</td>
+            </tr>
+            <tr>
+              <td>05:15</td>
+              <td><code>minty-chatbot-sync</code></td>
+              <td>Rebuild the site assistant's records when they change</td>
+            </tr>
+            <tr>
+              <td>09:10 and 17:10</td>
+              <td><code>yinai-health-check</code></td>
+              <td>Test the paid-site, library and X sign-ins</td>
             </tr>
             <tr>
               <td>12:00 and 20:00</td>
               <td><code>feedme-incremental</code></td>
-              <td>Refresh X, Bluesky, and arXiv curator candidates</td>
+              <td>Top-up runs that add new stories to the day's slate</td>
             </tr>
             <tr>
-              <td>Friday 08:45</td>
-              <td><code>weekly-source-digest</code></td>
-              <td>Build the full-text source review and spoken script</td>
+              <td>19:30 to 23:30</td>
+              <td><code>yinai-selector</code></td>
+              <td>Choose about forty sources for the next issue</td>
+            </tr>
+            <tr>
+              <td>23:00</td>
+              <td><code>yesterday-in-ai</code></td>
+              <td>Plan the issue for Seth's approval</td>
+            </tr>
+            <tr>
+              <td>After approval</td>
+              <td><code>yesterday-in-ai-write-consumer</code><br /><code>yinai-proposal-release</code></td>
+              <td>Write, edit and preview the issue; publish and send once approved</td>
+            </tr>
+            <tr>
+              <td>00:00, 06:00, 12:00, 18:00</td>
+              <td><code>rclone-backup</code></td>
+              <td>Back up lab data; the 06:00 run archives the corpus and mirrors off-site</td>
             </tr>
             <tr>
               <td>06:00 and 18:00</td>
               <td><code>guide-updater</code></td>
               <td>Refresh and publish this page's system snapshot</td>
+            </tr>
+            <tr>
+              <td>Sunday 04:00</td>
+              <td><code>paper-map-updater</code></td>
+              <td>Regroup the corpus if due and redraw the Corpus Map</td>
+            </tr>
+            <tr>
+              <td>Sunday 05:00</td>
+              <td><code>slack-index</code></td>
+              <td>Refresh the Slack search index</td>
             </tr>
             <tr>
               <td>Continuous</td>
@@ -899,12 +929,17 @@
             <tr>
               <td>Persistent</td>
               <td><code>corpus-agent</code></td>
-              <td>Answer grounded corpus searches and literature reviews in Slack</td>
+              <td>Answer grounded corpus questions and add tagged papers in Slack</td>
             </tr>
             <tr>
-              <td>Continuous</td>
+              <td>Every 30 seconds</td>
               <td><code>share-to-minty</code></td>
-              <td>Handle direct Slack content intake</td>
+              <td>Score and post links shared in Slack</td>
+            </tr>
+            <tr>
+              <td>Every 5 minutes</td>
+              <td><code>news-pdf-bot</code></td>
+              <td>Fetch papers linked in <code>#firehose</code></td>
             </tr>
           </tbody>
         </table>
@@ -929,8 +964,7 @@
               <div>
                 <div class="card-title">@Minty</div>
                 <div class="card-sub">
-                  Ask corpus questions, request literature reviews, and retrieve
-                  papers.
+                  Ask research questions answered from the corpus, choose a mode and model, or tag it on a paper to add it to the corpus.
                 </div>
               </div>
             </div>
@@ -940,8 +974,27 @@
               <div>
                 <div class="card-title">@minty-search</div>
                 <div class="card-sub">
-                  Search indexed Slack history with iterative multi-query
-                  retrieval.
+                  Search the lab's Slack history by meaning. It answers citing message links and says when the evidence is thin.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card no-expand">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Share bot</div>
+                <div class="card-sub">
+                  Drop a link in a share channel and it reads, scores and posts it to <code>#firehose</code>, where the newsletter and the corpus pick it up.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card no-expand">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Paper bot</div>
+                <div class="card-sub">
+                  Post a paper link in <code>#firehose</code> and it saves the PDF to the thread and the corpus, or says why it could not.
                 </div>
               </div>
             </div>
@@ -958,15 +1011,15 @@
           <tbody>
             <tr>
               <td><code>#mint-community</code></td>
-              <td>Lab discussion and delivery of Yesterday in AI.</td>
+              <td>Lab discussion, shared links, and each Yesterday in AI issue link.</td>
             </tr>
             <tr>
               <td><code>#firehose</code></td>
-              <td>Curated research intake used by downstream services.</td>
+              <td>Morning news picks and shared links; papers posted here are fetched.</td>
             </tr>
             <tr>
               <td><code>#papers</code></td>
-              <td>Paper acquisition and corpus-ingestion notices.</td>
+              <td>Paper intake for the corpus, with ingestion replies.</td>
             </tr>
             <tr>
               <td><code>#minty-inbox</code></td>
@@ -984,11 +1037,13 @@
           </span>
         </h2>
         <p>
-          Scheduled agents run through a shared Codex router with explicit model
-          and reasoning policy. Deterministic services use ordinary code where a
-          model adds no value; research synthesis and judgment-heavy work use
-          higher reasoning effort. Daemon subprocesses receive explicit virtual
-          environments and isolated runtime homes.
+          Scheduled agents send model calls through a shared router that
+          rotates through the lab's model sign-ins and rests any that hit a
+          usage limit; a probe checks every sign-in every ten minutes without
+          spending a call. Jobs get credentials by name from a signed helper
+          that keeps them out of code and logs. Deterministic services use
+          ordinary code where a model adds no value; research synthesis and
+          judgment-heavy work use higher reasoning effort.
         </p>
         <table class="ref-table">
           <thead>
@@ -1027,7 +1082,8 @@
         <div class="callout">
           Verification is part of the runtime contract: agents must collect
           fresh evidence before reporting state, preserve concurrent work, and
-          keep credentials out of public artifacts.
+          keep credentials out of public artifacts. Agents prepare; Seth
+          approves anything that is published or sent.
         </div>
       </section>
       <section id="integrations" class="fade-in">
@@ -1044,7 +1100,8 @@
               <div>
                 <div class="card-title">Slack</div>
                 <div class="card-sub">
-                  Human requests, content intake, search, and briefing delivery.
+                  Research questions, link and paper intake, search, news picks,
+                  and newsletter links.
                 </div>
               </div>
             </div>
@@ -1064,7 +1121,8 @@
               <div>
                 <div class="card-title">Google Drive and Zotero</div>
                 <div class="card-sub">
-                  Shared paper files, backups, and bibliographic cataloging.
+                  The paper archive, a shared intake inbox, off-site backups, and
+                  the lab's reference library.
                 </div>
               </div>
             </div>
@@ -1100,8 +1158,28 @@
               <div>
                 <div class="card-title">Academic APIs</div>
                 <div class="card-sub">
-                  arXiv, Crossref, Semantic Scholar, Unpaywall, and related
-                  sources.
+                  arXiv, PhilPapers, Crossref, Semantic Scholar, and open-access
+                  lookups, plus the university library for paywalled papers.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card no-expand">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Model providers</div>
+                <div class="card-sub">
+                  Language models for scoring, writing and research, reached through the lab's own sign-ins, and Voyage embeddings for the corpus and Slack search.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card no-expand">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Cloudflare Tunnel</div>
+                <div class="card-sub">
+                  The public route into lab services, such as the subscribe form and the corpus server; any other address gets 'not found'.
                 </div>
               </div>
             </div>
@@ -1113,8 +1191,8 @@
         <div class="subscribe-panel">
           <h2>Yesterday in AI</h2>
           <p>
-            A weekday briefing on AI safety, governance, ethics, and
-            capabilities, delivered to
+            A daily briefing on AI safety, governance, ethics, and
+            capabilities, chosen and approved by Seth, delivered to
             <strong data-infra-field="newsletter.enabledSubscribers"
               >109</strong
             >

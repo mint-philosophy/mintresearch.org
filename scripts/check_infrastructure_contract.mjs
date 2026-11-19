@@ -93,7 +93,8 @@ if (fs.existsSync(guidePath)) {
     "BirdClaw",
     "AT Protocol",
     "Gmail API",
-    "Weekly Source Digest",
+    "Yesterday in AI",
+    "Slack picks",
     "<code>corpus-agent</code>",
   ]) {
     if (!guide.includes(required)) {
@@ -107,6 +108,7 @@ if (fs.existsSync(guidePath)) {
     ["obsolete model", /GPT-5\.2|gpt-5\.3-codex-spark/i],
     ["obsolete Ghost host", /Ghost CMS powering mintresearch\.org/i],
     ["generic source rollup", /RSS, arXiv, newsletters, social feeds/i],
+    ["retired weekly source digest", /Weekly Source Digest|weekly-source-digest/i],
     [
       "retired daily-briefing pipeline",
       /where the daily briefing and paper intake\s+services can use them/i,
