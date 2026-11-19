@@ -367,30 +367,86 @@
           checks the morning run thirteen times before 08:00 and restarts it if
           it stalls.
         </p>
-        <div class="infra-flow" aria-label="Content pipeline">
-          <div class="infra-node">
-            <span class="infra-kicker">Collect</span>
-            <strong>Fetchers</strong>
-            <small>X, Bluesky, feeds and podcasts, the newsletter inbox, arXiv, and PhilPapers</small>
+        <figure class="flowmap" aria-labelledby="flowmapCaption">
+          <div class="fm-trunk">
+            <div class="fm-node">
+              <span class="fm-kicker">01 Collect</span>
+              <strong>Seven fetchers</strong>
+              <ul class="fm-chips">
+                <li>X</li>
+                <li>5 Bluesky feeds</li>
+                <li>~380 feeds, journals, podcasts</li>
+                <li>Newsletter inbox</li>
+                <li>arXiv + PhilPapers</li>
+              </ul>
+            </div>
+            <span class="fm-link" aria-hidden="true"></span>
+            <div class="fm-node fm-hub">
+              <span class="fm-kicker">02 Process</span>
+              <strong>FeedMe</strong>
+              <ul class="fm-times">
+                <li><b>04:00</b> full run</li>
+                <li><b>12:00</b> top-up</li>
+                <li><b>20:00</b> top-up</li>
+              </ul>
+              <small>Drop repeats, score, summarize, group into stories. A watchdog checks the morning run until 08:00.</small>
+            </div>
+            <span class="fm-link" aria-hidden="true"></span>
+            <div class="fm-node">
+              <span class="fm-kicker">03 Route</span>
+              <strong>Two outputs</strong>
+              <dl class="fm-outs">
+                <div><dt>Day's slate</dt><dd>up to 300 sources</dd></div>
+                <div><dt>Morning picks</dt><dd>20 to 25 to #firehose</dd></div>
+              </dl>
+            </div>
           </div>
-          <span class="infra-arrow" aria-hidden="true">&rarr;</span>
-          <div class="infra-node">
-            <span class="infra-kicker">Process</span> <strong>FeedMe</strong>
-            <small>Drop repeats, score, summarize, and group into stories</small>
+          <div class="fm-fork" aria-hidden="true"><span>slate</span><span>picks</span><span>papers</span></div>
+          <div class="fm-lanes">
+            <div class="fm-lane" style="--lane: var(--accent)">
+              <div class="fm-lane-head">
+                <span class="fm-lane-name">Yesterday in AI</span>
+                <span class="fm-lane-from">daily, from the slate</span>
+              </div>
+              <ol class="fm-steps">
+                <li class="fm-gate"><span class="fm-who">Seth</span><strong>Marks the slate</strong><small>in the curator app</small></li>
+                <li><strong>Selector</strong><small>19:30 to 23:30, about 40 sources, continuity check</small></li>
+                <li class="fm-gate"><span class="fm-who">Seth</span><strong>Approves the pitch</strong><small>proposal at 23:00</small></li>
+                <li><strong>Writer + desk</strong><small>draft, Read mores, edits, preview</small></li>
+                <li class="fm-end"><strong>Release</strong><small>website, one email per subscriber, #mint-community</small></li>
+              </ol>
+            </div>
+            <div class="fm-lane" style="--lane: var(--blue)">
+              <div class="fm-lane-head">
+                <span class="fm-lane-name">Slack</span>
+                <span class="fm-lane-from">from the morning picks</span>
+              </div>
+              <ol class="fm-steps">
+                <li><strong>Picks + shares</strong><small>morning picks, and the share bot every 30 s</small></li>
+                <li><strong>#firehose</strong><small>the lab's shared stream</small></li>
+                <li><strong>Paper bot</strong><small>every 5 min, fetches papers posted there</small></li>
+                <li class="fm-end"><strong>#papers</strong><small>papers cross-posted; requests filed for any it can't get</small></li>
+              </ol>
+            </div>
+            <div class="fm-lane" style="--lane: var(--purple)">
+              <div class="fm-lane-head">
+                <span class="fm-lane-name">Corpus</span>
+                <span class="fm-lane-from">from #papers, a local folder and a Drive inbox</span>
+              </div>
+              <ol class="fm-steps">
+                <li><strong>Intake</strong><small>#papers every 10 min, folder overnight, Drive every 30 min</small></li>
+                <li><strong>Fetch</strong><small>university library and a local model</small></li>
+                <li><strong>Analyze</strong><small>41 questions and six summaries per paper</small></li>
+                <li><strong>Single writer</strong><small>one locked writer; archive to Drive and Zotero</small></li>
+                <li class="fm-end"><strong>Serve</strong><small>@Minty, the corpus server, and the Corpus Map (Sundays)</small></li>
+              </ol>
+            </div>
           </div>
-          <span class="infra-arrow" aria-hidden="true">&rarr;</span>
-          <div class="infra-node infra-node-hub">
-            <span class="infra-kicker">Route</span>
-            <strong>Slate + Slack picks</strong>
-            <small>The day's slate of up to 300 sources, and 20 to 25 morning picks in #firehose</small>
-          </div>
-          <span class="infra-arrow" aria-hidden="true">&rarr;</span>
-          <div class="infra-node">
-            <span class="infra-kicker">Serve</span>
-            <strong>Newsletter + corpus</strong>
-            <small>Yesterday in AI, and papers fetched into the corpus</small>
-          </div>
-        </div>
+          <figcaption id="flowmapCaption">
+            How an item travels: collected, ranked by FeedMe, then routed to the
+            newsletter, Slack and the corpus. Amber steps wait for Seth.
+          </figcaption>
+        </figure>
         <h3>Source adapters</h3>
         <div class="cards">
           <div class="card no-expand">
@@ -1307,48 +1363,286 @@
       html[data-infra-snapshot="fallback"] .snapshot-state {
         background: var(--red);
       }
-      .infra-flow {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(
-            0,
-            1fr
-          ) auto minmax(0, 1fr);
-        align-items: stretch;
-        gap: 10px;
-        margin: 24px 0;
+      .flowmap {
+        margin: 26px 0;
+        padding: 20px;
+        border: 1px solid var(--border);
+        background-color: var(--bg-1);
+        background-image: radial-gradient(
+          color-mix(in srgb, var(--text-3) 30%, transparent) 1px,
+          transparent 1px
+        );
+        background-size: 16px 16px;
       }
-      .infra-node {
+      .fm-trunk,
+      .fm-fork {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1.15fr) 44px minmax(0, 1fr);
+      }
+      .fm-node {
+        position: relative;
         display: flex;
-        min-height: 112px;
         flex-direction: column;
-        justify-content: center;
-        gap: 7px;
+        gap: 8px;
         padding: 14px;
         border: 1px solid var(--border);
         background: var(--bg-2);
       }
-      .infra-node-hub {
-        border-color: var(--accent);
-      }
-      .infra-node strong {
+      .fm-node strong {
         color: var(--text-bright);
         font-size: 14px;
       }
-      .infra-node small {
+      .fm-node small {
         color: var(--text-3);
         font-size: 10px;
         line-height: 1.5;
       }
-      .infra-kicker {
+      .fm-hub {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px var(--accent-soft), 0 0 28px var(--accent-soft);
+      }
+      .fm-hub::after {
+        content: "";
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--accent);
+        animation: fm-pulse 2.4s ease-in-out infinite;
+      }
+      .fm-kicker {
         color: var(--accent);
         font-size: 9px;
         font-weight: 700;
+        letter-spacing: 0.04em;
         text-transform: uppercase;
       }
-      .infra-arrow {
-        align-self: center;
+      .fm-chips,
+      .fm-times {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .fm-chips li {
+        padding: 2px 6px;
+        border: 1px solid var(--border);
+        background: var(--bg-1);
+        color: var(--text-2);
+        font-size: 10px;
+      }
+      .fm-times li {
+        padding: 2px 6px;
+        background: var(--accent-soft);
+        color: var(--text-2);
+        font-size: 10px;
+      }
+      .fm-times b {
         color: var(--accent);
-        font-size: 17px;
+      }
+      .fm-outs {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+      }
+      .fm-outs dt {
+        color: var(--text-1);
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .fm-outs dd {
+        margin: 2px 0 0;
+        color: var(--text-3);
+        font-size: 10px;
+      }
+      .fm-link {
+        position: relative;
+        align-self: center;
+        height: 2px;
+        margin: 0 8px 0 4px;
+        background: repeating-linear-gradient(
+          90deg,
+          var(--accent) 0 6px,
+          transparent 6px 12px
+        );
+        background-size: 12px 2px;
+        animation: fm-flow 0.9s linear infinite;
+      }
+      .fm-link::after {
+        content: "";
+        position: absolute;
+        top: -4px;
+        right: -8px;
+        border: 5px solid transparent;
+        border-left: 7px solid var(--accent);
+      }
+      .fm-fork {
+        height: 26px;
+      }
+      .fm-fork span {
+        display: none;
+      }
+      .fm-fork::before,
+      .fm-fork::after {
+        content: "";
+        grid-row: 1;
+        border-bottom: 2px solid var(--accent-dim);
+        height: 13px;
+      }
+      .fm-fork::before {
+        grid-column: 1 / 5;
+        margin-left: 6px;
+      }
+      .fm-fork::after {
+        grid-column: 5;
+        width: 50%;
+        height: 13px;
+        border-right: 2px solid var(--accent-dim);
+      }
+      .fm-lanes {
+        display: grid;
+        gap: 16px;
+        padding-left: 24px;
+      }
+      .fm-lane {
+        position: relative;
+        display: grid;
+        gap: 8px;
+      }
+      .fm-lane::before,
+      .fm-lane::after {
+        content: "";
+        position: absolute;
+        left: -18px;
+        background: var(--accent-dim);
+      }
+      .fm-lane::before {
+        top: 7px;
+        width: 14px;
+        height: 2px;
+      }
+      .fm-lane::after {
+        top: -16px;
+        bottom: 0;
+        width: 2px;
+      }
+      .fm-lane:first-child::after {
+        top: -13px;
+      }
+      .fm-lane:last-child::after {
+        bottom: auto;
+        height: 25px;
+      }
+      .fm-lane-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 4px 10px;
+        line-height: 16px;
+      }
+      .fm-lane-name {
+        color: var(--lane);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .fm-lane-from {
+        color: var(--text-3);
+        font-size: 10px;
+      }
+      .fm-steps {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px 20px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .fm-steps li {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 9px 10px 10px;
+        border: 1px solid var(--border);
+        border-top: 2px solid var(--lane);
+        background: var(--bg-2);
+      }
+      .fm-steps li + li::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: -17px;
+        width: 10px;
+        height: 2px;
+        background: var(--lane);
+      }
+      .fm-steps li + li::after {
+        content: "";
+        position: absolute;
+        top: calc(50% - 3px);
+        left: -8px;
+        border: 4px solid transparent;
+        border-left: 5px solid var(--lane);
+      }
+      .fm-steps strong {
+        color: var(--text-bright);
+        font-size: 12px;
+      }
+      .fm-steps small {
+        color: var(--text-3);
+        font-size: 10px;
+        line-height: 1.45;
+      }
+      .fm-steps .fm-gate {
+        border-color: color-mix(in srgb, var(--amber) 55%, transparent);
+        border-top-color: var(--amber);
+      }
+      .fm-who {
+        color: var(--amber);
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .fm-steps .fm-end {
+        background: color-mix(in srgb, var(--lane) 10%, var(--bg-2));
+      }
+      .flowmap figcaption {
+        margin-top: 16px;
+        color: var(--text-3);
+        font-size: 11px;
+        line-height: 1.5;
+      }
+      @keyframes fm-flow {
+        to {
+          background-position: 12px 0;
+        }
+      }
+      @keyframes fm-pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent);
+        }
+        60% {
+          box-shadow: 0 0 0 7px transparent;
+        }
+      }
+      @keyframes fm-flow-down {
+        to {
+          background-position: 0 12px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .fm-link,
+        .fm-hub::after {
+          animation: none;
+        }
       }
       .infra-note {
         margin-top: 18px;
@@ -1485,14 +1779,64 @@
         .infra-stats {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
-        .infra-flow {
+        .flowmap {
+          padding: 14px;
+        }
+        .fm-trunk {
           grid-template-columns: 1fr;
+        }
+        .fm-link {
+          justify-self: start;
+          width: 2px;
+          height: 22px;
+          margin: 4px 0 10px 24px;
+          background: repeating-linear-gradient(
+            180deg,
+            var(--accent) 0 6px,
+            transparent 6px 12px
+          );
+          background-size: 2px 12px;
+          animation-name: fm-flow-down;
+        }
+        .fm-link::after {
+          top: auto;
+          right: auto;
+          bottom: -10px;
+          left: -4px;
+          border: 5px solid transparent;
+          border-top: 7px solid var(--accent);
+        }
+        .fm-fork {
+          display: block;
+          height: 16px;
+          margin-left: 6px;
+          border-left: 2px solid var(--accent-dim);
+        }
+        .fm-fork::before,
+        .fm-fork::after {
+          display: none;
+        }
+        .fm-lane:first-child::after {
+          top: -16px;
+        }
+        .fm-steps {
+          grid-template-columns: 1fr;
+          gap: 14px;
+        }
+        .fm-steps li + li::before {
+          top: -13px;
+          left: 18px;
+          width: 2px;
+          height: 8px;
+        }
+        .fm-steps li + li::after {
+          top: -7px;
+          left: 15px;
+          border: 4px solid transparent;
+          border-top: 5px solid var(--lane);
         }
         .infra-service-cards {
           grid-template-columns: 1fr;
-        }
-        .infra-arrow {
-          transform: rotate(90deg);
         }
         .service-pipeline {
           grid-template-columns: repeat(2, minmax(0, 1fr));
