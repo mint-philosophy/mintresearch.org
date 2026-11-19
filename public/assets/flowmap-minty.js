@@ -47,7 +47,7 @@
   var SPEED = 140; // pixels per second
   var NODE_PAUSE = 350; // milliseconds at each step
   var GATE_PAUSE = 1300; // at a step that waits for Seth
-  var END_PAUSE = 900;
+  var END_PAUSE = 1600;
 
   var riders = lanes.map(function () {
     var rider = document.createElement("span");
@@ -108,7 +108,10 @@
         pts.push([s.cx, s.cy, pause]);
       }
     });
-    pts[pts.length - 1][2] = Math.max(pts[pts.length - 1][2], END_PAUSE);
+    // Ride on to the far edge of the lane's last box and rest there.
+    var end = steps[steps.length - 1];
+    if (narrow) pts.push([end.left + 19, end.bottom - 12, END_PAUSE]);
+    else pts.push([end.right - 14, end.cy, END_PAUSE]);
     return pts;
   }
 
