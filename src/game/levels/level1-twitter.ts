@@ -68,6 +68,7 @@ export function getLevel1Config(): LevelConfig {
       { x: 4400, y: GAME_HEIGHT - 230 },
     ],
     powerUps: [
+      { type: 'wren', x: 172, y: GAME_HEIGHT - 40 },
       { type: 'shield', x: 900, y: GAME_HEIGHT - 240 },
       { type: 'clippy', x: 1600, y: GAME_HEIGHT - 140 },
       { type: 'speedBolt', x: 2350, y: GAME_HEIGHT - 240 },

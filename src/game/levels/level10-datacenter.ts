@@ -79,6 +79,7 @@ export function getLevel10Config(): LevelConfig {
       { x: 7500, y: GAME_HEIGHT - 330 },
     ],
     powerUps: [
+      { type: 'wren', x: 172, y: GAME_HEIGHT - 40 },
       { type: 'nvidia', x: 940, y: GAME_HEIGHT - 180 },
       { type: 'apple', x: 2200, y: GAME_HEIGHT - 210 },
       { type: 'nvidia', x: 3580, y: GAME_HEIGHT - 170 },

@@ -194,13 +194,14 @@ export const SCENES = {
   DIALOGUE: 'DialogueScene',
   PAUSE: 'PauseScene',
   GAMEOVER: 'GameOverScene',
+  RUN_BONUS: 'RunBonusScene',
   CREDITS: 'Credits',
 } as const;
 
 // Types
 export type MintyColor = typeof MINTY_COLORS[number];
 export type EnemyTier = keyof typeof ENEMY_TIERS;
-export type PowerUpType = keyof typeof POWERUP_DURATION;
+export type PowerUpType = keyof typeof POWERUP_DURATION | 'wren';
 export type PowerDownType = keyof typeof POWERDOWN_DURATION | 'dataLeak';
 export type LevelNumber =
   1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |

@@ -30,6 +30,19 @@ routes were removed, and hashed shared asset bundles remain in `public/_astro/`.
   counts or the daemon inventory.
 - The `chatbot-worker/` and `paper-map/` subprojects retain their own build steps (see their READMEs).
 
+## Data Dash gameplay
+
+The static wrapper is `public/data-dash/index.html`. The game lives in
+`src/game/`; the browser entry script lives in the archived Astro page.
+Run `npm run build:data-dash` after editing either source. This regenerates
+`public/assets/data-dash-game.js` and updates its content-hash query in the
+static wrapper. Commit those files with the source edits. The regular site
+build copies that wrapper and bundle into `dist/`.
+
+To preview just the game locally, run
+`python3 -m http.server 8765 --bind 127.0.0.1 --directory public` from the repo
+root and open <http://127.0.0.1:8765/data-dash/>.
+
 ## Shared site contracts
 
 The canonical primary-navigation hierarchy and renderer now live in

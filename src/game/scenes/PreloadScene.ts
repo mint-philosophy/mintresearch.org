@@ -43,6 +43,7 @@ export class PreloadScene extends Phaser.Scene {
     this.generateParrotNoSprite();
     this.generateSlopPoopSprite();
     this.generatePowerUps();
+    this.generateCarolinaWrenTextures();
     this.generateCheckpoint();
     this.generateParticle();
     this.generateEnemies();
@@ -57,6 +58,64 @@ export class PreloadScene extends Phaser.Scene {
     this.generateMacBombSprite();
     this.generateLipstickMintySprite();
     this.generateCreditsAshMinty();
+  }
+
+  private generateCarolinaWrenTextures(): void {
+    // One silhouette for the full-sized Rennie and its pickup miniature.
+    // Profile faces right, and the tucked belly sits at Minty's ground line.
+    const draw = (g: Phaser.GameObjects.Graphics, scale: number, dx = 0, dy = 0) => {
+      const shape = (color: number, points: Array<[number, number]>) => {
+        g.fillStyle(color);
+        g.fillPoints(points.map(([x, y]) => ({
+          x: Math.round(dx + x * scale),
+          y: Math.round(dy + y * scale),
+        })), true);
+      };
+      const ink = 0x34221f;
+      // Lifted tail and its dark feather bars.
+      shape(ink, [[9, 25], [6, 19], [2, 14], [0, 9], [1, 7], [4, 7],
+        [6, 9], [10, 15], [13, 24]]);
+      shape(0xaa5831, [[9, 23], [6, 18], [3, 13], [1, 8], [4, 8],
+        [7, 12], [10, 17], [12, 23]]);
+      shape(0x663921, [[2, 11], [5, 10], [6, 12], [3, 13]]);
+      shape(0x663921, [[4, 15], [7, 13], [8, 15], [5, 17]]);
+      shape(0x663921, [[6, 18], [9, 17], [10, 19], [7, 20]]);
+      // Plump, tucked body, raised face and slightly curved slender bill.
+      shape(ink, [[5, 20], [9, 17], [14, 17], [14, 14], [16, 11],
+        [19, 10], [23, 10], [25, 12], [27, 12], [28, 13], [28, 14],
+        [25, 14], [24, 17], [23, 20], [23, 25], [21, 29], [17, 31],
+        [9, 31], [5, 29], [3, 26], [3, 23]]);
+      shape(0xb96336, [[5, 21], [9, 18], [14, 18], [15, 14], [17, 12],
+        [20, 11], [23, 11], [25, 13], [24, 16], [22, 20], [22, 25],
+        [20, 28], [17, 30], [9, 30], [6, 28], [4, 26], [4, 23]]);
+      shape(0xecb77b, [[25, 14], [24, 17], [22, 20], [22, 25],
+        [20, 28], [17, 30], [9, 30], [6, 28], [9, 28], [15, 26],
+        [18, 20], [18, 17], [21, 16], [23, 16]]);
+      shape(0x8c492a, [[6, 22], [10, 19], [15, 19], [17, 21],
+        [16, 24], [12, 27], [7, 27], [5, 26]]);
+      shape(0xc47948, [[6, 23], [10, 21], [15, 21], [13, 23], [9, 24]]);
+      shape(0xaa5b36, [[6, 25], [12, 24], [14, 24], [11, 26], [7, 27]]);
+      // Cream supercilium, bead eye, and highlight on the swept bill.
+      shape(0xffe8bd, [[16, 14], [18, 12], [22, 11], [24, 12],
+        [22, 13], [19, 13], [17, 15]]);
+      shape(0x271819, [[21, 13], [23, 13], [23, 15], [21, 15]]);
+      shape(0xc38459, [[25, 13], [27, 13], [28, 14], [25, 14]]);
+    };
+    const player = this.add.graphics();
+    draw(player, 4, 1);
+    player.generateTexture('minty-wren', 114, 124);
+    player.destroy();
+
+    const pickup = this.add.graphics();
+    pickup.fillStyle(0x34221f);
+    pickup.fillCircle(12, 12, 12);
+    pickup.fillStyle(0xffd194);
+    pickup.fillCircle(12, 12, 11);
+    pickup.fillStyle(0x754c43);
+    pickup.fillCircle(12, 12, 9);
+    draw(pickup, 0.66, 3, -1);
+    pickup.generateTexture('pu-wren', 24, 24);
+    pickup.destroy();
   }
 
   private generatePlatform(): void {

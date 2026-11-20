@@ -11,6 +11,7 @@ import { LevelScene } from './scenes/LevelScene';
 import { HUDScene } from './scenes/HUDScene';
 import { DialogueScene } from './scenes/DialogueScene';
 import { PauseScene } from './scenes/PauseScene';
+import { RunBonusScene } from './scenes/RunBonusScene';
 import { GameOverScene } from './scenes/GameOverScene';
 
 export function createGame(parentId: string): Phaser.Game {
@@ -45,6 +46,7 @@ export function createGame(parentId: string): Phaser.Game {
       DialogueScene,
       PauseScene,
       GameOverScene,
+      RunBonusScene,
     ],
   };
 
