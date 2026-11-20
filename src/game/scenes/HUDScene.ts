@@ -19,7 +19,7 @@ export class HUDScene extends Phaser.Scene {
     super({ key: SCENES.HUD });
   }
 
-  create(data: { health: number; maxHealth?: number; lives: number; score: number; papers: number; ammo: number; level: number; levelName: string }): void {
+  create(data: { health: number; maxHealth?: number; lives: number; score: number; papers: number; ammo: number; level: number; levelName: string; invincibleMinty?: boolean }): void {
     this.maxHealth = data.maxHealth ?? PLAYER_MAX_HEALTH;
 
     const style = {
@@ -32,6 +32,23 @@ export class HUDScene extends Phaser.Scene {
     this.levelText = this.add.text(GAME_WIDTH / 2, 6, `L${data.level} — ${data.levelName}`, {
       ...style, fontSize: '9px', color: '#5c6370',
     }).setOrigin(0.5, 0);
+
+    if (data.invincibleMinty) {
+      this.add.text(GAME_WIDTH / 2, 22, 'INVINCIBLE MINTY', {
+        ...style, fontSize: '10px', color: '#7ee5d6',
+      }).setOrigin(0.5, 0);
+    }
+
+    const wrenHint = this.add.text(GAME_WIDTH / 2, 38, '', {
+      ...style, fontSize: '9px', color: '#fff4c6',
+    }).setOrigin(0.5, 0);
+    const updateWrenHint = ({ flying }: { flying: boolean }) => {
+      wrenHint.setText(flying ? 'TYPE FALL TO LAND  •  ↑/↓ to steer' : 'TYPE FLY TO FLY');
+    };
+    this.events.on('wrenFlightUpdate', updateWrenHint);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.events.off('wrenFlightUpdate', updateWrenHint);
+    });
 
     // Health bar
     this.healthBar = this.add.graphics();

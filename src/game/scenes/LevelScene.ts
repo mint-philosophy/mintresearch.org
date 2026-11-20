@@ -61,6 +61,11 @@ export class LevelScene extends Phaser.Scene {
   private facing: number = 1; // 1 = right, -1 = left
   private lastFireTime: number = 0;
   private invincible: boolean = false;
+  private hurtUntil = 0;
+
+  private get playerProtected(): boolean {
+    return this.gsm.invincibleMinty || this.invincible || this.time.now < this.hurtUntil;
+  }
   private lastCheckpoint: { x: number; y: number } | null = null;
   private paperAmmo: number = 0;
   private goldPapersCollected: number = 0;
@@ -93,17 +98,9 @@ export class LevelScene extends Phaser.Scene {
   private bossType: string = '';
   private bossLastAttack: number = 0;
   private bossLastSpecial: number = 0;
+  private static readonly BOSS_COOLDOWN_SCALE = 1.3;
   private bossClones: Phaser.Physics.Arcade.Sprite[] = [];
   private bossInvincible: boolean = false;
-
-  // Envelop mechanic
-  private enveloped: boolean = false;
-  private envelopOverlay: Phaser.GameObjects.Rectangle | null = null;
-  private envelopText: Phaser.GameObjects.Text | null = null;
-  private envelopMeter: number = 0;
-  private envelopStartTime: number = 0;
-  private envelopLastDir: string = '';
-  private envelopMeterBar: Phaser.GameObjects.Graphics | null = null;
 
   // Active effects
   private activeEffects: Map<string, Phaser.Time.TimerEvent> = new Map();
@@ -162,6 +159,10 @@ export class LevelScene extends Phaser.Scene {
   private bridgeVelocityX: number = 0;
   private bridgeVelocityY: number = 0;
   private flightActive: boolean = false;
+  private wrenUnlocked = false;
+  private wrenFlying = false;
+  private wrenCommand = '';
+  private wrenCommandTime = -Infinity;
   private flightTimer: Phaser.Time.TimerEvent | null = null;
   private basePlayerScaleMultiplier: number = 1;
   private permanentDeepseekHat: boolean = false;
@@ -186,6 +187,11 @@ export class LevelScene extends Phaser.Scene {
     this.jumpsRemaining = MAX_JUMPS;
     this.bossDefeated = false;
     this.invincible = false;
+    this.hurtUntil = 0;
+    this.wrenUnlocked = false;
+    this.wrenFlying = false;
+    this.wrenCommand = '';
+    this.wrenCommandTime = -Infinity;
     this.speedMultiplier = 1;
     this.controlsReversed = false;
     this.controlShuffleTimer?.remove();
@@ -218,13 +224,6 @@ export class LevelScene extends Phaser.Scene {
     this.bossLastSpecial = 0;
     this.bossClones = [];
     this.bossInvincible = false;
-    this.enveloped = false;
-    this.envelopOverlay = null;
-    this.envelopText = null;
-    this.envelopMeter = 0;
-    this.envelopStartTime = 0;
-    this.envelopLastDir = '';
-    this.envelopMeterBar = null;
     this.clawd = null;
     this.clawdTimer = null;
     this.clawdFireTimer = null;
@@ -324,6 +323,16 @@ export class LevelScene extends Phaser.Scene {
     };
     this.keyZ = this.input.keyboard!.addKey('Z');
     this.keyX = this.input.keyboard!.addKey('X');
+    const keyboard = this.input.keyboard!;
+    const clearWrenCommand = () => { this.wrenCommand = ''; };
+    keyboard.on('keydown', this.readWrenCommand, this);
+    this.events.on(Phaser.Scenes.Events.PAUSE, clearWrenCommand);
+    this.game.events.on(Phaser.Core.Events.BLUR, clearWrenCommand);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      keyboard.off('keydown', this.readWrenCommand, this);
+      this.events.off(Phaser.Scenes.Events.PAUSE, clearWrenCommand);
+      this.game.events.off(Phaser.Core.Events.BLUR, clearWrenCommand);
+    });
 
     // Pause
     this.input.keyboard!.on('keydown-ESC', () => {
@@ -341,6 +350,7 @@ export class LevelScene extends Phaser.Scene {
       ammo: this.paperAmmo,
       level: this.levelNum,
       levelName: this.config.name,
+      invincibleMinty: this.gsm.invincibleMinty,
     });
 
     // State machine
@@ -459,7 +469,7 @@ export class LevelScene extends Phaser.Scene {
   private setPlayerVisual(textureKey: string, scaleMultiplier: number = 1, preserveFeet: boolean = true): void {
     if (!this.player?.active) return;
 
-    this.player.setTexture(textureKey);
+    this.player.setTexture(this.wrenUnlocked ? 'minty-wren' : textureKey);
     this.resizePlayerVisual(scaleMultiplier, preserveFeet);
   }
 
@@ -617,9 +627,9 @@ export class LevelScene extends Phaser.Scene {
     });
   }
 
-  private applyGlueDebuff(duration: number = 4500): void {
-    this.glueSlowFactor = 0.42;
-    this.glueJumpFactor = 0.6;
+  private applyGlueDebuff(duration: number = 900): void {
+    this.glueSlowFactor = 0.78;
+    this.glueJumpFactor = 0.9;
     this.glueTimer?.remove();
     this.glueTimer = this.time.delayedCall(duration, () => {
       this.glueSlowFactor = 1;
@@ -655,28 +665,15 @@ export class LevelScene extends Phaser.Scene {
   }
 
   private applyShockDrain(amount: number): void {
-    if (!this.player?.active) return;
+    if (!this.player?.active || this.playerProtected) return;
+    // A shock can drain repeatedly, without reapplying hit flashes or hit-stun.
     this.playerHealth -= amount;
     this.emitHUDUpdate();
-
-    if (this.playerHealth <= 0) {
-      this.clearShockSources();
-      this.endGoldenGateRide(true);
-      this.playerLives--;
-      if (this.playerLives <= 0) {
-        this.fsm.setState('dead');
-      } else {
-        this.playerHealth = this.maxPlayerHealth;
-        const respawn = this.lastCheckpoint || this.config.playerStart;
-        this.player.setPosition(respawn.x, respawn.y);
-        this.player.setVelocity(0, 0);
-        this.emitHUDUpdate();
-      }
-    }
+    if (this.playerHealth <= 0) this.loseLife();
   }
 
   private updateShockEffect(): void {
-    if (!this.player?.active || this.appleMelting) return;
+    if (!this.player?.active || this.gsm.invincibleMinty || this.appleMelting) return;
 
     if (this.shockSourceIds.size === 0) {
       if (!this.idleSleeping) {
@@ -697,9 +694,10 @@ export class LevelScene extends Phaser.Scene {
   }
 
   private startAppleMeltdown(): void {
-    if (!this.player?.active || this.appleMelting) return;
+    if (!this.player?.active || this.gsm.invincibleMinty || this.appleMelting) return;
 
     this.appleMelting = true;
+    this.endWrenFlight();
     this.endFlightMode(true);
     this.endGoldenGateRide(true);
     this.appleMeltTimer?.remove();
@@ -824,8 +822,57 @@ export class LevelScene extends Phaser.Scene {
     this.bridgeVelocityY = 0;
   }
 
+  private readWrenCommand(event: KeyboardEvent): void {
+    if (!this.wrenUnlocked || !this.player?.active || this.appleMelting ||
+        (!this.fsm.isState('playing') && !this.fsm.isState('bossFight'))) return;
+    // Native form fields and the site's editable widgets retain normal typing.
+    if (event.composedPath().some(node => node instanceof HTMLElement &&
+        (node.matches('input, textarea, select') || node.isContentEditable))) {
+      this.wrenCommand = '';
+      return;
+    }
+    if (event.repeat || event.ctrlKey || event.metaKey || event.altKey || event.isComposing) return;
+    const key = event.key.toLowerCase();
+    if (!/^[a-z]$/.test(key)) return;
+    const now = this.time.now;
+    if (now - this.wrenCommandTime > 1600) this.wrenCommand = '';
+    this.wrenCommandTime = now;
+    this.wrenCommand = (this.wrenCommand + key).slice(-4);
+    if (this.wrenCommand.endsWith('fly')) {
+      this.wrenCommand = '';
+      if (this.wrenFlying) return;
+      this.endFlightMode(true);
+      this.endGoldenGateRide(true);
+      this.wrenFlying = true;
+      const body = this.player.body as Phaser.Physics.Arcade.Body;
+      body.setAllowGravity(false);
+      body.setVelocityY(-150);
+      this.emitWrenHint();
+    } else if (this.wrenCommand.endsWith('fall')) {
+      this.wrenCommand = '';
+      this.endWrenFlight();
+    }
+  }
+
+  private endWrenFlight(): void {
+    if (!this.wrenFlying) return;
+    this.wrenFlying = false;
+    const body = this.player?.body as Phaser.Physics.Arcade.Body | undefined;
+    if (body) {
+      body.setAllowGravity(true);
+      this.applyLevelEnvironmentSetup();
+      if (body.velocity.y < 0) body.setVelocityY(0);
+    }
+    this.emitWrenHint();
+  }
+
+  private emitWrenHint(): void {
+    const hud = this.scene.get(SCENES.HUD);
+    hud?.events.emit('wrenFlightUpdate', { flying: this.wrenFlying });
+  }
+
   private startFlightMode(): void {
-    if (!this.player?.active) return;
+    if (!this.player?.active || this.wrenFlying) return;
 
     this.endGoldenGateRide(true);
     this.flightTimer?.remove();
@@ -866,7 +913,7 @@ export class LevelScene extends Phaser.Scene {
   }
 
   private updateFlightMode(moveDir: number): void {
-    if (!this.flightActive || !this.player?.active) return;
+    if ((!this.flightActive && !this.wrenFlying) || !this.player?.active) return;
 
     const body = this.player.body as Phaser.Physics.Arcade.Body;
     const ascend = this.isActionDown('jump');
@@ -916,6 +963,12 @@ export class LevelScene extends Phaser.Scene {
     if (!this.player?.active) return;
 
     const body = this.player.body as Phaser.Physics.Arcade.Body;
+    // The campaign normally has a continuous floor. Recover from a fall
+    // through geometry without dropping a life, papers or boss progress.
+    if (this.gsm.invincibleMinty && this.player.y >= GAME_HEIGHT) {
+      this.returnToCheckpoint();
+      return;
+    }
 
     if (this.appleMelting) {
       body.setVelocity(0, 0);
@@ -944,7 +997,7 @@ export class LevelScene extends Phaser.Scene {
     else if (this.isActionDown('right')) moveDir = 1;
 
     if (this.controlsReversed) moveDir *= -1;
-    if (this.flightActive) {
+    if (this.flightActive || this.wrenFlying) {
       this.updateFlightMode(moveDir);
     } else if (this.bridgeRideActive) {
       this.updateGoldenGateRide(moveDir);
@@ -959,14 +1012,14 @@ export class LevelScene extends Phaser.Scene {
     }
 
     // Reset jumps when grounded
-    if (body.blocked.down && !this.bridgeRideActive && !this.flightActive) {
+    if (body.blocked.down && !this.bridgeRideActive && !this.flightActive && !this.wrenFlying) {
       this.jumpsRemaining = MAX_JUMPS;
     }
 
     // Jump (with double jump)
     const jumpPressed = this.isActionJustPressed('jump');
 
-    if (!this.bridgeRideActive && !this.flightActive && jumpPressed && this.jumpsRemaining > 0) {
+    if (!this.bridgeRideActive && !this.flightActive && !this.wrenFlying && jumpPressed && this.jumpsRemaining > 0) {
       if (this.jumpReversed) {
         // Copilot: backward launch instead of jump
         const body2 = this.player.body as Phaser.Physics.Arcade.Body;
@@ -1763,13 +1816,19 @@ export class LevelScene extends Phaser.Scene {
       ssi: 'pu-ssi', deepseek: 'pu-deepseek', nvidia: 'pu-nvidia',
       clippy: 'pd-clippy', fogCloud: 'pd-fog', grok: 'pd-grok', dataLeak: 'pd-leak',
       copilot: 'pd-copilot', meta: 'pd-meta', qwen: 'pd-qwen', openclaw: 'pd-openclaw', apple: 'pd-apple',
-      goldenGate: 'pu-goldenGate', jetpack: 'pu-jetpack',
+      goldenGate: 'pu-goldenGate', jetpack: 'pu-jetpack', wren: 'pu-wren',
     };
     const spawnPickup = (x: number, y: number, type: string) => {
       const tex = textureMap[type] || 'pu-shield';
       const item = this.powerUps.create(x, y, tex) as Phaser.Physics.Arcade.Sprite;
       item.body!.allowGravity = false;
       item.setData('puType', type);
+      if (type === 'wren') {
+        item.setData('pickupLabel', this.add.text(x, y - 27, 'WREN POWER-UP', {
+          fontFamily: '"JetBrains Mono", monospace', fontSize: '8px',
+          color: '#fff4c6', stroke: '#0d1117', strokeThickness: 3,
+        }).setOrigin(0.5).setDepth(59));
+      }
       this.tweens.add({
         targets: item,
         y: y - 4,
@@ -1780,7 +1839,7 @@ export class LevelScene extends Phaser.Scene {
       });
     };
 
-    const fixedTypes = new Set(['goldenGate', 'jetpack']);
+    const fixedTypes = new Set(['goldenGate', 'jetpack', 'wren']);
     const fixedSpawns = this.config.powerUps.filter((powerUp) => fixedTypes.has(powerUp.type));
     const flexiblePositions = this.config.powerUps.filter((powerUp) => !fixedTypes.has(powerUp.type));
 
@@ -1899,8 +1958,9 @@ export class LevelScene extends Phaser.Scene {
     this.bossType = bc.type;
     this.boss.setData('isBoss', true);
     this.boss.setData('type', bc.type);
-    this.boss.setData('hp', bc.hp);
-    this.boss.setData('maxHp', bc.hp);
+    const bossHp = Math.max(1, Math.ceil(bc.hp * 0.8));
+    this.boss.setData('hp', bossHp);
+    this.boss.setData('maxHp', bossHp);
     this.boss.setData('phases', bc.phases);
     this.boss.setData('currentPhase', 0);
     this.boss.setData('score', 500);
@@ -1911,8 +1971,8 @@ export class LevelScene extends Phaser.Scene {
     this.boss.setData('lastSlop', 0);
     this.boss.setData('slopInterval', 1500);
     this.boss.setData('tier', 'orange');
-    this.bossMaxHealth = bc.hp;
-    this.bossHealth = bc.hp;
+    this.bossMaxHealth = bossHp;
+    this.bossHealth = bossHp;
   }
 
   private canCollectPaper(_player: any, paper: any): boolean {
@@ -1969,7 +2029,7 @@ export class LevelScene extends Phaser.Scene {
       p.destroy();
       this.spawnParticles(p.x, p.y, 0xff4444, 10);
       this.cameras.main.shake(200, 0.01);
-      if (!this.invincible) {
+      if (!this.playerProtected) {
         this.takeDamage(BOSS_FAKE_PAPER_DAMAGE);
       }
       return;
@@ -2034,6 +2094,7 @@ export class LevelScene extends Phaser.Scene {
   private collectPowerUp(_player: any, item: any): void {
     const pu = item as Phaser.Physics.Arcade.Sprite;
     const type = pu.getData('puType') as string;
+    pu.getData('pickupLabel')?.destroy();
     pu.destroy();
 
     this.applyPowerUp(type);
@@ -2047,6 +2108,10 @@ export class LevelScene extends Phaser.Scene {
     }
 
     const isPowerDown = ['clippy', 'fogCloud', 'grok', 'dataLeak', 'copilot', 'meta', 'qwen', 'openclaw', 'apple'].includes(type);
+    if (isPowerDown && this.gsm.invincibleMinty) {
+      this.showStatusBanner('INVINCIBLE MINTY', '#7ee5d6');
+      return;
+    }
     audioEngine.playSFX(isPowerDown ? 'powerdown' : 'powerup');
 
     switch (type) {
@@ -2211,35 +2276,11 @@ export class LevelScene extends Phaser.Scene {
         }));
         break;
       case 'qwen':
-        // Instant explosion — lose a life
-        // Particle burst
-        this.endFlightMode(true);
+        // Instant explosion — lose a life in standard play.
         this.spawnParticles(this.player.x, this.player.y, 0xEF4444, 20);
         this.cameras.main.shake(400, 0.03);
         this.cameras.main.flash(200, 255, 100, 100);
-        // Lose a life
-        this.playerLives--;
-        if (this.playerLives <= 0) {
-          this.fsm.setState('dead');
-        } else {
-          this.playerHealth = this.maxPlayerHealth;
-          const respawn = this.lastCheckpoint || this.config.playerStart;
-          this.player.setPosition(respawn.x, respawn.y);
-          this.player.setVelocity(0, 0);
-          // Swap to bandage texture for 5s
-          this.setPlayerVisual('minty-bandage', 1, false);
-          this.time.delayedCall(5000, () => {
-            if (this.player?.active) this.setPlayerVisual('minty-teal');
-          });
-          // Brief invincibility
-          this.invincible = true;
-          this.player.setAlpha(0.5);
-          this.time.delayedCall(2000, () => {
-            this.invincible = false;
-            if (this.player?.active) this.player.setAlpha(1);
-          });
-        }
-        this.emitHUDUpdate();
+        this.loseLife();
         break;
       case 'openclaw':
         // Spawn 30 lobsters that block movement
@@ -2257,7 +2298,7 @@ export class LevelScene extends Phaser.Scene {
           lobster.body!.allowGravity = false;
           this.physics.add.collider(this.player, lobster);
           this.physics.add.overlap(this.player, lobster, () => {
-            if (this.invincible || !this.player?.active) return;
+            if (this.playerProtected || !this.player?.active) return;
             this.takeDamage(Math.ceil(CONTACT_DAMAGE / 2));
             const dir = this.player.x < lobster.x ? -1 : 1;
             this.player.setVelocity(dir * 120, -80);
@@ -2275,7 +2316,14 @@ export class LevelScene extends Phaser.Scene {
         this.enableDeepseekMode(POWERUP_DURATION.deepseek);
         break;
       case 'goldenGate':
+        this.endWrenFlight();
         this.startGoldenGateRide();
+        break;
+      case 'wren':
+        this.wrenUnlocked = true;
+        this.setPlayerVisual('minty-wren');
+        this.showStatusBanner('CAROLINA WREN! TYPE FLY', '#fff4c6');
+        this.emitWrenHint();
         break;
       case 'jetpack':
         this.startFlightMode();
@@ -2375,7 +2423,7 @@ export class LevelScene extends Phaser.Scene {
       return;
     }
 
-    if (this.invincible || this.time.now < this.stompGraceUntil) return;
+    if (this.playerProtected || this.time.now < this.stompGraceUntil) return;
 
     if (enemyType === 'zuckerberg') {
       const readyAt = (e.getData('stealReadyAt') as number) || 0;
@@ -2430,6 +2478,7 @@ export class LevelScene extends Phaser.Scene {
     const sourceType = s.getData('sourceType') as string;
 
     if (sourceType === 'meanCommentTrap') {
+      if (this.playerProtected) { s.destroy(); return; }
       const body = this.player.body as Phaser.Physics.Arcade.Body;
       const dx = s.x - this.player.x;
       const dy = s.y - this.player.y;
@@ -2443,7 +2492,7 @@ export class LevelScene extends Phaser.Scene {
 
     if (sourceType === 'ventureCapitalistMoney') {
       s.destroy();
-      if (this.invincible) return;
+      if (this.playerProtected) return;
       this.cameras.main.flash(80, 255, 245, 180);
       this.takeDamage(SLOP_DAMAGE);
       return;
@@ -2451,7 +2500,7 @@ export class LevelScene extends Phaser.Scene {
 
     if (sourceType === 'pauseGlue') {
       s.destroy();
-      if (this.invincible) return;
+      if (this.playerProtected) return;
       this.applyGlueDebuff();
       this.takeDamage(Math.ceil(SLOP_DAMAGE / 2));
       return;
@@ -2459,14 +2508,13 @@ export class LevelScene extends Phaser.Scene {
 
     if (sourceType === 'datacenterOctopus') {
       s.destroy();
-      if (this.invincible) return;
+      if (this.playerProtected) return;
       this.takeDamage(SLOP_DAMAGE + 5);
       return;
     }
 
-    if (this.invincible) return;
     s.destroy();
-    this.takeDamage(SLOP_DAMAGE);
+    this.takeDamage(sourceType === 'boss' ? Math.ceil(SLOP_DAMAGE * 0.8) : SLOP_DAMAGE);
   }
 
   private paperHitEnemy(projectile: any, enemy: any): void {
@@ -2581,42 +2629,49 @@ export class LevelScene extends Phaser.Scene {
     audioEngine.playSFX('checkpoint');
   }
 
-  private takeDamage(amount: number): void {
-    if (this.invincible) return;
-    this.playerHealth -= amount;
+  private grantHitGrace(duration: number): void {
+    const end = this.time.now + duration;
+    this.hurtUntil = end;
+    // Indicate a hit without swapping textures or changing the physics body.
+    this.player.setAlpha(0.55);
+    this.time.delayedCall(duration, () => {
+      if (this.player?.active && this.hurtUntil === end) this.player.setAlpha(1);
+    });
+  }
+
+  private returnToCheckpoint(): void {
+    this.endWrenFlight();
+    this.endFlightMode(true);
+    this.endGoldenGateRide(true);
+    this.clearShockSources();
+    const respawn = this.lastCheckpoint || this.config.playerStart;
+    const body = this.player.body as Phaser.Physics.Arcade.Body;
+    body.setAllowGravity(true);
+    body.reset(respawn.x, respawn.y);
+    this.jumpsRemaining = MAX_JUMPS;
+  }
+
+  private loseLife(): void {
+    if (this.gsm.invincibleMinty || this.fsm.isState('dead')) return;
+    this.playerLives--;
+    if (this.playerLives <= 0) {
+      this.fsm.setState('dead');
+    } else {
+      this.playerHealth = this.maxPlayerHealth;
+      this.returnToCheckpoint();
+      this.grantHitGrace(1900);
+    }
     this.emitHUDUpdate();
+  }
 
-    // Brief invincibility
-    this.invincible = true;
-    this.player.setAlpha(0.5);
-    this.time.delayedCall(1000, () => {
-      this.invincible = false;
-      if (this.player?.active) this.player.setAlpha(1);
-    });
-
-    // Bandage visual after being hit
-    this.setPlayerVisual('minty-bandage');
-    this.time.delayedCall(5000, () => {
-      if (this.player?.active && !this.invincible) {
-        this.setPlayerVisual('minty-teal');
-      }
-    });
-
+  private takeDamage(amount: number): void {
+    if (!this.player?.active || this.playerProtected || this.fsm.isState('dead')) return;
+    this.playerHealth -= amount;
     if (this.playerHealth <= 0) {
-      this.clearShockSources();
-      this.endFlightMode(true);
-      this.endGoldenGateRide(true);
-      this.playerLives--;
-      if (this.playerLives <= 0) {
-        this.fsm.setState('dead');
-      } else {
-        // Respawn
-        this.playerHealth = this.maxPlayerHealth;
-        const respawn = this.lastCheckpoint || this.config.playerStart;
-        this.player.setPosition(respawn.x, respawn.y);
-        this.player.setVelocity(0, 0);
-        this.emitHUDUpdate();
-      }
+      this.loseLife();
+    } else {
+      this.grantHitGrace(1600);
+      this.emitHUDUpdate();
     }
   }
 
@@ -2650,17 +2705,14 @@ export class LevelScene extends Phaser.Scene {
 
     this.time.delayedCall(1500, () => {
       this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
+      // No immediate barrage as the camera hands control back.
+      this.bossLastAttack = this.time.now;
+      this.bossLastSpecial = this.time.now;
       this.fsm.setState('bossFight');
     });
   }
 
   private updateBossFight(_dt: number): void {
-    // Handle envelop state separately
-    if (this.enveloped) {
-      this.updateEnvelop();
-      return;
-    }
-
     this.updatePlaying(_dt);
 
     if (!this.boss?.active) return;
@@ -2734,7 +2786,7 @@ export class LevelScene extends Phaser.Scene {
     const pullInterval = [6000, 4000, 2000][phase] || 2000;
 
     // Pull player toward boss periodically
-    if (now - this.bossLastSpecial > pullInterval) {
+    if (now - this.bossLastSpecial > pullInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastSpecial = now;
       // Apply pull force for 1.5s
       const pullTimer = this.time.addEvent({
@@ -2744,14 +2796,14 @@ export class LevelScene extends Phaser.Scene {
           if (!this.boss?.active || !this.player?.active) return;
           const dir = this.boss.x > this.player.x ? 1 : -1;
           const body = this.player.body as Phaser.Physics.Arcade.Body;
-          body.setVelocityX(body.velocity.x + dir * 8);
+          if (!this.playerProtected) body.setVelocityX(body.velocity.x + dir * 6);
         },
       });
     }
 
     // Fire fan of 3 projectiles
     const fireInterval = Math.max(800, 1200 - phase * 200);
-    if (now - this.bossLastAttack > fireInterval) {
+    if (now - this.bossLastAttack > fireInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       for (let i = -1; i <= 1; i++) {
         this.throwBossProjectile('boss-projectile', this.boss.x, this.boss.y,
@@ -2768,14 +2820,14 @@ export class LevelScene extends Phaser.Scene {
     const jumpInterval = [5000, 3500, 2500][phase] || 2500;
 
     // Jump attack
-    if (now - this.bossLastSpecial > jumpInterval) {
+    if (now - this.bossLastSpecial > jumpInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastSpecial = now;
       this.bossJumpAttack();
     }
 
     // Fire single targeted shots
     const fireInterval = Math.max(600, 1000 - phase * 150);
-    if (now - this.bossLastAttack > fireInterval) {
+    if (now - this.bossLastAttack > fireInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       this.throwBossProjectile('boss-projectile', this.boss.x, this.boss.y,
         this.player.x, this.player.y, 220);
@@ -2830,7 +2882,7 @@ export class LevelScene extends Phaser.Scene {
       this.cameras.main.shake(200, 0.015);
       // Shockwave damage check
       const dist = Math.abs(this.player.x - this.boss!.x);
-      if (dist < BOSS_SHOCKWAVE_RANGE && !this.invincible) {
+      if (dist < BOSS_SHOCKWAVE_RANGE && !this.playerProtected) {
         this.takeDamage(BOSS_JUMP_DAMAGE);
       }
       this.spawnParticles(this.boss!.x, this.boss!.y + 30, 0xffffff, 8);
@@ -2857,7 +2909,7 @@ export class LevelScene extends Phaser.Scene {
 
     // Fire projectiles that split
     const fireInterval = Math.max(600, 1000 - phase * 150);
-    if (now - this.bossLastAttack > fireInterval) {
+    if (now - this.bossLastAttack > fireInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       this.throwBossProjectile('boss-projectile', this.boss.x, this.boss.y,
         this.player.x, this.player.y, 180);
@@ -2898,13 +2950,13 @@ export class LevelScene extends Phaser.Scene {
     const vacuumInterval = [4000, 3000, 2000, 1500][phase] || 1500;
 
     // Vacuum nearby papers
-    if (now - this.bossLastSpecial > vacuumInterval) {
+    if (now - this.bossLastSpecial > vacuumInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastSpecial = now;
       this.bossPaperVacuum();
     }
 
     // Spawn fake grey papers periodically
-    if (now - this.bossLastAttack > 3000) {
+    if (now - this.bossLastAttack > 3000 * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       const fx = this.player.x + Phaser.Math.Between(-100, 100);
       const fy = this.player.y - Phaser.Math.Between(40, 80);
@@ -2966,7 +3018,7 @@ export class LevelScene extends Phaser.Scene {
     const envelopInterval = [12000, 9000, 7000][phase] || 7000;
 
     // Teleport
-    if (now - this.bossLastSpecial > teleportInterval) {
+    if (now - this.bossLastSpecial > teleportInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastSpecial = now;
       // Fade out
       this.tweens.add({
@@ -2992,7 +3044,7 @@ export class LevelScene extends Phaser.Scene {
     }
 
     // Fire bursts of 5 slow homing void tendrils
-    if (now - this.bossLastAttack > 2000) {
+    if (now - this.bossLastAttack > 2000 * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       for (let i = 0; i < 5; i++) {
         this.time.delayedCall(i * 150, () => {
@@ -3023,7 +3075,7 @@ export class LevelScene extends Phaser.Scene {
     this.boss.setVelocityX(Math.min(speed, 70) * dir);
 
     // Mixed projectiles, fires every 800ms
-    if (now - this.bossLastAttack > 800) {
+    if (now - this.bossLastAttack > 800 * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       this.throwBossProjectile('boss-projectile', this.boss.x, this.boss.y,
         this.player.x, this.player.y, 220);
@@ -3034,7 +3086,7 @@ export class LevelScene extends Phaser.Scene {
     if (phase >= 0 && now % 5000 < 50) {
       const pBody = this.player.body as Phaser.Physics.Arcade.Body;
       const pullDir = this.boss.x > this.player.x ? 1 : -1;
-      pBody.setVelocityX(pBody.velocity.x + pullDir * 12);
+      if (!this.playerProtected) pBody.setVelocityX(pBody.velocity.x + pullDir * 9);
     }
 
     // Phase 1+: Head bounce (every 6s)
@@ -3087,7 +3139,7 @@ export class LevelScene extends Phaser.Scene {
     this.boss.setVelocityX(speed * dir);
 
     const fireInterval = [1850, 1450, 1100][phase] || 1100;
-    if (now - this.bossLastAttack > fireInterval) {
+    if (now - this.bossLastAttack > fireInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       const spread = phase >= 2 ? 1 : 0;
       for (let i = -spread; i <= spread; i++) {
@@ -3103,7 +3155,7 @@ export class LevelScene extends Phaser.Scene {
     }
 
     const burstInterval = [5200, 4100, 3200][phase] || 3200;
-    if (now - this.bossLastSpecial > burstInterval) {
+    if (now - this.bossLastSpecial > burstInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastSpecial = now;
       for (let i = 0; i < 2 + phase; i++) {
         this.time.delayedCall(i * 160, () => {
@@ -3131,7 +3183,7 @@ export class LevelScene extends Phaser.Scene {
     this.boss.setVelocityX(speed * dir * 0.75);
 
     const fireInterval = [1500, 1100, 800][phase] || 800;
-    if (now - this.bossLastAttack > fireInterval) {
+    if (now - this.bossLastAttack > fireInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       const volleySize = 2 + phase;
       for (let i = 0; i < volleySize; i++) {
@@ -3151,7 +3203,7 @@ export class LevelScene extends Phaser.Scene {
     }
 
     const burstInterval = [4200, 3200, 2400][phase] || 2400;
-    if (now - this.bossLastSpecial > burstInterval) {
+    if (now - this.bossLastSpecial > burstInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastSpecial = now;
       const spread = phase >= 2 ? 2 : 1;
       for (let i = -spread; i <= spread; i++) {
@@ -3179,7 +3231,7 @@ export class LevelScene extends Phaser.Scene {
     this.boss.setVelocity(0, 0);
 
     const fireInterval = [1600, 1200, 900][phase] || 900;
-    if (now - this.bossLastAttack > fireInterval) {
+    if (now - this.bossLastAttack > fireInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       const spread = phase >= 2 ? 1 : 0;
       for (let i = -spread; i <= spread; i++) {
@@ -3194,7 +3246,7 @@ export class LevelScene extends Phaser.Scene {
     }
 
     const burstInterval = [4200, 3200, 2600][phase] || 2600;
-    if (now - this.bossLastSpecial > burstInterval) {
+    if (now - this.bossLastSpecial > burstInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastSpecial = now;
       const targets = 4 + phase;
       for (let i = 0; i < targets; i++) {
@@ -3229,7 +3281,7 @@ export class LevelScene extends Phaser.Scene {
     this.boss.setFlipX(this.player.x < this.boss.x);
 
     const fireInterval = [1500, 1050, 760][phase] || 760;
-    if (now - this.bossLastAttack > fireInterval) {
+    if (now - this.bossLastAttack > fireInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       const volley = 2 + phase;
       for (let i = 0; i < volley; i++) {
@@ -3247,7 +3299,7 @@ export class LevelScene extends Phaser.Scene {
     }
 
     const burstInterval = [3800, 3000, 2200][phase] || 2200;
-    if (now - this.bossLastSpecial > burstInterval) {
+    if (now - this.bossLastSpecial > burstInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastSpecial = now;
       const spread = phase >= 2 ? 2 : 1;
       for (let i = -spread; i <= spread; i++) {
@@ -3271,7 +3323,7 @@ export class LevelScene extends Phaser.Scene {
     this.boss.setX(originX + Math.sin(now * 0.0012) * (32 + phase * 14));
 
     const fireInterval = [1350, 1000, 760][phase] || 760;
-    if (now - this.bossLastAttack > fireInterval) {
+    if (now - this.bossLastAttack > fireInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       const volley = 2 + phase;
       for (let i = 0; i < volley; i++) {
@@ -3290,7 +3342,7 @@ export class LevelScene extends Phaser.Scene {
     }
 
     const scanInterval = [4300, 3200, 2400][phase] || 2400;
-    if (now - this.bossLastSpecial > scanInterval) {
+    if (now - this.bossLastSpecial > scanInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastSpecial = now;
       const count = 2 + phase;
       const baseX = Phaser.Math.Clamp(this.player.x, 90, this.config.width - 90);
@@ -3310,7 +3362,7 @@ export class LevelScene extends Phaser.Scene {
     this.boss.setVelocity(0, 0);
 
     const fireInterval = [1250, 950, 720][phase] || 720;
-    if (now - this.bossLastAttack > fireInterval) {
+    if (now - this.bossLastAttack > fireInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       const spread = phase >= 2 ? 1 : 0;
       for (let i = -spread; i <= spread; i++) {
@@ -3326,7 +3378,7 @@ export class LevelScene extends Phaser.Scene {
     }
 
     const crashInterval = [4100, 3000, 2200][phase] || 2200;
-    if (now - this.bossLastSpecial > crashInterval) {
+    if (now - this.bossLastSpecial > crashInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastSpecial = now;
       const count = 3 + phase;
       for (let i = 0; i < count; i++) {
@@ -3347,7 +3399,7 @@ export class LevelScene extends Phaser.Scene {
     this.boss.setVelocity(0, 0);
 
     const fireInterval = [1300, 960, 740][phase] || 740;
-    if (now - this.bossLastAttack > fireInterval) {
+    if (now - this.bossLastAttack > fireInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       const burst = 2 + phase;
       for (let i = 0; i < burst; i++) {
@@ -3366,7 +3418,7 @@ export class LevelScene extends Phaser.Scene {
     }
 
     const summonsInterval = [5000, 3900, 3000][phase] || 3000;
-    if (now - this.bossLastSpecial > summonsInterval) {
+    if (now - this.bossLastSpecial > summonsInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastSpecial = now;
       const leftX = Phaser.Math.Clamp(this.player.x - 220, 90, this.config.width - 90);
       const rightX = Phaser.Math.Clamp(this.player.x + 220, 90, this.config.width - 90);
@@ -3384,7 +3436,7 @@ export class LevelScene extends Phaser.Scene {
     this.boss.setVelocity(0, 0);
 
     const fireInterval = [1400, 1100, 860, 700][phase] || 700;
-    if (now - this.bossLastAttack > fireInterval) {
+    if (now - this.bossLastAttack > fireInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       const volley = 2 + Math.min(2, phase);
       for (let i = 0; i < volley; i++) {
@@ -3403,7 +3455,7 @@ export class LevelScene extends Phaser.Scene {
     }
 
     const stampInterval = [4400, 3300, 2500, 2100][phase] || 2100;
-    if (now - this.bossLastSpecial > stampInterval) {
+    if (now - this.bossLastSpecial > stampInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastSpecial = now;
       const count = 2 + Math.min(2, phase);
       for (let i = 0; i < count; i++) {
@@ -3422,7 +3474,7 @@ export class LevelScene extends Phaser.Scene {
     this.boss.setVelocity(0, 0);
 
     const fireInterval = [1250, 980, 780, 620][phase] || 620;
-    if (now - this.bossLastAttack > fireInterval) {
+    if (now - this.bossLastAttack > fireInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       const burst = 2 + Math.min(2, phase);
       for (let i = -Math.floor(burst / 2); i <= Math.floor(burst / 2); i++) {
@@ -3438,7 +3490,7 @@ export class LevelScene extends Phaser.Scene {
     }
 
     const beamInterval = [4300, 3200, 2500, 2000][phase] || 2000;
-    if (now - this.bossLastSpecial > beamInterval) {
+    if (now - this.bossLastSpecial > beamInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastSpecial = now;
       const x = Phaser.Math.Clamp(this.player.x, 90, this.config.width - 90);
       this.telegraphColumnStrike(x, 86, 0xf97316, 20 + phase * 2, 780);
@@ -3462,7 +3514,7 @@ export class LevelScene extends Phaser.Scene {
     body.setVelocityX(dir * (70 + phase * 18));
 
     const fireInterval = [1500, 1150, 900, 760][phase] || 760;
-    if (now - this.bossLastAttack > fireInterval) {
+    if (now - this.bossLastAttack > fireInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       this.throwBossProjectile(
         'boss-projectile',
@@ -3475,7 +3527,7 @@ export class LevelScene extends Phaser.Scene {
     }
 
     const chargeInterval = [4200, 3200, 2500, 1900][phase] || 1900;
-    if (now - this.bossLastSpecial > chargeInterval) {
+    if (now - this.bossLastSpecial > chargeInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastSpecial = now;
       this.boss.setData('chargeUntil', now + 850);
       this.showStatusBanner('HEADLIGHTS', '#fde68a');
@@ -3491,7 +3543,7 @@ export class LevelScene extends Phaser.Scene {
     this.boss.setVelocityX(speed * dir * 0.7);
 
     const fireInterval = [1400, 1050, 850, 700][phase] || 700;
-    if (now - this.bossLastAttack > fireInterval) {
+    if (now - this.bossLastAttack > fireInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       const volley = 2 + Math.min(2, phase);
       for (let i = 0; i < volley; i++) {
@@ -3510,7 +3562,7 @@ export class LevelScene extends Phaser.Scene {
     }
 
     const pullInterval = [4500, 3400, 2600, 2100][phase] || 2100;
-    if (now - this.bossLastSpecial > pullInterval) {
+    if (now - this.bossLastSpecial > pullInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastSpecial = now;
       this.time.addEvent({
         delay: 60,
@@ -3519,7 +3571,7 @@ export class LevelScene extends Phaser.Scene {
           if (!this.boss?.active || !this.player?.active) return;
           const body = this.player.body as Phaser.Physics.Arcade.Body;
           const pullDir = this.boss.x > this.player.x ? 1 : -1;
-          body.setVelocityX(body.velocity.x + pullDir * 10);
+          if (!this.playerProtected) body.setVelocityX(body.velocity.x + pullDir * 8);
         },
       });
       this.summonBossEnemy('waterWave', this.player.x + Phaser.Math.Between(-120, 120), -60, 'peach', 0, true);
@@ -3541,7 +3593,7 @@ export class LevelScene extends Phaser.Scene {
     );
 
     const fireInterval = [1200, 920, 760, 620][phase] || 620;
-    if (now - this.bossLastAttack > fireInterval) {
+    if (now - this.bossLastAttack > fireInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       const volley = 2 + Math.min(2, phase);
       for (let i = 0; i < volley; i++) {
@@ -3560,7 +3612,7 @@ export class LevelScene extends Phaser.Scene {
     }
 
     const boosterInterval = [4200, 3100, 2400, 1900][phase] || 1900;
-    if (now - this.bossLastSpecial > boosterInterval) {
+    if (now - this.bossLastSpecial > boosterInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastSpecial = now;
       const count = 2 + Math.min(2, phase);
       for (let i = 0; i < count; i++) {
@@ -3582,7 +3634,7 @@ export class LevelScene extends Phaser.Scene {
     this.boss.setVelocity(0, 0);
 
     const fireInterval = [1250, 980, 760, 620][phase] || 620;
-    if (now - this.bossLastAttack > fireInterval) {
+    if (now - this.bossLastAttack > fireInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       this.throwBossProjectile(
         phase % 2 === 0 ? 'comment-projectile' : 'tweet-projectile',
@@ -3595,7 +3647,7 @@ export class LevelScene extends Phaser.Scene {
     }
 
     const fakeInterval = [4200, 3200, 2500, 1900][phase] || 1900;
-    if (now - this.bossLastSpecial > fakeInterval) {
+    if (now - this.bossLastSpecial > fakeInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastSpecial = now;
       for (let i = 0; i < 2 + Math.min(2, phase); i++) {
         this.spawnFakePaperDecoy(
@@ -3623,7 +3675,7 @@ export class LevelScene extends Phaser.Scene {
     );
 
     const fireInterval = [1180, 900, 720, 600, 520][phase] || 520;
-    if (now - this.bossLastAttack > fireInterval) {
+    if (now - this.bossLastAttack > fireInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       const volley = 2 + Math.min(2, phase);
       for (let i = 0; i < volley; i++) {
@@ -3642,7 +3694,7 @@ export class LevelScene extends Phaser.Scene {
     }
 
     const strikeInterval = [3900, 3000, 2400, 1900, 1600][phase] || 1600;
-    if (now - this.bossLastSpecial > strikeInterval) {
+    if (now - this.bossLastSpecial > strikeInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastSpecial = now;
       this.showStatusBanner('TARGET LOCK', '#fca5a5');
       const count = 2 + Math.min(2, phase);
@@ -3669,7 +3721,7 @@ export class LevelScene extends Phaser.Scene {
     this.boss.setVelocity(0, 0);
 
     const fireInterval = [980, 820, 680, 580, 500][phase] || 500;
-    if (now - this.bossLastAttack > fireInterval) {
+    if (now - this.bossLastAttack > fireInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastAttack = now;
       const textures = ['boss-projectile', 'comment-projectile', 'tweet-projectile'];
       for (let i = 0; i < 3 + Math.min(2, phase); i++) {
@@ -3689,7 +3741,7 @@ export class LevelScene extends Phaser.Scene {
     }
 
     const comboInterval = [3400, 2800, 2200, 1800, 1500][phase] || 1500;
-    if (now - this.bossLastSpecial > comboInterval) {
+    if (now - this.bossLastSpecial > comboInterval * LevelScene.BOSS_COOLDOWN_SCALE) {
       this.bossLastSpecial = now;
       const count = 2 + Math.min(3, phase);
       for (let i = 0; i < count; i++) {
@@ -3763,7 +3815,7 @@ export class LevelScene extends Phaser.Scene {
       if (!this.player?.active) return;
       this.cameras.main.shake(150, 0.008);
       this.spawnParticles(x, Phaser.Math.Between(90, GAME_HEIGHT - 40), color, 12);
-      if (!this.invincible && Math.abs(this.player.x - x) <= width / 2) {
+      if (!this.playerProtected && Math.abs(this.player.x - x) <= width / 2) {
         this.takeDamage(damage);
       }
     });
@@ -3785,15 +3837,15 @@ export class LevelScene extends Phaser.Scene {
     });
   }
 
-  // ── Envelop Mechanic ──
+  // ── Boss Charge (keeps Minty in control) ──
   private startEnvelopCharge(): void {
-    if (!this.boss?.active || !this.player?.active) return;
+    if (!this.boss?.active || !this.player?.active || this.gsm.invincibleMinty) return;
     // Boss charges at player
     const chargeTimer = this.time.addEvent({
       delay: 50,
       repeat: 40, // 2s charge window
       callback: () => {
-        if (!this.boss?.active || !this.player?.active || this.enveloped) {
+        if (!this.boss?.active || !this.player?.active) {
           chargeTimer.remove();
           return;
         }
@@ -3805,134 +3857,14 @@ export class LevelScene extends Phaser.Scene {
         );
         if (dist < 50) {
           chargeTimer.remove();
-          this.startEnvelop();
+          if (!this.playerProtected) {
+            this.showStatusBanner('DODGE THE CHARGE!', '#ffaaaa');
+            this.takeDamage(Math.ceil(BOSS_ENVELOP_DAMAGE / 2));
+            (this.player.body as Phaser.Physics.Arcade.Body).setVelocityY(-160);
+          }
         }
       },
     });
-  }
-
-  private startEnvelop(): void {
-    this.enveloped = true;
-    this.envelopMeter = 0;
-    this.envelopStartTime = this.time.now;
-    this.envelopLastDir = '';
-
-    // Lock player
-    const body = this.player.body as Phaser.Physics.Arcade.Body;
-    body.setVelocity(0, 0);
-    body.setAllowGravity(false);
-
-    // Dark overlay
-    this.envelopOverlay = this.add.rectangle(
-      GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.85
-    ).setScrollFactor(0).setDepth(300);
-
-    // Escape text
-    this.envelopText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 40, 'MASH ← → TO ESCAPE!', {
-      fontFamily: '"JetBrains Mono", monospace',
-      fontSize: '16px',
-      color: '#ff4444',
-      fontStyle: 'bold',
-      stroke: '#000000',
-      strokeThickness: 3,
-    }).setOrigin(0.5).setScrollFactor(0).setDepth(301);
-
-    // Meter bar
-    this.envelopMeterBar = this.add.graphics().setScrollFactor(0).setDepth(301);
-  }
-
-  private updateEnvelop(): void {
-    if (!this.enveloped) return;
-    const now = this.time.now;
-    const elapsed = now - this.envelopStartTime;
-
-    // Drain meter over time (4%/s)
-    this.envelopMeter = Math.max(0, this.envelopMeter - 0.04 * (1 / 60));
-
-    // Check L/R input for escape
-    if (this.isActionDown('left')) {
-      if (this.envelopLastDir !== 'left') {
-        this.envelopLastDir = 'left';
-        this.envelopMeter = Math.min(100, this.envelopMeter + 8);
-      }
-    } else if (this.isActionDown('right')) {
-      if (this.envelopLastDir !== 'right') {
-        this.envelopLastDir = 'right';
-        this.envelopMeter = Math.min(100, this.envelopMeter + 8);
-      }
-    }
-
-    // Draw meter
-    if (this.envelopMeterBar) {
-      this.envelopMeterBar.clear();
-      const barW = 200;
-      const barH = 12;
-      const bx = GAME_WIDTH / 2 - barW / 2;
-      const by = GAME_HEIGHT / 2;
-      // Background
-      this.envelopMeterBar.fillStyle(0x333333);
-      this.envelopMeterBar.fillRect(bx, by, barW, barH);
-      // Fill
-      const pct = this.envelopMeter / 100;
-      this.envelopMeterBar.fillStyle(pct > 0.7 ? 0x00ff00 : 0xffaa00);
-      this.envelopMeterBar.fillRect(bx, by, barW * pct, barH);
-      // Border
-      this.envelopMeterBar.lineStyle(1, 0xffffff);
-      this.envelopMeterBar.strokeRect(bx, by, barW, barH);
-    }
-
-    // Success: meter hits 100%
-    if (this.envelopMeter >= 100) {
-      this.cleanupEnvelop(true);
-      return;
-    }
-
-    // Failure: 5s time limit
-    if (elapsed >= 5000) {
-      this.cleanupEnvelop(false);
-      return;
-    }
-  }
-
-  private cleanupEnvelop(escaped: boolean): void {
-    this.enveloped = false;
-    this.envelopOverlay?.destroy();
-    this.envelopOverlay = null;
-    this.envelopText?.destroy();
-    this.envelopText = null;
-    this.envelopMeterBar?.destroy();
-    this.envelopMeterBar = null;
-
-    // Restore player physics
-    const body = this.player.body as Phaser.Physics.Arcade.Body;
-    body.setAllowGravity(true);
-
-    if (escaped) {
-      // Boss stunned 2s, player thrown back with invincibility
-      if (this.boss?.active) {
-        this.boss.setTint(0x888888);
-        this.boss.setVelocity(0, 0);
-        this.bossInvincible = true;
-        this.time.delayedCall(2000, () => {
-          if (this.boss?.active) this.boss.clearTint();
-          this.bossInvincible = false;
-        });
-      }
-      // Throw player back
-      const dir = this.player.x < (this.boss?.x || 0) ? -1 : 1;
-      body.setVelocity(dir * 200, -200);
-      this.invincible = true;
-      this.player.setAlpha(0.5);
-      this.time.delayedCall(2000, () => {
-        this.invincible = false;
-        if (this.player?.active) this.player.setAlpha(1);
-      });
-    } else {
-      // Failure: 40 damage + knockback
-      this.takeDamage(BOSS_ENVELOP_DAMAGE);
-      const dir = this.player.x < (this.boss?.x || 0) ? -1 : 1;
-      body.setVelocity(dir * 250, -200);
-    }
   }
 
   // ── Boss Helper Methods ──

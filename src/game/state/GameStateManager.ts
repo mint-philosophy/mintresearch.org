@@ -9,6 +9,7 @@ export interface GameSaveData {
   maxLevelUnlocked: number;
   totalPapersCollected: number;
   muted: boolean;
+  invincibleMinty: boolean;
 }
 
 const DEFAULT_STATE: GameSaveData = {
@@ -16,6 +17,7 @@ const DEFAULT_STATE: GameSaveData = {
   maxLevelUnlocked: 1,
   totalPapersCollected: 0,
   muted: false,
+  invincibleMinty: true,
 };
 
 export class GameStateManager {
@@ -46,6 +48,13 @@ export class GameStateManager {
   get maxLevelUnlocked(): number { return this.data.maxLevelUnlocked; }
   get totalPapersCollected(): number { return this.data.totalPapersCollected; }
   get muted(): boolean { return this.data.muted; }
+  get invincibleMinty(): boolean { return this.data.invincibleMinty !== false; }
+
+  toggleInvincibleMinty(): boolean {
+    this.data.invincibleMinty = !this.invincibleMinty;
+    this.save();
+    return this.data.invincibleMinty;
+  }
 
   updateHighScore(score: number): void {
     if (score > this.data.highScore) {

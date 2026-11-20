@@ -23,7 +23,10 @@ export class MenuScene extends Phaser.Scene {
 
   create(): void {
     this.stateManager = new GameStateManager();
+    this.levelTexts = [];
+    this.konamiBuffer = [];
     this.cameras.main.setBackgroundColor(COLORS.bg0);
+    this.drawRainbowBackdrop();
     const totalLevels = getTotalLevels();
 
     // Title
@@ -38,7 +41,7 @@ export class MenuScene extends Phaser.Scene {
     this.add.text(GAME_WIDTH / 2, 95, 'A MINT Lab Adventure', {
       fontFamily: '"JetBrains Mono", monospace',
       fontSize: '11px',
-      color: '#5c6370',
+      color: '#91a0b2',
     }).setOrigin(0.5);
 
     // Minty mascot
@@ -63,13 +66,13 @@ export class MenuScene extends Phaser.Scene {
     this.add.text(GAME_WIDTH / 2, 230, '── SELECT LEVEL ──', {
       fontFamily: '"JetBrains Mono", monospace',
       fontSize: '10px',
-      color: '#5c6370',
+      color: '#91a0b2',
     }).setOrigin(0.5);
 
     this.levelListContainer = this.add.container(GAME_WIDTH / 2, MenuScene.LEVEL_LIST_TOP);
 
     const listMask = this.make.graphics({ x: 0, y: 0, add: false });
-    listMask.fillRect(GAME_WIDTH / 2 - 180, MenuScene.LEVEL_LIST_TOP - 12, 360, MenuScene.LEVEL_ROW_HEIGHT * MenuScene.LEVEL_VISIBLE_ROWS + 24);
+    listMask.fillRect(GAME_WIDTH / 2 - 180, MenuScene.LEVEL_LIST_TOP - 12, 360, MenuScene.LEVEL_ROW_HEIGHT * MenuScene.LEVEL_VISIBLE_ROWS);
     this.levelListContainer.setMask(listMask.createGeometryMask());
 
     levelNames.forEach((name, i) => {
@@ -80,7 +83,7 @@ export class MenuScene extends Phaser.Scene {
       const text = this.add.text(0, y, unlocked ? name : `${level}. ????`, {
         fontFamily: '"JetBrains Mono", monospace',
         fontSize: '12px',
-        color: unlocked ? (level === this.selectedLevel ? '#2ec4b6' : '#abb2bf') : '#333333',
+        color: unlocked ? (level === this.selectedLevel ? '#2ec4b6' : '#abb2bf') : '#718095',
       }).setOrigin(0.5);
 
       if (unlocked) {
@@ -101,7 +104,7 @@ export class MenuScene extends Phaser.Scene {
     this.add.text(GAME_WIDTH / 2, 410, '[ W/S, arrows, or mouse wheel ]', {
       fontFamily: '"JetBrains Mono", monospace',
       fontSize: '10px',
-      color: '#5c6370',
+      color: '#91a0b2',
     }).setOrigin(0.5);
 
     // High score
@@ -112,6 +115,35 @@ export class MenuScene extends Phaser.Scene {
         color: '#e5c07b',
       }).setOrigin(0.5);
     }
+
+    // Keep the assist discoverable with either a mouse or keyboard.
+    const invincibleLabel = () => `INVINCIBLE MINTY: ${this.stateManager.invincibleMinty ? 'ON' : 'OFF'}`;
+    const assistBtn = this.add.text(GAME_WIDTH - 24, 122, invincibleLabel(), {
+      fontFamily: '"JetBrains Mono", monospace',
+      fontSize: '12px',
+      color: '#0d1117',
+      backgroundColor: '#7ee5d6',
+      padding: { x: 9, y: 6 },
+    }).setOrigin(1, 0.5).setInteractive({ useHandCursor: true });
+    const assistHint = this.add.text(GAME_WIDTH - 24, 147, '', {
+      fontFamily: '"JetBrains Mono", monospace',
+      fontSize: '9px',
+      color: '#abb2bf',
+    }).setOrigin(1, 0.5);
+    const refreshAssist = () => {
+      const on = this.stateManager.invincibleMinty;
+      assistBtn.setText(invincibleLabel()).setBackgroundColor(on ? '#7ee5d6' : '#abb2bf');
+      assistHint.setText(on ? 'No damage • I to toggle' : 'Standard • I to toggle');
+    };
+    const toggleAssist = () => {
+      this.stateManager.toggleInvincibleMinty();
+      refreshAssist();
+    };
+    assistBtn.on('pointerdown', toggleAssist);
+    this.input.keyboard!.on('keydown-I', (event: KeyboardEvent) => {
+      if (!event.repeat) toggleAssist();
+    });
+    refreshAssist();
 
     // Start prompt
     const prompt = this.add.text(GAME_WIDTH / 2, 466, '[ Press ENTER to start ]', {
@@ -160,6 +192,26 @@ export class MenuScene extends Phaser.Scene {
     });
 
     this.syncLevelListScroll();
+  }
+
+  private drawRainbowBackdrop(): void {
+    // Pixel-width stripes render consistently in Canvas and WebGL.
+    const rainbow = [0xf06278, 0xfb9958, 0xf5ce65, 0x80cb90, 0x58c8d8, 0x7d9ce7, 0xb78bdf];
+    const g = this.add.graphics();
+    const colorAt = (y: number) => {
+      const index = Math.min(rainbow.length - 2, Math.floor(y * (rainbow.length - 1) / (GAME_HEIGHT - 1)));
+      const mix = y * (rainbow.length - 1) / (GAME_HEIGHT - 1) - index;
+      const a = Phaser.Display.Color.IntegerToColor(rainbow[index]);
+      const b = Phaser.Display.Color.IntegerToColor(rainbow[index + 1]);
+      const rgb = Phaser.Display.Color.Interpolate.ColorWithColor(a, b, 100, Math.round(mix * 100));
+      return Phaser.Display.Color.GetColor(rgb.r, rgb.g, rgb.b);
+    };
+    for (let y = 0; y < GAME_HEIGHT; y += 4) {
+      g.fillStyle(colorAt(y), 1).fillRect(0, y, GAME_WIDTH, 4);
+    }
+    g.fillStyle(0x0d1117, 0.94).fillRoundedRect(GAME_WIDTH / 2 - 195, 30, 390, GAME_HEIGHT - 53, 14);
+    g.lineStyle(1, 0xffffff, 0.35).strokeRoundedRect(GAME_WIDTH / 2 - 195, 30, 390, GAME_HEIGHT - 53, 14);
+    g.fillStyle(0x0d1117, 0.95).fillRoundedRect(GAME_WIDTH - 200, 100, 185, 63, 9);
   }
 
   private changeSelection(dir: number): void {
