@@ -128,6 +128,18 @@
   root.MintBanner = api;
   root.dispatchEvent(new CustomEvent('mint-banner:ready', { detail: { version: VERSION } }));
 
+  /* The wrens (20 Nov 2026) live on this site's own pages, not on other sites that borrow the banner,
+     and not inside framed decks. Removing this block removes them everywhere. */
+  try {
+    if (new URL(scriptUrl).origin === root.location.origin && root.top === root && !document.querySelector('script[data-mint-wrens]')) {
+      var wrens = document.createElement('script');
+      wrens.src = defaultAssetRoot + 'mint-wrens.js?v=1';
+      wrens.defer = true;
+      wrens.setAttribute('data-mint-wrens', '');
+      document.head.appendChild(wrens);
+    }
+  } catch (e) { /* no wrens */ }
+
   function autoInit() { init('.top-banner'); }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', autoInit, { once: true });
