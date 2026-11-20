@@ -3,6 +3,7 @@ import { SCENES, COLORS, GAME_WIDTH, GAME_HEIGHT, LEVEL_THEMES } from '../consta
 import type { LevelNumber } from '../constants';
 import { GameStateManager } from '../state/GameStateManager';
 import { audioEngine } from '../systems/AudioEngine';
+import { RUN_UNLOCK_LEVEL } from './RunBonusScene';
 import { menuTrack } from '../audio/tracks/menu';
 import { getTotalLevels } from '../levels/LevelRegistry';
 
@@ -15,6 +16,8 @@ export class MenuScene extends Phaser.Scene {
   private levelTexts: Phaser.GameObjects.Text[] = [];
   private levelListContainer!: Phaser.GameObjects.Container;
   private konamiBuffer: string[] = [];
+  private startRunBonus!: () => void;
+  private refreshRunBonus!: () => void;
   private static readonly KONAMI_SEQUENCE = ['UP','UP','DOWN','DOWN','LEFT','RIGHT','LEFT','RIGHT','Z','X','ENTER'];
 
   constructor() {
@@ -145,6 +148,34 @@ export class MenuScene extends Phaser.Scene {
     });
     refreshAssist();
 
+    // The bonus does not occupy a campaign level number.
+    const bonusBtn = this.add.text(107, 122, 'BONUS: RUN!', {
+      fontFamily: '"JetBrains Mono", monospace', fontSize: '13px', color: '#13253a',
+      backgroundColor: '#ffdb81', padding: { x: 9, y: 6 },
+    }).setOrigin(0.5);
+    const bonusHint = this.add.text(107, 147, '', {
+      fontFamily: '"JetBrains Mono", monospace', fontSize: '9px', color: '#e3dfeb',
+    }).setOrigin(0.5);
+    this.startRunBonus = () => {
+      if (this.stateManager.maxLevelUnlocked < RUN_UNLOCK_LEVEL) return;
+      audioEngine.stopTrack();
+      this.scene.start(SCENES.RUN_BONUS);
+    };
+    bonusBtn.on('pointerdown', () => this.startRunBonus());
+    this.refreshRunBonus = () => {
+      const unlocked = this.stateManager.maxLevelUnlocked >= RUN_UNLOCK_LEVEL;
+      bonusBtn.setBackgroundColor(unlocked ? '#ffdb81' : '#c9c4cb');
+      bonusHint.setText(unlocked ? 'Press R or click' : 'Unlocks at Level 10');
+      if (unlocked) bonusBtn.setInteractive({ useHandCursor: true });
+      else bonusBtn.disableInteractive();
+    };
+    this.input.keyboard!.on('keydown-R', (event: KeyboardEvent) => {
+      if (event.repeat || event.composedPath().some(node => node instanceof HTMLElement &&
+          (node.matches('input, textarea, select') || node.isContentEditable))) return;
+      this.startRunBonus();
+    });
+    this.refreshRunBonus();
+
     // Start prompt
     const prompt = this.add.text(GAME_WIDTH / 2, 466, '[ Press ENTER to start ]', {
       fontFamily: '"JetBrains Mono", monospace',
@@ -212,6 +243,7 @@ export class MenuScene extends Phaser.Scene {
     g.fillStyle(0x0d1117, 0.94).fillRoundedRect(GAME_WIDTH / 2 - 195, 30, 390, GAME_HEIGHT - 53, 14);
     g.lineStyle(1, 0xffffff, 0.35).strokeRoundedRect(GAME_WIDTH / 2 - 195, 30, 390, GAME_HEIGHT - 53, 14);
     g.fillStyle(0x0d1117, 0.95).fillRoundedRect(GAME_WIDTH - 200, 100, 185, 63, 9);
+    g.fillRoundedRect(15, 100, 185, 63, 9);
   }
 
   private changeSelection(dir: number): void {
@@ -283,6 +315,7 @@ export class MenuScene extends Phaser.Scene {
 
     // Refresh level list highlighting
     this.updateLevelHighlight();
+    this.refreshRunBonus();
     // Rebuild level text colors to show newly unlocked
     this.levelTexts.forEach((text, i) => {
       const level = i + 1;

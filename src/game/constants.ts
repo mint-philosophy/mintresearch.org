@@ -194,6 +194,7 @@ export const SCENES = {
   DIALOGUE: 'DialogueScene',
   PAUSE: 'PauseScene',
   GAMEOVER: 'GameOverScene',
+  RUN_BONUS: 'RunBonusScene',
   CREDITS: 'Credits',
 } as const;
 
