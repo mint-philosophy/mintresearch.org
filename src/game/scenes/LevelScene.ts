@@ -1209,18 +1209,12 @@ export class LevelScene extends Phaser.Scene {
       enemy.setVelocityY(Phaser.Math.Between(120, 220));
     }
 
-    if (enemyData.type === 'octopus' && this.levelNum === 10) {
-      enemy.setScale(1.5);
-      enemy.setData('speed', tierData.speed + 28);
-      enemy.setData('slopInterval', Math.max(700, tierData.slopInterval - 900));
-      enemy.setData('airLeapCooldown', Phaser.Math.Between(1200, 2100));
-      enemy.setData('lastAirLeap', -Phaser.Math.Between(0, 1600));
-    }
-
     return enemy;
   }
 
   private spawnReinforcementWave(): void {
+    // Level 10 is kept sparse: no reinforcement waves there.
+    if (this.levelNum === 10) return;
     if (!this.player?.active || this.bossDefeated) return;
 
     const candidates = this.config.enemies.filter((enemy) => enemy.type !== 'cloudflareWall');
@@ -1300,18 +1294,6 @@ export class LevelScene extends Phaser.Scene {
           enemy.setVelocityX(speed * 1.2 * chaseDir);
         } else {
           enemy.setVelocityX(speed * dir);
-        }
-      } else if (enemyType === 'octopus' && this.levelNum === 10 && this.player?.active) {
-        const distToPlayer = Phaser.Math.Distance.Between(enemy.x, enemy.y, this.player.x, this.player.y);
-        const chaseDir = this.player.x > enemy.x ? 1 : -1;
-        const body = enemy.body as Phaser.Physics.Arcade.Body;
-        enemy.setVelocityX(speed * chaseDir);
-        const lastAirLeap = (enemy.getData('lastAirLeap') as number) || 0;
-        const airLeapCooldown = (enemy.getData('airLeapCooldown') as number) || 1600;
-        if (body.blocked.down && distToPlayer < 360 && this.time.now - lastAirLeap > airLeapCooldown) {
-          body.setVelocityX(chaseDir * speed * 1.35);
-          body.setVelocityY(-240);
-          enemy.setData('lastAirLeap', this.time.now);
         }
       } else {
         enemy.setVelocityX(speed * dir);
