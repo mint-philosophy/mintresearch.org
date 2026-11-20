@@ -180,6 +180,7 @@ export class RunBonusScene extends Phaser.Scene {
       fontFamily: FONT, color: won ? '#fff1c3' : '#ffd2df', fontSize: '25px', fontStyle: 'bold',
     }).setOrigin(.5).setDepth(11);
     if (won) {
+      this.addFlying67s();
       audioEngine.playSFX('victory');
       this.add.image(cx, 232, 'run-rainbow-67').setDepth(11);
       this.add.text(cx, 360, 'Bonus level complete!', { fontFamily: FONT, color: '#acf4e7', fontSize: '15px' }).setOrigin(.5).setDepth(11);
@@ -196,6 +197,37 @@ export class RunBonusScene extends Phaser.Scene {
     const actionY = won ? 419 : 328;
     this.button(cx - 115, actionY, won ? 'REPLAY [R]' : 'TRY AGAIN [R]', () => this.retry());
     this.button(cx + 115, actionY, 'MENU [ESC]', () => this.backToMenu());
+  }
+
+  private addFlying67s(): void {
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+    // Small numbers loop around the outside; the central 67 and actions stay still.
+    const orbit = (phase: number) => ({
+      x: GAME_WIDTH / 2 + Math.cos(phase) * 321,
+      y: GAME_HEIGHT / 2 + Math.sin(phase) * 128,
+    });
+    for (let i = 0; i < 8; i++) {
+      const phase = (i + 0.35) * Math.PI / 4;
+      const start = orbit(phase);
+      const bubble = this.add.image(start.x, start.y, 'run-rainbow-67')
+        .setName(`flying-67-${i}`)
+        .setScale(0.106 + (i % 3) * 0.025)
+        .setRotation(Math.sin(phase) * 0.19)
+        .setAlpha(0.73)
+        .setDepth(10.5);
+      if (reduceMotion) continue;
+      this.tweens.addCounter({
+        from: phase,
+        to: phase + Math.PI * 2,
+        duration: 11300,
+        repeat: -1,
+        onUpdate: tween => {
+          const current = tween.getValue() ?? phase;
+          const point = orbit(current);
+          bubble.setPosition(point.x, point.y).setRotation(Math.sin(current * 2) * 0.22);
+        },
+      });
+    }
   }
 
   private button(x: number, y: number, label: string, action: () => void): void {
