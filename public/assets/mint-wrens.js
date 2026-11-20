@@ -2,19 +2,20 @@
    Left alone they shuffle about the page: they turn round, hop to a nearby perch on the top edge of a
    heading, picture, card or button, and now and then two fly together and nuzzle, or one flies off into
    the distance and later flies back in from the side. When you scroll they follow you down the page.
-   Clicked (or Enter/Space when focused), a wren may fly to another perch or off into the distance, or
-   it puffs up a little more with each click; keep going and it sends up hearts and looks at you with
-   big eyes. Typing "ash" tames them all (and again sets them free). Very rarely a puffed wren lays an
+   Clicked or tapped (or Enter/Space when focused), a wren puffs up a little more each time; keep going
+   and it sends up hearts and looks at you with big eyes. Any wren can be dragged anywhere on the page
+   (or moved with the arrow keys when focused) and stays where it is put; the page's text flows round
+   it, laid out line by line with Pretext, as it does round Minty. Typing "ash" tames them all (and again sets them free). Very rarely a puffed wren lays an
    egg, which hatches a chick that walks towards you.
    With Reduce Motion nothing travels across the screen: a wren fades out and fades in at its new
-   perch, puffs up without bounce, and hearts appear and fade in place. On touch screens the wrens are
-   only to look at. Nothing here runs until the page has loaded and the browser is idle, and the
+   perch, puffs up without bounce, and hearts appear and fade in place. On touch screens a wren is
+   tapped or dragged with a finger, and the page scrolls as usual everywhere else. Nothing here runs until the page has loaded and the browser is idle, and the
    pictures (about 300 KB in all, mostly fetched only when needed) come from /assets/wrens/.
    Loaded by mint-banner.js. To remove the wrens, delete this file's loader there. */
 (function () {
   'use strict';
   if (window.MintWrens) return;
-  window.MintWrens = { version: '1.0.0' };
+  window.MintWrens = { version: '1.1.0' };
   if (/[?&]nowrens\b/.test(location.search)) return;
 
   var NS = 'http://www.w3.org/2000/svg';
@@ -63,7 +64,10 @@
 
   var CSS = [
     '.mint-wrens{position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none;z-index:80}',
-    '.mint-wrens .wren{pointer-events:auto;cursor:pointer;outline:none}',
+    '.mint-wrens .wren{pointer-events:auto;cursor:grab;outline:none;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}',
+    '.mint-wrens .wren.held{cursor:grabbing}',
+    '.mint-wren-line{display:block;position:relative}',
+    '.mint-wren-line>span{position:absolute;top:0;white-space:pre}',
     '.mint-wrens .wren-hit{fill:transparent;stroke:none}',
     '.mint-wrens .wren:focus-visible .wren-hit{stroke:var(--text-1,#333);stroke-width:2.5;stroke-dasharray:1 6;stroke-linecap:round}',
     '.wren-heart{fill:#f27c95;stroke:#3a2a2a;stroke-width:1.4;stroke-linejoin:round;pointer-events:none}',
@@ -73,7 +77,6 @@
     '.wren-chick{position:fixed;z-index:85;padding:0;margin:0;border:0;background:none;cursor:pointer;transform-origin:50% 100%}',
     '.wren-chick img{display:block;width:100%;height:100%;pointer-events:none}',
     '.wren-chick-heart{position:fixed;z-index:86;pointer-events:none;overflow:visible}',
-    '@media (hover:none){.mint-wrens .wren,.wren-chick{pointer-events:none}}',
     '@media print{.mint-wrens,.wren-toast,.wren-chick,.wren-chick-heart{display:none!important}}'
   ].join('\n');
 
@@ -187,6 +190,7 @@
   Flock.prototype.relayout = function () {
     var self = this, o = this.origin();
     this.perches.forEach(function (p) {
+      if (!p.el) return;   /* where someone put a wren down */
       if (!p.el.isConnected) { p.gone = true; return; }
       var r = p.el.getBoundingClientRect(), s = textSpan(p.el, r);
       if (r.width < 1) { p.gone = true; return; }
@@ -199,6 +203,7 @@
       var p = self.freePerch(b); if (!p) return;
       self.settle(b, p); b.x = p.x; b.y = p.y; self.place(b);
     });
+    this.flowKey = ''; this.flowSoon();
   };
 
   Flock.prototype.make = function (own, face, i) {
@@ -213,10 +218,43 @@
     pose.appendChild(im); g.appendChild(hit); g.appendChild(pose);
     this.layer.appendChild(g);
     this.perched(b, own);
-    g.addEventListener('click', function (e) { e.stopPropagation(); e.preventDefault(); self.poke(b); });
+    /* press and let go to puff it up; press and move to carry it anywhere */
+    var down = null;
+    g.addEventListener('pointerdown', function (e) {
+      if (e.button > 0 || b.away) return;
+      e.preventDefault(); e.stopPropagation();
+      down = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
+      try { g.setPointerCapture(e.pointerId); } catch (err) { /* fine */ }
+    });
+    g.addEventListener('pointermove', function (e) {
+      if (!down || e.pointerId !== down.id) return;
+      e.preventDefault();
+      if (!down.moved) {
+        if (Math.hypot(e.clientX - down.x, e.clientY - down.y) < 6 || b.flyingNow) return;
+        down.moved = true; self.grab(b);
+        var o0 = self.origin(); down.ox = b.x - (e.clientX - o0.x); down.oy = b.y - (e.clientY - o0.y);
+      }
+      var o = self.origin();
+      self.carry(b, e.clientX - o.x + down.ox, e.clientY - o.y + down.oy);
+    });
+    function up(e) {
+      if (!down || e.pointerId !== down.id) return;
+      var was = down; down = null;
+      e.preventDefault(); e.stopPropagation();
+      if (was.moved) self.drop(b); else if (e.type === 'pointerup') self.poke(b);
+    }
+    g.addEventListener('pointerup', up);
+    g.addEventListener('pointercancel', up);
+    g.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); });
+    g.addEventListener('contextmenu', function (e) { e.preventDefault(); });
     g.addEventListener('keydown', function (e) {
-      if (e.key !== 'Enter' && e.key !== ' ') return;
-      e.preventDefault(); e.stopPropagation(); self.poke(b);
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); self.poke(b); return; }
+      var step = e.shiftKey ? 48 : 12, d = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key];
+      if (!d || b.away || b.flyingNow) return;
+      e.preventDefault(); e.stopPropagation();
+      if (!b.held) self.grab(b, true);
+      self.carry(b, b.x + d[0], b.y + d[1]);
+      clearTimeout(b.keyDrop); b.keyDrop = setTimeout(function () { self.drop(b); }, 600);
     });
     /* a focused wren stays where the keyboard can find it */
     g.addEventListener('focus', function () { b.focused = true; });
@@ -238,6 +276,8 @@
     b.im.setAttribute('width', w.toFixed(1)); b.im.setAttribute('height', h.toFixed(1));
   };
   Flock.prototype.place = function (b) {
+    if (!b.flyingNow || b.wasStill) this.flowSoon();
+    b.wasStill = !b.flyingNow;
     b.g.setAttribute('transform', 'translate(' + (b.x + (b.dx || 0)).toFixed(1) + ' ' + (b.y + b.lift).toFixed(1) + ')');
     b.pose.setAttribute('transform', 'rotate(' + (b.tilt + b.lean + (b.wob || 0)).toFixed(1) + ') scale(' + (b.face * b.scale).toFixed(3) + ' ' + (b.scale * b.sy * (b.breath || 1)).toFixed(3) + ')');
   };
@@ -366,6 +406,143 @@
     setTimeout(function () { t.classList.add('gone'); setTimeout(function () { t.remove(); }, 800); }, 3500);
   };
 
+  /* ---- the page's words flow round a wren that sits on them (Seth, 20 Nov), as they do round Minty:
+     each paragraph under a wren is laid out again line by line with Pretext, leaving a gap the shape
+     of the wren, and put back exactly as it was once the wren has gone. Only plain paragraphs are
+     touched: one with a link, button, picture or code in it is left alone, so nothing on the page
+     stops working. Pretext is fetched the first time a wren lands on words. ---------------------------- */
+  var PRETEXT = ['https://cdn.jsdelivr.net/npm/@chenglou/pretext@0.0.8/+esm', 'https://esm.sh/@chenglou/pretext@0.0.8'];
+  var TEXT_SEL = 'p,li,dd,dt,blockquote,figcaption,td,th,.lead';
+  var NO_FLOW = 'a,button,input,select,textarea,details,img,svg,picture,video,canvas,iframe,code,kbd,pre,br,[tabindex],[contenteditable]';
+  var GAP = 8;
+  var ptx = null, ptxState = 0;   /* 0 not asked, 1 loading, 2 ready, 3 failed */
+  function loadPretext(then) {
+    if (ptxState >= 1) { if (ptxState === 2) then(); return; }
+    ptxState = 1;
+    var i = 0;
+    (function next() {
+      if (i >= PRETEXT.length) { ptxState = 3; return; }
+      import(PRETEXT[i++]).then(function (m) {
+        if (typeof m.prepareWithSegments !== 'function' || typeof m.layoutNextLine !== 'function') return next();
+        ptx = m; ptxState = 2;
+        (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(then);
+      }, next);
+    })();
+  }
+  function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function mintyOn(r) {
+    var m = document.getElementById('minty-sprite'); if (!m) return false;
+    var q = m.getBoundingClientRect();
+    return q.width > 0 && q.right > r.left - 20 && q.left < r.right + 20 && q.bottom > r.top - 20 && q.top < r.bottom + 20;
+  }
+
+  Flock.prototype.flowSoon = function () {
+    var self = this;
+    if (this.flowAsk) return;
+    this.flowAsk = true;
+    requestAnimationFrame(function () { self.flowAsk = false; self.flow(); });
+  };
+  /* where each sitting wren is, in screen pixels, as an ellipse round its drawing */
+  Flock.prototype.obstacles = function () {
+    var o = this.origin(), out = [];
+    this.birds.forEach(function (b) {
+      if (b.away || (b.flyingNow && !b.held) || !b.cur) return;
+      var sc = b.scale * (b.breath || 1), h = (b.held ? Math.sqrt(FLY_AREA / b.cur.r) : SIZE) * sc, w = (b.held ? Math.sqrt(FLY_AREA * b.cur.r) : SIZE * b.cur.r) * sc;
+      var cx = b.x + (b.dx || 0) + o.x, bottom = b.y + o.y + (b.held ? -SIZE / 2 * sc + h / 2 : 0);
+      out.push({ l: cx - w / 2, r: cx + w / 2, t: bottom - h, b: bottom, cx: cx, cy: bottom - h / 2, rx: w / 2 * 0.86, ry: h / 2 * 0.92 });
+    });
+    return out;
+  };
+  Flock.prototype.flow = function () {
+    if (!this.alive()) return;
+    var self = this, obs = this.obstacles();
+    this.flowing = this.flowing || [];
+    var key = obs.map(function (q) { return [q.l, q.t, q.r, q.b].map(Math.round).join(','); }).join(';');
+    if (key === this.flowKey) return;
+    this.flowKey = key;
+    /* the paragraphs under each wren */
+    var found = [];
+    obs.forEach(function (q) {
+      if (q.b < 0 || q.t > window.innerHeight || q.r < 0 || q.l > window.innerWidth) return;
+      [[q.cx, q.cy], [q.cx - q.rx * 0.6, q.cy], [q.cx + q.rx * 0.6, q.cy], [q.cx, q.t + 4], [q.cx, q.b - 4]].forEach(function (pt) {
+        var els = document.elementsFromPoint(pt[0], pt[1]);
+        for (var i = 0; i < els.length; i++) {
+          var el = els[i].closest && els[i].closest(TEXT_SEL);
+          if (!el || el.closest(SKIP_SEL) || el.closest('.top-banner,nav,form,[contenteditable]')) continue;
+          if (found.indexOf(el) < 0) found.push(el);
+          break;
+        }
+      });
+    });
+    var blocks = this.flowing.filter(function (st) { return st.el.isConnected; });
+    found.forEach(function (el) { if (!blocks.some(function (st) { return st.el === el; })) blocks.push({ el: el, fresh: true }); });
+    if (!blocks.length) { this.flowing = []; return; }
+    if (ptxState !== 2) {
+      if (blocks.some(function (st) { return st.fresh; })) loadPretext(function () { self.flowKey = ''; self.flowSoon(); });
+      return;
+    }
+    var keep = [];
+    blocks.forEach(function (st) {
+      var el = st.el;
+      if (st.lastHTML != null && el.innerHTML !== st.lastHTML) return;   /* someone else (Minty) rewrote it: let it be */
+      var r = el.getBoundingClientRect();
+      var hits = obs.filter(function (q) { return q.b > r.top && q.t < r.bottom && q.r > r.left && q.l < r.right; });
+      if (!hits.length || mintyOn(r)) {
+        if (st.orig != null) { el.innerHTML = st.orig; }
+        return;
+      }
+      if (st.fresh) {
+        if (el.querySelector(NO_FLOW) || el.querySelector('span[style*="display:block"]')) return;
+        var text = el.textContent.replace(/\s+/g, ' ').trim(), cs = getComputedStyle(el);
+        if (text.length < 12 || /flex|grid/.test(cs.display) || r.width < 80) return;
+        var ls = parseFloat(cs.letterSpacing) || 0;
+        try {
+          st.prepared = ptx.prepareWithSegments(text, cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily, ls ? { letterSpacing: ls } : undefined);
+        } catch (e) { return; }
+        st.lh = cs.lineHeight === 'normal' ? parseFloat(cs.fontSize) * 1.5 : parseFloat(cs.lineHeight);
+        st.padL = parseFloat(cs.paddingLeft) || 0; st.padR = parseFloat(cs.paddingRight) || 0; st.padT = parseFloat(cs.paddingTop) || 0;
+        st.orig = el.innerHTML; st.fresh = false;
+      }
+      var html = self.layout(st, r, hits);
+      if (html !== st.lastHTML) { el.innerHTML = html; st.lastHTML = el.innerHTML; }
+      keep.push(st);
+    });
+    this.flowing = keep;
+  };
+  /* lay the paragraph out line by line, each line in the gaps the wrens leave */
+  Flock.prototype.layout = function (st, r, hits) {
+    var left = r.left + st.padL, cw = r.width - st.padL - st.padR, top = r.top + st.padT, lh = st.lh;
+    var cursor = { segmentIndex: 0, graphemeIndex: 0 }, out = [], y = 0, done = false;
+    for (var n = 0; n < 400 && !done; n++) {
+      var lt = top + y, lb = lt + lh, cuts = [];
+      hits.forEach(function (q) {
+        var a = Math.max(lt, q.cy - q.ry), z = Math.min(lb, q.cy + q.ry);
+        if (z <= a) return;
+        var dy = Math.min(Math.abs(lt - q.cy), Math.abs(lb - q.cy)); if (lt <= q.cy && lb >= q.cy) dy = 0;
+        var half = q.rx * Math.sqrt(Math.max(0, 1 - (dy * dy) / (q.ry * q.ry)));
+        cuts.push([q.cx - half - GAP - left, q.cx + half + GAP - left]);
+      });
+      cuts.sort(function (a, b) { return a[0] - b[0]; });
+      var spans = [], from = 0;
+      cuts.forEach(function (c) { if (c[0] > from) spans.push([from, Math.min(c[0], cw)]); from = Math.max(from, c[1]); });
+      if (from < cw) spans.push([from, cw]);
+      spans = spans.filter(function (sp) { return sp[1] - sp[0] >= 36; });
+      if (!cuts.length) spans = [[0, cw]];
+      var parts = '';
+      for (var k = 0; k < spans.length; k++) {
+        var line = null;
+        try { line = ptx.layoutNextLine(st.prepared, cursor, spans[k][1] - spans[k][0]); } catch (e) { line = null; }
+        if (!line) { done = true; break; }
+        parts += '<span style="left:' + spans[k][0].toFixed(1) + 'px">' + esc(line.text) + '</span>';
+        cursor = line.end;
+      }
+      if (!parts && done) break;
+      out.push('<span class="mint-wren-line" style="height:' + lh + 'px">' + parts + '</span>');
+      y += lh;
+    }
+    return out.join('');
+  };
+
   /* ---- the worm: the wren that has one holds it in its beak, where it wriggles; a while later it
      gets gulped down, and later still the wren finds another ------------------------------------- */
   Flock.prototype.giveWorm = function (b) {
@@ -460,10 +637,10 @@
   };
   Flock.prototype.idle = function () {
     var self = this;
-    return this.birds.filter(function (b) { return !b.busy && !b.away && !b.puff && !b.focused && self.seen(b); });
+    return this.birds.filter(function (b) { return !b.busy && !b.away && !b.puff && !b.focused && !b.stay && self.seen(b); });
   };
   Flock.prototype.shuffle = function () {
-    var self = this, puffed = this.birds.filter(function (b) { return b.puff && !b.flyingNow && self.seen(b); });
+    var self = this, puffed = this.birds.filter(function (b) { return b.puff && !b.flyingNow && !b.held && self.seen(b); });
     if (puffed.length && Math.random() < 0.5) { this.turn(pick(puffed)); return; }
     var idle = this.idle(); if (!idle.length) return;
     var b = pick(idle), p = Math.random() < 0.8 && this.freePerch(b, null, 520);
@@ -475,7 +652,7 @@
     if (!this.alive() || STILL || document.hidden) return;
     var seen = this.birds.filter(function (b) { return !b.away && self.seen(b); }).length, want = Math.min(2, this.birds.length);
     if (seen >= want) return;
-    var off = shuffled(this.birds.filter(function (b) { return !b.away && !b.busy && !b.puff && !b.focused && !self.seen(b); }));
+    var off = shuffled(this.birds.filter(function (b) { return !b.away && !b.busy && !b.puff && !b.focused && !b.stay && !self.seen(b); }));
     off.slice(0, want - seen).forEach(function (b, i) {
       setTimeout(function () { self.flyIn(b); }, 200 + i * 700 + rnd(0, 500));
     });
@@ -494,16 +671,53 @@
   };
 
   /* ---- clicked ----------------------------------------------------------------------------------- */
+  /* every click or tap plumps it up a little more (Seth, 20 Nov: tapping must plump them up) */
   Flock.prototype.poke = function (b) {
-    if (b.away || b.flyingNow) return;
-    if (this.tame || b.puff) { this.puffUp(b); return; }
-    if (b.busy) return;
-    var r = Math.random();
-    if (r < b.puffy) { this.puffUp(b); return; }
-    if (b.focused) { this.puffUp(b); return; }   /* a wren chosen with the keyboard stays to be seen */
-    if (r < b.puffy + (1 - b.puffy) * 0.3) { this.flyOff(b); return; }
-    var p = this.freePerch(b);
-    if (p) this.hopTo(b, p); else this.puffUp(b);
+    if (b.away || b.flyingNow || b.held) return;
+    if (b.busy && !b.puff) return;
+    this.puffUp(b);
+  };
+
+  /* ---- carried: picked up, it flutters in your hand; put down, it stays there ---------------------- */
+  Flock.prototype.grab = function (b, quiet) {
+    clearTimeout(b.keyDrop);
+    this.leave(b);
+    b.held = true; b.busy = true; b.stay = true;
+    b.g.classList.add('held');
+    b.g.style.opacity = '1';
+    var self = this;
+    if (quiet || reduced || b.flutter) return;
+    var wings = this.wings.side, t0 = 0;
+    b.flutter = true;
+    requestAnimationFrame(function f(now) {
+      if (!self.alive()) return;
+      if (!b.held) { b.flutter = false; b.lift = 0; self.perched(b, b.puff ? (b.dote ? self.doting : self.puffed) : b.own); self.place(b); return; }
+      if (!t0) t0 = now;
+      self.flying(b, wings[Math.floor((now - t0) / BEAT) % wings.length]);
+      b.lift = -2 * Math.sin(((now - t0) / (BEAT * 4)) * Math.PI * 2);
+      self.place(b);
+      requestAnimationFrame(f);
+    });
+  };
+  Flock.prototype.carry = function (b, x, y) {
+    var o = this.origin(), v = this.view();
+    b.x = Math.max(v.lo - o.x + 16, Math.min(v.hi - o.x - 16, x));
+    b.y = Math.max(-o.y + 8 + SIZE, y);
+    if (x > b.x + 1 || x < b.x - 1) b.face = x > b.x ? 1 : -1;
+    this.place(b); this.flowSoon();
+  };
+  Flock.prototype.drop = function (b) {
+    var self = this;
+    if (!b.held) return;
+    clearTimeout(b.keyDrop);
+    b.held = false; b.g.classList.remove('held');
+    var p = { el: null, x: b.x, y: b.y, bird: null };
+    this.perches.push(p); this.settle(b, p);
+    if (!b.flutter) { this.perched(b, b.puff ? (b.dote ? this.doting : this.puffed) : b.own); }
+    b.lift = 0; this.place(b);
+    var after = function () { b.busy = !!b.puff; self.flowSoon(); };
+    if (reduced) after(); else this.landHop(b, after);
+    this.flowSoon();
   };
   Flock.prototype.puffUp = function (b) {
     var self = this;
@@ -781,7 +995,7 @@
       if (!self.alive()) return;
       if (!document.hidden) {
         if (self.tame) {
-          if (kind === 'shuffle') { var pf = self.birds.filter(function (b) { return b.puff && !b.flyingNow && self.seen(b); }); if (pf.length) self.turn(pick(pf)); }
+          if (kind === 'shuffle') { var pf = self.birds.filter(function (b) { return b.puff && !b.flyingNow && !b.held && self.seen(b); }); if (pf.length) self.turn(pick(pf)); }
         }
         else if (kind === 'shuffle') self.shuffle();
         else if (Math.random() < 0.55) self.nuzzle() || self.flyOff();
