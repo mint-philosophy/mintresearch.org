@@ -1339,7 +1339,7 @@ export class LevelScene extends Phaser.Scene {
           const canFireLaterally = enemyType === 'octopus' && this.levelNum === 9
             ? Math.abs(enemy.y - this.player.y) < 85
             : true;
-          if (dist < fireRange && canFireLaterally) {
+          if (dist < fireRange && canFireLaterally && !this.isEnemyOnPlatform(enemy)) {
             this.throwSlop(enemy);
             enemy.setData('lastSlop', now);
           }
@@ -1664,12 +1664,18 @@ export class LevelScene extends Phaser.Scene {
     return true; // Actively pursuing a paper
   }
 
+  // Enemies standing on a raised platform (not the floor) hold their fire.
+  private isEnemyOnPlatform(enemy: Phaser.Physics.Arcade.Sprite): boolean {
+    const body = enemy.body as Phaser.Physics.Arcade.Body | null;
+    return !!body && (body.blocked.down || body.touching.down) && body.bottom < GAME_HEIGHT - 24;
+  }
+
   private updateRangedPaperAttack(enemy: Phaser.Physics.Arcade.Sprite, _type: string): void {
     // Strict alternation: odd fires → paper, even fires → player
     const now = this.time.now;
     const lastSlop = enemy.getData('lastSlop') as number;
     const slopInterval = enemy.getData('slopInterval') as number;
-    if (now - lastSlop < slopInterval) return;
+    if (now - lastSlop < slopInterval || this.isEnemyOnPlatform(enemy)) return;
 
     const fireCount = (enemy.getData('fireCount') as number) || 0;
     const targetPaper = fireCount % 2 === 0; // even = paper, odd = player
