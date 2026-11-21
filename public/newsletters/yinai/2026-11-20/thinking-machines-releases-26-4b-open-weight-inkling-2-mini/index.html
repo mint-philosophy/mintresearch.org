@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Inkling 2 Mini built a flight simulator on a laptop — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-20">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-20">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 20 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Inkling 2 Mini built a flight simulator on a laptop</h1>
+<p class="dek">Thinking Machines squeezed a coding model onto a laptop by reusing the same layers for each token. A companion model let researchers vary the number of passes and see how much it could solve without writing down the steps.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 20 November 2026</span> <span class="chip">686 words · ~3 min</span></div>
+<div class="article-body">
+<p>On a flight, Thinking Machines Lab researchers asked Inkling 2 Mini to build a playable flight simulator. The model ran offline on a MacBook Pro with 48 GB of memory and finished in minutes. The lab <a href="https://thinkingmachines.ai/news/inkling-2-mini/">released Mini on November 20</a> with 26.4 billion parameters, down from 594 billion in its <a href="https://mintresearch.org/newsletters/yinai/2026-11-05/#story-thinking-machines-launches-inkling-2-small-with-17b-active-p">earlier Inkling 2 Small</a>. Mini can take pictures or text as input and answer in text. Its <a href="https://huggingface.co/thinkingmachines/Inkling-2-Mini">weights are available to download</a> under the Apache 2.0 license, and the lab offers hosted inference and fine-tuning through Tinker.</p><p>To fit Mini on a laptop, the lab removed two-thirds of the specialist subnetworks, or experts, that the model could call on to process an input. It kept the most frequently used experts in each layer and trained them on a trillion tokens from a larger Inkling model to recover the performance lost in pruning. Most of the weights use four bits apiece, the same precision used in training. The <a href="https://thinkingmachines.ai/model-card/inkling-2-mini/">model card</a> puts the download at about 20 GB and specifies at least 32 GB of unified memory for an Apple silicon Mac.</p><p>Mini can do more calculation between one token and the next by passing information through the same layers repeatedly, an idea Mostafa Dehghani and colleagues explored in their 2018 arXiv paper <a href="https://arxiv.org/abs/1807.03819">“Universal Transformers.”</a> In Mini, each token passes once through the first six layers, three times through the middle twelve and once through the last six. On each return to the middle layers the model can use the results of its previous pass. It thus performs 48 layers’ worth of computation with 24 layers of weights. In training experiments, repeating the middle twelve layers produced larger gains in accuracy than repeating the last twelve on 27 of 28 evaluations.</p><p>On DeepSWE, a test of software engineering, Thinking Machines reports that Mini resolved 48.2% of tasks. The lab <a href="https://x.com/thinkymachines/status/2123871643797995872">announced a score of 20.1</a> on the Artificial Analysis Intelligence Index. <a href="https://artificialanalysis.ai/models/inkling-2-mini">Artificial Analysis lists a rounded score of 20</a>, against a median of 10 for open-weight models in Mini’s size class.</p><p><a href="https://x.com/miramurati/status/2123872534970208421">Mira Murati</a> raised a question about oversight. People can read the steps a model writes out as it works on a problem. Repeated passes give it more opportunities to work things out between those written steps. Mini always takes three passes. The lab released <a href="https://thinkingmachines.ai/model-card/tml-d24-varloop-research/">a separate research model</a> whose users can vary the number of passes while keeping the same weights. The researchers trained it with one to five passes, then used three throughout its final training stage.</p><p>On a subset of Think Fast problems, the lab asked the research model to give its answer directly. At one pass, the researchers estimated a 50% chance of success on a problem that took a human 16 seconds. At three passes, the corresponding human time was 37 seconds. Further passes brought little overall gain, although on problems that required following a chain of entries through fictional lookup tables the model kept improving out to ten passes.</p><p>When the researchers allowed written reasoning, they compared science questions the research model got right at every pass count. At five passes it used less than half as many reasoning tokens, on average, as at one. It backtracked less, while its average sentence length and use of dictionary words barely changed. Those measures describe the text a reader sees. To test whether an observer could detect misconduct, the lab also had a second model monitor the research model during software tasks. Giving the observer access to the model’s writing as well as its actions helped it detect hidden side tasks. The lab found no clear trend in undetected successes as the number of passes rose.</p><p>Andrew Lee and colleagues at Goodfire took a different approach in <a href="https://www.goodfire.com/research/interpreting-inkling-2-mini/">“Interpreting Inkling 2 Mini.”</a> With early access to the production model’s weights, they tested how well they could predict its next token from its internal state partway through a pass. Applying the model’s ordinary output decoder worked mainly near the end of each pass. Running the internal state through Mini’s own final six layers first let them recover information about the likely output much earlier.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://thinkingmachines.ai/news/inkling-2-mini/">Introducing Inkling 2 Mini</a> <span class="how">— Read the full announcement and its comparison and methods notes. Supports the flight demonstration, training, coding score and monitorability results.</span></li>
+<li><a href="https://x.com/thinkymachines/status/2123871643797995872">Thinking Machines Lab announces Inkling 2 Mini on X</a> <span class="how">— The supplied full post gives the 594B predecessor size and the launch-day 20.1 index score.</span></li>
+<li><a href="https://x.com/miramurati/status/2123872534970208421">Mira Murati on looping and monitoring</a> <span class="how">— The supplied full quote-post describes the case for the variable-loop research model and the limits of extrapolating to other scales.</span></li>
+<li><a href="https://thinkingmachines.ai/model-card/inkling-2-mini/">Inkling 2 Mini Model Card</a> <span class="how">— Architecture, input and output types, hardware requirements and distribution.</span></li>
+<li><a href="https://huggingface.co/thinkingmachines/Inkling-2-Mini">Inkling 2 Mini on Hugging Face</a> <span class="how">— Verified repository, checkpoint files, Apache 2.0 terms, memory requirements and hosted access.</span></li>
+<li><a href="https://thinkingmachines.ai/model-card/tml-d24-varloop-research/">TML-d24-varloop-research Model Card</a> <span class="how">— Identifies the separate weights, selectable loop count and three-pass reinforcement learning.</span></li>
+<li><a href="https://artificialanalysis.ai/models/inkling-2-mini">Inkling 2 Mini: Intelligence, Performance &amp; Price Analysis</a> <span class="how">— Evaluator’s index page displays the rounded score, comparison median and parameter class.</span></li>
+<li><a href="https://arxiv.org/abs/1807.03819">Universal Transformers</a> <span class="how">— Dehghani and colleagues’ recurrent transformer precedent, cited in the release. Checked paper and publication venue.</span></li>
+<li><a href="https://www.goodfire.com/research/interpreting-inkling-2-mini/">Interpreting Inkling 2 Mini</a> <span class="how">— Goodfire’s early-access investigation, including tests using the final model block to decode intermediate states.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-11-05/#story-thinking-machines-launches-inkling-2-small-with-17b-active-p">Inkling 2 Small gains capabilities, with uneven coding results</a> <span class="how">— Prior model release. The November 5 deep edition is recorded in deep_history.json and its story appears on the hosted issue.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-thinking-machines-releases-26-4b-open-weight-inkling-2-mini">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-20/thinking-machines-releases-26-4b-open-weight-inkling-2-mini</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

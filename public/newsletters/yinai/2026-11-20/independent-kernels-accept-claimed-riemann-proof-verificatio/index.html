@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Independent proof checkers accept Alpöge and Claude’s Riemann proof — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-20">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-20">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 20 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Independent proof checkers accept Alpöge and Claude’s Riemann proof</h1>
+<p class="dek">Andrew Sutherland checked the complete derivation and matched its conclusions to five independently specified statements. Alpöge describes one idea Claude contributed and why he wants to understand the argument better himself.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 20 November 2026</span> <span class="chip">643 words · ~3 min</span></div>
+<div class="article-body">
+<p>Two independently written programs accepted Levent Alpöge and Claude’s formal proof of the Riemann hypothesis on November 20. MIT mathematician Andrew Sutherland <a href="https://math.mit.edu/~drew/grh/">reported both results</a> that evening. He also checked whether the conclusions in the files Alpöge had <a href="https://alpo.ge/remark.pdf">released</a> matched five mathematical statements specified separately, including the hypothesis as defined in Lean’s standard mathematics library. Alpöge already had a proof that a computer could check when, by his own account, he was still learning some of the mathematics that Claude had used.</p><p>Riemann’s <a href="https://www.claymath.org/millennium/riemann-hypothesis/">1859 hypothesis</a> concerns how far the number of primes below a given number can depart from its predicted value. Riemann related those fluctuations to the zeros of a function called zeta. The hypothesis puts every nontrivial zero on a single vertical line in the complex plane, where the real part is one half. In <a href="https://mintresearch.org/newsletters/yinai/2026-10-06/#story-openai-releases-mathematical-results-with-lean-proofs-comput">October</a>, <a href="https://github.com/openai/math/blob/main/preprints/The-Quasi-Riemann-Hypothesis-September-30-2026/README.md">OpenAI reported</a> a proof excluding zeros to the right of seven eighths. That left room for zeros off the central line. The statement Sutherland checked puts them on the line itself.</p><p>Alpöge’s generalization covers every Dirichlet L-function. Mathematicians use these functions to study primes in arithmetic progressions, for example primes that leave a remainder of one when divided by four. Two of the <a href="https://raw.githubusercontent.com/leanprover-community/riemann-hypothesis/main/src/Challenge.lean">five statements</a> express the ordinary Riemann hypothesis in equivalent ways. The others rule out zeros to the right of one half for Dirichlet L-functions, apart from the point where the principal character’s function has a pole, and place every zero with real part between zero and one on the central line. Alpöge sees extending the proof to Dedekind zeta functions as further work.</p><p>Sutherland used Claude Code to run the checks. Lean compiled all 175,187 modules and checked each with its kernel, the part of the program that decides whether a proof follows the rules. Sutherland <a href="https://math.mit.edu/~drew/grh/audit.log">traced the five conclusions</a> to three standard Lean axioms. On November 20, <a href="https://math.mit.edu/~drew/grh/nanoda.log">nanoda</a> accepted the complete exported proof at 19:05 UTC and <a href="https://math.mit.edu/~drew/grh/con-leche-master.log">con-leche</a> accepted it at 21:19 UTC. Each implements the rules independently of Lean’s own kernel. In a <a href="https://math.mit.edu/~drew/grh/con-leche-compare.log">separate comparison</a>, con-leche matched all five conclusions in the solution to a file that stated the targets using only the standard mathematics library. Sutherland published his account at 22:05 UTC, while a further check using Lean’s own kernel on the complete export was still running.</p><p>Alpöge gives one example of his work with Claude in his <a href="https://alpo.ge/remark.pdf">four-page announcement</a>. He had been trying to adapt Sergei Stepanov’s argument for a related problem over function fields. That argument makes use of how many times a zero occurs, its multiplicity. Alpöge and Claude found a way to imitate multiplicity by repeatedly applying a mathematical transformation called a theta lift. Alpöge credits Claude with working out how many lifts to use. For a weighted sum that counts primes and their powers up to a given number, Claude proposed a chain about as long as the square root of that number. Alpöge expects a much simpler argument to emerge. Writing before either independent kernel finished, <a href="https://scottaaronson.blog/?p=10344">Scott Aaronson</a> said he expected the proof to stand and thought it might take mathematicians years to understand it well enough to reconstruct it for themselves.</p><p>The same day, <a href="https://math216.wordpress.com/2026/11/20/hurried-announcement-alessandro-masullo-grh/">Ravi Vakil posted</a> a separate, human-written manuscript by Alessandro Maria Masullo. In <a href="https://math216.wordpress.com/wp-content/uploads/2026/11/the-music-of-the-primes.pdf">The Music of the Primes</a>, Masullo claims a result for the broader family of Hecke L-functions over number fields. Vakil said Brian Conrad had spent months giving Masullo feedback. Refine Technologies <a href="https://github.com/Refine-Technologies-Inc/music-of-primes-report-by-refine/commit/1aa155d4940b7e9e1f26278b59535e66dbbe215f">published</a> a <a href="https://github.com/Refine-Technologies-Inc/music-of-primes-report-by-refine/blob/f4844e58ede0/report.tex">model-assisted review of Masullo’s argument</a> that evening, identifying ten errors or gaps. On page 514, a heading promises to connect a global calculation to local ones, then the text moves directly to the next section. Refine argues that establishing the missing comparison would itself require a result strong enough to imply the hypothesis. Vakil later updated his post to say that several people had reported problems with Masullo’s manuscript.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://math.mit.edu/~drew/grh/">Verification files for the Lean proof of the Riemann Hypothesis | Andrew Sutherland, MIT</a> <span class="how">— Read the complete November 20 snapshot and the November 21 update. The former supplies the issue-day status.</span></li>
+<li><a href="https://alpo.ge/remark.pdf">Remark | Levent Alpöge</a> <span class="how">— Read the four-page announcement, including the author’s account of the mathematical idea, the timeline and what he hopes to explain.</span></li>
+<li><a href="https://www.claymath.org/millennium/riemann-hypothesis/">Riemann Hypothesis | Clay Mathematics Institute</a> <span class="how">— Read the problem description for the connection with deviations in prime counts and the date of the hypothesis.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-10-06/#story-openai-releases-mathematical-results-with-lean-proofs-comput">OpenAI manuscripts claim a proof of the quasi-Riemann hypothesis and new multiplication bounds | Yesterday in AI, October 6</a> <span class="how">— Read the published report and confirmed its slug in deep_history.json. It describes the earlier zero-free region and Dirichlet characters.</span></li>
+<li><a href="https://github.com/openai/math/blob/main/preprints/The-Quasi-Riemann-Hypothesis-September-30-2026/README.md">The Quasi-Riemann Hypothesis: A Zero-Free Half-Plane Re(s)&gt;7/8 | OpenAI</a> <span class="how">— Read OpenAI’s preprint record. Its stated bound is the October precedent.</span></li>
+<li><a href="https://raw.githubusercontent.com/leanprover-community/riemann-hypothesis/main/src/Challenge.lean">The five challenge statements | Lean community proof repository</a> <span class="how">— Read the complete challenge, including the quantifiers and distinction between all and primitive Dirichlet characters.</span></li>
+<li><a href="https://math.mit.edu/~drew/grh/audit.log">Axiom dependencies of the five conclusions | Andrew Sutherland</a> <span class="how">— Read the short log listing the same three standard axioms for each theorem.</span></li>
+<li><a href="https://math.mit.edu/~drew/grh/nanoda.log">nanoda check of the proof export | Andrew Sutherland</a> <span class="how">— Checked the recorded successful exit against the dated verification page.</span></li>
+<li><a href="https://math.mit.edu/~drew/grh/con-leche-master.log">con-leche check of the proof export | Andrew Sutherland</a> <span class="how">— Checked the successful independent run against the dated verification page.</span></li>
+<li><a href="https://math.mit.edu/~drew/grh/con-leche-compare.log">con-leche comparison against the challenge | Andrew Sutherland</a> <span class="how">— Checked the successful comparison against Sutherland’s dated account of the five statement matches.</span></li>
+<li><a href="https://scottaaronson.blog/?p=10344">The stochastic parrots have apparently proved the Riemann Hypothesis | Scott Aaronson</a> <span class="how">— Read the full post. Its publication time is 18:29 UTC on November 20, before the independent kernels finished. His expectation is attributed to him.</span></li>
+<li><a href="https://math216.wordpress.com/2026/11/20/hurried-announcement-alessandro-masullo-grh/">Hurried Announcement: Alessandro Masullo GRH | Ravi Vakil</a> <span class="how">— Read the original announcement and the update about eight hours later.</span></li>
+<li><a href="https://math216.wordpress.com/wp-content/uploads/2026/11/the-music-of-the-primes.pdf">The Music of the Primes | Alessandro Maria Masullo</a> <span class="how">— Inspected the manuscript copy distributed with Refine’s November 20 report, including the heading and empty section on page 514.</span></li>
+<li><a href="https://github.com/Refine-Technologies-Inc/music-of-primes-report-by-refine/blob/f4844e58ede0/report.tex">Report on The Music of the Primes | Refine Technologies, November 20 version</a> <span class="how">— Read the November 20 assessment, including its classification of ten alleged errors and its argument about section 12.3.</span></li>
+<li><a href="https://github.com/Refine-Technologies-Inc/music-of-primes-report-by-refine/commit/1aa155d4940b7e9e1f26278b59535e66dbbe215f">Publish the Refine report and reviewed manuscript | Refine Technologies</a> <span class="how">— Verified first publication at 21:12:42 UTC via GitHub commit metadata. The files were renamed at 21:20:43 UTC.</span></li>
+<li><a href="https://github.com/Refine-Technologies-Inc/music-of-primes-report-by-refine/blob/main/report.pdf">Report on The Music of the Primes | Refine Technologies, current PDF</a> <span class="how">— Selected PDF from the Bluesky thread. The main-branch PDF was revised November 21 at 15:11 UTC. Issue-day claims use the pinned November 20 text.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-independent-kernels-accept-claimed-riemann-proof-verificatio">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-20/independent-kernels-accept-claimed-riemann-proof-verificatio</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
