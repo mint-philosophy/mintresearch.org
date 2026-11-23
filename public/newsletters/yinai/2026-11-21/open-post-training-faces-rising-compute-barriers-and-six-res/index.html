@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Nathan Lambert’s research agenda for labs that start with an open model — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-21">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-21">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 21 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Nathan Lambert’s research agenda for labs that start with an open model</h1>
+<p class="dek">Lambert puts the annual cost of frontier post-training at roughly $50 million or more. He sees room for smaller teams to study why a model improves on familiar math problems while it keeps missing the hardest ones.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 21 November 2026</span> <span class="chip">864 words · ~4 min</span></div>
+<div class="article-body">
+<p>Teaching frontier language models to reason after their initial training can cost a lab roughly $50 million or more a year, Nathan Lambert estimated in a <a href="https://natolambert.com/slides/2026/cornell-post-training/talk#1">November 20 talk at Cornell</a>, “Pushing Frontiers in Open Language Model Post-Training.” A smaller group can start with a released reasoning model and investigate why it keeps getting the same math problem wrong. Lambert, executive director of Trillium Labs, <a href="https://bsky.app/profile/natolambert.bsky.social/post/3n2tdrggx2o27">shared the slides on November 21</a> as a guide to the work he wants the lab and other open research groups to pursue.</p><p>Lambert traces the rising expense to a change in how labs train a model after it has learned to predict text. Early instruction-following models learned from examples of good answers and from human comparisons between answers. DeepSeek’s R1 devoted much of its post-training to letting the model practice reasoning and rewarding successful attempts. For <a href="https://arxiv.org/abs/2601.02780">MiMo-V2-Flash</a>, Xiaomi trained separate models to excel in different domains. A final model learned from the specialists’ judgments about which word or word fragment to generate next as it composed its own answers. An open release gives researchers the result of all that teaching. To reproduce how the model learned, a team would also need the specialists, the tasks each practiced and the computing time to train them.</p><p>For legal work, a team adapting an existing model can draw on lawyers’ judgments about what a good answer to a client’s question should cover. At the legal AI company Harvey, <a href="https://www.harvey.ai/blog/post-training-update-harvey-tenet">Calvin Qi and colleagues</a> worked with Fireworks to train Kimi K3 on assignments like those a law firm partner gives an associate. Lawyers could judge the result against the documents in a mock client file and detailed grading criteria. Harvey reports that Tenet, which also had changes to the software it used to carry out the work, met every grading criterion on nearly twice as many held-out tasks on its Legal Agent Bench as Kimi K3. Hamish Ivison, Junjie Oscar Yin and colleagues released the tasks as well as the trained models from <a href="https://arxiv.org/abs/2606.23321">TMax</a>, an academic project teaching small Qwen models to work in a computer terminal. Other groups can change what those models practice and measure the difference.</p><p>Lambert and his coauthors Michael Noukhovitch, Hamish Ivison and Aaron Courville studied one such question in their September arXiv paper, <a href="https://arxiv.org/html/2609.13443v1">“Learning to Solve Hard Problems in RL for LLMs by Never Giving Up.”</a> Noukhovitch and colleagues revisited an Olmo model whose average score on contest math questions rose during training. On questions it could sometimes solve at the outset, it became much more reliable. On questions it had failed on every one of its first 32 attempts, it generally kept failing. One common training method compares several answers to the same question and reinforces the better ones. When all the answers are wrong, the scores give the model no reason to prefer any of them. Giving every question more attempts spends much of the extra time on questions the model already solves.</p><p>Noukhovitch’s group tried giving some questions another round of attempts whenever the model got every answer wrong. In a comparison with roughly equal computing time, a small Qwen model trained this way made greater gains on difficult contest questions while retaining more of its performance on easier ones. Setting a larger allowance in advance for questions the model initially found hard matched the gains on the hardest subset, but cost more accuracy on the easy ones. Judging a question’s difficulty only once misses how it changes as the model learns. <a href="https://mnoukhov.github.io/posts/ngu/">Noukhovitch also identifies a limit</a>. If nearly every question is difficult, there is little time to save on the easy ones, and waiting for successive attempts can slow learning.</p><p>Character training, one of Trillium’s early priorities, poses a different measurement problem. In <a href="https://arxiv.org/abs/2511.01689">“Open Character Training,”</a> a 2025 paper on arXiv, Sharan Maiya and colleagues trained assistants to exhibit traits such as humor or care. They measured changes in the preferences the models expressed and found that the trained personas were harder for a user to dislodge than personas assigned through instructions alone. Lambert wants to know how those preferences carry over when an assistant can take action on someone’s behalf. A researcher can check a math answer against a solution. Establishing whether an assistant acted with care requires deciding what care called for in the circumstances.</p><p>Some of Lambert’s other questions concern tools a small group could build and share, including environments where models practice tasks and software that lets a model choose which information to keep as it works. At the expensive end, he wants to know whether small experiments can predict the outcome of much larger training runs, and when several models working together can finish a difficult task sooner. A week earlier, after Jensen Huang’s departure from Nvidia, he <a href="https://mintresearch.org/newsletters/yinai/2026-11-14/#story-nvidia-leadership-upheaval-threatens-open-models-funding-reg">argued for a US institution capable of sustaining open models</a>. At Cornell he described one contribution other groups could use immediately. Open research on the first stage of training benefited from shared collections of text. Groups studying how models learn from practice need collections of tasks with ways to check the answers. TMax gives the next group a set of those tasks to work with.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://natolambert.com/slides/2026/cornell-post-training/talk#1">Pushing Frontiers in Open Language Model Post-Training, Nathan Lambert, Cornell University</a> <span class="how">— Read the full slides from the supplied capture and checked the canonical deck. Slides 1, 7–18, 20–37 and 45–46 give the date, cost estimate, teaching sequence, examples, research agenda and institutional aims.</span></li>
+<li><a href="https://bsky.app/profile/natolambert.bsky.social/post/3n2tdrggx2o27">Nathan Lambert announces the Cornell slides on Bluesky</a> <span class="how">— Read the captured thread and verified its date and public replies in the Bluesky API. Lambert described the topics as goals for Trillium.</span></li>
+<li><a href="https://arxiv.org/abs/2601.02780">MiMo-V2-Flash Technical Report, Xiaomi LLM-Core Team and colleagues</a> <span class="how">— The authors describe the trained specialists and the feedback they give a student as it generates its own answers.</span></li>
+<li><a href="https://www.harvey.ai/blog/post-training-update-harvey-tenet">Harvey Tenet Research Preview, Calvin Qi, Vasudha Rengarajan, Julio Pereyra, Niko Grupen and Gabe Pereyra</a> <span class="how">— Read the original account of Fireworks collaboration, the mock client matters, expert grading criteria and held-out comparison. Results are attributed to Harvey.</span></li>
+<li><a href="https://arxiv.org/abs/2606.23321">TMax: A Simple Recipe for Terminal Agents, Hamish Ivison, Junjie Oscar Yin and colleagues</a> <span class="how">— Checked the Qwen models, task set, and release in the paper. Ivison and Yin share first authorship.</span></li>
+<li><a href="https://arxiv.org/html/2609.13443v1">Learning to Solve Hard Problems in RL for LLMs by Never Giving Up, Michael Noukhovitch, Hamish Ivison, Nathan Lambert and Aaron Courville</a> <span class="how">— Checked the question-level analysis, compute-matched Qwen comparison on contest mathematics, and fixed initial-difficulty comparison in section 5.</span></li>
+<li><a href="https://mnoukhov.github.io/posts/ngu/">Learning to Solve Hard Problems in RL for LLMs by Never Giving Up, Michael Noukhovitch</a> <span class="how">— First author’s September 15 account explains the 32-attempt split and the limitation for predominantly hard datasets.</span></li>
+<li><a href="https://arxiv.org/abs/2511.01689">Open Character Training: Shaping the Persona of AI Assistants through Constitutional AI, Sharan Maiya, Henning Bartsch, Nathan Lambert and Evan Hubinger</a> <span class="how">— The authors’ arXiv abstract describes trained personas, revealed preferences and robustness to adversarial prompting.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-11-14/#story-nvidia-leadership-upheaval-threatens-open-models-funding-reg">Lambert calls for a US open-model institution after Huang’s departure, Yesterday in AI, November 14</a> <span class="how">— Confirmed the exact deep-edition story in published history and the hosted article. The institutional proposal is related background.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-open-post-training-faces-rising-compute-barriers-and-six-res">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-21/open-post-training-faces-rising-compute-barriers-and-six-res</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

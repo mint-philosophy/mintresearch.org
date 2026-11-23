@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Alpöge and Buckmaster claim a Navier-Stokes blowup without an external force — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-21">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-21">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 21 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Alpöge and Buckmaster claim a Navier-Stokes blowup without an external force</h1>
+<p class="dek">The mathematicians used Claude to construct a flow that they say loses smoothness on its own. Their November 20 release includes a formal proof of conditional results. It leaves out the numerical data needed to check that the conditions hold.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 21 November 2026</span> <span class="chip">928 words · ~5 min</span></div>
+<div class="article-body">
+<p>A fluid can start in smooth motion and develop a singularity with nothing pushing it from outside, Levent Alpöge of Anthropic and Tristan Buckmaster of New York University claim. In their November 20 manuscript, <a href="https://github.com/tristanbuckmaster/navier-stokes/blob/ad53419de079eb8f95f60313473374624a348546/paper/finite-time-blow-up-navier-stokes.pdf">“Finite-time blow-up for the Navier–Stokes equations,”</a> they describe an initially smooth velocity field whose variation grows without bound in a finite time. It would be enough to find one such flow to overturn the conjecture that smooth motion always stays smooth in these equations. The authors published the mathematics and a machine-checkable account of much of the argument. The numerical file on which their example depends was missing from the release.</p><p>As <a href="https://www.scientificamerican.com/article/ai-just-solved-the-real-navier-stokes-problem/">Peter Hall reported in Scientific American</a>, Buckmaster announced the result the same morning that Alpöge separately claimed a proof of the Riemann hypothesis. Buckmaster had accused OpenAI of racing to publish a competing fluid result in September. OpenAI denied wrongdoing, and <a href="https://www.scientificamerican.com/article/openais-blockbuster-navier-stokes-proof-isnt-what-we-thought-it-was/">Joseph Howlett reported in October</a> that mathematicians who examined the approaches thought they differed. In his <a href="https://mastodon.social/@tristanbuckmaster/117649035783718539">November 20 announcement</a>, Buckmaster said he feared being scooped again and had decided to publish while the write-up was still rough. He also linked a <a href="https://cims.nyu.edu/~tristanb/cc.pdf">separate proof with Matei Coiculescu</a> about the Euler equations, which describe a fluid without viscosity. The Navier-Stokes claim concerns a fluid with viscosity, which tends to smooth out differences in velocity.</p><p><a href="https://openai.com/index/navier-stokes-solution/">OpenAI’s September construction</a> began with a fluid at rest. A carefully chosen external force drove it to a singularity, as <a href="https://mintresearch.org/newsletters/yinai/2026-09-08/#story-openai-reports-forced-navier-stokes-blowup-proof-using-10-00">we reported on September 8</a>. Charles Fefferman’s <a href="https://www.claymath.org/wp-content/uploads/2022/06/navierstokes.pdf">official statement for the Clay Mathematics Institute</a> allows this in two of its four formulations, one for ordinary three-dimensional space and one for a periodic box, where the flow repeats across opposite faces. The other two ask whether smooth initial motion can always continue smoothly when the force is zero. A case of unforced breakdown in each setting would answer both questions, and would count as an example for the formulations that permit a force. Alpöge and Buckmaster claim to have constructed both.</p><p>The difference between the two constructions had already been worked out in part. In September, <a href="https://arxiv.org/abs/2609.20803">Peter Constantin, Mihaela Ignatova and Vlad Vicol showed</a> that the force in OpenAI’s example could not vanish near the point of collapse. Their proof also covers other flows with two of its features, including a central region that looks the same after any rotation around an axis. As <a href="https://www.scientificamerican.com/article/did-openai-solve-the-wrong-navier-stokes-problem/">Howlett reported at the time</a>, the unforced problem that many specialists had in mind would take a different solution.</p><p>The new manuscript returns to an idea Jean Leray proposed in 1934. If a collapsing flow kept its shape as it shrank, a mathematician could describe the shape once and use it at every scale. Later work ruled out that possibility under natural conditions. Alpöge and Buckmaster instead look for a flow that repeats its shape only at a succession of smaller scales. Between repetitions it can change shape or rotate. Their numerical approximation has a central column and a layer that divides into nineteen spiral arms. A rotation of one nineteenth of a turn about the vertical axis preserves the pattern.</p><p>The authors need to show that an exact solution has the properties they see on the computer. There is precedent in <a href="https://arxiv.org/abs/2210.07191">Jiajie Chen and Thomas Hou’s work on the Euler equations</a>, where rigorous bounds on the errors in a numerical approximation helped prove blowup in a domain with a boundary. Here the authors give inequalities which, if satisfied by their numerical data, guarantee a true repeating profile near the approximation. A second argument takes a profile of that kind and constructs smooth starting flows that approach it as they break down. The numerical certificate contains the data to which those inequalities must be applied.</p><p>Alpöge and Buckmaster explain in their <a href="https://github.com/tristanbuckmaster/navier-stokes/blob/ad53419de079eb8f95f60313473374624a348546/lean/README.md">guide to the Lean proof</a> that the formalization came first. They gave Claude their earlier work and possible avenues to explore, then directed it through revisions of a written proof generated from the formal one. The final versions differ in mathematically relevant details. The paper gives a rate of blowup that the corresponding formal statement omits. One formal theorem yields a weaker kind of profile than the smooth one in the paper. The authors explain how the formal library uses that weaker result to reach a breakdown conclusion in each setting. Conversely, two inequalities in the appendix have proofs only in Lean.</p><p>The <a href="https://github.com/tristanbuckmaster/navier-stokes/tree/ad53419de079eb8f95f60313473374624a348546">November 20 repository</a> records exactly what readers could check. The paper prints a digital fingerprint that a reader can use to identify the promised file when it appears. To check that its numbers satisfy the inequalities, a reader also needs the separate calculation that bounds the effects of rounding. Neither accompanied the paper. The authors also say that they changed some formal statements to match the appendix and had yet to rebuild the patched Lean package when they assembled the release.</p><p>On November 20 <a href="https://terrytao.wordpress.com/2026/11/20/unforced-euler-singularity-unforced-navier-stokes-singularity-and-the-generalized-riemann-hypothesis/">Terence Tao wrote</a> that he could follow the overall strategy and wanted a more professionally written proof. Readers also started testing particular steps. A <a href="https://github.com/tristanbuckmaster/navier-stokes/issues/2">reader posting as manvirjaswal</a> found that one inequality in the written appendix needs an extra condition where two pieces of a function meet. The Lean statement includes it, and the reader judged that the main conditional theorem was unaffected. <a href="https://github.com/tristanbuckmaster/navier-stokes/issues/3">A second reader</a> supplied another example that fails without the condition and asked to check it against the actual coefficients. The two readers could compare the paper with the formal statements immediately. Checking the example that Alpöge and Buckmaster say solves the unforced problem still depended on the promised data.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://www.scientificamerican.com/article/ai-just-solved-the-real-navier-stokes-problem/">After months of controversy, AI finally solved the 'real' Navier-Stokes problem (Peter Hall, Scientific American)</a> <span class="how">— Peter Hall’s November 20 account, edited by Joseph Howlett. Verified the byline and the reporting on the release, the priority dispute and the missing certificate against the publisher.</span></li>
+<li><a href="https://github.com/tristanbuckmaster/navier-stokes/blob/ad53419de079eb8f95f60313473374624a348546/paper/finite-time-blow-up-navier-stokes.pdf">Finite-time blow-up for the Navier-Stokes equations (Alpöge and Buckmaster, manuscript of 20 November 2026)</a> <span class="how">— November 20 manuscript at the historical commit. Both authors, theorem statements, construction, AI statement, numerical certificate and mathematical precedents.</span></li>
+<li><a href="https://github.com/tristanbuckmaster/navier-stokes/tree/ad53419de079eb8f95f60313473374624a348546">tristanbuckmaster/navier-stokes repository (README, lean/README, NOTICE, commit history)</a> <span class="how">— Final commit available by November 21. The root README expressly excludes the certificate and interval calculation and records a patch that the authors had yet to rebuild at assembly.</span></li>
+<li><a href="https://mastodon.social/@tristanbuckmaster/117649035783718539">Buckmaster Mastodon post announcing unforced Euler and Navier-Stokes</a> <span class="how">— Buckmaster’s November 20 announcement, his explanation for releasing the unfinished write-up and his link to the separate Euler result.</span></li>
+<li><a href="https://www.claymath.org/wp-content/uploads/2022/06/navierstokes.pdf">Existence and Smoothness of the Navier-Stokes Equation (Fefferman, Clay Mathematics Institute)</a> <span class="how">— Explains statements (A)-(D) and why zero-force breakdown settles both pairs.</span></li>
+<li><a href="https://openai.com/index/navier-stokes-solution/">On the Navier-Stokes Millennium Prize Problem (OpenAI)</a> <span class="how">— OpenAI’s September 8 account of its forced construction starting from rest.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-09-08/#story-openai-reports-forced-navier-stokes-blowup-proof-using-10-00">Yesterday in AI, September 8 issue: OpenAI's forced Navier-Stokes proof</a> <span class="how">— Brief linked back-reference to verified prior coverage of the forced proof.</span></li>
+<li><a href="https://www.scientificamerican.com/article/did-openai-solve-the-wrong-navier-stokes-problem/">Did OpenAI solve the wrong Navier-Stokes problem? (Joseph Howlett, Scientific American)</a> <span class="how">— Joseph Howlett’s September reporting on why experts distinguished the unforced question.</span></li>
+<li><a href="https://arxiv.org/abs/2609.20803">Regularity of asymptotically axisymmetric solutions to the 3D Navier-Stokes equations with analytic forcing (Constantin, Ignatova, Vicol, arXiv:2609.20803)</a> <span class="how">— The authors identify two features of OpenAI’s construction and prove a result constraining the possible force for such solutions.</span></li>
+<li><a href="https://www.scientificamerican.com/article/openais-blockbuster-navier-stokes-proof-isnt-what-we-thought-it-was/">OpenAI's blockbuster Navier-Stokes proof isn't what we thought it was (Joseph Howlett, Scientific American)</a> <span class="how">— October reporting that experts judged OpenAI's approach different from Buckmaster and Alpöge's.</span></li>
+<li><a href="https://cims.nyu.edu/~tristanb/cc.pdf">Finite-time singularity formation for the three-dimensional Euler equations (Alpöge, Buckmaster, Coiculescu)</a> <span class="how">— Separate paper on incompressible Euler, linked in the authors’ announcement.</span></li>
+<li><a href="https://arxiv.org/abs/2210.07191">Stable nearly self-similar blowup of the 2D Boussinesq and 3D Euler equations with smooth data I (Chen and Hou)</a> <span class="how">— Precedent computer-assisted blowup proof cited by the paper.</span></li>
+<li><a href="https://terrytao.wordpress.com/2026/11/20/unforced-euler-singularity-unforced-navier-stokes-singularity-and-the-generalized-riemann-hypothesis/">Unforced Euler singularity, unforced Navier-Stokes singularity, and the Generalized Riemann Hypothesis (Terence Tao)</a> <span class="how">— Tao’s November 20 assessment of the strategy and the state of the exposition.</span></li>
+<li><a href="https://github.com/tristanbuckmaster/navier-stokes/issues/2">GitHub issue #2: Proposition B.1 stated without the joins across y3 = 0 (manvirjaswal)</a> <span class="how">— November 20 reader comparison of the appendix and Lean statement, including the reader’s assessment of the main theorem.</span></li>
+<li><a href="https://github.com/tristanbuckmaster/navier-stokes/issues/3">An axisymmetric test of the D term in (B.20) | LingYi-Liang</a> <span class="how">— November 20 follow-up calculation and request to inspect the certificate.</span></li>
+<li><a href="https://github.com/tristanbuckmaster/navier-stokes/blob/ad53419de079eb8f95f60313473374624a348546/lean/README.md">The Lean formalization and the paper | Alpöge and Buckmaster</a> <span class="how">— Historical statement-by-statement comparison and the path from a weak profile to the two breakdown conclusions.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-ai-assisted-navier-stokes-proof-claims-unforced-blowup-but-v">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-21/ai-assisted-navier-stokes-proof-claims-unforced-blowup-but-v</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
