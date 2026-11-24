@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Anthropic credits Claude with a proof of Valiant’s conjecture — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-23">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-23">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 23 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Anthropic credits Claude with a proof of Valiant’s conjecture</h1>
+<p class="dek">The claimed result would rule out arithmetic shortcuts for two classic polynomials. An outside audit reproduced the formal checks. Human review of the mathematics was still pending on November 23.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 23 November 2026</span> <span class="chip">876 words · ~4 min</span></div>
+<div class="article-body">
+<p>A simple rule generates the terms of a sum called the permanent. Finding a shortcut to compute it has occupied computer scientists for nearly half a century. Anthropic says an internal Claude model proved that as real matrices grow, computing their permanent eventually takes more additions and multiplications than any fixed power of the matrix dimension. The November 23 manuscript, <a href="https://github.com/anthropics/formal-math/blob/918c8e2778aee18b0283dc5a33ed39ab3cd63a96/vp-vnp/paper.pdf">“VP ≠ VNP over every field,”</a> names Claude as its sole author. If correct, the proof settles Leslie Valiant’s conjecture about the limits of computing with addition and multiplication. Anthropic released a version in Lean, a language in which software can check the steps of a proof.</p><p>Take a square matrix whose entries are variables. To form its permanent, choose one entry from each row and each column, multiply those entries together, and add up the products for every possible choice. Writing out the terms for a ten-by-ten matrix would take more than three million products. Yet the determinant has just as many terms, with half their signs reversed, and it has efficient algorithms. In <a href="https://sites.math.washington.edu/~billey/colombia/references/valiant.completeness.1979.pdf">“Completeness Classes in Algebra,”</a> published at the 1979 ACM Symposium on Theory of Computing, Valiant showed how much depends on finding a shortcut for the permanent. Outside a special case called characteristic two, such a shortcut would carry over to an entire class of polynomials.</p><p>That class, VNP, allows a sum over all possible settings of a polynomial number of switches, each either zero or one. Each summand can be computed efficiently. VP requires an efficient computation for the whole polynomial. Efficiency here means that the size of the arithmetic circuit, a sequence of additions and multiplications that can reuse earlier results, grows at most as a fixed power of the family’s size parameter. Both classes require that the degree and the number of variables also grow at most polynomially.</p><p>Claude’s <a href="https://github.com/anthropics/formal-math/blob/918c8e2778aee18b0283dc5a33ed39ab3cd63a96/vp-vnp/Statement.lean">formal theorem</a> says that, for sufficiently large matrices outside characteristic two, the permanent requires more gates than any fixed power of the matrix dimension. The exponent in the lower bound itself grows in proportion to the cube root of the logarithm of that dimension. The bound holds even if the circuit can produce the target polynomial as a formal limit. Prior work obtained superpolynomial bounds for circuits subject to restrictions such as fixed depth. Here the circuit can have as many successive layers of operations as it likes. The proof gives no matrix size at which its bound first takes effect.</p><p>In fields of characteristic two, adding one to one gives zero. Plus and minus coincide, so the permanent equals the efficiently computable determinant. As Andrea <a href="https://bsky.app/profile/valkyrie.hacker.gf/post/3n2zhczqqqc2e">explained on Bluesky</a>, another polynomial covers this case. Imagine each entry of the matrix as the weight of a directed edge. Sum the products of edge weights only for cycles that visit every vertex exactly once. Claude claims the same lower bound for this Hamiltonian cycle polynomial over every field. Even over the two-element field, the arithmetic circuit must produce the polynomial itself. An algorithm working on bits can use identities such as a bit squared equaling itself. The ordinary P versus NP question remains open.</p><p>The manuscript divides the proof into two cases according to a geometric property of arrays of coefficients. In one, a polynomial represents a network in which every pair of vertices is connected. Any division of the vertices into two sizeable groups leaves many connections between the groups, which the argument uses to rule out a small circuit. In the other, a polynomial encodes the runs of short programs. Assuming it had a small circuit would yield a program that, run on its own description, must give a value equal to itself plus one. Valiant’s reductions then transfer the bound to the permanent or the cycle polynomial. The argument leaves open which case holds even for the real numbers.</p><p>Jess Sorrell <a href="https://x.com/OptimistsInc/status/2124995087788851532">suggested on X</a> that the result could yield a deterministic subexponential-time algorithm for polynomial identity testing, which asks whether a circuit computes the zero polynomial. She qualified the suggestion as pending verification. The manuscript connects hard polynomials to removing randomness from identity tests, but leaves open how fast such a test would run.</p><p>Anthropic’s <a href="https://github.com/anthropics/formal-math/blob/918c8e2778aee18b0283dc5a33ed39ab3cd63a96/vp-vnp/README.md">release notes</a> say Lean checked the proof using three standard axioms. The company also supplied a second checker. By Monday evening, Carlos Toledo <a href="https://carlostoledo.co/vp-vnp/">reported that three independently written checkers had accepted the proof</a>, with checks repeated on a second machine. His team also tested how the formal statement corresponded to the textbook problem. A Claude model and an OpenAI model each wrote down the claim from textbook definitions without seeing Anthropic’s version. Software checked that the released theorems implied each formulation. Toledo said Claude models had done most of the audit. Neither he nor Anthropic reported that a human mathematician had reviewed the proof by that evening.</p><p>OpenAI released a separate argument, <a href="https://github.com/openai/math/blob/e07100d36b22bcf8bb759f2f1abc7976ba472e47/preprints/VP-and-VNP-are-different-November-23-2026/paper.pdf">“VP and VNP are different,”</a> that same evening. It <a href="https://github.com/openai/math/blob/e07100d36b22bcf8bb759f2f1abc7976ba472e47/history.md">dates its result to November 6</a>. Its manuscript gives a smaller lower bound that still grows faster than any fixed polynomial and applies to approximating circuits, with the same distinction between the permanent and the cycle polynomial. The accompanying <a href="https://github.com/openai/math/tree/e07100d36b22bcf8bb759f2f1abc7976ba472e47/preprints/VP-and-VNP-are-different-November-23-2026">OpenAI Lean proof</a> covers the separation for exact computation. Both groups claim to reach the same conclusion through their own proofs.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://github.com/anthropics/formal-math/blob/918c8e2778aee18b0283dc5a33ed39ab3cd63a96/vp-vnp/paper.pdf">VP ≠ VNP over every field, Claude (Anthropic)</a> <span class="how">— The manuscript sets out the claimed circuit lower bound and its proof.</span></li>
+<li><a href="https://github.com/anthropics/formal-math/blob/918c8e2778aee18b0283dc5a33ed39ab3cd63a96/vp-vnp/README.md">Anthropic formal-math release README</a> <span class="how">— Anthropic describes its checkers, axioms and the status of human review.</span></li>
+<li><a href="https://github.com/anthropics/formal-math/blob/918c8e2778aee18b0283dc5a33ed39ab3cd63a96/vp-vnp/Statement.lean">Statement.lean at release</a> <span class="how">— The formal definitions distinguish exact and approximate computation.</span></li>
+<li><a href="https://sites.math.washington.edu/~billey/colombia/references/valiant.completeness.1979.pdf">Leslie G. Valiant, Completeness Classes in Algebra, STOC 1979</a> <span class="how">— Valiant defines the classes and proves the completeness result for the permanent outside characteristic two.</span></li>
+<li><a href="https://bsky.app/profile/valkyrie.hacker.gf/post/3n2zhczqqqc2e">Andrea’s correction on characteristic two</a> <span class="how">— Andrea explains why the Hamiltonian cycle polynomial matters in characteristic two.</span></li>
+<li><a href="https://x.com/OptimistsInc/status/2124995087788851532">Jess Sorrell on polynomial identity testing</a> <span class="how">— Sorrell suggests a possible consequence for identity testing.</span></li>
+<li><a href="https://carlostoledo.co/vp-vnp/">Carlos Toledo, The VP ≠ VNP claim, checked in the open</a> <span class="how">— Toledo reports the results of three checkers and discloses the role of Claude models in the audit.</span></li>
+<li><a href="https://github.com/openai/math/blob/e07100d36b22bcf8bb759f2f1abc7976ba472e47/preprints/VP-and-VNP-are-different-November-23-2026/paper.pdf">OpenAI, VP and VNP are different</a> <span class="how">— OpenAI gives its own argument for the separation.</span></li>
+<li><a href="https://github.com/openai/math/blob/e07100d36b22bcf8bb759f2f1abc7976ba472e47/history.md">OpenAI math release history, November 23 entry</a> <span class="how">— OpenAI dates its result to November 6.</span></li>
+<li><a href="https://github.com/openai/math/tree/e07100d36b22bcf8bb759f2f1abc7976ba472e47/preprints/VP-and-VNP-are-different-November-23-2026">OpenAI release README and linked exact-separation proof</a> <span class="how">— OpenAI describes the scope of its Lean proof.</span></li>
+<li><a href="https://bsky.app/profile/gracekind.net/post/3n2zdcnq3hc6b">Grace Kind’s Bluesky discussion linking the Anthropic release</a></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-anthropic-releases-claude-generated-vp-versus-vnp-separation">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-23/anthropic-releases-claude-generated-vp-versus-vnp-separation</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
