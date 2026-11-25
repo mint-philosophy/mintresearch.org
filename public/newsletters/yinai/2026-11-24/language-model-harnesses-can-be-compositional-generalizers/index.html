@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Models trained on short tasks learned to divide up much longer ones — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-24">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-24">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 24 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Models trained on short tasks learned to divide up much longer ones</h1>
+<p class="dek">MIT researchers taught a model to delegate familiar pieces of work, then tested which strategies survived a change in length or subject.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 24 November 2026</span> <span class="chip">634 words · ~3 min</span></div>
+<div class="article-body">
+<p>A language model learned a way to read a short collection of records that still worked when the collection grew many times longer. Alex L. Zhang, Souradip Chakraborty and Omar Khattab at MIT CSAIL tested how the software around a model affects that ability in their November 20 arXiv paper <a href="https://arxiv.org/abs/2611.28298v1">“Language Model Harnesses can be Compositional Generalizers.”</a> They found that a model can learn to write a program that divides up the reading, gives each reader a manageable assignment and combines the answers. As the collection grows, the program can assign more reading while each individual assignment stays familiar.</p>
+<p>Zhang and Khattab had already shown with Tim Kraska in <a href="https://arxiv.org/abs/2512.24601">“Recursive Language Models”</a> that a model could work with an input too long to fit in its context window, the amount of text it can see at once. Their software keeps the input outside that window. The model can inspect it with code and ask fresh copies of itself to read particular passages. The November paper asks what the model can learn from using that arrangement on easy problems that will still work when the problem gets harder.</p>
+<p>In one comparison, the researchers rewarded several versions of the same underlying model for correct answers on short inputs, then gave them longer ones. On the retrieval test, the model had to find entries in an input 64 times as long as the ones it saw during training. Code alone often worked well on retrieval and on questions about paths through a graph. A program that follows connections through a small graph can follow the same rules through a larger one. Other tasks required judgments about the meaning of individual records. There the recursive model could ask separate copies of itself to classify the records and then use code to tally their judgments. Where the researchers had correct labels for individual records, they found that the readers remained accurate as the overall collection grew.</p>
+<p>The researchers also changed the subject while preserving the kind of work a problem required. In one test, the model trained on analogies involving writing style and then had to find mathematical analogies in a collection of documents. In another, it went from classifying positions expressed in tweets to identifying errors in transcripts of language model interactions. The recursive model transferred its strategy better than the other systems in all three comparisons. Simply giving a model access to helpers could produce habits that worked poorly on longer collections, such as reading a fixed subset of the records or copying out long lists by hand.</p>
+<p>On a harder suite of eight benchmarks, rewarding correct answers on the short tasks yielded only modest gains for the stronger model. Zhang and colleagues tried teaching it how to divide up the work more directly. They gave a separate model examples from the target task families and asked it to devise practice problems with different content that could be solved the same way. For some exercises they supplied prepared answers whenever the model delegated a question. That let the model practice deciding whom to ask and what to do with the answer without waiting for other models to carry out every assignment.</p>
+<p>Trained on examples of successful runs through these exercises, RLM-27B raised the average score across the eight benchmarks from 46.1 to 58.5, compared with the underlying Qwen model using the same software without that training. It also used roughly half as many tokens per evaluation. The researchers knew the kinds of problems they wanted it to solve when they designed the exercises. Their result suggests a way to train for an expensive task whose structure is already understood. The exercises can use different documents, and a prepared answer from a helper can stand in for an expensive model call while the model practices directing the work.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2611.28298v1">https://arxiv.org/abs/2611.28298v1</a></li>
+<li><a href="https://arxiv.org/abs/2512.24601">https://arxiv.org/abs/2512.24601</a></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-language-model-harnesses-can-be-compositional-generalizers">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-24/language-model-harnesses-can-be-compositional-generalizers</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
