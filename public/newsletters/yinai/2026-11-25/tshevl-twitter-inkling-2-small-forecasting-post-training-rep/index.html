@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Mantic cuts the cost of researching and making a forecast — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-25">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-25">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 25 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Mantic cuts the cost of researching and making a forecast</h1>
+<p class="dek">On 200 numerical questions, Mantic’s small model scored about as well as Fable 5.2 at medium reasoning effort for one-fifteenth the cost per forecast.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 25 November 2026</span> <span class="chip">607 words · ~3 min</span></div>
+<div class="article-body">
+<p>In <a href="https://thinkingmachines.ai/news/training-a-scalable-forecasting-agent/">“Training a Scalable Forecasting Agent,”</a> published by Thinking Machines on November 24, Mantic and its collaborators trained a small model to investigate a question and assign probabilities to the possible answers. Comparing the model with Fable 5.2 on 200 numerical questions held out for testing, with both using Mantic’s forecasting tools, they found that the small model’s forecasts scored about as well on average as Fable’s at medium reasoning effort, for one-fifteenth the cost per forecast.</p>
+<p>The team also saved time on training. Forecasts can take different amounts of research, so waiting for every answer in a batch can delay the next update. On Thinking Machines’ Tinker platform, the team could update the model using finished forecasts while others were still in progress. Using that approach with a training method called StableReinforce cut elapsed time for the experiment to a third, a result Toby Shevlane discussed in his <a href="https://x.com/tshevl/status/2125568718553968953?a=flv8KABj9N74f9N6TZ4&amp;s=12">November 25 post</a>.</p>
+<p>In <a href="https://thinkingmachines.ai/news/training-llms-to-predict-world-events/">a March 19 experiment</a>, Mantic trained a model to answer yes-or-no questions using research other agents had already done. This time the team started with <a href="https://mintresearch.org/newsletters/yinai/2026-11-05/#story-thinking-machines-launches-inkling-2-small-with-17b-active-p">Thinking Machines’ Inkling 2 Small</a> and let it decide what evidence to look for and when to write code. The test questions came from Metaculus, Polymarket, Kalshi and Mantic itself. All asked for forecasts as of dates after September 15, the base model’s knowledge cutoff. The researchers scored a forecast according to the probability it assigned to the outcome, with a heavy penalty for treating something that ultimately happened as nearly impossible.</p>
+<p>For training, Mantic needed questions with known answers and a way to keep those answers out of the model’s searches. Of roughly 848,000 numerical questions resolved on three public platforms in 2026, fewer than 4,000 survived its filters. Many were duplicates or concerned subjects the team excluded, such as sports and next-day prices. Mantic used news reports to generate another 45,000 questions. It gave the agent access to news, economic data and Wikipedia as they stood on the date of each forecast. To serve thousands of simultaneous searches, the team indexed Wikipedia’s revision history itself.</p>
+<p>A well-researched forecast can still score poorly if an unlikely event occurs. Conversely, a model can score well by getting lucky with a confident prediction on weak evidence. Mantic therefore gave the model a second source of feedback. Several frontier models forecast the same question, and the researchers calculated how well the trainee would score across the outcomes those models considered plausible. They combined that score with the score for the actual outcome. This reduced the reward for lucky guesses, at the expense of rewarding some errors that the other models shared.</p>
+<p>For one question, both versions of Inkling had to forecast South Korea’s August 2026 producer price index for coal and petroleum products. The base model fitted a straight line relating the index to the price of oil in won and predicted a steep decline. The trained model found that refinery price caps remained in place, estimated how slowly oil-price changes reached producers and checked its estimate against the oil slump of 2022. Its median forecast for the index was 272, compared with the base model’s 225. At high reasoning effort the trained model spent more time investigating questions. At low effort, Mantic found, it could outperform the base model at lower cost.</p>
+<p>Mantic used the cheaper forecasts to estimate 2027 revenue and earnings per share for every S&amp;P 500 company under 50 scenarios. For each scenario the team asked for estimates assuming the event happened and again assuming it did not. The exercise produced 100,000 conditional forecasts. The comparison with Fable used questions whose outcomes were already known.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://thinkingmachines.ai/news/training-a-scalable-forecasting-agent/">Training a Scalable Forecasting Agent</a> <span class="how">— Read the full November 24 joint report, including Figures 2, 5 and 8. Evaluation, training and scenario comparisons.</span></li>
+<li><a href="https://x.com/tshevl/status/2125568718553968953?a=flv8KABj9N74f9N6TZ4&amp;s=12">Toby Shevlane on the Mantic run</a> <span class="how">— November 25 participant account of wall-clock speedup and shared harness. Bird could not retrieve a live thread. Post text also visible in indexed reposts.</span></li>
+<li><a href="https://thinkingmachines.ai/news/training-llms-to-predict-world-events/">Training LLMs to Predict World Events</a> <span class="how">— March 19 predecessor using externally supplied research and binary questions.</span></li>
+<li><a href="https://mintresearch.org/newsletters/yinai/2026-11-05/#story-thinking-machines-launches-inkling-2-small-with-17b-active-p">Inkling 2 Small gains capabilities, with uneven coding results</a> <span class="how">— Published November 5 coverage of the base model and Thinking Machines’ separate forecasting demonstration.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-tshevl-twitter-inkling-2-small-forecasting-post-training-rep">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-25/tshevl-twitter-inkling-2-small-forecasting-post-training-rep</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
