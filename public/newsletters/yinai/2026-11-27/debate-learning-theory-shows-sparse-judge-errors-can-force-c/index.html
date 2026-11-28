@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Rare errors in judging debates can keep a learner guessing — Yesterday in AI</title>
+<script>try{if(localStorage.getItem("mint-theme")==="dark")document.documentElement.removeAttribute("data-theme")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Georgia,'Iowan Old Style',Palatino,serif;font-size:17px;line-height:1.7;background:var(--bg-1,#f6f3ea);color:var(--text-bright,#16181d)}main.nl-page{max-width:680px;margin:0 auto;padding:30px 20px 56px}a{color:var(--accent,#0d7c73)}</style>
+<link rel="stylesheet" href="/assets/theme.css?v=2026-11-27">
+<link rel="stylesheet" href="/newsletters/yinai/assets/brand.css?v=2026-11-27">
+</head>
+<body>
+<header class="nl-header"><div class="nl-header-inner">
+<a class="nl-wordmark" href="https://mintresearch.org/"><img src="/assets/mint-banner.png" alt="MINT Lab" height="28"></a>
+<p class="nl-kicker">Yesterday in AI · 27 November 2026</p>
+</div></header>
+<main class="nl-page">
+<h1 class="hed">Rare errors in judging debates can keep a learner guessing</h1>
+<p class="dek">In a mathematical example, a learner repeatedly faces the same question. If a judge errs on the few arguments that distinguish competing answers, the learner can still do no better than chance.</p>
+<div class="byline"><span>The Minty Newsroom · Edited by Codex · 27 November 2026</span> <span class="chip">630 words · ~3 min</span></div>
+<div class="article-body">
+<p>A judge can follow the rules of a debate on nearly every round and still leave a learner unable to tell which answer is correct. Tosca Lechner of the Vector Institute and coauthors Vinayak Pathak, Sivan Sabato and Ruth Urner prove this for a family of examples in their arXiv paper <a href="https://arxiv.org/abs/2611.17303v2">“Towards a Theory of Learnability via Debate.”</a> In one construction, the learner faces the same question every time. With accurate verdicts it can settle the question by testing enough different arguments. With a fallible judge, the few arguments it most needs the judge to assess can all receive the wrong verdict.</p><p>The motivation comes from a proposal by Geoffrey Irving, Paul Christiano and Dario Amodei in <a href="https://arxiv.org/abs/1805.00899">“AI safety via debate.”</a> Someone who would struggle to answer a hard question unaided might be able to decide which of two competing AI systems made the better case. In the original formal model, an argument played well by both sides allows a judge to settle questions that would exceed its own computational resources. As Pathak explains in his <a href="https://www.lesswrong.com/posts/wdowLCxnsRg56cNqT/towards-a-theory-of-learnability-via-debate">account of the paper</a>, that argument starts at the point where the debaters already know how to play. A system learning from verdicts must also discover which arguments the judge will accept and what those verdicts tell it about the answer.</p><p>Lechner and colleagues give the learner considerable freedom. On each round an adversary picks a question. The learner first predicts its answer, then writes both sides of one debate and submits the transcript. It knows the set of possible judging rules and receives the verdict on the transcript it chose. The correct answer and the verdicts on alternative transcripts remain hidden. Even a judge who follows the intended rule perfectly can award a debate to the wrong answer when the learner fails to present the argument that would win for the right one.</p><p>In the <a href="https://arxiv.org/html/2611.17303v2#A1.5">authors’ proof</a>, the arguments are simply numbers drawn from a finite list. One possible judge always returns zero, and the correct answer under that rule is zero. Each other possible judge has a secret number. If either side submits that number as its argument, the judge returns one. Every other pair of arguments gets a zero. With any of these judges the correct answer is one, because a debater who knows the number can always win for that answer. The learner can test two numbers per round, one for each side of the debate. If the judge applies its rule consistently, the learner will eventually try every number and know which answer to give thereafter.</p><p>Now allow the environment to change a verdict. It can return zero on precisely the rounds when the secret number appears. The learner then sees a sequence of zeros consistent with either answer. For as long as the learner rarely tests the secret number, disguising those results uses up only a small part of the judge’s allowance for errors. Pathak illustrates the size of the effect with a constructed case in which errors on one percent of rounds can leave prediction at chance. The percentage counts wrong verdicts on the debates the learner actually submits. Those mistakes can fall disproportionately on the decisive arguments. A judge making independent slips at random would present a different learning problem.</p><p>The authors also find examples where two sides that cooperate to elicit informative verdicts can learn more than opponents trying to win their own debates. The secret-number example gives the two sides that freedom. Even when they coordinate their search and have unlimited computing power, both must still work from the verdicts they receive. How often human judges make mistakes on precisely the arguments that distinguish competing answers, and whether language models trained through real debates can learn around those mistakes, remain empirical questions.</p>
+</div>
+<section class="sources">
+<h2>Sources &amp; documents</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2611.17303v2">Towards a Theory of Learnability via Debate</a> <span class="how">— Protocol, Theorem 12 and proof, cooperative and competitive learning.</span></li>
+<li><a href="https://www.lesswrong.com/posts/wdowLCxnsRg56cNqT/towards-a-theory-of-learnability-via-debate">Vinayak Pathak on learning via debate</a> <span class="how">— Author explanation and one-percent illustration.</span></li>
+<li><a href="https://arxiv.org/abs/1805.00899">AI safety via debate</a> <span class="how">— Original proposal and optimal-play motivation, verified from author abstract.</span></li>
+<li><a href="https://arxiv.org/html/2611.17303v2#A1.5">Towards a Theory of Learnability via Debate, appendix</a> <span class="how">— Theorem 12 proof, single input and finite list of numerical arguments.</span></li>
+</ul>
+</section>
+<section class="how-reported">
+<h2>How this was reported</h2>
+<p>Reported and written by MINT Lab's AI agents and edited by Codex. Story selection curated by Seth. No interviews were conducted; all quotes come from published, linked sources.</p>
+</section>
+<p class="issue-note">this piece also lives inside <a href="../#story-debate-learning-theory-shows-sparse-judge-errors-can-force-c">the full issue</a></p>
+<nav class="nl-exit">
+<a href="../" onclick="if(history.length>1){history.back();return false}">[ &#8592; back ]</a>
+<a href="../">[ continue reading today's issue &#8594; ]</a>
+</nav>
+</main>
+<footer class="nl-footer">
+<img class="nl-footer-minty" src="/assets/minty-teal.png" alt="">
+<a class="nl-footer-site" href="https://mintresearch.org/">mintresearch.org</a>
+<span class="nl-footer-section">newsletters/yinai/2026-11-27/debate-learning-theory-shows-sparse-judge-errors-can-force-c</span>
+<button type="button" class="theme-toggle" id="nlThemeToggle"></button>
+</footer>
+<script>
+(function () {
+  var KEY = "mint-theme", root = document.documentElement,
+      btn = document.getElementById("nlThemeToggle");
+  if (!btn) return;
+  function cur() { return root.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function paint() {
+    var dark = cur() === "dark";
+    btn.innerHTML = dark
+      ? '<span class="theme-toggle-icon">\u2600</span>light'
+      : '<span class="theme-toggle-icon">\u263E</span>dark';
+    btn.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+    btn.title = btn.getAttribute("aria-label");
+  }
+  btn.addEventListener("click", function () {
+    var next = cur() === "dark" ? "light" : "dark";
+    if (next === "light") { root.setAttribute("data-theme", "light"); }
+    else { root.removeAttribute("data-theme"); }
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
